@@ -1,0 +1,1 @@
+sh hpss_cache -a 2 -f $1 -s $2 | awk '$1 == "Size:" {size = $2} $3 == "Position:" {position = $4} $1 == "VOLID:" {tape = $2} $6 == "cache:" && $7 == "purged," {storageLevel = "1"} $6 == "cache:" && $7 == "not" {storageLevel = "0"} END {print size "," position "," tape storageLevel}' | sed 's/,/ /g'

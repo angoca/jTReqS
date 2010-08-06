@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<configuration debug="false" scan="true">
+
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <Pattern> %date{ISO8601} [%thread] %-4relative %-5level %logger{35} - %msg%n </Pattern>
+    </layout>
+  </appender>
+  <!--logger name="fr.in2p3.cc.storage.treqs.control.QueuesController" level="DEBUG">
+    <appender-ref ref="Console" />
+  </logger-->
+
+  <root level="trace">
+    <appender-ref ref="Console" />
+  </root>
+</configuration>

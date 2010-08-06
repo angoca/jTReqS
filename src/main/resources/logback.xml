@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<configuration debug="false" scan="true">
+  <appender name="LogFile"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <!--file>/var/log/treqs/treqs.log</file-->
+    <file>treqs.log</file>
+    <append>true</append>
+    <encoding>ISO-8859-1</encoding>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>treqs.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+      <!-- keep 30 days' worth of history -->
+      <maxHistory>180</maxHistory>
+    </rollingPolicy>
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>
+        %date{ISO8601} [%thread] %-5level %logger{35} - %msg%n
+    </pattern>
+    </layout>
+  </appender>
+
+  <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d{ISO8601} [%thread] %-5level %logger{35} - %msg%n
+      </pattern>
+    </layout>
+  </appender>
+
+  <root level="WARN">
+    <appender-ref ref="Console" />
+    <appender-ref ref="LogFile" />
+  </root>
+</configuration>

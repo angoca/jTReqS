@@ -1,0 +1,372 @@
+package fr.in2p3.cc.storage.treqs.control.activator;
+
+/*
+ * Copyright      Jonathan Schaeffer 2009-2010,
+ *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
+ * Contributors : Andres Gomez,
+ *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
+ *
+ * This software is a computer program whose purpose is to schedule, sort
+ * and submit file requests to the hierarchical storage system HPSS.
+ *
+ * This software is governed by the CeCILL license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights, and the successive licensors have only limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ *
+ */
+
+import java.util.GregorianCalendar;
+
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
+import fr.in2p3.cc.storage.treqs.control.FilesController;
+import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
+import fr.in2p3.cc.storage.treqs.control.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.StagersController;
+import fr.in2p3.cc.storage.treqs.control.TapesController;
+import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
+import fr.in2p3.cc.storage.treqs.model.MediaType;
+import fr.in2p3.cc.storage.treqs.model.Queue;
+import fr.in2p3.cc.storage.treqs.model.Tape;
+import fr.in2p3.cc.storage.treqs.model.TapeStatus;
+import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+
+/**
+ * ActivatorTest.cpp
+ * 
+ * @version 2010-07-22
+ * @author gomez
+ */
+
+public class ActivatorTest {
+
+    @Before
+    public void setUp() {
+        Activator.destroyInstance();
+        FilesController.destroyInstance();
+        FilePositionOnTapesController.destroyInstance();
+        QueuesController.destroyInstance();
+        TapesController.destroyInstance();
+        TReqSConfig.destroyInstance();
+        StagersController.destroyInstance();
+        MediaTypesController.destroyInstance();
+    }
+
+    @Test
+    public void test01MaxQueueStagers() {
+
+        short actual = (short) Activator.getInstance().getMaxStagersPerQueue();
+
+        short expected = 3;
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test02MaxQueueStagers() {
+        boolean failed = false;
+        try {
+            Activator.getInstance().setMaxStagersPerQueue((short) -6);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test01MaxStagers() {
+
+        short actual = (short) Activator.getInstance().getMaxStagers();
+
+        short expected = 1000;
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test02MaxStagers() {
+        boolean failed = false;
+        try {
+            Activator.getInstance().setMaxStagers((short) -6);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test01timeBetweenWorkers() {
+
+        short actual = (short) Activator.getInstance().getTimeBetweenWorkers();
+
+        short expected = 50;
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test02timeBetweenWorkers() {
+
+        boolean failed = false;
+        try {
+            Activator.getInstance().setTimeBetweenWorkers(-6);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test01activeWorkers() {
+
+        boolean failed = false;
+        try {
+            Activator.getInstance().setActiveWorkers((short) -1);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test01Activate() {
+
+        boolean failed = false;
+        try {
+            Activator.getInstance().activate(null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test02Activate() throws TReqSException {
+
+        Activator.getInstance().setMaxStagers((short) 5);
+        Activator.getInstance().setActiveWorkers((short) 10);
+
+        MediaType media = new MediaType((byte) 1, "media");
+        File file = new File("filename", new User("username"), 300);
+        Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 2, tape);
+        Queue queue = QueuesController.getInstance().addFilePositionOnTape(
+                fpot, (byte) 1);
+
+        Activator.getInstance().activate(queue);
+    }
+
+    @Test
+    public void test03Activate() throws TReqSException {
+
+        MediaType media = new MediaType((byte) 1, "media");
+        File file = new File("filename", new User("username"), 300);
+        Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 2, tape);
+        Queue queue = QueuesController.getInstance().addFilePositionOnTape(
+                fpot, (byte) 1);
+
+        Activator.getInstance().activate(queue);
+    }
+
+    @Test
+    public void test04Activate() throws TReqSException {
+        Activator.getInstance().setMaxStagersPerQueue((short) 2);
+
+        MediaType media = new MediaType((byte) 1, "media");
+        Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
+        User user = new User("username");
+
+        File file1 = new File("filename1", user, 300);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                new GregorianCalendar(), 10, tape);
+        Queue queue = QueuesController.getInstance().addFilePositionOnTape(
+                fpot1, (byte) 1);
+
+        File file2 = new File("filename2", user, 300);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                new GregorianCalendar(), 20, tape);
+        QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
+
+        File file3 = new File("filename3", user, 300);
+        FilePositionOnTape fpot3 = new FilePositionOnTape(file3,
+                new GregorianCalendar(), 30, tape);
+        QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
+
+        Activator.getInstance().activate(queue);
+    }
+
+    @Test
+    public void test01refreshAllocation() throws TReqSException {
+        Activator.getInstance().refreshAllocations();
+    }
+
+    @Test
+    public void test01setMetadataTimeout() {
+
+        boolean failed = false;
+        try {
+            Activator.getInstance().setMetadataTimeout((short) 0);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests the stop method.
+     */
+    @Test
+    public void test01stop() {
+        Activator.getInstance().start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Activator.getInstance().toStop();
+    }
+
+    /**
+     * Tests to stop the activator from other thread.
+     */
+    @Test
+    public void test01run() {
+        Thread thread = new Thread() {
+
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Activator.getInstance().toStop();
+            }
+        };
+        thread.start();
+        Activator.getInstance().run();
+    }
+
+    /**
+     * Tests to refresh the metada in the run method.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void test02run() throws TReqSException {
+        Activator.getInstance().setMetadataTimeout((short) 1);
+        Activator.getInstance().refreshAllocations();
+        Activator.getInstance().start();
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Activator.getInstance().toStop();
+    }
+
+    /**
+     * Tests to retrieve the best user that does not exists.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void test03run() throws TReqSException {
+        Activator.getInstance().refreshAllocations();
+
+        File file = new File("filename", new User("username"), 400);
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media1"),
+                TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 6, tape);
+        QueuesController.getInstance().addFilePositionOnTape(fpot, (byte) 1);
+        Activator.getInstance().start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Activator.getInstance().toStop();
+    }
+
+    @Test
+    public void test04run() throws TReqSException {
+        Activator.getInstance().refreshAllocations();
+
+        File file = new File("filename", new User("user1"), 400);
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media1"),
+                TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 6, tape);
+        QueuesController.getInstance().addFilePositionOnTape(fpot, (byte) 1);
+        Activator.getInstance().start();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Activator.getInstance().toStop();
+    }
+}

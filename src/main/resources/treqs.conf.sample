@@ -1,0 +1,52 @@
+[MAIN]
+# path to the HPSS keytab
+KEYTAB_FILE=/home/treqs/keytab.treqs
+# user of the keytab
+KEYTAB_USER=treqs
+# tell treqs about the log4j configuration file
+LOG4JPROPERTIES=/opt/treqs/etc/log4cxx.properties
+
+# time laps between two activator's runs in seconds
+# the activator is responsible for choosing the best queue
+# and starting it
+ACTIVATOR_INTERVAL=200
+# time laps between two dispatcher's runs in seconds
+# the dispatcher fetches the new requests and register them
+# in queues
+DISPATCHER_INTERVAL=15
+# maximum new requests to fetch from database in one run
+DISPATCHER_FETCH_MAX=400
+
+# number of simultaneous stagings for each queue
+# 3 should do the trick
+STAGING_DEPTH=3
+# staging maximum retries number in case of failure
+STAGING_MAXTRIES=2
+# time of suspension (seconds) for a temporally suspended queue.
+# A queue is suspended on the following cases :
+# - No space left on HPSS's disks for staging
+QUEUE_SUSPEND_TIME=600
+
+# The host where the Database is running
+DBHOST=localhost
+# The port to contact the database
+DBPORT=3386
+# The socket to contact the database
+DBSOCKET=/var/lib/mysql/mysql.sock
+
+[JOBSDB]
+# The jobs database settings. 
+# It contains the requests and queues table
+# The user must have SELECT,INSERT,UPDATE and DELETE rights
+USER=jobs
+PASSWORD=jobspasswd
+DATABASE=jobs
+
+[CONFIGDB]
+# The configuration database settings. 
+# The user must have SELECT,INSERT,UPDATE and DELETE rights
+USER=config
+PASSWORD=configpasswd
+DATABASE=config
+
+

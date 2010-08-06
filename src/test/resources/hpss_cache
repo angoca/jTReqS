@@ -1,0 +1,57 @@
+# Tape types
+Types="IT
+IS
+JT"
+type=($Types)
+num_types=${#type[*]}
+tapeType=${type[$((RANDOM%num_types))]}
+
+# Tape number
+tapeNumber=$((RANDOM%9999))
+
+if [ ${tapeNumber} -eq 0 ]; then
+    volid=${tapeType}0000
+elif [ ${tapeNumber} -lt 10 ]; then
+    volid=${tapeType}000${tapeNumber}
+elif [ ${tapeNumber} -lt 100 ]; then
+    volid=${tapeType}00${tapeNumber}
+elif [ ${tapeNumber} -lt 1000 ]; then
+    volid=${tapeType}0${tapeNumber}
+else
+    volid=${tapeType}${tapeNumber}
+fi
+
+# Tape position
+position=$((RANDOM%100))
+
+# File's size
+size=$((RANDOM%1000))
+
+# File's state
+States="purged
+not
+purged
+purged"
+state=($States)
+num_states=${#state[*]}
+fileState=${state[$((RANDOM%num_states))]}
+
+if [ "${fileState}" = "not" ]; then
+    fileState="not purged"
+fi
+
+filename=$6
+if [ -z ${filename} ]; then
+    filename=NO_FILE
+elif [ "${filename}" = "/hpss/filename" ]; then
+    size=564
+    position=123
+    volid=IT9876
+    fileState="not purged"
+fi
+
+echo FILE: ${filename}
+echo TYPE: file, COS: 11, Family: 0, Uid: 2543, Gid: 182
+echo Size: ${size} MB, Read count: 1, Write count: 1
+echo Current Open Count: 0, disk cache: ${fileState}, migrated, not locked
+echo VOLID: ${volid}, Position: ${position}
