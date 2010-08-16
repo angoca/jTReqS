@@ -52,20 +52,26 @@ import fr.in2p3.cc.storage.treqs.model.Stager;
 
 public class StagersController {
     /**
+     * Instance of the singleton.
+     */
+    private static StagersController _instance = null;
+
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StagersController.class);
 
     /**
-     * Instance of the singleton.
+     * Destroys the unique instance. This is useful only for testing purposes.
      */
-    private static StagersController _instance = null;
+    public static void destroyInstance() {
+        LOGGER.debug("> destroyInstance");
 
-    /**
-     * List of created stagers.
-     */
-    private List<Stager> stagers;
+        _instance = null;
+
+        LOGGER.debug("< destroyInstance");
+    }
 
     /**
      * Provides access to this singleton.
@@ -87,15 +93,9 @@ public class StagersController {
     }
 
     /**
-     * Destroys the unique instance. This is useful only for testing purposes.
+     * List of created stagers.
      */
-    public static void destroyInstance() {
-        LOGGER.debug("> destroyInstance");
-
-        _instance = null;
-
-        LOGGER.debug("< destroyInstance");
-    }
+    private List<Stager> stagers;
 
     private StagersController() {
         LOGGER.trace("> create StagersController");
@@ -103,6 +103,41 @@ public class StagersController {
         this.stagers = new ArrayList<Stager>();
 
         LOGGER.trace("< create StagersController");
+    }
+
+    /**
+     * Cleans the stager that are not longer used.
+     * 
+     * @return the quantity of stagers unreferenced.
+     */
+    public int cleanup() {
+        LOGGER.trace("> cleanup");
+
+        int iter = 0;
+        int count = 0;
+        for (int i = 0; i < this.stagers.size(); i++) {
+            Stager stager = this.stagers.get(i);
+            iter++;
+            LOGGER.debug("Scanning stagers {}", iter);
+            // TODO this method has to be changed. Stagers have several states,
+            // not only 2.
+            if (stager.isJobDone()) {
+                LOGGER.debug("Cleaning stagers {}", iter);
+                this.remove(i);
+                i--;
+                count++;
+            } else {
+                LOGGER.debug("Stager {} is still running", iter);
+            }
+        }
+
+        if (count > 0) {
+            LOGGER.info("Cleaned {} stager instances.", count);
+        }
+
+        LOGGER.trace("< cleanup");
+
+        return count;
     }
 
     /**
@@ -119,41 +154,6 @@ public class StagersController {
         LOGGER.trace("< create");
 
         return stager;
-    }
-
-    /**
-     * Cleans the stager that are not longer used.
-     * 
-     * @return the quantity of stagers unreferenced.
-     */
-    public int cleanup() {
-        LOGGER.trace("> cleanup");
-
-        int iter = 0;
-        int count = 0;
-        for (int i = 0; i < this.stagers.size(); i++) {
-            Stager stager = this.stagers.get(i);
-            iter++;
-            LOGGER.debug("Scanning worker " + iter);
-            // TODO this method has to be changed. Stagers have several states,
-            // not only 2.
-            if (stager.isJobDone()) {
-                LOGGER.debug("Cleaning worker " + iter);
-                this.remove(i);
-                i--;
-                count++;
-            } else {
-                LOGGER.debug("Worker " + iter + " is still running");
-            }
-        }
-
-        if (count > 0) {
-            LOGGER.info("Cleaned " + count + " stager instances.");
-        }
-
-        LOGGER.trace("< cleanup");
-
-        return count;
     }
 
     /**

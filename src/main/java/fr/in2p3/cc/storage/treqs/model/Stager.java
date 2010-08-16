@@ -52,6 +52,10 @@ public class Stager extends Thread {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Stager.class);
     /**
+     * Variable that indicates if the stager has to continue executing.
+     */
+    private boolean cont;
+    /**
      * Represents if the job has been finished.
      */
     private boolean jobDone;
@@ -59,10 +63,6 @@ public class Stager extends Thread {
      * Associated queue.
      */
     private Queue queue;
-    /**
-     * Variable that indicates if the stager has to continue executing.
-     */
-    private boolean cont;
 
     public Stager(Queue q) {
         super("tape" + q.getTape().getName() + "-" + System.currentTimeMillis());
@@ -75,24 +75,6 @@ public class Stager extends Thread {
     }
 
     /**
-     * Representation in a String.
-     */
-    public String toString() {
-        LOGGER.trace("> toString");
-
-        String ret = "";
-        ret += "Stager";
-        ret += "{ queue: " + this.queue.getId();
-        ret += ", tape: " + this.queue.getTape().getName();
-        ret += ", job: " + this.isJobDone();
-        ret += "}";
-
-        LOGGER.trace("< toString");
-
-        return ret;
-    }
-
-    /**
      * Getter for jobDone member.
      * 
      * @return
@@ -101,30 +83,6 @@ public class Stager extends Thread {
         LOGGER.trace(">< isJobDone");
 
         return this.jobDone;
-    }
-
-    /**
-     * Setter for jobDone member.
-     * 
-     * @param done
-     */
-    public void setJobDone(boolean done) {
-        LOGGER.trace("> setJobDone");
-
-        this.jobDone = done;
-
-        LOGGER.trace("< setJobDone");
-    }
-
-    /**
-     * Indicates that the execution of this thread has to be stopped.
-     */
-    public void toStop() {
-        LOGGER.trace("> toStop");
-
-        this.cont = false;
-
-        LOGGER.trace("< toStop");
     }
 
     /**
@@ -140,6 +98,7 @@ public class Stager extends Thread {
      *            pointer to a queue.
      * @return true is the queue is not null, false in the other case.
      */
+    @Override
     public void run() {
         LOGGER.trace("> run");
 
@@ -160,6 +119,19 @@ public class Stager extends Thread {
         this.setJobDone(true);
 
         LOGGER.trace("< run");
+    }
+
+    /**
+     * Setter for jobDone member.
+     * 
+     * @param done
+     */
+    public void setJobDone(boolean done) {
+        LOGGER.trace("> setJobDone");
+
+        this.jobDone = done;
+
+        LOGGER.trace("< setJobDone");
     }
 
     /**
@@ -188,5 +160,35 @@ public class Stager extends Thread {
         }
 
         LOGGER.trace("< stage");
+    }
+
+    /**
+     * Indicates that the execution of this thread has to be stopped.
+     */
+    public void toStop() {
+        LOGGER.trace("> toStop");
+
+        this.cont = false;
+
+        LOGGER.trace("< toStop");
+    }
+
+    /**
+     * Representation in a String.
+     */
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
+
+        String ret = "";
+        ret += "Stager";
+        ret += "{ queue: " + this.queue.getId();
+        ret += ", tape: " + this.queue.getTape().getName();
+        ret += ", job: " + this.isJobDone();
+        ret += "}";
+
+        LOGGER.trace("< toString");
+
+        return ret;
     }
 }

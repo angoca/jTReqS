@@ -38,6 +38,7 @@ package fr.in2p3.cc.storage.treqs.control;
  */
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.model.User;
@@ -47,6 +48,10 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * FilesControllerTest.cpp Created on: 2010-03-24 Author: gomez
  */
 public class FilesControllerTest {
+    @After
+    public void tearDown() {
+        FilesController.destroyInstance();
+    }
 
     @Test
     public void test01CreateUser() throws TReqSException {
@@ -76,7 +81,7 @@ public class FilesControllerTest {
 
     /**
      * Tests to create a file with a null user.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -119,7 +124,7 @@ public class FilesControllerTest {
 
     /**
      * Tests to create a file with a null user.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -137,7 +142,7 @@ public class FilesControllerTest {
 
     /**
      * Tests to create a file with a null user.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */

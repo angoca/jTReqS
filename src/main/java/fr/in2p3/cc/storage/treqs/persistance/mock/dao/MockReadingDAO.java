@@ -58,14 +58,25 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
  */
 public class MockReadingDAO implements ReadingDAO {
     /**
+     * Singleton initialization
+     */
+    private static MockReadingDAO _instance = null;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockReadingDAO.class);
+
     /**
-     * Singleton initialization
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    private static MockReadingDAO _instance = null;
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     public static MockReadingDAO getInstance() {
         if (_instance == null) {
@@ -75,37 +86,14 @@ public class MockReadingDAO implements ReadingDAO {
         return _instance;
     }
 
+    private List<PersistenceHelperFileRequest> newJobs;
+
+    private PersistanceException newJobsException;
+    private PersistanceException requestStatusByIdException;
+
     private MockReadingDAO() {
         this.requestStatusByIdException = null;
         this.newJobs = createJobs();
-    }
-
-    private PersistanceException requestStatusByIdException;
-    private List<PersistenceHelperFileRequest> newJobs;
-    private PersistanceException newJobsException;
-
-    @Override
-    public void update(FilePositionOnTape fpot, FileStatus fileState,
-            Calendar endTime, byte nbTries, String errorMessage,
-            short errorCode, Queue queue) throws TReqSException {
-    }
-
-    public int updateUnfinishedRequests() throws PersistanceException {
-        return 0;
-    }
-
-    public List<PersistenceHelperFileRequest> getNewJobs(int l)
-            throws PersistanceException {
-
-        if (this.newJobsException != null) {
-            PersistanceException toThrow = this.newJobsException;
-            this.newJobsException = null;
-            throw toThrow;
-        }
-
-        List<PersistenceHelperFileRequest> ret = this.newJobs;
-        this.newJobs = createJobs();
-        return ret;
     }
 
     /**
@@ -137,6 +125,26 @@ public class MockReadingDAO implements ReadingDAO {
         jobs.add(request);
     }
 
+    @Override
+    public void firstUpdate(FilePositionOnTape fpot, FileStatus status,
+            String message, Queue queue) throws ExecuteMySQLException {
+
+    }
+
+    public List<PersistenceHelperFileRequest> getNewJobs(int l)
+            throws PersistanceException {
+
+        if (this.newJobsException != null) {
+            PersistanceException toThrow = this.newJobsException;
+            this.newJobsException = null;
+            throw toThrow;
+        }
+
+        List<PersistenceHelperFileRequest> ret = this.newJobs;
+        this.newJobs = createJobs();
+        return ret;
+    }
+
     public void setNewJobs(List<PersistenceHelperFileRequest> jobs) {
         this.newJobs = jobs;
     }
@@ -146,7 +154,7 @@ public class MockReadingDAO implements ReadingDAO {
     }
 
     @Override
-    public void setRequestStatusById(int id, FileStatus status, String message)
+    public void setRequestStatusById(int r, FileStatus fs, int errcode, String m)
             throws PersistanceException {
         if (this.requestStatusByIdException != null) {
             PersistanceException toThrow = this.requestStatusByIdException;
@@ -156,7 +164,7 @@ public class MockReadingDAO implements ReadingDAO {
     }
 
     @Override
-    public void setRequestStatusById(int r, FileStatus fs, int errcode, String m)
+    public void setRequestStatusById(int id, FileStatus status, String message)
             throws PersistanceException {
         if (this.requestStatusByIdException != null) {
             PersistanceException toThrow = this.requestStatusByIdException;
@@ -170,9 +178,13 @@ public class MockReadingDAO implements ReadingDAO {
     }
 
     @Override
-    public void firstUpdate(FilePositionOnTape fpot, FileStatus status,
-            String message, Queue queue) throws ExecuteMySQLException {
+    public void update(FilePositionOnTape fpot, FileStatus fileState,
+            Calendar endTime, byte nbTries, String errorMessage,
+            short errorCode, Queue queue) throws TReqSException {
+    }
 
+    public int updateUnfinishedRequests() throws PersistanceException {
+        return 0;
     }
 
 }

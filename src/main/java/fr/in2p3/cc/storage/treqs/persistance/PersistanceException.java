@@ -48,12 +48,12 @@ public abstract class PersistanceException extends TReqSException {
      */
     private static final long serialVersionUID = -7397853011740242653L;
 
-    public PersistanceException(Exception e) {
-        super(e);
-    }
-
     public PersistanceException() {
         super();
+    }
+
+    public PersistanceException(Exception e) {
+        super(e);
     }
 
     public PersistanceException(String message) {

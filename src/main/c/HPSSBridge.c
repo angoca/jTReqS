@@ -135,7 +135,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpss_HPSSBridge_getHPS
 		// This does not seem to work on 64b
 		// CONVERT_U64_TO_LONGLONG(length, *s);
 		// TODO (jschaeff) this conversion is ugly
-		size = atoll(u64tostr(length));
+		//size = atoll(u64tostr(length));
 		if (storageLevel == 0) {
 			tape = "DISK";
 			position = -1;

@@ -72,7 +72,7 @@ public class Tape {
 
     /**
      * Constructor with name, media type and status.
-     *
+     * 
      * @param name
      * @param mediaType
      * @param status
@@ -89,26 +89,8 @@ public class Tape {
     }
 
     /**
-     * Representation in a String.
-     */
-    public String toString() {
-        LOGGER.trace("> toString");
-
-        String ret = "";
-        ret += "Tape";
-        ret += "{ media type: " + this.getMediaType().getName();
-        ret += ", name: " + this.getName();
-        ret += ", status: " + this.getStatus();
-        ret += "}";
-
-        LOGGER.trace("< toString");
-
-        return ret;
-    }
-
-    /**
      * Getter for media type member.
-     *
+     * 
      * @return
      */
     public MediaType getMediaType() {
@@ -119,10 +101,10 @@ public class Tape {
 
     /**
      * Getter for name member.
-     *
+     * 
      * @return
      */
-     public String getName() {
+    public String getName() {
         LOGGER.trace(">< getName");
 
         return this.name;
@@ -130,7 +112,7 @@ public class Tape {
 
     /**
      * Getter for status member.
-     *
+     * 
      * @return
      */
     TapeStatus getStatus() {
@@ -141,7 +123,7 @@ public class Tape {
 
     /**
      * Getter for update time member.
-     *
+     * 
      * @return
      */
     Calendar getStatusUpdateTime() {
@@ -152,10 +134,10 @@ public class Tape {
 
     /**
      * Setter for media type member.
-     *
+     * 
      * @param mediaType
      */
-     void setMediaType(MediaType mediaType) {
+    void setMediaType(MediaType mediaType) {
         LOGGER.trace("> setMediaType");
 
         assert mediaType != null;
@@ -167,10 +149,10 @@ public class Tape {
 
     /**
      * Setter for name member.
-     *
+     * 
      * @param name
      */
-     void setName(String name) {
+    void setName(String name) {
         LOGGER.trace("> setName");
 
         assert name != null;
@@ -183,10 +165,10 @@ public class Tape {
 
     /**
      * Setter for status member.
-     *
+     * 
      * @param status
      */
-     void setStatus(TapeStatus status) {
+    void setStatus(TapeStatus status) {
         LOGGER.trace("> setStatus");
 
         assert status != null;
@@ -198,7 +180,7 @@ public class Tape {
 
     /**
      * Setter for update time member.
-     *
+     * 
      * @param updateTime
      */
     void setStatusUpdateTime(Calendar updateTime) {
@@ -220,5 +202,24 @@ public class Tape {
         this.statusUpdateTime = new GregorianCalendar();
 
         LOGGER.trace("< setStatusUpdateTimeNow");
+    }
+
+    /**
+     * Representation in a String.
+     */
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
+
+        String ret = "";
+        ret += "Tape";
+        ret += "{ media type: " + this.getMediaType().getName();
+        ret += ", name: " + this.getName();
+        ret += ", status: " + this.getStatus();
+        ret += "}";
+
+        LOGGER.trace("< toString");
+
+        return ret;
     }
 }

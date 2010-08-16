@@ -9,13 +9,25 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 public class MediaTypesController extends Controller {
+    private static MediaTypesController instance;
+
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MediaTypesController.class);
 
-    private static MediaTypesController instance;
+    /**
+     * Destroys the only instance. ONLY for testing purposes. TODO change from
+     * public to default.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     public static MediaTypesController getInstance() {
         LOGGER.trace("> getInstance");
@@ -31,18 +43,6 @@ public class MediaTypesController extends Controller {
 
     public MediaTypesController() {
         super.objectMap = new HashMap<String, Object>();
-    }
-
-    /**
-     * Destroys the only instance. ONLY for testing purposes. TODO change from
-     * public to default.
-     */
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
-
-        instance = null;
-
-        LOGGER.trace("< destroyInstance");
     }
 
     public MediaType add(String name, byte id) throws TReqSException {

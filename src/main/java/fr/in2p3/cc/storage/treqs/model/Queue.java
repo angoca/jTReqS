@@ -51,13 +51,13 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.dao.DAOFactory;
+import fr.in2p3.cc.storage.treqs.model.dao.DAO;
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.MaximalSuspensionTriesException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * The queue class represents a queue of files to be read sequentially. A queue
@@ -115,16 +115,16 @@ import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
  * will be empty, will be change to QS_ENDED state. When a queue has processed
  * all its files, it will write the end time.
  */
-public class Queue {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Queue.class);
-
+public class Queue implements Comparable<Queue> {
     /**
      * Time to rest in temporary suspended state.
      */
     public static final short DEFAULT_SUSPEND_DURATION = 600;
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(Queue.class);
     /**
      * Quantity of retries if an error is detected.
      */
@@ -140,10 +140,6 @@ public class Queue {
      */
     private Calendar creationTime;
     /**
-     * The position of the file being read.
-     */
-    private short headPosition;
-    /**
      * The time when the queue finish.
      */
     private Calendar endTime;
@@ -152,6 +148,10 @@ public class Queue {
      */
     private TreeMap<Short, Reading> filesList;
     /**
+     * The position of the file being read.
+     */
+    private short headPosition;
+    /**
      * Unique Id of this queue given by the database.
      */
     private int id;
@@ -159,10 +159,6 @@ public class Queue {
      * Maximal retries of suspending the queue.
      */
     private byte maxSuspendRetries;
-    /**
-     * The associated tape.
-     */
-    private Tape tape;
     /**
      * The number of files successfully staged.
      */
@@ -198,6 +194,10 @@ public class Queue {
      * time's up.
      */
     private Calendar suspensionTime;
+    /**
+     * The associated tape.
+     */
+    private Tape tape;
 
     /**
      * Constructor that associates a tape with the Queue. This constructor also
@@ -222,7 +222,7 @@ public class Queue {
 
         this.maxSuspendRetries = MAX_SUSPEND_RETRIES;
         try {
-            this.maxSuspendRetries = Byte.parseByte(TReqSConfig.getInstance()
+            this.maxSuspendRetries = Byte.parseByte(Configurator.getInstance()
                     .getValue("MAIN", "MAX_SUSPEND_RETRIES"));
         } catch (ConfigNotFoundException e) {
             LOGGER
@@ -239,7 +239,7 @@ public class Queue {
 
         this.setSuspendDuration(DEFAULT_SUSPEND_DURATION);
         try {
-            this.setSuspendDuration(Short.parseShort(TReqSConfig.getInstance()
+            this.setSuspendDuration(Short.parseShort(Configurator.getInstance()
                     .getValue("MAIN", "SUSPEND_DURATION")));
         } catch (ConfigNotFoundException e) {
             LOGGER
@@ -247,51 +247,304 @@ public class Queue {
                             + this.getSuspendDuration());
         }
 
-        this.id = DAOFactory.getQueueDAO().insert(this.status, this.tape,
+        this.id = DAO.getQueueDAO().insert(this.status, this.tape,
                 this.filesList.size(), this.byteSize, this.creationTime);
 
         LOGGER.trace("< Creating queue with tape");
     }
 
+    /**
+     * Activating the queue means that the staging process can be started. The
+     * list has to be sorted according to the files' position.
+     * <p>
+     * It resets the counters of the queue.
+     * 
+     * @throws TReqSException
+     *             If the queue cannot be changed to activate. If the queue has
+     *             arrived to the maximal suspension times. If the new state is
+     *             invalid.
+     */
+    public void activate() throws TReqSException {
+        LOGGER.trace("> activate");
+
+        // Validates the current state.
+        if (this.getStatus() != QueueStatus.QS_CREATED) {
+            String message = "Queue is not in QS_CREATED state and it cannot be activated.";
+            ErrorCode code = ErrorCode.QUEU09;
+            LOGGER.error(code + ": " + message);
+            throw new InvalidStateException(code, message);
+        }
+
+        this.changeToActivated();
+        LOGGER.info("Queue " + this.getTape().getName() + " activated");
+        String owner = "NO-OWNER";
+        if (this.getOwner() != null) {
+            owner = this.getOwner().getName();
+        }
+        DAO.getQueueDAO().updateState(this.submissionTime, this.status,
+                this.filesList.size(), this.nbDone, this.nbFailed, owner,
+                this.byteSize, this.getId());
+
+        LOGGER.trace("< activate");
+    }
+
+    /**
+     * Compute the owner of the queue. The owner with more files in this queue.
+     * This selects the first users with more files in the queue, or the user
+     * that owns more than 50% of the files.
+     */
+    void calculateOwner() {
+        LOGGER.trace("> calculateOwner");
+
+        Map<User, Integer> ownersScores = new HashMap<User, Integer>();
+
+        // Calculates the quantity of files per owner.
+        Set<Short> keys = this.filesList.keySet();
+        for (Iterator<Short> iterator = keys.iterator(); iterator.hasNext();) {
+            Short key = iterator.next();
+            Reading reading = this.filesList.get(key);
+            User user = reading.getMetaData().getFile().getOwner();
+            Integer score = ownersScores.get(user);
+            if (score != null) {
+                ownersScores.put(user, score + 1);
+            } else {
+                ownersScores.put(user, 1);
+            }
+        }
+        int max = 0;
+        boolean found = false;
+        ArrayList<User> list = new ArrayList<User>();
+        list.addAll(ownersScores.keySet());
+
+        Collections.sort(list, new Comparator<User>() {
+            @Override
+            public int compare(User o1, User o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        // Takes the user with more files, and assigns it as queue's owner.
+        for (Iterator<User> iterator = list.iterator(); iterator.hasNext()
+                && !found;) {
+            User name = iterator.next();
+            Integer score = ownersScores.get(name);
+            if (score >= max) {
+                max = score;
+                this.owner = name;
+                // One user has more than 50%+1 files of the queue.
+                if (max > (filesList.size() / 2)) {
+                    // We are sure to have the major owner of the queue
+                    found = true;
+                }
+            }
+        }
+
+        assert this.owner != null;
+
+        LOGGER.trace("< calculateOwner");
+    }
+
+    /**
+     * Change the state to activated and change the submission time. TODO change
+     * to private
+     * 
+     * @throws TReqSException
+     *             If there is a problem changing the states.
+     */
+    void changeToActivated() throws TReqSException {
+        LOGGER.trace("> changeToActivate");
+
+        this.setStatus(QueueStatus.QS_ACTIVATED);
+        this.setSubmissionTime(new GregorianCalendar());
+
+        LOGGER.trace("< changeToActivate");
+    }
+
+    /**
+     * Change the state to ended and change the end time.
+     * 
+     * @throws TReqSException
+     *             If there is a problem changing the states.
+     */
+    void changeToEnded() throws TReqSException {
+        LOGGER.trace("> changeToEnded");
+
+        this.setStatus(QueueStatus.QS_ENDED);
+        this.setEndTime(new GregorianCalendar());
+
+        LOGGER.trace("< changeToEnded");
+    }
+
+    /**
+     * Change the state to temporarily suspended and change the suspension time.
+     * 
+     * @throws TReqSException
+     *             If there is a problem changing the states.
+     */
+    private void changeToSuspended() throws TReqSException {
+        LOGGER.trace("> changeToSuspended");
+
+        this.setStatus(QueueStatus.QS_TEMPORARILY_SUSPENDED);
+        Calendar suspensionTime = new GregorianCalendar();
+        suspensionTime.setTimeInMillis(System.currentTimeMillis()
+                + this.getSuspendDuration() * MILLIS);
+        this.setSuspensionTime(suspensionTime);
+
+        LOGGER.trace("< changeToSuspended");
+    }
+
     /*
      * (non-Javadoc)
-     * @see java.lang.Object#toString()
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public String toString() {
-        LOGGER.trace("> toString");
-
-        String ret = "";
-        ret += "Queue";
-        ret += "{ byte size: " + this.byteSize;
-        ret += ", id: " + this.getId();
-        ret += ", name: " + this.getTape().getName();
-        ret += ", number of done: " + this.nbDone;
-        ret += ", number of failed: " + this.nbFailed;
-        ret += ", number of suspended: " + this.nbSuspended;
-        ret += ", max suspend retries: " + this.maxSuspendRetries;
-        ret += ", headPosition: " + this.getHeadPosition();
-        if (this.getOwner() != null) {
-            ret += ", owner: " + this.getOwner().getName();
+    @Override
+    public int compareTo(Queue other) {
+        int ret = this.getTape().getName().compareTo(other.getTape().getName());
+        if (ret == 0) {
+            if (this.getStatus() == other.getStatus()) {
+                if (this.getId() == other.getId()) {
+                    ret = 0;
+                } else {
+                    ret = this.getId() - other.getId();
+                }
+            } else {
+                ret = this.getStatus().getId() - other.getStatus().getId();
+            }
         }
-        ret += ", status: " + this.getStatus();
-        ret += ", suspend duration: " + this.getSuspendDuration();
-        ret += ", creation time: " + this.getCreationTime().getTimeInMillis();
+        return ret;
+    }
+
+    /**
+     * Count the readObjects making difference between done and failed jobs.
+     * Updates NbDone and NbFailed.
+     * 
+     * @throws InvalidStateException
+     *             If the queue has an invalid state.
+     */
+    private void countJobs() throws InvalidStateException {
+        LOGGER.trace("> countJobs");
+
+        byte nbf = 0;
+        byte nbd = 0;
+        Set<Short> keys = this.filesList.keySet();
+        for (Iterator<Short> iterator = keys.iterator(); iterator.hasNext();) {
+            Short key = iterator.next();
+            Reading reading = this.filesList.get(key);
+            switch (reading.getFileState()) {
+                case FS_FAILED:
+                    nbf++;
+                    break;
+                case FS_STAGED:
+                    nbd++;
+                    break;
+                case FS_QUEUED:
+                    // The file is being staged.
+                    break;
+                case FS_SUBMITTED:
+                    // The file is waiting for being staged.
+                    break;
+                default:
+                    // Count jobs is called only when a Queue is in QS_ACTIVATED
+                    // state and all its files must be in FS_QUEUED state or a
+                    // final state.
+                    LOGGER.error("Invalid file state.");
+                    assert false;
+            }
+        }
+        this.nbFailed = nbf;
+        this.nbDone = nbd;
+
+        LOGGER.trace("< countJobs");
+    }
+
+    /**
+     * This is used for Debug purposes. TODO is it really necessary?
+     */
+    public void dump() {
+        LOGGER.trace("> dump");
+
+        LOGGER.info("Queue of " + this.filesList.size()
+                + " elements, owned by " + this.getOwner().getName());
+        String log = "";
+        log += ", headPosition " + this.getHeadPosition();
+        log += ", nbDone " + this.nbDone;
+        log += ", nbFailed " + this.nbFailed;
+        log += ", status " + this.getStatus();
+        log += ", suspendDuration " + this.getSuspendDuration();
+        log += ", creationTime " + this.getCreationTime().getTimeInMillis();
         if (this.getSubmissionTime() != null) {
-            ret += ", submission time: "
+            log += ", submissionTime "
                     + this.getSubmissionTime().getTimeInMillis();
         }
         if (this.getSuspensionTime() != null) {
-            ret += ", suspension time: "
+            log += ", suspensionTime "
                     + this.getSuspensionTime().getTimeInMillis();
         }
         if (this.getEndTime() != null) {
-            ret += ", end time: " + this.getEndTime().getTimeInMillis();
+            log += ", endTime " + this.getEndTime().getTimeInMillis();
         }
-        ret += "}";
+        LOGGER.debug(log);
+        Set<Short> keys = this.filesList.keySet();
+        for (Iterator<Short> iterator = keys.iterator(); iterator.hasNext();) {
+            Short key = iterator.next();
+            Reading reading = this.filesList.get(key);
+            log = "";
+            log += "File : " + reading.getMetaData().getFile().getName();
+            log += "; Position : " + key;
+            log += "; State : " + reading.getFileState();
+            log += "; Owner : "
+                    + reading.getMetaData().getFile().getOwner().getName();
+            LOGGER.info(log);
+        }
 
-        LOGGER.trace("< toString");
+        LOGGER.trace("< dump");
+    }
 
-        return ret;
+    /**
+     * Sets the queue in a final state if appropriate.
+     * 
+     * @throws TReqSException
+     *             If the queue is in an invalid state. If the time is invalid.
+     *             If the queue has been suspended too many times.
+     */
+    void finalizeQueue() throws TReqSException {
+        LOGGER.trace("> finalizeQueue");
+
+        this.countJobs();
+        Short nextPosition = this.filesList.higherKey(this.getHeadPosition());
+        Reading currentReading = this.filesList.get(this.getHeadPosition());
+        if (currentReading != null) {
+            FileStatus fs = currentReading.getFileState();
+            if (nextPosition == null) {// this.filesList.lastKey()) {
+                // The last file is in a final state.
+                if ((fs == FileStatus.FS_STAGED)
+                        || (fs == FileStatus.FS_FAILED)) {
+                    changeToEnded();
+
+                    LOGGER.info("Queue " + this.getTape().getName() + " ended");
+                    DAO.getQueueDAO().updateState(this.getEndTime(),
+                            this.getStatus(), this.filesList.size(),
+                            this.nbDone, this.nbFailed,
+                            this.getOwner().getName(), this.byteSize,
+                            this.getId());
+                } else {
+                    // If we get there, the last reading object is not in a
+                    // final state.
+                    // There is no next reading object, but it should not be
+                    // considered as an error. There are files in FS_QUEUED
+                    // state.
+
+                    LOGGER.info("No more files to stage in queue "
+                            + this.getTape().getName());
+                }
+            }
+        } else {
+            LOGGER.error("The queue has not this position "
+                    + this.getHeadPosition());
+            assert false;
+        }
+
+        LOGGER.trace("< finalizeQueue");
     }
 
     /**
@@ -306,17 +559,6 @@ public class Queue {
     }
 
     /**
-     * Getter for headPosition member.
-     * 
-     * @return current position of the tape's head.
-     */
-    public short getHeadPosition() {
-        LOGGER.trace(">< getHeadPosition");
-
-        return this.headPosition;
-    }
-
-    /**
      * Getter for endTime member.
      * 
      * @return End time of the queue.
@@ -328,6 +570,17 @@ public class Queue {
     }
 
     /**
+     * Getter for headPosition member.
+     * 
+     * @return current position of the tape's head.
+     */
+    public short getHeadPosition() {
+        LOGGER.trace(">< getHeadPosition");
+
+        return this.headPosition;
+    }
+
+    /**
      * Returns the id of the queue.
      * 
      * @return Id.
@@ -336,17 +589,6 @@ public class Queue {
         LOGGER.trace(">< getId");
 
         return this.id;
-    }
-
-    /**
-     * Retrieves the name of the queue.
-     * 
-     * @return Related tape of this queue.
-     */
-    public Tape getTape() {
-        LOGGER.trace(">< getName");
-
-        return this.tape;
     }
 
     /**
@@ -376,7 +618,7 @@ public class Queue {
         if (!keys.isEmpty()) {
             for (Iterator<Short> iterator = keys.iterator(); iterator.hasNext()
                     && !found;) {
-                Short key = (Short) iterator.next();
+                Short key = iterator.next();
                 Reading reading = this.filesList.get(key);
                 if (reading.getFileState() == FileStatus.FS_SUBMITTED) {
                     // this is the file to return
@@ -390,11 +632,11 @@ public class Queue {
 
                         this.setHeadPosition(key);
                         this.countJobs();
-                        DAOFactory.getQueueDAO().updateState(
-                                this.getSubmissionTime(), this.getStatus(),
-                                this.filesList.size(), this.nbDone,
-                                this.nbFailed, this.owner.getName(),
-                                this.byteSize, this.getId());
+                        DAO.getQueueDAO().updateState(this.getSubmissionTime(),
+                                this.getStatus(), this.filesList.size(),
+                                this.nbDone, this.nbFailed,
+                                this.owner.getName(), this.byteSize,
+                                this.getId());
                     }
                     // else {
                     // The queue is not in activated state, then, it just
@@ -478,6 +720,125 @@ public class Queue {
     }
 
     /**
+     * Retrieves the name of the queue.
+     * 
+     * @return Related tape of this queue.
+     */
+    public Tape getTape() {
+        LOGGER.trace(">< getName");
+
+        return this.tape;
+    }
+
+    /**
+     * The new reading object is created by this function. The reading status is
+     * FS_QUEUED.
+     * <p>
+     * Each time this method is called, the Queue owner is recalculated. This is
+     * done by counting the files for each owner and then selecting the biggest
+     * one.
+     * 
+     * @param fpot
+     *            the metadata of the file.
+     * @param nbTries
+     *            the number of tries.
+     * @return true if insertion was successful. False if the object existed
+     *         already.
+     * @throws TReqSException
+     *             If the head's position is after the file.
+     */
+    public boolean registerFile(FilePositionOnTape fpot, byte retries)
+            throws TReqSException {
+        LOGGER.trace("> registerFile");
+
+        assert fpot != null;
+        assert retries >= 0;
+
+        regiterFileValidation(fpot);
+
+        // Register the reading.
+        Reading readObj = new Reading(fpot, retries, this);
+
+        LOGGER.debug("Queue " + this.getTape().getName() + "-"
+                + this.getStatus()
+                + " Inserting the reading object at position "
+                + fpot.getPosition());
+
+        // The insert method ensure that the reading object is inserted
+        // in the right place.
+
+        boolean existed = this.filesList
+                .containsKey((short) fpot.getPosition());
+        if (!existed) {
+            this.filesList.put((short) fpot.getPosition(), readObj);
+
+            // If insertion is successful
+            this.byteSize += fpot.getFile().getSize();
+            this.calculateOwner();
+            int size = this.filesList.size();
+
+            LOGGER.info("Queue " + this.getTape().getName() + "-"
+                    + this.status.name() + " now contains " + size
+                    + " elements and is owned by " + this.getOwner().getName());
+            // Inserts file in any position, because the queue is in QS_CREATED
+            // state.
+            if (this.getStatus() == QueueStatus.QS_CREATED) {
+                DAO.getQueueDAO().updateAddRequest(size,
+                        this.getOwner().getName(), this.byteSize, this.getId());
+            } else {
+                // Inserts the file after the current head position, because the
+                // queue is in QS_ACTIVATED state.
+                DAO.getQueueDAO().updateState(this.getSubmissionTime(),
+                        this.getStatus(), size, this.nbDone, this.nbFailed,
+                        this.getOwner().getName(), this.byteSize, this.getId());
+            }
+        } else {
+            // The file is already in the queue.
+            LOGGER.info("Queue " + this.getTape().getName()
+                    + " already has a task for file "
+                    + fpot.getFile().getName());
+        }
+
+        LOGGER.trace("< registerFile");
+
+        return !existed;
+    }
+
+    /**
+     * Validates the given parameters when registering a file.
+     * 
+     * @throws TReqSException
+     *             if the state of the queue is invalid. If the current head's
+     *             position is after the file.
+     */
+    private void regiterFileValidation(FilePositionOnTape fpot)
+            throws TReqSException {
+        LOGGER.trace("> regiterFileValidation");
+
+        assert fpot != null;
+
+        if ((this.getStatus() != QueueStatus.QS_CREATED)
+                && (this.getStatus() != QueueStatus.QS_ACTIVATED)
+                && (this.getStatus() != QueueStatus.QS_TEMPORARILY_SUSPENDED)) {
+            // We can't register a file in this queue.
+            String message = "Unable to register file in Queue '"
+                    + this.getTape().getName() + "' with status: "
+                    + this.getStatus();
+            ErrorCode code = ErrorCode.QUEU11;
+            LOGGER.error(code + ": " + message);
+            throw new InvalidStateException(code, message);
+        }
+        if (fpot.getPosition() < this.getHeadPosition()) {
+            String message = "It's not possible to register a file before the current head position.";
+            ErrorCode code = ErrorCode.QUEU12;
+            LOGGER.error(code + ": " + message);
+            throw new InvalidParameterException(code, message);
+        }
+
+        LOGGER.trace("< regiterFileValidation");
+    }
+
+    /**
      * Setter for CreationTime member. Creation time is just once, that means
      * that it does not check the other times (suspension, end or submission.)
      * <p>
@@ -501,6 +862,34 @@ public class Queue {
         this.creationTime = t;
 
         LOGGER.trace("< setCreationTime");
+    }
+
+    /**
+     * Setter for EndTime member.
+     * <p>
+     * The visibility is default for the tests. However, it should not be used
+     * from the outside.
+     * 
+     * @param t
+     *            Time when the queue has finished to be processed.
+     * @throws InvalidParameterException
+     *             If the given time is invalid.
+     */
+    void setEndTime(Calendar t) throws InvalidParameterException {
+        LOGGER.trace("> setEndTime");
+
+        assert t != null;
+        assert this.status == QueueStatus.QS_ENDED;
+        assert this.creationTime != null;
+        assert this.submissionTime != null;
+        assert this.suspensionTime == null; // Warning, I'm not sure.
+        assert t.getTimeInMillis() >= this.getCreationTime().getTimeInMillis();
+        assert t.getTimeInMillis() >= this.getSubmissionTime()
+                .getTimeInMillis();
+
+        this.endTime = t;
+
+        LOGGER.trace("< setEndTime");
     }
 
     /**
@@ -535,34 +924,6 @@ public class Queue {
         this.headPosition = hp;
 
         LOGGER.trace("< setHeadPosition");
-    }
-
-    /**
-     * Setter for EndTime member.
-     * <p>
-     * The visibility is default for the tests. However, it should not be used
-     * from the outside.
-     * 
-     * @param t
-     *            Time when the queue has finished to be processed.
-     * @throws InvalidParameterException
-     *             If the given time is invalid.
-     */
-    void setEndTime(Calendar t) throws InvalidParameterException {
-        LOGGER.trace("> setEndTime");
-
-        assert t != null;
-        assert this.status == QueueStatus.QS_ENDED;
-        assert this.creationTime != null;
-        assert this.submissionTime != null;
-        assert this.suspensionTime == null; // Warning, I'm not sure.
-        assert t.getTimeInMillis() >= this.getCreationTime().getTimeInMillis();
-        assert t.getTimeInMillis() >= this.getSubmissionTime()
-                .getTimeInMillis();
-
-        this.endTime = t;
-
-        LOGGER.trace("< setEndTime");
     }
 
     /**
@@ -688,207 +1049,6 @@ public class Queue {
     }
 
     /**
-     * Change the state to activated and change the submission time. TODO change
-     * to private
-     * 
-     * @throws TReqSException
-     *             If there is a problem changing the states.
-     */
-    void changeToActivated() throws TReqSException {
-        LOGGER.trace("> changeToActivate");
-
-        this.setStatus(QueueStatus.QS_ACTIVATED);
-        this.setSubmissionTime(new GregorianCalendar());
-
-        LOGGER.trace("< changeToActivate");
-    }
-
-    /**
-     * Change the state to temporarily suspended and change the suspension time.
-     * 
-     * @throws TReqSException
-     *             If there is a problem changing the states.
-     */
-    private void changeToSuspended() throws TReqSException {
-        LOGGER.trace("> changeToSuspended");
-
-        this.setStatus(QueueStatus.QS_TEMPORARILY_SUSPENDED);
-        Calendar suspensionTime = new GregorianCalendar();
-        suspensionTime.setTimeInMillis(System.currentTimeMillis()
-                + this.getSuspendDuration() * MILLIS);
-        this.setSuspensionTime(suspensionTime);
-
-        LOGGER.trace("< changeToSuspended");
-    }
-
-    /**
-     * Change the state to ended and change the end time.
-     * 
-     * @throws TReqSException
-     *             If there is a problem changing the states.
-     */
-    void changeToEnded() throws TReqSException {
-        LOGGER.trace("> changeToEnded");
-
-        this.setStatus(QueueStatus.QS_ENDED);
-        this.setEndTime(new GregorianCalendar());
-
-        LOGGER.trace("< changeToEnded");
-    }
-
-    /**
-     * Activating the queue means that the staging process can be started. The
-     * list has to be sorted according to the files' position.
-     * <p>
-     * It resets the counters of the queue.
-     * 
-     * @throws TReqSException
-     *             If the queue cannot be changed to activate. If the queue has
-     *             arrived to the maximal suspension times. If the new state is
-     *             invalid.
-     */
-    public void activate() throws TReqSException {
-        LOGGER.trace("> activate");
-
-        // Validates the current state.
-        if (this.getStatus() != QueueStatus.QS_CREATED) {
-            String message = "Queue is not in QS_CREATED state and it cannot be activated.";
-            ErrorCode code = ErrorCode.QUEU09;
-            LOGGER.error(code + ": " + message);
-            throw new InvalidStateException(code, message);
-        }
-
-        this.changeToActivated();
-        LOGGER.info("Queue " + this.getTape().getName() + " activated");
-        String owner = "NO-OWNER";
-        if (this.getOwner() != null) {
-            owner = this.getOwner().getName();
-        }
-        DAOFactory.getQueueDAO().updateState(this.submissionTime, this.status,
-                this.filesList.size(), this.nbDone, this.nbFailed, owner,
-                this.byteSize, this.getId());
-
-        LOGGER.trace("< activate");
-    }
-
-    /**
-     * This is used for Debug purposes. TODO is it really necessary?
-     */
-    public void dump() {
-        LOGGER.trace("> dump");
-
-        LOGGER.info("Queue of " + this.filesList.size()
-                + " elements, owned by " + this.getOwner().getName());
-        String log = "";
-        log += ", headPosition " + this.getHeadPosition();
-        log += ", nbDone " + this.nbDone;
-        log += ", nbFailed " + this.nbFailed;
-        log += ", status " + this.getStatus();
-        log += ", suspendDuration " + this.getSuspendDuration();
-        log += ", creationTime " + this.getCreationTime().getTimeInMillis();
-        if (this.getSubmissionTime() != null) {
-            log += ", submissionTime "
-                    + this.getSubmissionTime().getTimeInMillis();
-        }
-        if (this.getSuspensionTime() != null) {
-            log += ", suspensionTime "
-                    + this.getSuspensionTime().getTimeInMillis();
-        }
-        if (this.getEndTime() != null) {
-            log += ", endTime " + this.getEndTime().getTimeInMillis();
-        }
-        LOGGER.debug(log);
-        Set<Short> keys = this.filesList.keySet();
-        for (Iterator<Short> iterator = keys.iterator(); iterator.hasNext();) {
-            Short key = (Short) iterator.next();
-            Reading reading = this.filesList.get(key);
-            log = "";
-            log += "File : " + reading.getMetaData().getFile().getName();
-            log += "; Position : " + key;
-            log += "; State : " + reading.getFileState();
-            log += "; Owner : "
-                    + reading.getMetaData().getFile().getOwner().getName();
-            LOGGER.info(log);
-        }
-
-        LOGGER.trace("< dump");
-    }
-
-    /**
-     * The new reading object is created by this function. The reading status is
-     * FS_QUEUED.
-     * <p>
-     * Each time this method is called, the Queue owner is recalculated. This is
-     * done by counting the files for each owner and then selecting the biggest
-     * one.
-     * 
-     * @param fpot
-     *            the metadata of the file.
-     * @param nbTries
-     *            the number of tries.
-     * @return true if insertion was successful. False if the object existed
-     *         already.
-     * @throws TReqSException
-     *             If the head's position is after the file.
-     */
-    public boolean registerFile(FilePositionOnTape fpot, byte retries)
-            throws TReqSException {
-        LOGGER.trace("> registerFile");
-
-        assert fpot != null;
-        assert retries >= 0;
-
-        regiterFileValidation(fpot);
-
-        // Register the reading.
-        Reading readObj = new Reading(fpot, retries, this);
-
-        LOGGER.debug("Queue " + this.getTape().getName() + "-"
-                + this.getStatus()
-                + " Inserting the reading object at position "
-                + fpot.getPosition());
-
-        // The insert method ensure that the reading object is inserted
-        // in the right place.
-
-        boolean existed = this.filesList
-                .containsKey((short) fpot.getPosition());
-        if (!existed) {
-            this.filesList.put((short) fpot.getPosition(), readObj);
-
-            // If insertion is successful
-            this.byteSize += fpot.getFile().getSize();
-            this.calculateOwner();
-            int size = this.filesList.size();
-
-            LOGGER.info("Queue " + this.getTape().getName() + "-"
-                    + this.status.name() + " now contains " + size
-                    + " elements and is owned by " + this.getOwner().getName());
-            // Inserts file in any position, because the queue is in QS_CREATED
-            // state.
-            if (this.getStatus() == QueueStatus.QS_CREATED) {
-                DAOFactory.getQueueDAO().updateAddRequest(size,
-                        this.getOwner().getName(), this.byteSize, this.getId());
-            } else {
-                // Inserts the file after the current head position, because the
-                // queue is in QS_ACTIVATED state.
-                DAOFactory.getQueueDAO().updateState(this.getSubmissionTime(),
-                        this.getStatus(), size, this.nbDone, this.nbFailed,
-                        this.getOwner().getName(), this.byteSize, this.getId());
-            }
-        } else {
-            // The file is already in the queue.
-            LOGGER.info("Queue " + this.getTape().getName()
-                    + " already has a task for file "
-                    + fpot.getFile().getName());
-        }
-
-        LOGGER.trace("< registerFile");
-
-        return !existed;
-    }
-
-    /**
      * Tells the queue to suspend for time seconds. This will do as if the queue
      * is ended. Sets the status to QS_TEMPORARILY_SUSPENDED, and writes this
      * new status through DAO. The Activator will ignore such queues and
@@ -912,11 +1072,52 @@ public class Queue {
         if (this.getOwner() != null) {
             name = this.getOwner().getName();
         }
-        DAOFactory.getQueueDAO().updateState(this.getSuspensionTime(),
+        DAO.getQueueDAO().updateState(this.getSuspensionTime(),
                 this.getStatus(), this.filesList.size(), this.nbDone,
                 this.nbFailed, name, this.byteSize, this.getId());
 
         LOGGER.trace("< suspend");
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString() {
+        LOGGER.trace("> toString");
+
+        String ret = "";
+        ret += "Queue";
+        ret += "{ byte size: " + this.byteSize;
+        ret += ", id: " + this.getId();
+        ret += ", name: " + this.getTape().getName();
+        ret += ", number of done: " + this.nbDone;
+        ret += ", number of failed: " + this.nbFailed;
+        ret += ", number of suspended: " + this.nbSuspended;
+        ret += ", max suspend retries: " + this.maxSuspendRetries;
+        ret += ", headPosition: " + this.getHeadPosition();
+        if (this.getOwner() != null) {
+            ret += ", owner: " + this.getOwner().getName();
+        }
+        ret += ", status: " + this.getStatus();
+        ret += ", suspend duration: " + this.getSuspendDuration();
+        ret += ", creation time: " + this.getCreationTime().getTimeInMillis();
+        if (this.getSubmissionTime() != null) {
+            ret += ", submission time: "
+                    + this.getSubmissionTime().getTimeInMillis();
+        }
+        if (this.getSuspensionTime() != null) {
+            ret += ", suspension time: "
+                    + this.getSuspensionTime().getTimeInMillis();
+        }
+        if (this.getEndTime() != null) {
+            ret += ", end time: " + this.getEndTime().getTimeInMillis();
+        }
+        ret += "}";
+
+        LOGGER.trace("< toString");
+
+        return ret;
     }
 
     /**
@@ -941,191 +1142,11 @@ public class Queue {
         if (this.getOwner() != null) {
             name = this.getOwner().getName();
         }
-        DAOFactory.getQueueDAO().updateState(this.getSubmissionTime(),
+        DAO.getQueueDAO().updateState(this.getSubmissionTime(),
                 this.getStatus(), this.filesList.size(), this.nbDone,
                 this.nbFailed, name, this.byteSize, this.getId());
 
         LOGGER.trace("< unsuspend");
-    }
-
-    /**
-     * Compute the owner of the queue. The owner with more files in this queue.
-     * This selects the first users with more files in the queue, or the user
-     * that owns more than 50% of the files.
-     */
-    void calculateOwner() {
-        LOGGER.trace("> calculateOwner");
-
-        Map<User, Integer> ownersScores = new HashMap<User, Integer>();
-
-        // Calculates the quantity of files per owner.
-        Set<Short> keys = this.filesList.keySet();
-        for (Iterator<Short> iterator = keys.iterator(); iterator.hasNext();) {
-            Short key = (Short) iterator.next();
-            Reading reading = this.filesList.get(key);
-            User user = reading.getMetaData().getFile().getOwner();
-            Integer score = ownersScores.get(user);
-            if (score != null) {
-                ownersScores.put(user, score + 1);
-            } else {
-                ownersScores.put(user, 1);
-            }
-        }
-        int max = 0;
-        boolean found = false;
-        ArrayList<User> list = new ArrayList<User>();
-        list.addAll(ownersScores.keySet());
-
-        Collections.sort(list, new Comparator<User>() {
-            @Override
-            public int compare(User o1, User o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-
-        // Takes the user with more files, and assigns it as queue's owner.
-        for (Iterator<User> iterator = list.iterator(); iterator.hasNext()
-                && !found;) {
-            User name = (User) iterator.next();
-            Integer score = ownersScores.get(name);
-            if (score >= max) {
-                max = score;
-                this.owner = name;
-                // One user has more than 50%+1 files of the queue.
-                if (max > (filesList.size() / 2)) {
-                    // We are sure to have the major owner of the queue
-                    found = true;
-                }
-            }
-        }
-
-        assert this.owner != null;
-
-        LOGGER.trace("< calculateOwner");
-    }
-
-    /**
-     * Count the readObjects making difference between done and failed jobs.
-     * Updates NbDone and NbFailed.
-     * 
-     * @throws InvalidStateException
-     *             If the queue has an invalid state.
-     */
-    private void countJobs() throws InvalidStateException {
-        LOGGER.trace("> countJobs");
-
-        byte nbf = 0;
-        byte nbd = 0;
-        Set<Short> keys = this.filesList.keySet();
-        for (Iterator<Short> iterator = keys.iterator(); iterator.hasNext();) {
-            Short key = (Short) iterator.next();
-            Reading reading = this.filesList.get(key);
-            switch (reading.getFileState()) {
-                case FS_FAILED:
-                    nbf++;
-                    break;
-                case FS_STAGED:
-                    nbd++;
-                    break;
-                case FS_QUEUED:
-                    // The file is being staged.
-                    break;
-                case FS_SUBMITTED:
-                    // The file is waiting for being staged.
-                    break;
-                default:
-                    // Count jobs is called only when a Queue is in QS_ACTIVATED
-                    // state and all its files must be in FS_QUEUED state or a
-                    // final state.
-                    LOGGER.error("Invalid file state.");
-                    assert false;
-            }
-        }
-        this.nbFailed = nbf;
-        this.nbDone = nbd;
-
-        LOGGER.trace("< countJobs");
-    }
-
-    /**
-     * Sets the queue in a final state if appropriate.
-     * 
-     * @throws TReqSException
-     *             If the queue is in an invalid state. If the time is invalid.
-     *             If the queue has been suspended too many times.
-     */
-    void finalizeQueue() throws TReqSException {
-        LOGGER.trace("> finalizeQueue");
-
-        this.countJobs();
-        Short nextPosition = this.filesList.higherKey(this.getHeadPosition());
-        Reading currentReading = this.filesList.get(this.getHeadPosition());
-        if (currentReading != null) {
-            FileStatus fs = currentReading.getFileState();
-            if (nextPosition == null) {// this.filesList.lastKey()) {
-                // The last file is in a final state.
-                if ((fs == FileStatus.FS_STAGED)
-                        || (fs == FileStatus.FS_FAILED)) {
-                    changeToEnded();
-
-                    LOGGER.info("Queue " + this.getTape().getName() + " ended");
-                    DAOFactory.getQueueDAO().updateState(this.getEndTime(),
-                            this.getStatus(), this.filesList.size(),
-                            this.nbDone, this.nbFailed,
-                            this.getOwner().getName(), this.byteSize,
-                            this.getId());
-                } else {
-                    // If we get there, the last reading object is not in a
-                    // final state.
-                    // There is no next reading object, but it should not be
-                    // considered as an error. There are files in FS_QUEUED
-                    // state.
-
-                    LOGGER.info("No more files to stage in queue "
-                            + this.getTape().getName());
-                }
-            }
-        } else {
-            LOGGER.error("The queue has not this position "
-                    + this.getHeadPosition());
-            assert false;
-        }
-
-        LOGGER.trace("< finalizeQueue");
-    }
-
-    /**
-     * Validates the given parameters when registering a file.
-     * 
-     * @throws TReqSException
-     *             if the state of the queue is invalid. If the current head's
-     *             position is after the file.
-     */
-    private void regiterFileValidation(FilePositionOnTape fpot)
-            throws TReqSException {
-        LOGGER.trace("> regiterFileValidation");
-
-        assert fpot != null;
-
-        if ((this.getStatus() != QueueStatus.QS_CREATED)
-                && (this.getStatus() != QueueStatus.QS_ACTIVATED)
-                && (this.getStatus() != QueueStatus.QS_TEMPORARILY_SUSPENDED)) {
-            // We can't register a file in this queue.
-            String message = "Unable to register file in Queue '"
-                    + this.getTape().getName() + "' with status: "
-                    + this.getStatus();
-            ErrorCode code = ErrorCode.QUEU11;
-            LOGGER.error(code + ": " + message);
-            throw new InvalidStateException(code, message);
-        }
-        if (fpot.getPosition() < this.getHeadPosition()) {
-            String message = "It's not possible to register a file before the current head position.";
-            ErrorCode code = ErrorCode.QUEU12;
-            LOGGER.error(code + ": " + message);
-            throw new InvalidParameterException(code, message);
-        }
-
-        LOGGER.trace("< regiterFileValidation");
     }
 
 }

@@ -347,7 +347,7 @@ public class ResourceTest {
 
         float actual = resource.getUserAllocation(new User("user3"));
 
-        float expected = -1;
+        float expected = 0;
 
         Assert.assertEquals(expected, actual);
     }

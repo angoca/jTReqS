@@ -49,14 +49,25 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
  */
 public class HSMMockBridge extends AbstractHSMBridge {
     /**
+     * Instance of the singleton
+     */
+    private static HSMMockBridge _instance = null;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HSMMockBridge.class);
+
     /**
-     * Instance of the singleton
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    private static HSMMockBridge _instance = null;
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     /**
      * Retrieves the unique instance.
@@ -113,12 +124,10 @@ public class HSMMockBridge extends AbstractHSMBridge {
         tape += "000";
         tape += (int) (Math.random() * 10);
 
-        int position = (int) (Math.random() * 100);
-        long size = (int) (Math.random() * 10000);
+        int position = (int) (Math.random() * 100) + 1;
+        long size = (int) (Math.random() * 10000) + 1;
+        // TODO Random
         byte storageLevel = 1;
-        LOGGER.info("Faked file properties generated (size " + size
-                + ", position " + position + ", tape " + tape
-                + ", storage level " + storageLevel + ")");
 
         fileProperties = new HSMHelperFileProperties(tape, position, size,
                 storageLevel);
@@ -131,6 +140,7 @@ public class HSMMockBridge extends AbstractHSMBridge {
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String)
      */
+    @Override
     public HSMHelperFileProperties getFileProperties(String name)
             throws HSMException {
         LOGGER.trace("> getFileProperties");
@@ -150,9 +160,33 @@ public class HSMMockBridge extends AbstractHSMBridge {
             throw toThrow;
         }
 
+        LOGGER
+                .info(
+                        "Faked file properties generated for '{}' (size {}, position {}, tape{})",
+                        new String[] { name, ret.getSize() + "",
+                                ret.getPosition() + "", ret.getStorageName() });
+
         LOGGER.trace("< getFileProperties");
 
         return ret;
+    }
+
+    public void setFileProperties(HSMHelperFileProperties properties) {
+        // Change the fileProperties for the given one. Normally, it is randomly
+        // generated.
+        this.fileProperties = properties;
+    }
+
+    public void setFilePropertiesException(HSMException exception) {
+        this.filePropertiesException = exception;
+    }
+
+    public void setStageException(HSMException exception) {
+        this.stageException = exception;
+    }
+
+    public void setStageTime(long millis) {
+        this.stageMillis = millis;
     }
 
     /*
@@ -161,6 +195,7 @@ public class HSMMockBridge extends AbstractHSMBridge {
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
      * long)
      */
+    @Override
     public void stage(String name, long size) throws HSMException {
         LOGGER.trace("> stage");
 
@@ -173,8 +208,10 @@ public class HSMMockBridge extends AbstractHSMBridge {
         long wait = 0;
         if (this.stageMillis == 0) {
             wait = ((long) ((Math.random() * 7) + 2)) * 1000;
+        } else {
+            wait = this.stageMillis;
         }
-        LOGGER.info("Fake staging starting ;) for " + wait + " seconds.");
+        LOGGER.info("Fake staging starting ;) for {} millis", wait);
         try {
             Thread.sleep(wait);
         } catch (InterruptedException e) {
@@ -182,23 +219,5 @@ public class HSMMockBridge extends AbstractHSMBridge {
         LOGGER.info("Fake staging done ;)");
 
         LOGGER.trace("< stage");
-    }
-
-    public void setStageException(HSMException exception) {
-        this.stageException = exception;
-    }
-
-    public void setStageTime(long millis) {
-        this.stageMillis = millis;
-    }
-
-    public void setFileProperties(HSMHelperFileProperties properties) {
-        // Change the fileProperties for the given one. Normally, it is randomly
-        // generated.
-        this.fileProperties = properties;
-    }
-
-    public void setFilePropertiesException(HSMException exception) {
-        this.filePropertiesException = exception;
     }
 }

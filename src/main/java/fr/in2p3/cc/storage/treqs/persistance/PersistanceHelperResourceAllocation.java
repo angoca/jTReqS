@@ -12,12 +12,12 @@ public class PersistanceHelperResourceAllocation {
         this.allocation = qtyAlloc;
     }
 
-    public User getUser() {
-        return this.user;
-    }
-
     public float getAllocation() {
         return this.allocation;
+    }
+
+    public User getUser() {
+        return this.user;
     }
 
 }

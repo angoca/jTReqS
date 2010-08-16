@@ -52,14 +52,14 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  */
 public class FilesController extends Controller {
     /**
+     * Instance of the singleton.
+     */
+    private static FilesController _instance = null;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FilesController.class);
-    /**
-     * Instance of the singleton.
-     */
-    private static FilesController _instance = null;
 
     /**
      * Destroys the unique instance. This is useful only for testing purposes.

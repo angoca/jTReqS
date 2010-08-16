@@ -59,14 +59,25 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
 public class MySQLQueueDAO implements QueueDAO {
 
     /**
+     * Singleton initialization
+     */
+    private static MySQLQueueDAO _instance = null;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLQueueDAO.class);
+
     /**
-     * Singleton initialization
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    private static MySQLQueueDAO _instance = null;
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     /**
      * @return
@@ -82,6 +93,23 @@ public class MySQLQueueDAO implements QueueDAO {
         LOGGER.trace("< getInstance");
 
         return _instance;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
+     */
+    public int abortPendingQueues() throws PersistanceException {
+        LOGGER.trace("> abortPendingQueues");
+
+        LOGGER.info("Cleaning unfinished queues");
+
+        int ret = MySQLBroker.getInstance().executeModification(
+                MySQLStatements.SQL_UPDATE_QUEUES_ON_STARTUP);
+
+        LOGGER.trace("< abortPendingQueues");
+
+        return ret;
     }
 
     /*
@@ -271,22 +299,5 @@ public class MySQLQueueDAO implements QueueDAO {
         }
 
         LOGGER.trace("< updateState");
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
-     */
-    public int abortPendingQueues() throws PersistanceException {
-        LOGGER.trace("> abortPendingQueues");
-
-        LOGGER.info("Cleaning unfinished queues");
-
-        int ret = MySQLBroker.getInstance().executeModification(
-                MySQLStatements.SQL_UPDATE_QUEUES_ON_STARTUP);
-
-        LOGGER.trace("< abortPendingQueues");
-
-        return ret;
     }
 }

@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Defines a relation between a file and a tape. This object only contains part
@@ -109,7 +109,7 @@ public class FilePositionOnTape {
 
         this.maxMetadataAge = MAX_METADATA_AGE;
         try {
-            this.maxMetadataAge = Short.parseShort(TReqSConfig.getInstance()
+            this.maxMetadataAge = Short.parseShort(Configurator.getInstance()
                     .getValue("MAIN", "MAX_METADATA_AGE"));
         } catch (ConfigNotFoundException e) {
             LOGGER
@@ -118,28 +118,6 @@ public class FilePositionOnTape {
         }
 
         LOGGER.trace("< Creating with parameters.");
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        LOGGER.trace("> toString");
-
-        String ret = "";
-        ret += "FilePositionOnTape";
-        ret += "{ MAX_METADATA_AGE: " + this.maxMetadataAge;
-        ret += ", file: " + this.getFile().getName();
-        ret += ", metadataAge: "
-                + this.getMetadataTimestamp().getTimeInMillis();
-        ret += ", position: " + this.getPosition();
-        ret += ", tape: " + this.getTape().getName();
-        ret += "}";
-
-        LOGGER.trace("< toString");
-
-        return ret;
     }
 
     /**
@@ -273,5 +251,28 @@ public class FilePositionOnTape {
         this.tape = tape;
 
         LOGGER.trace("< setTape");
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
+
+        String ret = "";
+        ret += "FilePositionOnTape";
+        ret += "{ MAX_METADATA_AGE: " + this.maxMetadataAge;
+        ret += ", file: " + this.getFile().getName();
+        ret += ", metadataAge: "
+                + this.getMetadataTimestamp().getTimeInMillis();
+        ret += ", position: " + this.getPosition();
+        ret += ", tape: " + this.getTape().getName();
+        ret += "}";
+
+        LOGGER.trace("< toString");
+
+        return ret;
     }
 }

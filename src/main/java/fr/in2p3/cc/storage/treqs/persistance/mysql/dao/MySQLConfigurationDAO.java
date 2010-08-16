@@ -66,14 +66,14 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
  */
 public class MySQLConfigurationDAO implements ConfigurationDAO {
     /**
+     * Singleton initialization
+     */
+    private static MySQLConfigurationDAO _instance = null;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLConfigurationDAO.class);
-    /**
-     * Singleton initialization
-     */
-    private static MySQLConfigurationDAO _instance = null;
 
     public static ConfigurationDAO getInstance() {
         LOGGER.trace("> getInstance");
@@ -86,6 +86,17 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
         LOGGER.trace("< getInstance");
 
         return _instance;
+    }
+
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
     }
 
     /*
@@ -154,7 +165,7 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
                 byte id = result.getByte(1);
                 String userName = result.getString(2);
                 float share = result.getFloat(4);
-                User user = (User) UsersController.getInstance().add(userName);
+                User user = UsersController.getInstance().add(userName);
                 PersistanceHelperResourceAllocation helper = new PersistanceHelperResourceAllocation(
                         user, share);
                 allocations.put(new Byte(id), helper);

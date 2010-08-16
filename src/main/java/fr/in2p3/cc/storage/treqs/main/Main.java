@@ -9,8 +9,9 @@ public class Main {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
+        System.out.println("TReqS-Server started");
         try {
-            Starter.process(args);
+            new Starter().process(args);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -41,20 +41,18 @@ import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
+import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * StagerTest.java
@@ -70,14 +68,25 @@ public class StagerTest {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StagerTest.class);
 
-    @Before
-    public void setUp() {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
+    @BeforeClass
+    public static void oneTimeSetUp()
+            throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "READING_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+    }
+
+    @After
+    public void tearDown() {
+        HSMMockBridge.destroyInstance();
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        Configurator.destroyInstance();
     }
 
     @Test
@@ -135,6 +144,8 @@ public class StagerTest {
 
         queue.activate();
 
+        HSMMockBridge.getInstance().setStageTime(100);
+
         stager.run();
     }
 
@@ -162,6 +173,8 @@ public class StagerTest {
         Stager stager = new Stager(queue);
 
         queue.activate();
+
+        HSMMockBridge.getInstance().setStageTime(100);
 
         stager.run();
     }
@@ -195,6 +208,9 @@ public class StagerTest {
         };
         thread.setName("TestStagerRun");
         thread.start();
+
+        HSMMockBridge.getInstance().setStageTime(100);
+
         stager.run();
     }
 

@@ -53,15 +53,21 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  */
 public class FilePositionOnTapesController extends Controller {
     /**
+     * Pointer to the singleton instance.
+     */
+    private static FilePositionOnTapesController _instance = null;
+
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FilePositionOnTapesController.class);
 
-    /**
-     * Pointer to the singleton instance.
-     */
-    private static FilePositionOnTapesController _instance = null;
+    public static void destroyInstance() {
+        LOGGER.debug(">< destroyInstance");
+
+        _instance = null;
+    }
 
     /**
      * Provides a pointer to the singleton instance.
@@ -80,12 +86,6 @@ public class FilePositionOnTapesController extends Controller {
         LOGGER.trace("< getInstance");
 
         return _instance;
-    }
-
-    public static void destroyInstance() {
-        LOGGER.debug(">< destroyInstance");
-
-        _instance = null;
     }
 
     private FilePositionOnTapesController() {

@@ -93,24 +93,20 @@ public class File {
         LOGGER.trace("< Creating file with all parameters.");
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
+    /**
+     * Associates a file request with this file.
+     * 
+     * @param freq
+     *            File request associated with this file.
      */
-    public String toString() {
-        LOGGER.trace("> toString");
+    void addFileRequest(FileRequest freq) {
+        LOGGER.trace("> removeFileRequest");
 
-        String ret = "";
-        ret += "File";
-        ret += "{ name: " + this.getName();
-        ret += ", owner: " + this.getOwner().getName();
-        ret += ", size: " + this.getSize();
-        ret += ", file requests size: " + this.getFileRequests().size();
-        ret += "}";
+        assert freq != null;
 
-        LOGGER.trace("< toString");
+        this.fileRequests.add(freq);
 
-        return ret;
+        LOGGER.trace("< removeFileRequest");
     }
 
     /**
@@ -155,6 +151,30 @@ public class File {
         LOGGER.trace(">< getSize");
 
         return this.size;
+    }
+
+    /**
+     * Remove the FileRequest having its identifier (fs_id) from the list.
+     * 
+     * @param fileRequestId
+     *            The id of the request to remove.
+     */
+    void removeFileRequest(long fileRequestId) {
+        LOGGER.trace("> removeFileRequest");
+
+        assert fileRequestId > 0;
+
+        boolean deleted = false;
+        for (int i = 0; i < this.fileRequests.size() && !deleted; i++) {
+            FileRequest fr = this.fileRequests.get(i);
+            if (fr.getId() == fileRequestId) {
+                this.fileRequests.remove(i);
+                deleted = true;
+            }
+
+        }
+
+        LOGGER.trace("< removeFileRequest");
     }
 
     /**
@@ -205,43 +225,24 @@ public class File {
         LOGGER.trace("< setSize");
     }
 
-    /**
-     * Remove the FileRequest having its identifier (fs_id) from the list.
-     * 
-     * @param fileRequestId
-     *            The id of the request to remove.
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
-    void removeFileRequest(long fileRequestId) {
-        LOGGER.trace("> removeFileRequest");
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
 
-        assert fileRequestId > 0;
+        String ret = "";
+        ret += "File";
+        ret += "{ name: " + this.getName();
+        ret += ", owner: " + this.getOwner().getName();
+        ret += ", size: " + this.getSize();
+        ret += ", file requests size: " + this.getFileRequests().size();
+        ret += "}";
 
-        boolean deleted = false;
-        for (int i = 0; i < this.fileRequests.size() && !deleted; i++) {
-            FileRequest fr = this.fileRequests.get(i);
-            if (fr.getId() == fileRequestId) {
-                this.fileRequests.remove(i);
-                deleted = true;
-            }
+        LOGGER.trace("< toString");
 
-        }
-
-        LOGGER.trace("< removeFileRequest");
-    }
-
-    /**
-     * Associates a file request with this file.
-     * 
-     * @param freq
-     *            File request associated with this file.
-     */
-    void addFileRequest(FileRequest freq) {
-        LOGGER.trace("> removeFileRequest");
-
-        assert freq != null;
-
-        this.fileRequests.add(freq);
-
-        LOGGER.trace("< removeFileRequest");
+        return ret;
     }
 }

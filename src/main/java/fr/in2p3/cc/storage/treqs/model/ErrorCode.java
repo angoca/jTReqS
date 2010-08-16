@@ -46,68 +46,6 @@ package fr.in2p3.cc.storage.treqs.model;
  * are properly for the error in the class.
  */
 public enum ErrorCode {
-    // Queue (code 10xx)
-    /**
-     * Submission time before the given creation time.
-     */
-    QUEU01,
-    /**
-     * End time before the given creation time.
-     */
-    QUEU02,
-    /**
-     * The new position cannot be before the current position.
-     */
-    QUEU03,
-    /**
-     * Creation time after the given end time.
-     */
-    QUEU04,
-    /**
-     * End time after the given end time.
-     */
-    QUEU05,
-    /**
-     * Invalid change of queue status.
-     */
-    QUEU06,
-    /**
-     * Creation time after the given submission time.
-     */
-    QUEU07,
-    /**
-     * End time before the given submission time.
-     */
-    QUEU08,
-    /**
-     * Queue is not in QS_CREATED state and it cannot be activated.
-     */
-    QUEU09,
-    /**
-     * It's not possible to register a null as 'File Position on Tape'.
-     */
-    QUEU10,
-    /**
-     * Unable to register file in Queue.
-     */
-    QUEU11,
-    /**
-     * It's not possible to register a file before the current position.
-     */
-    QUEU12,
-    /**
-     * Invalid state at this point.
-     */
-    QUEU13,
-    /**
-     * Invalid state to change the position.
-     */
-    QUEU14,
-    /**
-     * Maximal retries suspension.
-     */
-    QUEU15,
-
     // MySQLBridge (Code 11xx)
     /**
      * Failed to change database.
@@ -169,6 +107,7 @@ public enum ErrorCode {
      * mysql_stmt_execute() failed.
      */
     DBUT15,
+
     /**
      * No metadata information returned.
      */
@@ -313,7 +252,24 @@ public enum ErrorCode {
      * change database failed.
      */
     DBUT51,
-
+    // File (code 14xx)
+    /**
+     * The tape reference cannot be null.
+     */
+    FILE01,
+    /**
+     * The file has an invalid structure.
+     */
+    FILE02,
+    // Queues Controller (code 20xx)
+    /**
+     * The file reference cannot be null.
+     */
+    FPCO01,
+    /**
+     * The tape reference cannot be null.
+     */
+    FPCO02,
     // FilePositionOnTape (code 12xx)
     /**
      * The file reference cannot be null.
@@ -327,29 +283,6 @@ public enum ErrorCode {
      * The 'file position on tape' is not completely initialized.
      */
     FPOT03,
-
-    // Tape (code 13xx)
-    /**
-     * The tape has an invalid structure.
-     */
-    TAPE01,
-
-    // File (code 14xx)
-    /**
-     * The tape reference cannot be null.
-     */
-    FILE01,
-    /**
-     * The file has an invalid structure.
-     */
-    FILE02,
-
-    // User (code 15xx)
-    /**
-     * The user has an invalid structure.
-     */
-    USER01,
-
     // FileRequest (code 16xx)
     /**
      * The file request has an invalid structure.
@@ -367,41 +300,108 @@ public enum ErrorCode {
      * The file name of a request cannot be redefined.
      */
     FREQ04,
-
-    // Stager (code 17xx)
-    /**
-     * The queue to stage has not been specified.
-     */
-    STGR01,
-    /**
-     * No space left of device. Suspending the queue.
-     */
-    STGR02,
-
-    // Reading (code 18xx)
-    /**
-     * The metadata (FilePositionOnTape) reference cannot be null.
-     */
-    READ01,
-    /**
-     * Invalid change of file request status.
-     */
-    READ02,
-
     // Queues Controller (code 19xx)
     /**
      * The file reference cannot be null.
      */
     QCON01,
+    // Queue (code 10xx)
+    /**
+     * Submission time before the given creation time.
+     */
+    QUEU01,
+    /**
+     * End time before the given creation time.
+     */
+    QUEU02,
+    /**
+     * The new position cannot be before the current position.
+     */
+    QUEU03,
 
-    // Queues Controller (code 20xx)
     /**
-     * The file reference cannot be null.
+     * Creation time after the given end time.
      */
-    FPCO01,
+    QUEU04,
     /**
-     * The tape reference cannot be null.
+     * End time after the given end time.
      */
-    FPCO02
+    QUEU05,
+    /**
+     * Invalid change of queue status.
+     */
+    QUEU06,
+
+    /**
+     * Creation time after the given submission time.
+     */
+    QUEU07,
+
+    /**
+     * End time before the given submission time.
+     */
+    QUEU08,
+    /**
+     * Queue is not in QS_CREATED state and it cannot be activated.
+     */
+    QUEU09,
+
+    /**
+     * It's not possible to register a null as 'File Position on Tape'.
+     */
+    QUEU10,
+
+    /**
+     * Unable to register file in Queue.
+     */
+    QUEU11,
+    /**
+     * It's not possible to register a file before the current position.
+     */
+    QUEU12,
+    /**
+     * Invalid state at this point.
+     */
+    QUEU13,
+    /**
+     * Invalid state to change the position.
+     */
+    QUEU14,
+
+    /**
+     * Maximal retries suspension.
+     */
+    QUEU15,
+    // Reading (code 18xx)
+    /**
+     * The metadata (FilePositionOnTape) reference cannot be null.
+     */
+    READ01,
+
+    /**
+     * Invalid change of file request status.
+     */
+    READ02,
+    // Stager (code 17xx)
+    /**
+     * The queue to stage has not been specified.
+     */
+    STGR01,
+
+    /**
+     * No space left of device. Suspending the queue.
+     */
+    STGR02,
+
+    // Tape (code 13xx)
+    /**
+     * The tape has an invalid structure.
+     */
+    TAPE01,
+    // User (code 15xx)
+    /**
+     * The user has an invalid structure.
+     */
+    USER01
 
 };

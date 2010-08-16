@@ -44,12 +44,12 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  */
 public class HSMCloseException extends HSMException {
 
-    public HSMCloseException(short hsmErrorcode) {
-        super(hsmErrorcode);
-    }
-
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = -2148838547663392690L;
+
+    public HSMCloseException(short hsmErrorcode) {
+        super(hsmErrorcode);
+    }
 };

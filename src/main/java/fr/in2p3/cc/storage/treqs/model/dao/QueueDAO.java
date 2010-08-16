@@ -53,6 +53,13 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
 public interface QueueDAO extends DAO {
 
     /**
+     * Called on startup. All the queues from a previous run should be aborted
+     * When TReqS starts, she cleans the queues table in the database. Previous
+     * queues should be set as QS_ABORTED
+     */
+    int abortPendingQueues() throws PersistanceException;
+
+    /**
      * insert a queue entry in the table
      * 
      * @param qs
@@ -72,6 +79,23 @@ public interface QueueDAO extends DAO {
      */
     int insert(QueueStatus status, Tape tape, int size, long byteSize,
             Calendar creationTime) throws ExecuteMySQLException;
+
+    /**
+     * Update a queue entry to log the new number of jobs. Usualy called after a
+     * new file registration
+     * 
+     * @param nbjobs
+     *            the number of jobs registered in the queue
+     * @param owner
+     *            the owner of the queue
+     * @param jobsSize
+     *            the total size of the queue
+     * @param id
+     *            the unique ID of the queue
+     * @throws ExecuteMySQLException
+     */
+    void updateAddRequest(int jobsSize, String ownerName, long byteSize, int id)
+            throws ExecuteMySQLException;
 
     /**
      * Update a queue entry in the queues table
@@ -96,29 +120,5 @@ public interface QueueDAO extends DAO {
     void updateState(Calendar time, QueueStatus status, int size, short nbDone,
             short nbFailed, String ownerName, long byteSize, int id)
             throws ExecuteMySQLException;
-
-    /**
-     * Update a queue entry to log the new number of jobs. Usualy called after a
-     * new file registration
-     * 
-     * @param nbjobs
-     *            the number of jobs registered in the queue
-     * @param owner
-     *            the owner of the queue
-     * @param jobsSize
-     *            the total size of the queue
-     * @param id
-     *            the unique ID of the queue
-     * @throws ExecuteMySQLException
-     */
-    void updateAddRequest(int jobsSize, String ownerName, long byteSize, int id)
-            throws ExecuteMySQLException;
-
-    /**
-     * Called on startup. All the queues from a previous run should be aborted
-     * When TReqS starts, she cleans the queues table in the database. Previous
-     * queues should be set as QS_ABORTED
-     */
-    int abortPendingQueues() throws PersistanceException;
 
 }

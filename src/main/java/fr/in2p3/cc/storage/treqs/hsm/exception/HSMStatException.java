@@ -46,24 +46,24 @@ import java.io.IOException;
  */
 public class HSMStatException extends HSMException {
 
-    public HSMStatException(IOException exception) {
-        super(exception);
-    }
+    /**
+     * Generated Id.
+     */
+    private static final long serialVersionUID = 8267968446883602498L;
 
     public HSMStatException() {
         super();
-    }
-
-    public HSMStatException(String message) {
-        super(message);
     }
 
     public HSMStatException(int val) {
         super(val + "");
     }
 
-    /**
-     * Generated Id.
-     */
-    private static final long serialVersionUID = 8267968446883602498L;
+    public HSMStatException(IOException exception) {
+        super(exception);
+    }
+
+    public HSMStatException(String message) {
+        super(message);
+    }
 }

@@ -85,42 +85,6 @@ public interface ReadingDAO extends DAO {
             String message, Queue queue) throws ExecuteMySQLException;
 
     /**
-     * Updates the status of a set of file requests in the jobs table according
-     * to the filename
-     * 
-     * @param n
-     *            the name of the file updated
-     * @param fs
-     *            the new status to update
-     * @param t
-     *            the time stamp of the state change
-     * @param tries
-     *            the number of tries for this file
-     * @param m
-     *            the message to put
-     * @param e
-     *            the error code
-     * @param qid
-     *            the queue id
-     * @param tape
-     *            the tape where the file is stored
-     * @param pos
-     *            the position on the tape
-     * @return true if one or more rows are updated
-     * @throws TReqSException
-     *             If there is a problem with the configuration.
-     */
-    void update(FilePositionOnTape fpot, FileStatus status, Calendar time,
-            byte nbTries, String errorMessage, short errorCode, Queue queue)
-            throws TReqSException;
-
-    /**
-     * Called on startup. All requests in non-final states should be considered
-     * as new. Set the status of non-final requests to show them as new jobs
-     */
-    int updateUnfinishedRequests() throws PersistanceException;
-
-    /**
      * Find new jobs in the requests table
      * 
      * @param limit
@@ -128,20 +92,6 @@ public interface ReadingDAO extends DAO {
      * @return a vector of PersistenceFileRequest
      */
     List<PersistenceHelperFileRequest> getNewJobs(int limit)
-            throws PersistanceException;
-
-    /**
-     * Changes a file request status in the database
-     * 
-     * @param r
-     *            request identifier
-     * @param fs
-     *            the file status
-     * @param m
-     *            message
-     * @return
-     */
-    void setRequestStatusById(int id, FileStatus status, String message)
             throws PersistanceException;
 
     /**
@@ -161,4 +111,56 @@ public interface ReadingDAO extends DAO {
      */
     void setRequestStatusById(int id, FileStatus status, int code,
             String message) throws PersistanceException;
+
+    /**
+     * Changes a file request status in the database
+     * 
+     * @param r
+     *            request identifier
+     * @param fs
+     *            the file status
+     * @param m
+     *            message
+     * @return
+     */
+    void setRequestStatusById(int id, FileStatus status, String message)
+            throws PersistanceException;
+
+    /**
+     * Updates the status of a set of file requests in the jobs table according
+     * to the filename
+     * 
+     * @param n
+     *            the name of the file updated
+     * @param fs
+     *            the new status to update
+     * @param t
+     *            the time stamp of the state change
+     * @param tries
+     *            the number of tries for this file
+     * @param m
+     *            the message to put. The errorMessage could be empty when there
+     *            is not a problem, just a state change.
+     * @param e
+     *            the error code. When it is 0 it means that there is not a
+     *            problem.
+     * @param qid
+     *            the queue id
+     * @param tape
+     *            the tape where the file is stored
+     * @param pos
+     *            the position on the tape
+     * @return true if one or more rows are updated
+     * @throws TReqSException
+     *             If there is a problem with the configuration.
+     */
+    void update(FilePositionOnTape fpot, FileStatus status, Calendar time,
+            byte nbTries, String errorMessage, short errorCode, Queue queue)
+            throws TReqSException;
+
+    /**
+     * Called on startup. All requests in non-final states should be considered
+     * as new. Set the status of non-final requests to show them as new jobs
+     */
+    int updateUnfinishedRequests() throws PersistanceException;
 }

@@ -41,15 +41,13 @@ import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
+import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -57,8 +55,10 @@ import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * ActivatorTest.cpp
@@ -69,20 +69,39 @@ import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
 
 public class ActivatorTest {
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void oneTimeSetUp()
+            throws ProblematicConfiguationFileException {
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "CONFIGURATION_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockConfigurationDAO");
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "READING_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+        Configurator.getInstance().setValue("MAIN", "HSM_BRIDGE",
+                "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge");
+        HSMMockBridge.getInstance().setStageTime(100);
+    }
+
+    @After
+    public void tearDown() {
         Activator.destroyInstance();
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
         QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
-        MediaTypesController.destroyInstance();
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        HSMMockBridge.destroyInstance();
+        Configurator.destroyInstance();
+        PersistenceFactory.destroyInstance();
     }
 
     @Test
-    public void test01MaxQueueStagers() {
+    public void test01MaxQueueStagers() throws TReqSException {
 
         short actual = (short) Activator.getInstance().getMaxStagersPerQueue();
 
@@ -95,7 +114,7 @@ public class ActivatorTest {
     public void test02MaxQueueStagers() {
         boolean failed = false;
         try {
-            Activator.getInstance().setMaxStagersPerQueue((short) -6);
+            Activator.getInstance().setMaxStagersPerQueue((byte) -6);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -108,7 +127,7 @@ public class ActivatorTest {
     }
 
     @Test
-    public void test01MaxStagers() {
+    public void test01MaxStagers() throws TReqSException {
 
         short actual = (short) Activator.getInstance().getMaxStagers();
 
@@ -134,9 +153,9 @@ public class ActivatorTest {
     }
 
     @Test
-    public void test01timeBetweenWorkers() {
+    public void test01timeBetweenStagers() throws TReqSException {
 
-        short actual = (short) Activator.getInstance().getTimeBetweenWorkers();
+        short actual = (short) Activator.getInstance().getTimeBetweenStagers();
 
         short expected = 50;
 
@@ -144,11 +163,11 @@ public class ActivatorTest {
     }
 
     @Test
-    public void test02timeBetweenWorkers() {
+    public void test02timeBetweenStagers() {
 
         boolean failed = false;
         try {
-            Activator.getInstance().setTimeBetweenWorkers(-6);
+            Activator.getInstance().setTimeBetweenStagers(-6);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -161,11 +180,11 @@ public class ActivatorTest {
     }
 
     @Test
-    public void test01activeWorkers() {
+    public void test01activeStagers() {
 
         boolean failed = false;
         try {
-            Activator.getInstance().setActiveWorkers((short) -1);
+            Activator.getInstance().setActiveStagers((short) -1);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -198,7 +217,7 @@ public class ActivatorTest {
     public void test02Activate() throws TReqSException {
 
         Activator.getInstance().setMaxStagers((short) 5);
-        Activator.getInstance().setActiveWorkers((short) 10);
+        Activator.getInstance().setActiveStagers((short) 10);
 
         MediaType media = new MediaType((byte) 1, "media");
         File file = new File("filename", new User("username"), 300);
@@ -227,7 +246,7 @@ public class ActivatorTest {
 
     @Test
     public void test04Activate() throws TReqSException {
-        Activator.getInstance().setMaxStagersPerQueue((short) 2);
+        Activator.getInstance().setMaxStagersPerQueue((byte) 2);
 
         MediaType media = new MediaType((byte) 1, "media");
         Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
@@ -276,9 +295,11 @@ public class ActivatorTest {
 
     /**
      * Tests the stop method.
+     * 
+     * @throws TReqSException
      */
     @Test
-    public void test01stop() {
+    public void test01stop() throws TReqSException {
         Activator.getInstance().start();
         try {
             Thread.sleep(100);
@@ -290,9 +311,11 @@ public class ActivatorTest {
 
     /**
      * Tests to stop the activator from other thread.
+     * 
+     * @throws TReqSException
      */
     @Test
-    public void test01run() {
+    public void test01run() throws TReqSException {
         Thread thread = new Thread() {
 
             @Override
@@ -302,7 +325,11 @@ public class ActivatorTest {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                Activator.getInstance().toStop();
+                try {
+                    Activator.getInstance().toStop();
+                } catch (TReqSException e) {
+                    e.printStackTrace();
+                }
             }
         };
         thread.start();

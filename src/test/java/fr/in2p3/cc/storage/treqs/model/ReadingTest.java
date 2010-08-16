@@ -41,13 +41,10 @@ import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMCloseException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
@@ -57,9 +54,8 @@ import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.NullParameterException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * ReadingTest.cpp
@@ -70,22 +66,21 @@ import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
 public class ReadingTest {
 
     @Before
-    public void setUp() throws ProblematicConfiguationFileException {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        TReqSConfig
-                .getInstance()
-                .setValue("MAIN", "CONFIGURATION_DAO",
-                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockConfigurationDAO");
-        TReqSConfig.getInstance().setValue("MAIN", "QUEUE_DAO",
+    public void setUp() throws TReqSException {
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
                 "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-        TReqSConfig
+        Configurator
                 .getInstance()
                 .setValue("MAIN", "READING_DAO",
                         "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+        Configurator.getInstance().setValue("MAIN", "HSM_BRIDGE",
+                "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge");
+    }
+
+    @After
+    public void tearDown() {
+        Configurator.destroyInstance();
+        HSMMockBridge.destroyInstance();
     }
 
     /**
@@ -116,8 +111,7 @@ public class ReadingTest {
 
     @Test
     public void test02ReadingConstructor() throws TReqSException {
-        TReqSConfig.getInstance().getValue("MAIN", "MAX_READ_RETRIES");
-        TReqSConfig.getInstance().deleteValue("MAIN", "MAX_READ_RETRIES");
+        Configurator.getInstance().deleteValue("MAIN", "MAX_READ_RETRIES");
 
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
                 TapeStatus.TS_UNLOCKED);
@@ -174,7 +168,7 @@ public class ReadingTest {
     public void test02StageMaxRetries() throws TReqSException {
         byte max = Reading.MAX_READ_RETRIES;
         try {
-            max = Byte.parseByte(TReqSConfig.getInstance().getValue("MAIN",
+            max = Byte.parseByte(Configurator.getInstance().getValue("MAIN",
                     "MAX_READ_RETRIES"));
         } catch (ConfigNotFoundException e) {
         }
@@ -245,6 +239,8 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
+
+        HSMMockBridge.getInstance().setStageTime(100);
 
         reading.stage();
     }
@@ -765,7 +761,7 @@ public class ReadingTest {
 
         String actual = reading.toString();
 
-        String expected = "Reading{ Starttime: null, Endtime: null, Error code: -1, Error message: , File state: FS_SUBMITTED, Max retries: 3, Number of tries: "
+        String expected = "Reading{ Starttime: null, Endtime: null, Error code: 0, Error message: , File state: FS_SUBMITTED, Max retries: 3, Number of tries: "
                 + nbtries
                 + ", Queue id: "
                 + qid

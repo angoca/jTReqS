@@ -40,35 +40,20 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
 import java.util.List;
 
 import org.apache.commons.collections.MultiMap;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
 
 public class MySQLConfigurationDAOTest {
-
-    @Before
-    public void setUp() throws TReqSException {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
-        MySQLBroker.getInstance().disconnect();
+    @AfterClass
+    public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
-        MediaTypesController.destroyInstance();
+        MySQLConfigurationDAO.destroyInstance();
     }
 
     @Test

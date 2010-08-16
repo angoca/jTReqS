@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * HSM factory. This is the implementation of the Factory method for the
@@ -57,18 +57,18 @@ import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
  * default.
  */
 public class HSMFactory {
+    private static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge";
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HSMFactory.class);
-    private static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge";
 
     /**
      * Retrieves the corresponding HSM bridge. This method checks the value of
      * MAIN.HSM_BRIDGE in the configuration file. If no value was specify, it
      * will return HPSS bridge as default.
-     *
+     * 
      * @return
      * @throws ProblematicConfiguationFileException
      */
@@ -78,7 +78,7 @@ public class HSMFactory {
 
         String hsmBridgeClass = DEFAULT_HSM_BRIDGE;
         try {
-            hsmBridgeClass = TReqSConfig.getInstance().getValue("MAIN",
+            hsmBridgeClass = Configurator.getInstance().getValue("MAIN",
                     "HSM_BRIDGE");
         } catch (ConfigNotFoundException e) {
             LOGGER

@@ -51,12 +51,12 @@ public abstract class MySQLException extends PersistanceException {
      */
     private static final long serialVersionUID = 7637653660807465428L;
 
-    public MySQLException(Exception e) {
-        super(e);
-    }
-
     public MySQLException() {
         super();
+    }
+
+    public MySQLException(Exception e) {
+        super(e);
     }
 
     public MySQLException(String message) {

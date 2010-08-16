@@ -48,34 +48,43 @@ public abstract class TReqSException extends Exception {
      */
     private static final long serialVersionUID = 6917322061035496563L;
     /**
-     * The error message.
-     */
-    private String message = "No message";
-    /**
      * The error code.
      */
     private ErrorCode code;
     private Exception exception;
+    /**
+     * The error message.
+     */
+    private String message = "No message";
 
-    protected TReqSException(ErrorCode code, String message) {
-        this.code = code;
-        this.message = message;
+    public TReqSException() {
+        super();
     }
 
     public TReqSException(ErrorCode code) {
         this.code = code;
     }
 
+    protected TReqSException(ErrorCode code, String message) {
+        this.code = code;
+        this.message = message;
+    }
+
     public TReqSException(Exception exception) {
         super(exception);
     }
 
-    public TReqSException() {
-        super();
-    }
-
     public TReqSException(String message) {
         super(message);
+    }
+
+    /**
+     * Returns the error code.
+     * 
+     * @return the error code.
+     */
+    public ErrorCode getCode() {
+        return code;
     }
 
     @Override
@@ -89,14 +98,5 @@ public abstract class TReqSException extends Exception {
         ret += "}";
         ret += super.getMessage();
         return ret;
-    }
-
-    /**
-     * Returns the error code.
-     * 
-     * @return the error code.
-     */
-    public ErrorCode getCode() {
-        return code;
     }
 };

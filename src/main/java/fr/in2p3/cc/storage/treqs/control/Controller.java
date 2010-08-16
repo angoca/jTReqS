@@ -63,6 +63,30 @@ public abstract class Controller {
     protected Map<String, Object> objectMap;
 
     /**
+     * Try to create a new object instance and insert it in the map. Return a
+     * new instance or throw an exception if already exists. Each specialization
+     * of the Controller template should ...
+     * 
+     * @param key
+     *            the key of the object in the map.
+     */
+    protected final void add(String key, Object value)
+            throws ControllerInsertException {
+        LOGGER.trace("> add");
+
+        assert key != null;
+        assert value != null;
+
+        if (this.objectMap.get(key) != null) {
+            LOGGER.debug("Object " + key + " already exist");
+            throw new ControllerInsertException();
+        }
+        this.objectMap.put(key, value);
+
+        LOGGER.trace("< add");
+    }
+
+    /**
      * Find an object using the key and return a pointer to it.
      * 
      * @param key
@@ -98,29 +122,5 @@ public abstract class Controller {
         LOGGER.debug("Object " + key + " removed");
 
         LOGGER.trace("< remove");
-    }
-
-    /**
-     * Try to create a new object instance and insert it in the map. Return a
-     * new instance or throw an exception if already exists. Each specialization
-     * of the Controller template should ...
-     * 
-     * @param key
-     *            the key of the object in the map.
-     */
-    protected final void add(String key, Object value)
-            throws ControllerInsertException {
-        LOGGER.trace("> add");
-
-        assert key != null;
-        assert value != null;
-
-        if (this.objectMap.get(key) != null) {
-            LOGGER.debug("Object " + key + " already exist");
-            throw new ControllerInsertException();
-        }
-        this.objectMap.put(key, value);
-
-        LOGGER.trace("< add");
     }
 }

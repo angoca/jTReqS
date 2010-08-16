@@ -53,10 +53,12 @@ import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.dao.DAOFactory;
+import fr.in2p3.cc.storage.treqs.model.dao.DAO;
+import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistanceHelperResourceAllocation;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Class responsible for activation of the staging queues. This class runs as a
@@ -66,50 +68,39 @@ import fr.in2p3.cc.storage.treqs.persistance.PersistanceHelperResourceAllocation
  * the maxStagersPerQueue. TODO write this in the configuration file.
  */
 public class Activator extends Thread {
-    private static final int MILLIS = 1000;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(Activator.class);
-    private static final byte SECONDS_BETWEEN_LOOPS = 2;
     /**
      * The singleton instance.
      */
     private static Activator _instance = null;
     /**
-     * Count active workers.
+     * Logger.
      */
-    private short activeWorkers;
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(Activator.class);
+    private static final short MILLIS = 1000;
+    private static final byte SECONDS_BETWEEN_LOOPS = 2;
+    private static final byte STAGING_DEPTH = 0;
+
     /**
-     * List of drives allocations per PVR.
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    private List<Resource> allocations;
-    /**
-     * Max number of stager process per active queue.
-     */
-    private short maxStagersPerQueue;
-    /**
-     * Max number of stagers for overall activity.
-     */
-    private short maxStagers;
-    /**
-     * Maximum age of the resources metadata.
-     */
-    private short metadataTimeout;
-    /**
-     * Variable that indicated the thread to stop.
-     */
-    private boolean toContinue;
-    private int timeBetweenWorkers;
-    private int millisBetweenLoops;
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance.interrupt();
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     /**
      * Access the singleton instance.
      * 
      * @return Unique instance of this class.
+     * @throws TReqSException
      */
-    public static Activator getInstance() {
+    public static Activator getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (_instance == null) {
@@ -124,141 +115,73 @@ public class Activator extends Thread {
     }
 
     /**
-     * Destroys the only instance. ONLY for testing purposes.
+     * Count active stagers
      */
-    static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
+    private short activeStagers;
+    /**
+     * List of drives allocations per PVR.
+     */
+    private List<Resource> allocations;
+    /**
+     * Max number of stagers for overall activity.
+     */
+    private short maxStagers;
+    /**
+     * Max number of stager process per active queue.
+     */
+    private byte maxStagersPerQueue;
+    /**
+     * Maximum age of the resources metadata.
+     */
+    private short metadataTimeout;
+    private int millisBetweenLoops;
 
-        _instance = null;
+    private int timeBetweenStagers;
 
-        LOGGER.trace("< destroyInstance");
-    }
+    /**
+     * Variable that indicated the thread to stop.
+     */
+    private boolean toContinue;
 
-    private Activator() {
+    private Activator() throws TReqSException {
         super("Activator");
         LOGGER.trace("> create activator");
 
+        byte interval = SECONDS_BETWEEN_LOOPS;
+        try {
+            interval = Byte.parseByte(Configurator.getInstance().getValue(
+                    "MAIN", "ACTIVATOR_INTERVAL"));
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info(
+                            "No setting for MAIN.ACTIVATOR_INTERVAL, arbitrary default value set to {} seconds",
+                            interval);
+        }
+        this.setSecondsBetweenLoops(interval);
+
         // TODO retrieve these values from the configuration file.
         this.setMaxStagers((short) 1000);
-        this.setMaxStagersPerQueue((short) 3);
+
+        byte maxStager = STAGING_DEPTH;
+        try {
+            maxStager = Byte.parseByte(Configurator.getInstance().getValue(
+                    "MAIN", "STAGING_DEPTH"));
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info(
+                            "No setting for MAIN.STAGING_DEPTH, default value will be used: {}",
+                            maxStager);
+        }
+        this.setMaxStagersPerQueue(maxStager);
         this.setMetadataTimeout((short) 3600);
-        this.setTimeBetweenWorkers(50);
-        this.millisBetweenLoops = SECONDS_BETWEEN_LOOPS * MILLIS;
-        this.activeWorkers = 0;
+        this.setTimeBetweenStagers(50);
+        this.activeStagers = 0;
 
         this.allocations = new ArrayList<Resource>();
 
+        this.toContinue = true;
+
         LOGGER.trace("< create activator");
-    }
-
-    void setTimeBetweenWorkers(int time) {
-        LOGGER.trace("> setTimeBetweenWorkers");
-
-        assert time >= 0;
-
-        this.timeBetweenWorkers = time;
-
-        LOGGER.trace("< setTimeBetweenWorkers");
-    }
-
-    /**
-     * Getter
-     * 
-     * @return
-     */
-    short getMaxStagersPerQueue() {
-        LOGGER.trace(">< getStagersPerQueue");
-
-        return this.maxStagersPerQueue;
-    }
-
-    /**
-     * Getter
-     * 
-     * @return
-     */
-    short getMaxStagers() {
-        LOGGER.trace(">< getMaxStagers");
-
-        return this.maxStagers;
-    }
-
-    short getMetadataTimeout() {
-        LOGGER.trace(">< getMetadataTimeout");
-
-        return this.metadataTimeout;
-    }
-
-    /**
-     * This is ONLY for test purposes. It does not have to be used.
-     * 
-     * @param activeWorkers
-     *            Qty of workers.
-     */
-    void setActiveWorkers(short activeWorkers) {
-        LOGGER.trace("> setActiveWorkers");
-
-        assert activeWorkers >= 0;
-
-        this.activeWorkers = activeWorkers;
-
-        LOGGER.trace("> setActiveWorkers");
-    }
-
-    /**
-     * Setter
-     * 
-     * @param maxStagersPerQueue
-     */
-    void setMaxStagersPerQueue(short maxStagersPerQueue) {
-        LOGGER.trace("> setStagersPerQueue");
-
-        assert maxStagersPerQueue > 0;
-
-        this.maxStagersPerQueue = maxStagersPerQueue;
-
-        LOGGER.trace("< setStagersPerQueue");
-    }
-
-    public void setSecondsBetweenLoops(byte seconds) {
-        LOGGER.trace("> setSecondsBetweenLoops");
-
-        assert seconds > 0;
-
-        this.millisBetweenLoops = seconds * MILLIS;
-
-        LOGGER.trace("< setSecondsBetweenLoops");
-    }
-
-    /**
-     * Setter
-     * 
-     * @param maxStagers
-     */
-    void setMaxStagers(short maxStagers) {
-        LOGGER.trace("> setMaxStagers");
-
-        assert maxStagers > 0;
-
-        this.maxStagers = maxStagers;
-
-        LOGGER.trace("< setMaxStagers");
-    }
-
-    /**
-     * Quantity of seconds to consider the metadata outdated.
-     * 
-     * @param timeout
-     *            Seconds.
-     */
-    void setMetadataTimeout(short timeout) {
-        LOGGER.trace("> setMetadataTimeout");
-
-        assert timeout > 0;
-
-        this.metadataTimeout = timeout;
-
-        LOGGER.trace("< setMetadataTimeout");
     }
 
     /**
@@ -279,31 +202,34 @@ public class Activator extends Thread {
 
         queue.dump();
 
-        if (this.activeWorkers > this.maxStagers - this.maxStagersPerQueue) {
-            LOGGER.warn("No workers available to activate queue.");
+        if (this.activeStagers > this.maxStagers - this.maxStagersPerQueue) {
+            LOGGER.warn("No stagers available to activate queue.");
             cont = false;
         }
         if (cont) {
             queue.activate();
 
-            LOGGER.debug("Preparing " + this.maxStagersPerQueue + " workers");
+            LOGGER.debug("Preparing {} stagers", this.maxStagersPerQueue);
             int i;
             for (i = 1; i <= this.maxStagersPerQueue; i++) {
-                LOGGER.info("Starting worker " + i + "/"
-                        + this.maxStagersPerQueue);
+                LOGGER
+                        .info("Starting stager {}/{}", i,
+                                this.maxStagersPerQueue);
 
                 stager = StagersController.getInstance().create(queue);
 
-                LOGGER.debug("Thread started: " + stager.getName());
+                LOGGER.debug("Thread started: {}", stager.getName());
                 stager.start();
                 try {
-                    Thread.sleep(this.timeBetweenWorkers);
+                    LOGGER.info("Sleeping between stagers, {} millis",
+                            this.timeBetweenStagers);
+                    Thread.sleep(this.timeBetweenStagers);
                 } catch (InterruptedException e) {
                     // Nothing.
                 }
-                this.activeWorkers++;
+                this.activeStagers++;
             }
-            LOGGER.debug("Launched " + (i - 1) + " workers");
+            LOGGER.debug("Launched {} stager(s)", (i - 1));
         }
 
         LOGGER.trace("< activate");
@@ -321,85 +247,58 @@ public class Activator extends Thread {
             ProblematicConfiguationFileException {
         LOGGER.trace("> countUsedResources");
 
-        short active = 0;
-
         // Reset all used resources
         for (Iterator<Resource> iterator = this.allocations.iterator(); iterator
                 .hasNext();) {
-            Resource resource = (Resource) iterator.next();
+            Resource resource = iterator.next();
             resource.resetUsedResources();
         }
 
-        QueuesController.getInstance().countUsedResources(this.allocations);
-        LOGGER.info("There are " + active + " activated queues");
+        short active = QueuesController.getInstance().countUsedResources(
+                this.allocations);
+        LOGGER.info("There are {} activated queues", active);
 
         LOGGER.trace("< countUsedResources");
 
         return active;
     }
 
-    public void toStop() {
-        this.toContinue = false;
-    }
-
     /**
-     * Just browse periodically the list of users and queues to activate the
-     * best queue
+     * Getter
      * 
      * @return
      */
-    public void run() {
-        LOGGER.trace("> run");
+    short getMaxStagers() {
+        LOGGER.trace(">< getMaxStagers");
 
-        this.toContinue = true;
+        return this.maxStagers;
+    }
 
-        while (this.toContinue) {
+    /**
+     * Getter
+     * 
+     * @return
+     */
+    short getMaxStagersPerQueue() {
+        LOGGER.trace(">< getStagersPerQueue");
 
-            // First remove all done workers
-            this.activeWorkers -= StagersController.getInstance().cleanup();
-            LOGGER.info("Still " + this.activeWorkers + " active.");
+        return this.maxStagersPerQueue;
+    }
 
-            // If necessary, refresh the resources allocations
-            if (this.allocations.size() == 0
-                    || this.allocations.get(0).getAge() > this
-                            .getMetadataTimeout()) {
-                try {
-                    this.refreshAllocations();
-                } catch (TReqSException e) {
-                    LOGGER.error(e.getMessage());
-                    this.toContinue = false;
-                }
-            }
-            if (this.toContinue) {
-                // Count the active queues and update the resources
-                try {
-                    this.countUsedResources();
-                } catch (TReqSException e) {
-                    LOGGER.error(e.getMessage());
-                    this.toContinue = false;
-                }
-            }
-            if (this.toContinue) {
-                // Loop through the resources
-                try {
-                    process();
-                } catch (TReqSException e) {
-                    LOGGER.error(e.getMessage());
-                    this.toContinue = false;
-                }
+    short getMetadataTimeout() {
+        LOGGER.trace(">< getMetadataTimeout");
 
-                // Waits before restart the process.
-                LOGGER.debug("Sleeping " + this.millisBetweenLoops
-                        + " milliseconds");
-                try {
-                    Thread.sleep(this.millisBetweenLoops);
-                } catch (InterruptedException e) {
-                    // Nothing.
-                }
-            }
-        }
+        return this.metadataTimeout;
+    }
 
-        LOGGER.trace("< run");
+    public byte getSecondsBetweenLoops() {
+        LOGGER.trace(">< getSecondsBetweenLoops");
+
+        return (byte) (this.millisBetweenLoops / MILLIS);
+    }
+
+    public int getTimeBetweenStagers() {
+        return this.timeBetweenStagers;
     }
 
     /**
@@ -414,14 +313,14 @@ public class Activator extends Thread {
         User bestUser;
         for (Iterator<Resource> iterator = this.allocations.iterator(); iterator
                 .hasNext();) {
-            Resource resource = (Resource) iterator.next();
+            Resource resource = iterator.next();
             // while there is room to activate a queue, do it
             int freeResources = resource.countFreeResources();
             int waitingQueues = QueuesController.getInstance()
                     .countWaitingQueues(resource.getMediaType());
             boolean cont = true;
             while ((freeResources > 0) && (waitingQueues > 0) && cont) {
-                LOGGER.debug("Still " + freeResources + " resources available");
+                LOGGER.debug("Still {} resources available", freeResources);
                 bestUser = QueuesController.getInstance().selectBestUser(
                         resource);
                 if (bestUser == null) {
@@ -440,19 +339,21 @@ public class Activator extends Thread {
 
                     // Activate the best queue
                     if (bestQueue != null) {
-                        LOGGER.info("Activating queue "
-                                + bestQueue.getTape().getName() + " for user "
-                                + bestQueue.getOwner().getName());
+                        LOGGER.info("Activating queue {} for user {}",
+                                bestQueue.getTape().getName(), bestQueue
+                                        .getOwner().getName());
                         try {
                             this.activate(bestQueue);
                         } catch (TReqSException e) {
-                            Object[] data = new Object[] {
-                                    bestQueue.getTape().getName(),
-                                    bestQueue.getStatus(), e.getMessage() };
                             LOGGER
                                     .error(
                                             "Error activating queue {} in state {} - {}",
-                                            data);
+                                            new String[] {
+                                                    bestQueue.getTape()
+                                                            .getName(),
+                                                    bestQueue.getStatus()
+                                                            .name(),
+                                                    e.getMessage() });
                         }
                     } else {
                         // TODO this should never happen, at least one queue.
@@ -478,40 +379,194 @@ public class Activator extends Thread {
 
         // Get the drives allocations from DB
         this.allocations.clear();
-        List<Resource> resources = DAOFactory.getConfigurationDAO()
+        List<Resource> resources = DAO.getConfigurationDAO()
                 .getMediaAllocations();
         this.allocations.addAll(resources);
 
         // Now get the shares from DB
-        MultiMap dbshare = DAOFactory.getConfigurationDAO()
-                .getResourceAllocation();
+        MultiMap dbshare = DAO.getConfigurationDAO().getResourceAllocation();
 
         // browse the resources
         for (Iterator<Resource> iterator = this.allocations.iterator(); iterator
                 .hasNext();) {
-            Resource resource = (Resource) iterator.next();
+            Resource resource = iterator.next();
             // Find all shares for the current pvrid
             byte id = resource.getMediaType().getId();
             Collection<PersistanceHelperResourceAllocation> shareRange = (Collection<PersistanceHelperResourceAllocation>) dbshare
                     .get(new Byte(id));
-            // Browse the shares for this PVR and set the resources
-            for (Iterator<PersistanceHelperResourceAllocation> iterator2 = shareRange
-                    .iterator(); iterator2.hasNext();) {
-                PersistanceHelperResourceAllocation resAlloc = iterator2.next();
-                resource.setUserAllocation(resAlloc.getUser(), resAlloc
-                        .getAllocation());
-                resource.setTimestamp(new GregorianCalendar());
-                LOGGER.info("Setting share on media: {} ; user: {}; share: {}",
-                        new Object[] { resource.getMediaType().getName(),
-                                resAlloc.getUser().getName(),
-                                resAlloc.getAllocation() });
+            if (shareRange != null) {
+                // Browse the shares for this PVR and set the resources
+                for (Iterator<PersistanceHelperResourceAllocation> iterator2 = shareRange
+                        .iterator(); iterator2.hasNext();) {
+                    PersistanceHelperResourceAllocation resAlloc = iterator2
+                            .next();
+                    resource.setUserAllocation(resAlloc.getUser(), resAlloc
+                            .getAllocation());
+                    resource.setTimestamp(new GregorianCalendar());
+                    LOGGER.info(
+                            "Setting share on media: {} ; user: {}; share: {}",
+                            new Object[] { resource.getMediaType().getName(),
+                                    resAlloc.getUser().getName(),
+                                    resAlloc.getAllocation() });
+                }
+            } else {
+                // FIXME throw new RuntimeException("no share range for " + id);
             }
         }
 
         LOGGER.trace("< refreshAllocations");
     }
 
-    int getTimeBetweenWorkers() {
-        return this.timeBetweenWorkers;
+    /**
+     * Just browse periodically the list of users and queues to activate the
+     * best queue
+     * 
+     * @return
+     */
+    @Override
+    public void run() {
+        LOGGER.trace("> run");
+
+        while (this.toContinue) {
+
+            toStart();
+
+            if (this.toContinue) {
+                LOGGER.debug("Sleeping {} milliseconds",
+                        this.millisBetweenLoops);
+                // Waits before restart the process.
+                try {
+                    Thread.sleep(this.millisBetweenLoops);
+                } catch (InterruptedException e) {
+                    // Nothing.
+                }
+            }
+        }
+
+        LOGGER.trace("< run");
+    }
+
+    /**
+     * This is ONLY for test purposes. It does not have to be used.
+     * 
+     * @param activeStagers
+     *            Qty of stagers.
+     */
+    void setActiveStagers(short activeStagers) {
+        LOGGER.trace("> setActiveStagers");
+
+        assert activeStagers >= 0;
+
+        this.activeStagers = activeStagers;
+
+        LOGGER.trace("> setActiveStagers");
+    }
+
+    /**
+     * Setter
+     * 
+     * @param maxStagers
+     */
+    void setMaxStagers(short maxStagers) {
+        LOGGER.trace("> setMaxStagers");
+
+        assert maxStagers > 0;
+
+        this.maxStagers = maxStagers;
+
+        LOGGER.trace("< setMaxStagers");
+    }
+
+    /**
+     * Setter
+     * 
+     * @param maxStagersPerQueue
+     */
+    void setMaxStagersPerQueue(byte maxStagersPerQueue) {
+        LOGGER.trace("> setStagersPerQueue");
+
+        assert maxStagersPerQueue > 0;
+
+        this.maxStagersPerQueue = maxStagersPerQueue;
+
+        LOGGER.trace("< setStagersPerQueue");
+    }
+
+    /**
+     * Quantity of seconds to consider the metadata outdated.
+     * 
+     * @param timeout
+     *            Seconds.
+     */
+    void setMetadataTimeout(short timeout) {
+        LOGGER.trace("> setMetadataTimeout");
+
+        assert timeout > 0;
+
+        this.metadataTimeout = timeout;
+
+        LOGGER.trace("< setMetadataTimeout");
+    }
+
+    public void setSecondsBetweenLoops(byte seconds) {
+        LOGGER.trace("> setSecondsBetweenLoops");
+
+        assert seconds > 0;
+
+        this.millisBetweenLoops = seconds * MILLIS;
+
+        LOGGER.trace("< setSecondsBetweenLoops");
+    }
+
+    void setTimeBetweenStagers(int time) {
+        LOGGER.trace("> setTimeBetweenStagers");
+
+        assert time >= 0;
+
+        this.timeBetweenStagers = time;
+
+        LOGGER.trace("< setTimeBetweenStagers");
+    }
+
+    /**
+     * Makes the process of the activator.
+     */
+    public void toStart() {
+        // First remove all done stagers
+        this.activeStagers -= StagersController.getInstance().cleanup();
+        LOGGER.info("Still {} active stagers.", this.activeStagers);
+
+        // If necessary, refresh the resources allocations
+        if (this.allocations.size() == 0
+                || this.allocations.get(0).getAge() > this.getMetadataTimeout()) {
+            try {
+                this.refreshAllocations();
+            } catch (TReqSException e) {
+                LOGGER.error(e.getMessage());
+                this.toContinue = false;
+            }
+        }
+        if (this.toContinue) {
+            // Count the active queues and update the resources
+            try {
+                this.countUsedResources();
+            } catch (TReqSException e) {
+                LOGGER.error(e.getMessage());
+                this.toContinue = false;
+            }
+        }
+        if (this.toContinue) {
+            // Loop through the resources
+            try {
+                process();
+            } catch (TReqSException e) {
+                LOGGER.error(e.getMessage());
+                this.toContinue = false;
+            }
+        }
+    }
+
+    public void toStop() {
+        this.toContinue = false;
     }
 }

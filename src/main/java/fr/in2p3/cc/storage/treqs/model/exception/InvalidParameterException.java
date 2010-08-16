@@ -41,7 +41,7 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
 
 /**
  * The parameter is invalid for the current state of the object.
- *
+ * 
  * @author gomez
  * @version 2010-03-09
  */
@@ -53,7 +53,7 @@ public class InvalidParameterException extends TReqSException {
 
     /**
      * Creates the exception with a explanatory name.
-     *
+     * 
      * @param errCode
      *            Error code.
      * @param errMsg

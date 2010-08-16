@@ -42,34 +42,25 @@ import java.sql.SQLException;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.OpenMySQLException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 public class MySQLBrokerTest {
-    @Before
-    public void setUp() {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
+
+    @After
+    public void tearDown() {
+        Configurator.destroyInstance();
         MySQLBroker.destroyInstance();
     }
 
     @Test
     public void tes01Connect() throws TReqSException {
-        TReqSConfig.getInstance().setValue("JOBSDB", "DRIVER", "NO-DRIVER");
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER", "NO-DRIVER");
 
         boolean failed = false;
         try {
@@ -93,9 +84,9 @@ public class MySQLBrokerTest {
 
     @Test
     public void tes02Connect() throws TReqSException {
-        TReqSConfig.getInstance().setValue("JOBSDB", "DRIVER",
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
                 "com.mysql.jdbc.Driver");
-        TReqSConfig.getInstance().setValue("JOBSDB", "URL", "bad::url");
+        Configurator.getInstance().setValue("JOBSDB", "URL", "bad::url");
         boolean failed = false;
         try {
             MySQLBroker.getInstance().connect();
@@ -112,11 +103,11 @@ public class MySQLBrokerTest {
 
     @Test
     public void tes03Connect() throws TReqSException {
-        TReqSConfig.getInstance().setValue("JOBSDB", "DRIVER",
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
                 "com.mysql.jdbc.Driver");
-        TReqSConfig.getInstance().setValue("JOBSDB", "URL",
+        Configurator.getInstance().setValue("JOBSDB", "URL",
                 "jdbc:mysql://localhost/treqsjobs");
-        TReqSConfig.getInstance().setValue("JOBSDB", "USERNAME", "bad-user");
+        Configurator.getInstance().setValue("JOBSDB", "USERNAME", "bad-user");
         boolean failed = false;
         try {
             MySQLBroker.getInstance().connect();
@@ -133,13 +124,13 @@ public class MySQLBrokerTest {
 
     @Test
     public void tes04Connect() throws TReqSException {
-        TReqSConfig.getInstance().setValue("JOBSDB", "DRIVER",
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
                 "com.mysql.jdbc.Driver");
-        TReqSConfig.getInstance().setValue("JOBSDB", "URL",
+        Configurator.getInstance().setValue("JOBSDB", "URL",
                 "jdbc:mysql://localhost/treqsjobs");
-        TReqSConfig.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
-        TReqSConfig.getInstance()
-                .setValue("JOBSDB", "PASSWORD", "bad-password");
+        Configurator.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
+        Configurator.getInstance().setValue("JOBSDB", "PASSWORD",
+                "bad-password");
 
         boolean failed = false;
         try {
@@ -157,24 +148,27 @@ public class MySQLBrokerTest {
 
     @Test
     public void tes05Connect() throws TReqSException {
-        TReqSConfig.getInstance().setValue("JOBSDB", "DRIVER",
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
                 "com.mysql.jdbc.Driver");
-        TReqSConfig.getInstance().setValue("JOBSDB", "URL",
+        Configurator.getInstance().setValue("JOBSDB", "URL",
                 "jdbc:mysql://localhost/treqsjobs");
-        TReqSConfig.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
-        TReqSConfig.getInstance().setValue("JOBSDB", "PASSWORD", "treqs");
+        Configurator.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
+        Configurator.getInstance().setValue("JOBSDB", "PASSWORD", "treqs");
 
         MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().disconnect();
     }
 
     @Test
     public void tes06Connect() throws TReqSException {
         MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().disconnect();
     }
 
     @Test
     public void test01destroy() throws TReqSException {
         MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
     }
 
@@ -191,6 +185,7 @@ public class MySQLBrokerTest {
                 failed = true;
             }
         }
+        MySQLBroker.getInstance().disconnect();
         if (failed) {
             Assert.fail();
         }
@@ -209,6 +204,7 @@ public class MySQLBrokerTest {
                 failed = true;
             }
         }
+        MySQLBroker.getInstance().disconnect();
         if (failed) {
             Assert.fail();
         }
@@ -227,6 +223,7 @@ public class MySQLBrokerTest {
                 failed = true;
             }
         }
+        MySQLBroker.getInstance().disconnect();
         if (failed) {
             Assert.fail();
         }
@@ -245,6 +242,7 @@ public class MySQLBrokerTest {
                 failed = true;
             }
         }
+        MySQLBroker.getInstance().disconnect();
         if (failed) {
             Assert.fail();
         }
@@ -298,6 +296,7 @@ public class MySQLBrokerTest {
                 failed = true;
             }
         }
+        MySQLBroker.getInstance().disconnect();
         if (failed) {
             Assert.fail();
         }
@@ -317,38 +316,59 @@ public class MySQLBrokerTest {
                 failed = true;
             }
         }
+        MySQLBroker.getInstance().disconnect();
         if (failed) {
             Assert.fail();
         }
     }
 
     @Test
-    public void test05Modify() throws TReqSException {
-        String query = "insert into t1 values(1)";
+    public void test06Modify() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        String query = "DROP TABLE IF EXISTS t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        MySQLBroker.getInstance().executeModification(query);
+
+        query = "INSERT INTO t1 (USER) VALUES('1')";
         MySQLBroker.getInstance().connect();
         int actual = MySQLBroker.getInstance().executeModification(query);
+
+        query = "DROP TABLE t1 ";
+        MySQLBroker.getInstance().executeModification(query);
         MySQLBroker.getInstance().disconnect();
 
         Assert.assertTrue(actual == 1);
     }
 
     @Test
-    public void test06Modify() throws TReqSException {
-        String query = "DELETE FROM t1";
+    public void test07Modify() throws TReqSException {
         MySQLBroker.getInstance().connect();
+        String query = "DROP TABLE IF EXISTS t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        MySQLBroker.getInstance().executeModification(query);
+        query = "INSERT INTO t1 (USER) VALUES('1')";
+        MySQLBroker.getInstance().connect();
+        int actual = MySQLBroker.getInstance().executeModification(query);
+
+        query = "DELETE FROM t1";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "DROP TABLE t1 ";
         MySQLBroker.getInstance().executeModification(query);
         MySQLBroker.getInstance().disconnect();
+
+        Assert.assertTrue(actual == 1);
     }
 
     @Test
-    public void test07Modify() throws TReqSException {
+    public void test05Modify() throws TReqSException {
         MySQLBroker.getInstance().connect();
-        String query = "DROP TABLE IF EXISTS requests ";
+        String query = "DROP TABLE IF EXISTS t1 ";
         MySQLBroker.getInstance().executeModification(query);
-        query = "CREATE TABLE requests "
-                + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
         MySQLBroker.getInstance().executeModification(query);
-        query = "DROP TABLE requests ";
+        query = "DROP TABLE t1 ";
         MySQLBroker.getInstance().executeModification(query);
 
         MySQLBroker.getInstance().disconnect();

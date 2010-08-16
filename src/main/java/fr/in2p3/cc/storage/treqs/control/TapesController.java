@@ -52,15 +52,26 @@ import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
  */
 public class TapesController extends Controller {
     /**
+     * The singleton instance.
+     */
+    private static TapesController _instance = null;
+
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(TapesController.class);
 
     /**
-     * The singleton instance.
+     * Destroys the unique instance. This is useful only for testing purposes.
      */
-    private static TapesController _instance = null;
+    public static void destroyInstance() {
+        LOGGER.debug("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.debug("< destroyInstance");
+    }
 
     /**
      * Access the singleton instance.
@@ -83,17 +94,6 @@ public class TapesController extends Controller {
 
     private TapesController() {
         super.objectMap = new HashMap<String, Object>();
-    }
-
-    /**
-     * Destroys the unique instance. This is useful only for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.debug("> destroyInstance");
-
-        _instance = null;
-
-        LOGGER.debug("< destroyInstance");
     }
 
     public Tape add(String name, MediaType media, TapeStatus ts)

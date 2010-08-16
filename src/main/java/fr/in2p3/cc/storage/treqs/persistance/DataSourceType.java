@@ -39,25 +39,25 @@ package fr.in2p3.cc.storage.treqs.persistance;
 
 public enum DataSourceType {
     /**
+     * DB2
+     */
+    DS_DB2,
+    /**
+     * Flat file.
+     */
+    DS_FLAT_FILE,
+    /**
+     * Mock data source.
+     */
+    DS_MOCK,
+    /**
      * MySQL
      */
     DS_MYSQL,
     /**
      * Oracle
      */
-    DS_ORACLE,
-    /**
-     * DB2
-     */
-    DS_DB2,
-    /**
-     * Mock data source.
-     */
-    DS_MOCK,
-    /**
-     * Flat file.
-     */
-    DS_FLAT_FILE;
+    DS_ORACLE;
 
     public static DataSourceType parse(String value) {
         DataSourceType ret = DS_MYSQL;

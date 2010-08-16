@@ -48,9 +48,14 @@ public enum FileStatus {
      */
     FS_CREATED((byte) 10),
     /**
-     * File is registered in a queue
+     * File reading failed
      */
-    FS_SUBMITTED((byte) 11),
+    FS_FAILED((byte) 16),
+    /**
+     * File could not be processed by TReqS. There are not enough parameters to
+     * process the requests.
+     */
+    FS_INVALID((byte) 18),
     /**
      * File is submitted to HPSS for staging
      */
@@ -60,13 +65,9 @@ public enum FileStatus {
      */
     FS_STAGED((byte) 14),
     /**
-     * File reading failed
+     * File is registered in a queue
      */
-    FS_FAILED((byte) 16),
-    /**
-     * File could not be processed by TReqS TODO Where is it used?
-     */
-    FS_INVALID_REQUEST((byte) 18);
+    FS_SUBMITTED((byte) 11);
 
     private byte id;
 

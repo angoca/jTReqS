@@ -37,30 +37,33 @@ package fr.in2p3.cc.storage.treqs.control;
  *
  */
 
+import junit.framework.Assert;
+
+import org.junit.After;
 import org.junit.Test;
 
-import junit.framework.Assert;
-import fr.in2p3.cc.storage.treqs.control.UsersController;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * UsersControllerTest.cpp
- *
+ * 
  * @version 2010-03-23
  * @author gomez
  */
 public class UsersControllerTest {
+    @After
+    public void tearDown() {
+        UsersController.destroyInstance();
+    }
 
     /**
      * Tests
-     *
+     * 
      * @throws TReqSException
      */
     @Test
     public void test01addUser() throws TReqSException {
-        UsersController.destroyInstance();
-
         String username = "username";
         UsersController.getInstance().add(username);
 
@@ -76,8 +79,6 @@ public class UsersControllerTest {
 
     @Test
     public void test01create() {
-        UsersController.destroyInstance();
-
         try {
             UsersController.getInstance().create(null);
             Assert.fail();
@@ -90,8 +91,6 @@ public class UsersControllerTest {
 
     @Test
     public void test01add() {
-        UsersController.destroyInstance();
-
         try {
             UsersController.getInstance().add(null);
             Assert.fail();

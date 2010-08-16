@@ -44,7 +44,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
  * FileRequestTest.java
- *
+ * 
  * @version 2010-03-09
  * @author gomez
  */
@@ -52,7 +52,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with a negative id.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never
      */
@@ -63,7 +63,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never
      */
@@ -74,7 +74,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never
      */
@@ -85,7 +85,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never
      */
@@ -96,7 +96,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never
      */
@@ -107,7 +107,7 @@ public class FileRequestTest {
 
     /**
      * Tests the toString method.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */
@@ -131,7 +131,7 @@ public class FileRequestTest {
 
     /**
      * Tests to re-establish the name
-     *
+     * 
      * @throws InvalidParameterException
      *             Never
      */
@@ -140,13 +140,14 @@ public class FileRequestTest {
         FileRequest freq = new FileRequest(10, "filename",
                 new User("username"), (byte) 10);
 
-        try{
-        freq.setName("OtherName");
-        Assert.fail();
+        try {
+            freq.setName("OtherName");
+            Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
                 Assert.fail();
             }
-        }}
+        }
+    }
 
 }

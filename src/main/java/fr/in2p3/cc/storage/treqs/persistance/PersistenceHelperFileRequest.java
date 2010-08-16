@@ -41,8 +41,8 @@ package fr.in2p3.cc.storage.treqs.persistance;
  * TReqS. This objects is only used between MySQLBridge, and Dispatcher.
  */
 public class PersistenceHelperFileRequest {
-    private short id;
     private String fileName;
+    private short id;
     private byte numberTries;
     private String ownerName;
 

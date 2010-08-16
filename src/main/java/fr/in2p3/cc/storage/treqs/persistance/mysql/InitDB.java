@@ -8,15 +8,15 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 public class InitDB {
 
+    private static final String ALL_TABLES = "show tables";
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(InitDB.class);
-    private static final String ALL_TABLES = "show tables";
 
     public static void initDB() throws TReqSException {
         // Test the existence of the needed tables
@@ -91,7 +91,7 @@ public class InitDB {
         MySQLBroker.destroyInstance();
 
         // TODO To change this, in order to use two or one database.
-        TReqSConfig.getInstance().setValue("JOBSDB", "URL",
+        Configurator.getInstance().setValue("JOBSDB", "URL",
                 "jdbc:mysql://localhost/test");
 
         MySQLBroker.getInstance().connect();

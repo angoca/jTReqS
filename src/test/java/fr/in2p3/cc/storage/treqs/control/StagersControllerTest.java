@@ -39,7 +39,9 @@ package fr.in2p3.cc.storage.treqs.control;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -47,8 +49,10 @@ import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
+import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * StagersControllerTest.cpp
@@ -57,14 +61,22 @@ import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
  * @author gomez
  */
 public class StagersControllerTest {
-    @Before
-    public void setUp() {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
+    @BeforeClass
+    public static void oneTimeSetUp()
+            throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+    }
+
+    @After
+    public void tearDown() {
         StagersController.destroyInstance();
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        PersistenceFactory.destroyInstance();
+        Configurator.destroyInstance();
     }
 
     /**
@@ -74,8 +86,6 @@ public class StagersControllerTest {
      */
     @Test
     public void test01createTape() throws TReqSException {
-        StagersController.destroyInstance();
-
         String tapename = "tapename";
         Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
                 "media"), TapeStatus.TS_UNLOCKED));
@@ -93,10 +103,5 @@ public class StagersControllerTest {
         Assert.assertEquals("The other cleaned", 1, count);
         count = StagersController.getInstance().cleanup();
         Assert.assertEquals("Nothing cleaned", 0, count);
-    }
-
-    @Test
-    public void test01() {
-        StagersController.destroyInstance();
     }
 }

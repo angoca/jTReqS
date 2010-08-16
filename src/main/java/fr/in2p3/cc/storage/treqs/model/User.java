@@ -74,14 +74,14 @@ public class User {
      *            the user's name.
      */
     public User(String name) {
-        LOGGER.trace("> Creating user with name.");
+        LOGGER.trace("> Creating user with name as param.");
 
         this.setName(name);
         this.setUid((short) 0);
         this.setGroup("NA");
         this.setGid((short) 0);
 
-        LOGGER.trace("< Creating user with name.");
+        LOGGER.trace("< Creating user with name as param.");
     }
 
     /**
@@ -107,22 +107,15 @@ public class User {
         LOGGER.trace("< Creating user with all parameters.");
     }
 
-    /**
-     * Representation in a String.
-     */
-    public String toString() {
-        LOGGER.trace("> toString");
-
-        String ret = "";
-        ret += "User";
-        ret += "{ name: " + this.getName();
-        ret += ", uid: " + this.getUid();
-        ret += ", group: " + this.getGroup();
-        ret += ", gid: " + this.getGid();
-        ret += "}";
-
-        LOGGER.trace("< toString");
-
+    @Override
+    public boolean equals(Object obj) {
+        boolean ret = false;
+        if (obj instanceof User) {
+            User user = (User) obj;
+            if (user.getName().equals(this.getName())) {
+                ret = true;
+            }
+        }
         return ret;
     }
 
@@ -168,6 +161,15 @@ public class User {
         LOGGER.trace(">< getUid");
 
         return this.uid;
+    }
+
+    @Override
+    public int hashCode() {
+        int ret = this.name.hashCode();
+        ret += this.group.hashCode();
+        ret *= this.uid;
+        ret -= this.gid;
+        return ret;
     }
 
     /**
@@ -236,24 +238,23 @@ public class User {
         LOGGER.trace("< setUid");
     }
 
+    /**
+     * Representation in a String.
+     */
     @Override
-    public boolean equals(Object obj) {
-        boolean ret = false;
-        if (obj instanceof User) {
-            User user = (User) obj;
-            if (user.getName().equals(this.getName())) {
-                ret = true;
-            }
-        }
-        return ret;
-    }
+    public String toString() {
+        LOGGER.trace("> toString");
 
-    @Override
-    public int hashCode() {
-        int ret = this.name.hashCode();
-        ret += this.group.hashCode();
-        ret *= this.uid;
-        ret -= this.gid;
+        String ret = "";
+        ret += "User";
+        ret += "{ name: " + this.getName();
+        ret += ", uid: " + this.getUid();
+        ret += ", group: " + this.getGroup();
+        ret += ", gid: " + this.getGid();
+        ret += "}";
+
+        LOGGER.trace("< toString");
+
         return ret;
     }
 }

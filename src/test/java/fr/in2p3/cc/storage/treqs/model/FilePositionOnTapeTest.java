@@ -42,20 +42,15 @@ import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.NullParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * FilePositionOnTapeTest.cpp
@@ -75,14 +70,9 @@ public class FilePositionOnTapeTest {
     private Tape tape = new Tape(tapeName, new MediaType((byte) 1, "media"),
             TapeStatus.TS_UNLOCKED);
 
-    @Before
-    public void setUp() {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
+    @After
+    public void tearDown() {
+        Configurator.destroyInstance();
     }
 
     /**
@@ -257,8 +247,7 @@ public class FilePositionOnTapeTest {
     @Test
     public void test05Constructor() throws ConfigNotFoundException,
             ProblematicConfiguationFileException {
-        TReqSConfig.getInstance().getValue("MAIN", "MAX_METADATA_AGE");
-        TReqSConfig.getInstance().deleteValue("MAIN", "MAX_METADATA_AGE");
+        Configurator.getInstance().deleteValue("MAIN", "MAX_METADATA_AGE");
 
         int position = 100;
         Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
@@ -276,7 +265,7 @@ public class FilePositionOnTapeTest {
     @Test
     public void test01MetadataNotOutdated()
             throws ProblematicConfiguationFileException {
-        TReqSConfig.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "100");
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "100");
 
         FilePositionOnTape fpot = new FilePositionOnTape(file,
                 new GregorianCalendar(), 100, tape);
@@ -297,7 +286,7 @@ public class FilePositionOnTapeTest {
     @Test
     public void test02MetadataOutdated() throws InterruptedException,
             ProblematicConfiguationFileException {
-        TReqSConfig.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
 
         FilePositionOnTape fpot = new FilePositionOnTape(file,
                 new GregorianCalendar(), 100, tape);

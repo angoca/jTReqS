@@ -50,14 +50,14 @@ public class MediaType {
             .getLogger(MediaType.class);
 
     /**
-     * Name of the media type.
-     */
-    private String name;
-
-    /**
      * Id of the media type.
      */
     private byte id;
+
+    /**
+     * Name of the media type.
+     */
+    private String name;
 
     /**
      * Constructor that relates the name of the media type.
@@ -73,6 +73,41 @@ public class MediaType {
         this.setName(name);
 
         LOGGER.trace("< Creating media type");
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean ret = false;
+        if (obj instanceof MediaType) {
+            MediaType media = (MediaType) obj;
+            if (media.getId() == this.getId()
+                    && media.getName().equals(this.getName())) {
+                ret = true;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Getter of the id.
+     * 
+     * @return
+     */
+    public byte getId() {
+        LOGGER.trace(">< getId");
+
+        return this.id;
+    }
+
+    /**
+     * Getter of the name.
+     * 
+     * @return
+     */
+    public String getName() {
+        LOGGER.trace(">< getName");
+
+        return this.name;
     }
 
     private void setId(byte id) {
@@ -96,41 +131,6 @@ public class MediaType {
         this.name = name;
 
         LOGGER.trace("< setName");
-    }
-
-    /**
-     * Getter of the name.
-     * 
-     * @return
-     */
-    public String getName() {
-        LOGGER.trace(">< getName");
-
-        return this.name;
-    }
-
-    /**
-     * Getter of the id.
-     * 
-     * @return
-     */
-    public byte getId() {
-        LOGGER.trace(">< getId");
-
-        return this.id;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        boolean ret = false;
-        if (obj instanceof MediaType) {
-            MediaType media = (MediaType) obj;
-            if (media.getId() == this.getId()
-                    && media.getName().equals(this.getName())) {
-                ret = true;
-            }
-        }
-        return ret;
     }
 
     @Override

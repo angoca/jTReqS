@@ -42,6 +42,8 @@ import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +52,10 @@ import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.MaximalSuspensionTriesException;
+import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
 
 /**
  * QueueUnitTest.cpp
@@ -67,8 +70,24 @@ public class QueueUnitTest {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(QueueUnitTest.class);
 
+    @BeforeClass
+    public static void oneTimeSetUp()
+            throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "READING_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        Configurator.destroyInstance();
+    }
+
     /**
-     * Tests the contructor with a null tape.
+     * Tests the constructor with a null tape.
      * 
      * @throws TReqSException
      *             Never.
@@ -93,14 +112,15 @@ public class QueueUnitTest {
      */
     @Test
     public void test02Constructor() throws TReqSException {
-        TReqSConfig.getInstance().setValue("MAIN", "MAX_SUSPEND_RETRIES", "5");
-        TReqSConfig.getInstance().setValue("MAIN", "SUSPEND_DURATION", "4");
+        Configurator.getInstance().setValue("MAIN", "MAX_SUSPEND_RETRIES", "5");
+        Configurator.getInstance().setValue("MAIN", "SUSPEND_DURATION", "4");
 
         new Queue(new Tape("tapename", new MediaType((byte) 1, "media"),
                 TapeStatus.TS_UNLOCKED));
 
-        TReqSConfig.getInstance().deleteValue("MAIN", "MAX_SUSPEND_RETRIES");
-        TReqSConfig.getInstance().deleteValue("MAIN", "SUSPEND_DURATION");
+        // This could change the default configuration.
+        Configurator.getInstance().deleteValue("MAIN", "MAX_SUSPEND_RETRIES");
+        Configurator.getInstance().deleteValue("MAIN", "SUSPEND_DURATION");
     }
 
     /**
@@ -588,7 +608,7 @@ public class QueueUnitTest {
                 "media"), TapeStatus.TS_UNLOCKED));
         short max = Queue.MAX_SUSPEND_RETRIES;
         try {
-            max = Short.parseShort(TReqSConfig.getInstance().getValue("MAIN",
+            max = Short.parseShort(Configurator.getInstance().getValue("MAIN",
                     "MAX_SUSPEND_RETRIES"));
         } catch (ConfigNotFoundException e) {
         }
@@ -1257,7 +1277,8 @@ public class QueueUnitTest {
         String tapename = "tapename";
         MediaType mediaType = new MediaType((byte) 1, "mediaType");
         String username = "user";
-
+        // TODO se esta conectando a la base de datos? NO, PERO copiarlos a los
+        // tests de integracion
         RequestsDAO.deleteRow(filename1);
         RequestsDAO.deleteRow(filename2);
         RequestsDAO.insertRow(filename1);

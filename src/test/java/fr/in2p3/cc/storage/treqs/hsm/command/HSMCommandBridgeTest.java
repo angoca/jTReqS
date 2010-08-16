@@ -37,6 +37,7 @@ package fr.in2p3.cc.storage.treqs.hsm.command;
  *
  */
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -51,6 +52,10 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
  */
 
 public class HSMCommandBridgeTest {
+    @After
+    public void tearDown() {
+        HSMCommandBridge.destroyInstance();
+    }
 
     /**
      * Tests

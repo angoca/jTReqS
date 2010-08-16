@@ -44,13 +44,13 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  */
 public class HSMStageException extends HSMException {
 
-    public HSMStageException(short hsmErrorcode) {
-        super(hsmErrorcode);
-    }
-
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = 635125729313261510L;
+
+    public HSMStageException(short hsmErrorcode) {
+        super(hsmErrorcode);
+    }
 
 };

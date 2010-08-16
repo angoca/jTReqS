@@ -36,6 +36,7 @@ package fr.in2p3.cc.storage.treqs.control.starter;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
@@ -46,15 +47,14 @@ import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
-import fr.in2p3.cc.storage.treqs.model.dao.DAOFactory;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.model.dao.DAO;
+import fr.in2p3.cc.storage.treqs.model.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.InitDB;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 public class Starter {
 
@@ -65,28 +65,31 @@ public class Starter {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
-    private static boolean cont = true;
-    private static long timeBetweenCheck = 1000;
-    private static Options options;
+    private boolean cont = true;
+    private Options options;
+    private long timeBetweenCheck = 1000;
 
     @SuppressWarnings("static-access")
-    private static CommandLine prepareCommandOptions(String[] arguments)
+    private CommandLine prepareCommandOptions(String[] arguments)
             throws ParseException {
+        LOGGER.trace("> prepareCommandOptions");
+
         options = new Options();
         options.addOption("h", "help", false, "print this message");
         options.addOption("c", "config", false, "treqs configuration file");
         options.addOption(OptionBuilder.withDescription("r").withLongOpt(
                 "reqfile").hasArg().withArgName("REQUESTS_FILE").create());
         CommandLineParser parser = new PosixParser();
-        return parser.parse(options, arguments);
+
+        CommandLine cli = parser.parse(options, arguments);
+
+        LOGGER.trace("< prepareCommandOptions");
+
+        return cli;
     }
 
-    private static void showHelp() {
-        HelpFormatter help = new HelpFormatter();
-        help.printHelp("treqs", options);
-    }
-
-    public static void process(String[] arguments) throws Exception {
+    public void process(String[] arguments) throws Exception {
+        LOGGER.trace("> process");
 
         LOGGER.info("Starting Treqs Server");
 
@@ -102,8 +105,8 @@ public class Starter {
             String configurationFile = cmd.getOptionValue("config");
             if (configurationFile != null) {
                 try {
-                    TReqSConfig.getInstance()
-                            .setConfFilename(configurationFile);
+                    Configurator.getInstance().setConfFilename(
+                            configurationFile);
                 } catch (ProblematicConfiguationFileException e) {
                     LOGGER.error("No configuration file found.");
                 }
@@ -111,87 +114,85 @@ public class Starter {
 
             InitDB.initDB();
 
-            start();
+            this.toStart();
         }
+
+        LOGGER.trace("< process");
     }
 
-    private static void start() throws TReqSException, InterruptedException {
-        DAOFactory.getQueueDAO().abortPendingQueues();
-        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+    private void showHelp() {
+        LOGGER.trace("> showHelp");
 
-        startDispatcher();
+        HelpFormatter help = new HelpFormatter();
+        help.printHelp("treqs", options);
 
-        Thread.sleep(3000);
-
-        startActivator();
-
-        while (cont) {
-            Thread.sleep(timeBetweenCheck);
-        }
+        LOGGER.trace("< showHelp");
     }
 
     /**
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     * @throws TReqSException
      */
-    private static void startActivator() throws NumberFormatException,
-            ProblematicConfiguationFileException {
-        byte interval = (byte) 2;
-        short suspendTime = 600;
-        try {
-            interval = Byte.parseByte(TReqSConfig.getInstance().getValue(
-                    "MAIN", "ACTIVATOR_INTERVAL"));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAIN.ACTIVATOR_INTERVAL, arbitrary default value set to "
-                            + interval + " seconds");
-        }
-        try {
-            suspendTime = Short.parseShort(TReqSConfig.getInstance().getValue(
-                    "MAIN", "QUEUE_SUSPEND_TIME"));
-            QueuesController.getInstance().updateSuspendTime(suspendTime);
-        } catch (fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAIN.QUEUE_SUSPEND_TIME, configuration will not be updated");
-        }
-
-        Activator.getInstance().setSecondsBetweenLoops(interval);
-        QueuesController.getInstance().updateSuspendTime(suspendTime);
+    private void startActivator() throws TReqSException {
+        LOGGER.trace("> startActivator");
 
         LOGGER.debug("Starting an Activator instance");
         Activator.getInstance().start();
+
+        LOGGER.trace("< startActivator");
     }
 
     /**
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     * @throws TReqSException
      */
-    private static void startDispatcher() throws NumberFormatException,
-            ProblematicConfiguationFileException {
-        byte interval = 2;
-        short maxRequests = 400;
-
-        try {
-            interval = Byte.parseByte(TReqSConfig.getInstance().getValue(
-                    "MAIN", "DISPATCHER_INTERVAL"));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAIN.DISPATCHER_INTERVAL, arbitrary default value set to "
-                            + interval + " seconds");
-        }
-        try {
-            maxRequests = Short.parseShort(TReqSConfig.getInstance().getValue(
-                    "MAIN", "DISPATCHER_FETCH_MAX"));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAIN.DISPATCHER_FETCH_MAX, arbitrary default value set to "
-                            + maxRequests);
-        }
-
-        Dispatcher.getInstance().setSecondsBetweenLoops(interval);
-        Dispatcher.getInstance().setMaxRequests(maxRequests);
+    private void startDispatcher() throws TReqSException {
+        LOGGER.trace("> startDispatcher");
 
         LOGGER.info("Starting a Dispatcher instance");
         Dispatcher.getInstance().start();
+
+        LOGGER.trace("< startDispatcher");
+    }
+
+    void toStart() throws TReqSException {
+        LOGGER.trace("> start");
+
+        DAO.getQueueDAO().abortPendingQueues();
+        DAO.getReadingDAO().updateUnfinishedRequests();
+        DAO.getConfigurationDAO().getMediaAllocations();
+
+        // Creates the Dispatcher
+        Dispatcher.getInstance();
+        // Creates and retrieve the activation time of the activator.
+        // This time is half of the default activation time.
+        long sleep = Activator.getInstance().getSecondsBetweenLoops() * 1000 / 2;
+
+        startDispatcher();
+
+        LOGGER.info("Waiting {} milliseconds", sleep);
+        try {
+            Thread.sleep(sleep);
+
+            startActivator();
+
+            while (cont) {
+                Thread.sleep(timeBetweenCheck);
+            }
+        } catch (InterruptedException e) {
+            throw new ExecutionErrorException(e);
+        }
+
+        LOGGER.trace("< start");
+    }
+
+    void toStop() throws TReqSException {
+        LOGGER.trace("> stop");
+
+        this.cont = false;
+
+        Activator.getInstance().toStop();
+
+        Dispatcher.getInstance().toStop();
+
+        LOGGER.trace("< stop");
     }
 }

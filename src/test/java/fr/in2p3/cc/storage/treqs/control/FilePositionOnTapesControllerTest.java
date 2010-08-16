@@ -40,7 +40,7 @@ import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.model.File;
@@ -50,20 +50,14 @@ import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
 
 /**
  * FilePositionOnTapesController.cpp Created on: 2010-03-23 Author: gomez
  */
 public class FilePositionOnTapesControllerTest {
-    @Before
-    public void setUp() {
-        FilesController.destroyInstance();
+    @After
+    public void tearDown() {
         FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
     }
 
     /**

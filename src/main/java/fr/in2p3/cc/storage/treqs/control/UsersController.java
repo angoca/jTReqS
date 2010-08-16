@@ -50,15 +50,26 @@ import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
  */
 public class UsersController extends Controller {
     /**
+     * Pointer to the singleton instance.
+     */
+    private static UsersController _instance = null;
+
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(UsersController.class);
 
     /**
-     * Pointer to the singleton instance.
+     * Destroys the unique instance. This is useful only for testing purposes.
      */
-    private static UsersController _instance = null;
+    static void destroyInstance() {
+        LOGGER.debug("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.debug("< destroyInstance");
+    }
 
     /**
      * To get an instance to this singleton.
@@ -81,17 +92,6 @@ public class UsersController extends Controller {
 
     private UsersController() {
         super.objectMap = new HashMap<String, Object>();
-    }
-
-    /**
-     * Destroys the unique instance. This is useful only for testing purposes.
-     */
-    static void destroyInstance() {
-        LOGGER.debug("> destroyInstance");
-
-        _instance = null;
-
-        LOGGER.debug("< destroyInstance");
     }
 
     /**

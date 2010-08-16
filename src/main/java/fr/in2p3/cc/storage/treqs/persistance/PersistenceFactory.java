@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Persistence factory. This is the implementation of the Factory method for the
@@ -60,12 +60,12 @@ import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
  */
 public class PersistenceFactory {
 
+    private static PersistenceFactory _instance = null;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(PersistenceFactory.class);
-    private static PersistenceFactory _instance = null;
 
     /**
      * Singleton access
@@ -85,6 +85,14 @@ public class PersistenceFactory {
         return _instance;
     }
 
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
+
     private ConfigurationDAO configurationDAO = null;
     private QueueDAO queueDAO = null;
     private ReadingDAO readingDAO = null;
@@ -92,12 +100,12 @@ public class PersistenceFactory {
     private PersistenceFactory() throws PersistanceFactoryException {
 
         try {
-            String dao = TReqSConfig.getInstance().getValue("MAIN",
+            String dao = Configurator.getInstance().getValue("MAIN",
                     "CONFIGURATION_DAO");
             this.configurationDAO = (ConfigurationDAO) getDataSourceAccess(dao);
-            dao = TReqSConfig.getInstance().getValue("MAIN", "QUEUE_DAO");
+            dao = Configurator.getInstance().getValue("MAIN", "QUEUE_DAO");
             this.queueDAO = (QueueDAO) getDataSourceAccess(dao);
-            dao = TReqSConfig.getInstance().getValue("MAIN", "READING_DAO");
+            dao = Configurator.getInstance().getValue("MAIN", "READING_DAO");
             this.readingDAO = (ReadingDAO) getDataSourceAccess(dao);
         } catch (ConfigNotFoundException e) {
             LOGGER.info("No setting for CONFIGURATION_DAO");
@@ -109,14 +117,6 @@ public class PersistenceFactory {
 
     public ConfigurationDAO getConfigurationDAO() {
         return this.configurationDAO;
-    }
-
-    public QueueDAO getQueueDAO() {
-        return this.queueDAO;
-    }
-
-    public ReadingDAO getReadingDAO() {
-        return this.readingDAO;
     }
 
     /**
@@ -167,5 +167,13 @@ public class PersistenceFactory {
 
         LOGGER.trace("< getDataSourceAccess");
         return dsaccess;
+    }
+
+    public QueueDAO getQueueDAO() {
+        return this.queueDAO;
+    }
+
+    public ReadingDAO getReadingDAO() {
+        return this.readingDAO;
     }
 }

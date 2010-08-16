@@ -45,24 +45,24 @@ public abstract class HSMException extends TReqSException {
      */
     private static final long serialVersionUID = 7426851287153707330L;
 
-    HSMException(short hsmErrorcode) {
+    private short hsmErrorcode;
+
+    public HSMException() {
         super();
-        this.hsmErrorcode = hsmErrorcode;
     }
 
     public HSMException(Exception exception) {
         super(exception);
     }
 
-    public HSMException() {
+    HSMException(short hsmErrorcode) {
         super();
+        this.hsmErrorcode = hsmErrorcode;
     }
 
     public HSMException(String message) {
         super(message);
     }
-
-    private short hsmErrorcode;
 
     public short getHSMErrorCode() {
         return this.hsmErrorcode;

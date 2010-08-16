@@ -69,13 +69,13 @@ public class Resource {
      */
     private byte totalAllocation;
     /**
-     * Allocated resource for a user, as a fraction of TotalAllocation
-     */
-    private Map<User, Float> userAllocation;
-    /**
      * Resources currently used for a user.
      */
     private Map<User, Byte> usedResources;
+    /**
+     * Allocated resource for a user, as a fraction of TotalAllocation
+     */
+    private Map<User, Float> userAllocation;
 
     /**
      * Constructs a resource with the necessary parameters.
@@ -101,25 +101,24 @@ public class Resource {
     }
 
     /**
-     * Representation in a String.
+     * Returns the count of resources available.
+     * 
+     * @return
      */
-    public String toString() {
-        LOGGER.trace("> toString");
+    public byte countFreeResources() {
+        LOGGER.trace("> countFreeResources");
 
-        String ret = "";
-        ret += "User";
-        ret += "{ age : " + this.getAge();
-        ret += ", media type : " + this.getMediaType().getName();
-        ret += ", timestamp : " + this.getTimestamp().getTimeInMillis();
-        ret += ", total allocation : " + this.getTotalAllocation();
-        ret += ", used resources : " + this.getUsedResources();
-        ret += ", used allocation : " + this.getUserAllocation();
-        ret += ",  ";
-        ret += "}";
+        byte resource_left = this.totalAllocation;
 
-        LOGGER.trace("< toString");
+        Set<User> keySet = this.usedResources.keySet();
+        for (Iterator<User> iterator = keySet.iterator(); iterator.hasNext();) {
+            User key = iterator.next();
+            resource_left -= this.usedResources.get(key);
+        }
 
-        return ret;
+        LOGGER.trace("< countFreeResources");
+
+        return resource_left;
     }
 
     /**
@@ -173,6 +172,18 @@ public class Resource {
     }
 
     /**
+     * Returns the resource usage for a given user.
+     * 
+     * @param user
+     *            the user name
+     * @return the number of used resources
+     */
+    Map<User, Byte> getUsedResources() {
+        LOGGER.trace(">< getUsedResources");
+        return this.usedResources;
+    }
+
+    /**
      * Returns a pointer to the map of used resources.
      * 
      * @param u
@@ -196,6 +207,17 @@ public class Resource {
     }
 
     /**
+     * Returns a pointer to the map of user allocations.
+     * 
+     * @return a pointer to the map of user allocations
+     */
+    Map<User, Float> getUserAllocation() {
+        LOGGER.trace(">< getUserAllocation");
+
+        return this.userAllocation;
+    }
+
+    /**
      * Returns the allocation for a given user.
      * 
      * @param user
@@ -209,7 +231,7 @@ public class Resource {
 
         float ret = 0;
         if (!this.userAllocation.containsKey(user)) {
-            ret = -1;
+            ret = 0;
         } else {
             ret = this.userAllocation.get(user);
         }
@@ -220,26 +242,53 @@ public class Resource {
     }
 
     /**
-     * Returns a pointer to the map of user allocations.
+     * Increment the used resources for a given user. If the user reference
+     * doesn't exist, create it.
      * 
-     * @return a pointer to the map of user allocations
+     * @param u
+     *            the reference to the user.
+     * @return
      */
-    Map<User, Float> getUserAllocation() {
-        LOGGER.trace(">< getUserAllocation");
+    public byte increaseUsedResources(User user) {
+        LOGGER.trace("> incUsedResources");
 
-        return this.userAllocation;
+        assert user != null;
+
+        if (this.usedResources.containsKey(user)) {
+            usedResources.put(user, (byte) (usedResources.get(user) + 1));
+        } else {
+            usedResources.put(user, (byte) 1);
+        }
+
+        LOGGER.trace("< incUsedResources");
+
+        return usedResources.get(user);
     }
 
     /**
-     * Returns the resource usage for a given user.
-     * 
-     * @param user
-     *            the user name
-     * @return the number of used resources
+     * Sets timestamp to now.
      */
-    Map<User, Byte> getUsedResources() {
-        LOGGER.trace(">< getUsedResources");
-        return this.usedResources;
+    void resetTimestamp() {
+        LOGGER.trace("> resetTimestamp");
+
+        this.timestamp = new GregorianCalendar();
+
+        LOGGER.trace("< resetTimestamp");
+    }
+
+    /**
+     * Sets all used resources to 0.
+     */
+    public void resetUsedResources() {
+        LOGGER.trace("> resetUsedResources");
+
+        Set<User> keySet = this.usedResources.keySet();
+        for (Iterator<User> iterator = keySet.iterator(); iterator.hasNext();) {
+            User key = iterator.next();
+            this.usedResources.put(key, (byte) 0);
+        }
+
+        LOGGER.trace("< resetUsedResources");
     }
 
     public void setMediaType(MediaType media) {
@@ -286,23 +335,6 @@ public class Resource {
      * Setter for member.
      * 
      * @param user
-     * @param allocation
-     */
-    public void setUserAllocation(User user, float allocation) {
-        LOGGER.trace("> setUserAllocation");
-
-        assert user != null;
-        assert allocation > 0;
-
-        this.userAllocation.put(user, allocation);
-
-        LOGGER.trace("< setUserAllocation");
-    }
-
-    /**
-     * Setter for member.
-     * 
-     * @param user
      * @param resource
      */
     void setUsedResources(User user, Byte resource) {
@@ -317,74 +349,43 @@ public class Resource {
     }
 
     /**
-     * Returns the count of resources available.
+     * Setter for member.
      * 
-     * @return
+     * @param user
+     * @param allocation
      */
-    public byte countFreeResources() {
-        LOGGER.trace("> countFreeResources");
-
-        byte resource_left = this.totalAllocation;
-
-        Set<User> keySet = this.usedResources.keySet();
-        for (Iterator<User> iterator = keySet.iterator(); iterator.hasNext();) {
-            User key = (User) iterator.next();
-            resource_left -= this.usedResources.get(key);
-        }
-
-        LOGGER.trace("< countFreeResources");
-
-        return resource_left;
-    }
-
-    /**
-     * Increment the used resources for a given user. If the user reference
-     * doesn't exist, create it.
-     * 
-     * @param u
-     *            the reference to the user.
-     * @return
-     */
-    public byte increaseUsedResources(User user) {
-        LOGGER.trace("> incUsedResources");
+    public void setUserAllocation(User user, float allocation) {
+        LOGGER.trace("> setUserAllocation");
 
         assert user != null;
+        assert allocation > 0;
 
-        if (this.usedResources.containsKey(user)) {
-            usedResources.put(user, (byte) (usedResources.get(user) + 1));
-        } else {
-            usedResources.put(user, (byte) 1);
-        }
+        this.userAllocation.put(user, allocation);
 
-        LOGGER.trace("< incUsedResources");
-
-        return usedResources.get(user);
+        LOGGER.trace("< setUserAllocation");
     }
 
     /**
-     * Sets timestamp to now.
+     * Representation in a String.
      */
-    void resetTimestamp() {
-        LOGGER.trace("> resetTimestamp");
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
 
-        this.timestamp = new GregorianCalendar();
+        String ret = "";
+        ret += "User";
+        ret += "{ age : " + this.getAge();
+        ret += ", media type : " + this.getMediaType().getName();
+        ret += ", timestamp : " + this.getTimestamp().getTimeInMillis();
+        ret += ", total allocation : " + this.getTotalAllocation();
+        ret += ", used resources : " + this.getUsedResources();
+        ret += ", used allocation : " + this.getUserAllocation();
+        ret += ",  ";
+        ret += "}";
 
-        LOGGER.trace("< resetTimestamp");
-    }
+        LOGGER.trace("< toString");
 
-    /**
-     * Sets all used resources to 0.
-     */
-    public void resetUsedResources() {
-        LOGGER.trace("> resetUsedResources");
-
-        Set<User> keySet = this.usedResources.keySet();
-        for (Iterator<User> iterator = keySet.iterator(); iterator.hasNext();) {
-            User key = (User) iterator.next();
-            this.usedResources.put(key, (byte) 0);
-        }
-
-        LOGGER.trace("< resetUsedResources");
+        return ret;
     }
 
 }

@@ -53,14 +53,25 @@ import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
 public class MockQueueDAO implements QueueDAO {
 
     /**
+     * Singleton initialization
+     */
+    private static MockQueueDAO _instance = null;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockQueueDAO.class);
+
     /**
-     * Singleton initialization
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    private static MockQueueDAO _instance = null;
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     /**
      * @return
@@ -71,6 +82,10 @@ public class MockQueueDAO implements QueueDAO {
             _instance = new MockQueueDAO();
         }
         return _instance;
+    }
+
+    public int abortPendingQueues() throws PersistanceException {
+        return 0;
     }
 
     @Override
@@ -88,10 +103,6 @@ public class MockQueueDAO implements QueueDAO {
     public void updateState(Calendar time, QueueStatus status, int size,
             short nbDone, short nbFailed, String ownerName, long byteSize,
             int id) {
-    }
-
-    public int abortPendingQueues() throws PersistanceException {
-        return 0;
     }
 
 }

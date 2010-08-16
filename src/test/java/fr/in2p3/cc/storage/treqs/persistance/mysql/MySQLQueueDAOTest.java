@@ -42,16 +42,10 @@ import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Tape;
@@ -59,24 +53,13 @@ import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLQueueDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
 
 public class MySQLQueueDAOTest {
 
-    @Before
-    public void setUp() throws TReqSException {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
-        MySQLBroker.getInstance().connect();
-        String query = "delete from queues";
-        MySQLBroker.getInstance().executeModification(query);
-        MySQLBroker.getInstance().disconnect();
+    @AfterClass
+    public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
-        MediaTypesController.destroyInstance();
+        MySQLQueueDAO.destroyInstance();
     }
 
     /**
@@ -157,6 +140,7 @@ public class MySQLQueueDAOTest {
                 failed = true;
             }
         }
+        MySQLBroker.getInstance().disconnect();
         if (failed) {
             Assert.fail();
         }
@@ -448,7 +432,6 @@ public class MySQLQueueDAOTest {
             long actualByteSize = result.getLong(3);
 
             MySQLBroker.getInstance().terminateExecution(objects);
-
             MySQLBroker.getInstance().disconnect();
 
             Assert.assertEquals(jobsSize, actualJobsSize);

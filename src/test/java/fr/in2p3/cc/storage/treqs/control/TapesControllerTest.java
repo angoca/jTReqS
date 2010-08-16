@@ -39,6 +39,7 @@ package fr.in2p3.cc.storage.treqs.control;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -54,6 +55,10 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  */
 
 public class TapesControllerTest {
+    @After
+    public void tearDown() {
+        TapesController.destroyInstance();
+    }
 
     /**
      * Tests

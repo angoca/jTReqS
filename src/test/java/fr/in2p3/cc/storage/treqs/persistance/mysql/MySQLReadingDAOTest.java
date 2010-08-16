@@ -44,17 +44,12 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.FileStatus;
@@ -68,28 +63,29 @@ import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistenceHelperFileRequest;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLReadingDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 public class MySQLReadingDAOTest {
     @BeforeClass
     public static void oneTimeSetUp() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM requests";
-        MySQLBroker.getInstance().executeModification(query);
-        MySQLBroker.getInstance().disconnect();
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
     }
 
-    @Before
-    public void setUp() throws TReqSException {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
-        QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
+    @After
+    public void tearDown() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        RequestsDAO.deleteAll();
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
-        MediaTypesController.destroyInstance();
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        Configurator.destroyInstance();
+        MySQLBroker.destroyInstance();
+        MySQLReadingDAO.destroyInstance();
     }
 
     @Test
@@ -450,6 +446,11 @@ public class MySQLReadingDAOTest {
         }
     }
 
+    /**
+     * Tests a null message.
+     * 
+     * @throws TReqSException
+     */
     @Test
     public void testUpdate05() throws TReqSException {
         User owner = new User("username");
@@ -483,6 +484,11 @@ public class MySQLReadingDAOTest {
         }
     }
 
+    /**
+     * Tests to insert an empty message. This is valid.
+     * 
+     * @throws TReqSException
+     */
     @Test
     public void testUpdate06() throws TReqSException {
         User owner = new User("username");
@@ -501,19 +507,10 @@ public class MySQLReadingDAOTest {
         short errorCode = 2;
         Queue queue = new Queue(tape);
 
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
+        MySQLBroker.getInstance().connect();
+        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
+                errorMessage, errorCode, queue);
+        MySQLBroker.getInstance().disconnect();
     }
 
     @Test
@@ -811,7 +808,6 @@ public class MySQLReadingDAOTest {
             int expectedState = FileStatus.FS_CREATED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
-
             MySQLBroker.getInstance().disconnect();
 
             Assert.assertEquals(expectedState, actualState);
@@ -847,7 +843,6 @@ public class MySQLReadingDAOTest {
             int expectedState = FileStatus.FS_CREATED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
-
             MySQLBroker.getInstance().disconnect();
 
             Assert.assertEquals(expectedState, actualState);
@@ -1211,7 +1206,6 @@ public class MySQLReadingDAOTest {
             String expectedMessage = message;
 
             MySQLBroker.getInstance().terminateExecution(objects);
-
             MySQLBroker.getInstance().disconnect();
 
             Assert.assertEquals(expectedState, actualState);
@@ -1420,7 +1414,6 @@ public class MySQLReadingDAOTest {
             String expectedMessage = message;
 
             MySQLBroker.getInstance().terminateExecution(objects);
-
             MySQLBroker.getInstance().disconnect();
 
             Assert.assertEquals(expectedState, actualState);

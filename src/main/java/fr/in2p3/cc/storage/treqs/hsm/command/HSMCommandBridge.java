@@ -56,17 +56,28 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
  * use the HPSS api directly in order to read the file properties or stage.
  */
 public class HSMCommandBridge extends AbstractHSMBridge {
-    private static final String HSM_STAGE_COMMAND = "sh hsmStageFile.sh";
+    /**
+     * Instance of the singleton
+     */
+    private static HSMCommandBridge _instance = null;
     private static final String HSM_GET_PROPERTIES_COMMAND = "sh hsmGetProperties.sh";
+    private static final String HSM_STAGE_COMMAND = "sh hsmStageFile.sh";
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HSMCommandBridge.class);
+
     /**
-     * Instance of the singleton
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    private static HSMCommandBridge _instance = null;
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     /**
      * Retrieves the unique instance.
@@ -93,6 +104,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String, long, int, java.lang.String, int)
      */
+    @Override
     public HSMHelperFileProperties getFileProperties(String name)
             throws HSMException {
         LOGGER.trace("> getFileProperties");
@@ -156,6 +168,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
      * long)
      */
+    @Override
     public void stage(String name, long size) throws HSMException {
         LOGGER.trace("> stage");
 

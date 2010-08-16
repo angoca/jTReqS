@@ -43,6 +43,7 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,7 +62,8 @@ import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * QueuesControllerTest.cpp
@@ -78,24 +80,30 @@ public class QueuesControllerTest {
             .getLogger(QueuesControllerTest.class);
 
     @Before
-    public void setUp() {
-        FilesController.destroyInstance();
-        FilePositionOnTapesController.destroyInstance();
+    public void setUp() throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "READING_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+    }
+
+    @After
+    public void tearDown() {
         QueuesController.destroyInstance();
-        TapesController.destroyInstance();
-        TReqSConfig.destroyInstance();
-        StagersController.destroyInstance();
+        Configurator.destroyInstance();
+        PersistenceFactory.destroyInstance();
     }
 
     @Test
     public void test01Constructor() throws ProblematicConfiguationFileException {
-        QueuesController.destroyInstance();
 
-        TReqSConfig.getInstance().deleteValue("MAIN", "SUSPEND_DURATION");
+        Configurator.getInstance().deleteValue("MAIN", "SUSPEND_DURATION");
 
         QueuesController.getInstance();
 
-        TReqSConfig.destroyInstance();
+        Configurator.destroyInstance();
     }
 
     /**
@@ -106,7 +114,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test02create() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "2tapename";
         QueuesController.getInstance().create(
@@ -126,7 +133,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test03createExisting() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "3tapename";
         Queue queue1 = QueuesController.getInstance().create(
@@ -148,7 +154,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test04createSame() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename1 = "clean1tapename";
         Queue queue1 = QueuesController.getInstance().create(
@@ -173,7 +178,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test01exist() throws ProblematicConfiguationFileException {
-        QueuesController.destroyInstance();
 
         String tapename = "1NotExisitingTapename";
 
@@ -189,7 +193,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test02exist() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "2existtapename";
         Queue queue1 = QueuesController.getInstance().create(
@@ -249,7 +252,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test01clean() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "cleantapename";
         Queue queue = QueuesController.getInstance().create(
@@ -268,7 +270,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test02cleanOne() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename0 = "clean0tapename";
         QueuesController.getInstance().create(
@@ -306,7 +307,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test03cleanSeveral() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename1 = "clean1tapename";
         String tapename4 = "clean4tapename";
@@ -366,7 +366,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test04cleanDifferentStatus() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename1 = "clean1tapename";
         Queue queue1 = QueuesController.getInstance().create(
@@ -411,7 +410,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test01suspendTime() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename1 = "updatename1";
         String tapename3 = "updatename3";
@@ -461,7 +459,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test01getQueues() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename1 = "getQueuetape1";
         String tapename2 = "getQueuetape2";
@@ -548,7 +545,7 @@ public class QueuesControllerTest {
      */
     @Test
     public void test02getQueuesAllStates() throws TReqSException {
-        QueuesController.destroyInstance();
+
         String tapename1 = "getQueuetape1";
 
         int qty = 0;
@@ -674,7 +671,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test02addFileActivatedQueueAfter() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "queue";
         String filename = "filename";
@@ -714,7 +710,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test03addFileActivatedQueueBefore() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "queue";
         String filename = "filename";
@@ -752,7 +747,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test04addFileAlreadyCreatedQueue() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "queue";
         String filename = "filename";
@@ -788,7 +782,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test05addFileActivated() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "activatedqueue";
         String filename = "filename";
@@ -809,7 +802,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test06addFileSuspended() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String tapename = "queue";
         String filename = "filename";
@@ -864,7 +856,6 @@ public class QueuesControllerTest {
     @Test
     public void test01CountWaiting()
             throws ProblematicConfiguationFileException {
-        QueuesController.destroyInstance();
 
         MediaType media = new MediaType((byte) 1, "media1");
         short actual = QueuesController.getInstance().countWaitingQueues(media);
@@ -874,7 +865,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test02CountWaiting() throws TReqSException {
-        QueuesController.destroyInstance();
 
         MediaType media = new MediaType((byte) 1, "media1");
         Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
@@ -886,7 +876,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test03CountWaiting() throws TReqSException {
-        QueuesController.destroyInstance();
 
         File file = new File("filename", new User("username"), 500);
         MediaType media = new MediaType((byte) 1, "media1");
@@ -902,7 +891,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test04CountWaiting() throws TReqSException {
-        QueuesController.destroyInstance();
 
         File file = new File("filename", new User("username"), 500);
         MediaType media = new MediaType((byte) 1, "media");
@@ -919,7 +907,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test05CountWaiting() throws TReqSException {
-        QueuesController.destroyInstance();
 
         MediaType media = new MediaType((byte) 1, "media");
         Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
@@ -933,7 +920,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test06CountWaiting() throws TReqSException {
-        QueuesController.destroyInstance();
 
         MediaType media1 = new MediaType((byte) 1, "media1");
         Tape tape1 = new Tape("tapename1", media1, TapeStatus.TS_UNLOCKED);
@@ -953,7 +939,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test07CountWaiting() throws TReqSException {
-        QueuesController.destroyInstance();
 
         MediaType media1 = new MediaType((byte) 1, "media1");
         Tape tape1 = new Tape("tapename1", media1, TapeStatus.TS_UNLOCKED);
@@ -979,7 +964,6 @@ public class QueuesControllerTest {
     @Test
     public void test01CountResources()
             throws ProblematicConfiguationFileException {
-        QueuesController.destroyInstance();
 
         List<Resource> resources = new ArrayList<Resource>();
         short actual = QueuesController.getInstance().countUsedResources(
@@ -991,7 +975,6 @@ public class QueuesControllerTest {
     @Test
     public void test02CountResources()
             throws ProblematicConfiguationFileException {
-        QueuesController.destroyInstance();
 
         MediaType media = new MediaType((byte) 1, "media");
         Resource resource = new Resource(media, new GregorianCalendar(),
@@ -1007,7 +990,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test03CountResources() throws TReqSException {
-        QueuesController.destroyInstance();
 
         MediaType media = new MediaType((byte) 1, "media");
         Resource resource = new Resource(media, new GregorianCalendar(),
@@ -1025,7 +1007,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test04CountResources() throws TReqSException {
-        QueuesController.destroyInstance();
 
         File file = new File("filename", new User("username1"), 300);
         MediaType media = new MediaType((byte) 1, "media");
@@ -1048,7 +1029,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test05CountResources() throws TReqSException {
-        QueuesController.destroyInstance();
 
         File file1 = new File("filename1", new User("username1"), 300);
         MediaType media1 = new MediaType((byte) 1, "media1");
@@ -1091,7 +1071,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test06CountResources() throws TReqSException {
-        QueuesController.destroyInstance();
 
         File file1 = new File("filename1", new User("username1"), 300);
         MediaType media1 = new MediaType((byte) 1, "media1");
@@ -1139,7 +1118,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test01BestUser() {
-        QueuesController.destroyInstance();
 
         MediaType media = new MediaType((byte) 1, "media1");
         Resource resource = new Resource(media, new GregorianCalendar(),
@@ -1156,7 +1134,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test02BestUser() throws TReqSException {
-        QueuesController.destroyInstance();
 
         User user = new User("username1");
         MediaType media = new MediaType((byte) 1, "media");
@@ -1176,7 +1153,6 @@ public class QueuesControllerTest {
 
     @Test
     public void test03BestUser() throws TReqSException {
-        QueuesController.destroyInstance();
 
         User user = new User("username1");
         MediaType media = new MediaType((byte) 1, "media");
@@ -1198,7 +1174,7 @@ public class QueuesControllerTest {
 
     @Test
     public void test04BestUser() throws TReqSException {
-        QueuesController.destroyInstance();
+
         MediaType media = new MediaType((byte) 1, "media");
         Resource resource = new Resource(media, new GregorianCalendar(),
                 (byte) 5);
@@ -1247,7 +1223,6 @@ public class QueuesControllerTest {
     @Test
     public void test01BestQueue() throws NumberFormatException,
             ProblematicConfiguationFileException {
-        QueuesController.destroyInstance();
 
         String username = "username";
         User user = new User(username);
@@ -1267,7 +1242,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test02BestQueue() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String username = "username";
         MediaType media = new MediaType((byte) 1, "media1");
@@ -1290,13 +1264,11 @@ public class QueuesControllerTest {
 
     /**
      * Tests that two identical queues, will be returned the first one as best.
-     * XXX Sometimes this fails, it seems that it is the order of the queues.
      * 
      * @throws TReqSException
      */
     @Test
     public void test03BestQueue() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String username = "username";
         MediaType media = new MediaType((byte) 1, "media1");
@@ -1322,6 +1294,7 @@ public class QueuesControllerTest {
                 user);
         Queue expected = queue1;
 
+        // XXX sometimes it fails., ya no debe fallar.
         Assert.assertEquals(expected, actual);
     }
 
@@ -1333,7 +1306,6 @@ public class QueuesControllerTest {
      */
     @Test
     public void test04BestQueue() throws TReqSException {
-        QueuesController.destroyInstance();
 
         String username = "username";
         MediaType media = new MediaType((byte) 1, "media1");

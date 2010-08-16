@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.OpenMySQLException;
-import fr.in2p3.cc.storage.treqs.tools.TReqSConfig;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  *
@@ -68,8 +68,7 @@ public class MySQLBroker {
             .getLogger(MySQLBroker.class);
 
     /**
-     * Destroys the only instance. ONLY for testing purposes. TODO change from
-     * public to default.
+     * Destroys the only instance. ONLY for testing purposes.
      */
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
@@ -135,11 +134,6 @@ public class MySQLBroker {
         return result;
     }
 
-    public void terminateExecution(Object[] objects) throws CloseMySQLException {
-        closeResultSet((ResultSet) objects[1]);
-        closeStatement((Statement) objects[0]);
-    }
-
     /**
      * @param stmt
      * @throws CloseMySQLException
@@ -163,10 +157,10 @@ public class MySQLBroker {
     public Connection connect() throws TReqSException {
         LOGGER.trace("> connect");
 
-        String url = TReqSConfig.getInstance().getValue("JOBSDB", "URL");
-        String driver = TReqSConfig.getInstance().getValue("JOBSDB", "DRIVER");
-        String user = TReqSConfig.getInstance().getValue("JOBSDB", "USERNAME");
-        String password = TReqSConfig.getInstance().getValue("JOBSDB",
+        String url = Configurator.getInstance().getValue("JOBSDB", "URL");
+        String driver = Configurator.getInstance().getValue("JOBSDB", "DRIVER");
+        String user = Configurator.getInstance().getValue("JOBSDB", "USERNAME");
+        String password = Configurator.getInstance().getValue("JOBSDB",
                 "PASSWORD");
         Connection ret = null;
 
@@ -277,7 +271,7 @@ public class MySQLBroker {
         PreparedStatement ret = null;
         try {
             ret = this.connection.prepareStatement(query,
-                    Statement.RETURN_GENERATED_KEYS);
+                    java.sql.Statement.RETURN_GENERATED_KEYS);
         } catch (SQLException e) {
             throw new ExecuteMySQLException(e);
         }
@@ -297,6 +291,11 @@ public class MySQLBroker {
         System.out.println("VendorError: " + ex.getErrorCode());
 
         LOGGER.trace("< handleSQLException");
+    }
+
+    public void terminateExecution(Object[] objects) throws CloseMySQLException {
+        closeResultSet((ResultSet) objects[1]);
+        closeStatement((Statement) objects[0]);
     }
 
     /**

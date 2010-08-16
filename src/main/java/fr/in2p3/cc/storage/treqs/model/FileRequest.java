@@ -98,25 +98,6 @@ public class FileRequest {
         LOGGER.trace("< Creating file requests with all parameters.");
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        LOGGER.trace("> toString");
-
-        String ret = "FileRequest";
-        ret += "{ id: " + this.getId();
-        ret += ", filename: " + this.getName();
-        ret += ", client: " + this.getClient().getName();
-        ret += ", number of tries: " + this.getNumberTries();
-        ret += "}";
-
-        LOGGER.trace("< toString");
-
-        return ret;
-    }
-
     /**
      * Getter for client member.
      * 
@@ -226,10 +207,30 @@ public class FileRequest {
     void setNumberTries(byte numberTries) {
         LOGGER.trace("> setNbTries");
 
-        assert numberTries > 0;
+        assert numberTries >= 0;
 
         this.numberTries = numberTries;
 
         LOGGER.trace("< setNbTries");
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
+
+        String ret = "FileRequest";
+        ret += "{ id: " + this.getId();
+        ret += ", filename: " + this.getName();
+        ret += ", client: " + this.getClient().getName();
+        ret += ", number of tries: " + this.getNumberTries();
+        ret += "}";
+
+        LOGGER.trace("< toString");
+
+        return ret;
     }
 }

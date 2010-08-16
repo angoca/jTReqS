@@ -39,6 +39,7 @@ package fr.in2p3.cc.storage.treqs.control;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -55,6 +56,10 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * @author gomez
  */
 public class ControllerTest {
+    @After
+    public void tearDown() {
+        TapesController.destroyInstance();
+    }
 
     /**
      * Tests to query an existing object.
@@ -64,8 +69,6 @@ public class ControllerTest {
      */
     @Test
     public void test01existYes() throws TReqSException {
-        TapesController.destroyInstance();
-
         String tapename = "tapenameYes";
         TapesController.getInstance().create(tapename,
                 new MediaType((byte) 1, "media"), TapeStatus.TS_UNLOCKED);
@@ -80,8 +83,6 @@ public class ControllerTest {
      */
     @Test
     public void test02existNo() {
-        TapesController.destroyInstance();
-
         String tapename = "tapenameNo";
 
         Tape tape = (Tape) TapesController.getInstance().exists(tapename);
@@ -91,8 +92,6 @@ public class ControllerTest {
 
     @Test
     public void test03existNull() {
-        TapesController.destroyInstance();
-
         try {
             TapesController.getInstance().exists(null);
             Assert.fail();
@@ -105,8 +104,6 @@ public class ControllerTest {
 
     @Test
     public void test01remove() throws TReqSException {
-        TapesController.destroyInstance();
-
         String tapename = "tapenameYes";
         TapesController.getInstance().create(tapename,
                 new MediaType((byte) 1, "media"), TapeStatus.TS_UNLOCKED);
@@ -116,8 +113,6 @@ public class ControllerTest {
 
     @Test
     public void test02removenull() throws TReqSException {
-        TapesController.destroyInstance();
-
         try {
             TapesController.getInstance().remove(null);
             Assert.fail();
@@ -130,8 +125,6 @@ public class ControllerTest {
 
     @Test
     public void test01add() throws TReqSException {
-        TapesController.destroyInstance();
-
         String tapename = "tapenameYes";
         TapesController.getInstance().add(
                 tapename,
@@ -152,8 +145,6 @@ public class ControllerTest {
 
     @Test
     public void test02addnull() throws TReqSException {
-        TapesController.destroyInstance();
-
         String tapename = "tapenameYes";
         try {
             TapesController.getInstance().add(
@@ -170,8 +161,6 @@ public class ControllerTest {
 
     @Test
     public void test03addnull() throws TReqSException {
-        TapesController.destroyInstance();
-
         String tapename = "tapenameYes";
         try {
             TapesController.getInstance().add(tapename, null);

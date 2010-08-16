@@ -48,13 +48,17 @@ public class ConfigException extends TReqSException {
      * Generated Id.
      */
     private static final long serialVersionUID = -8984526634793772647L;
-    private String section;
     private String key;
-    private String value;
     private String path;
+    private String section;
+    private String value;
 
     public ConfigException() {
         super();
+    }
+
+    public ConfigException(String file) {
+        super(file);
     }
 
     /**
@@ -93,24 +97,27 @@ public class ConfigException extends TReqSException {
         setPath(path);
     }
 
-    public ConfigException(String file) {
-        super(file);
+    String getKey() {
+        return key;
+    }
+
+    @Override
+    public String getMessage() {
+        return getSection() + "::" + getKey()
+                + " : Configuration item not found - " + getValue() + "-"
+                + getPath();
+    }
+
+    String getPath() {
+        return path;
     }
 
     String getSection() {
         return section;
     }
 
-    String getKey() {
-        return key;
-    }
-
     String getValue() {
         return value;
-    }
-
-    String getPath() {
-        return path;
     }
 
     void setKey(String key) {
@@ -127,12 +134,5 @@ public class ConfigException extends TReqSException {
 
     void setValue(String value) {
         this.value = value;
-    }
-
-    @Override
-    public String getMessage() {
-        return getSection() + "::" + getKey()
-                + " : Configuration item not found - " + getValue() + "-"
-                + getPath();
     }
 };

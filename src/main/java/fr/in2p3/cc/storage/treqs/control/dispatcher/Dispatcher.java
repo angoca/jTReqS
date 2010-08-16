@@ -64,18 +64,24 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.dao.DAOFactory;
+import fr.in2p3.cc.storage.treqs.model.dao.DAO;
+import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.model.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * This class scans new jobs and assign the requests to queues
  */
 public class Dispatcher extends Thread {
 
-    private static final short MILLIS = 1000;
+    /**
+     * The singleton instance.
+     */
+    private static Dispatcher _instance = null;
     /**
      * Logger.
      */
@@ -85,25 +91,28 @@ public class Dispatcher extends Thread {
      * TODO retrieve as a constant.
      */
     private static final short MAX_FILES_BEFORE_MESSAGE = 100;
-    private static final byte SECONDS_BETWEEN_LOOPS = 2;
+
+    private static final short MILLIS = 1000;
 
     /**
-     * The singleton instance.
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    private static Dispatcher _instance = null;
-    /**
-     * The number of requests to fetch per run
-     */
-    private short maxRequests;
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
 
-    private boolean toContinue;
-    private short maxFilesBeforeMessage;
-    private int millisBetweenLoops;
+        _instance.interrupt();
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
 
     /**
      * Access the singleton instance.
+     * 
+     * @throws TReqSException
      */
-    public static Dispatcher getInstance() {
+    public static Dispatcher getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (_instance == null) {
@@ -117,27 +126,95 @@ public class Dispatcher extends Thread {
         return _instance;
     }
 
-    private Dispatcher() {
+    private short maxFilesBeforeMessage;
+    /**
+     * The number of requests to fetch per run
+     */
+    private short maxRequests;
+
+    private int millisBetweenLoops;
+
+    private boolean toContinue;
+
+    private Dispatcher() throws TReqSException {
         super("Dispatcher");
 
         LOGGER.trace("> create Dispatcher");
 
+        try {
+            short maxRequests = Short.parseShort(Configurator.getInstance()
+                    .getValue("MAIN", "DISPATCHER_FETCH_MAX"));
+            this.setMaxRequests(maxRequests);
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info("No setting for MAIN.DISPATCHER_FETCH_MAX, arbitrary default value set to "
+                            + maxRequests);
+        }
+
         this.setMaxFilesBeforeMessage(MAX_FILES_BEFORE_MESSAGE); // TODO
         // retrieve from configuration.
-        this.setSecondsBetweenLoops(SECONDS_BETWEEN_LOOPS);
+
+        try {
+            byte interval = Byte.parseByte(Configurator.getInstance().getValue(
+                    "MAIN", "DISPATCHER_INTERVAL"));
+            this.setSecondsBetweenLoops(interval);
+        } catch (ConfigNotFoundException e) {
+            throw new ExecutionErrorException(e);
+        }
+
+        this.toContinue = true;
 
         LOGGER.trace("< create Dispatcher");
     }
 
     /**
-     * Destroys the only instance. ONLY for testing purposes.
+     * @throws ProblematicConfiguationFileException
+     * @throws NumberFormatException
      */
-    static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
+    private void cleaningReferences() throws NumberFormatException,
+            ProblematicConfiguationFileException {
+        LOGGER.trace("> cleaningReferences");
 
-        _instance = null;
+        // clean the finished queues
+        LOGGER.debug("Cleaning unreferenced instances");
+        int cleaned_instances = QueuesController.getInstance()
+                .cleanDoneQueues();
+        LOGGER.debug(cleaned_instances + " Queues cleaned");
+        // TODO cleaned_instances =
+        // FilePositionOnTapesController.getInstance().cleanup();
+        LOGGER.debug(cleaned_instances + " FilePositionOnTapes cleaned");
+        // TODO cleaned_instances = FilesController.getInstance().cleanup();
+        LOGGER.debug(cleaned_instances + " Files cleaned");
+        // TODO cleaned_instances = TapesController.getInstance().cleanup();
+        LOGGER.debug(cleaned_instances + " Tapes cleaned");
+        // TODO cleaned_instances = UsersController.getInstance().cleanup();
+        LOGGER.debug(cleaned_instances + " Users cleaned");
 
-        LOGGER.trace("< destroyInstance");
+        LOGGER.trace("< cleaningReferences");
+    }
+
+    /**
+     * @param key
+     * @param fileReq
+     * @throws ProblematicConfiguationFileException
+     */
+    private void fileOnDisk(String key, FileRequest fileReq)
+            throws ProblematicConfiguationFileException {
+        LOGGER.trace("> fileOnDisk");
+
+        assert key != null;
+        assert fileReq != null;
+
+        LOGGER.info("File {} is on disk, set the request as done", key);
+        try {
+            DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
+                    FileStatus.FS_STAGED, 0, "File is already on disk");
+        } catch (TReqSException e) {
+            LOGGER.error("Error {} trying to update file request status : {}",
+                    e.getCode(), e.getMessage());
+        }
+
+        LOGGER.trace("< fileOnDisk");
     }
 
     /**
@@ -150,36 +227,56 @@ public class Dispatcher extends Thread {
     }
 
     /**
-     * Setter
+     * Scans new requests via MySQLBridge Puts all new requests in the
+     * RequestsList container
+     * 
+     * @return A map of all the new requests. The key is the filename
+     * @throws TReqSException
      */
-    public void setMaxRequests(short max) {
-        LOGGER.trace("> setMaxRequests");
+    private MultiMap getNewRequests() throws TReqSException {
+        LOGGER.trace("> getNewRequests");
 
-        assert max > 0;
+        // newRequests will be returned at the end
+        MultiMap newRequests = new MultiValueMap();
+        // This is the return type of MySQLBridge.getNewJobs()
+        List<PersistenceHelperFileRequest> newJobs = null;
+        User owner;
 
-        this.maxRequests = max;
+        LOGGER.info("Looking for new jobs");
+        try {
+            newJobs = DAO.getReadingDAO().getNewJobs(this.maxRequests);
+        } catch (PersistanceException e) {
+            LOGGER.error("Exception caught: {}", e.getMessage());
+            throw e;
+        }
 
-        LOGGER.trace("< setMaxRequests");
+        if (newJobs != null && newJobs.size() > 0) {
+            // loop through the list returned by getNewJobs()
+            for (Iterator<PersistenceHelperFileRequest> iterator = newJobs
+                    .iterator(); iterator.hasNext();) {
+                PersistenceHelperFileRequest dbFileRequest = iterator.next();
+                LOGGER.info("New request [" + dbFileRequest.getId()
+                        + "] for file '" + dbFileRequest.getFileName()
+                        + "' from user: " + dbFileRequest.getOwnerName());
+                owner = UsersController.getInstance().add(
+                        dbFileRequest.getOwnerName());
+                FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
+                        dbFileRequest.getFileName(), owner, dbFileRequest
+                                .getNumberTries());
+
+                newRequests.put(dbFileRequest.getFileName(), newFileReq);
+            }
+        }
+
+        LOGGER.trace("< getNewRequests");
+
+        return newRequests;
     }
 
-    void setMaxFilesBeforeMessage(short max) {
-        LOGGER.trace("> setMaxFilesBeforeMessage");
+    public byte getSecondsBetweenLoops() {
+        LOGGER.trace(">< getSecondsBetweenLoops");
 
-        assert max > 0;
-
-        this.maxFilesBeforeMessage = max;
-
-        LOGGER.trace("< setMaxFilesBeforeMessage");
-    }
-
-    public void setSecondsBetweenLoops(byte seconds) {
-        LOGGER.trace("> setSecondsBetweenLoops");
-
-        assert seconds > 0;
-
-        this.millisBetweenLoops = seconds * MILLIS;
-
-        LOGGER.trace("< setSecondsBetweenLoops");
+        return (byte) (this.millisBetweenLoops / MILLIS);
     }
 
     /**
@@ -200,133 +297,6 @@ public class Dispatcher extends Thread {
     // }
 
     /**
-     * Scans new requests via MySQLBridge Puts all new requests in the
-     * RequestsList container
-     * 
-     * @return A map of all the new requests. The key is the filename
-     * @throws TReqSException
-     */
-    private MultiMap getNewRequests() throws TReqSException {
-        LOGGER.trace("> getNewRequests");
-
-        // newRequests will be returned at the end
-        MultiMap newRequests = new MultiValueMap();
-        // This is the return type of MySQLBridge.getNewJobs()
-        List<PersistenceHelperFileRequest> newJobs = null;
-        User owner;
-
-        LOGGER.info("Looking for new jobs");
-        try {
-            newJobs = DAOFactory.getReadingDAO().getNewJobs(this.maxRequests);
-        } catch (PersistanceException e) {
-            LOGGER.error("Exception caught: {}", e.getMessage());
-            throw e;
-        }
-
-        if (newJobs != null && newJobs.size() > 0) {
-            // loop through the list returned by getNewJobs()
-            for (Iterator<PersistenceHelperFileRequest> iterator = newJobs
-                    .iterator(); iterator.hasNext();) {
-                PersistenceHelperFileRequest dbFileRequest = (PersistenceHelperFileRequest) iterator
-                        .next();
-                LOGGER.info("New request [" + dbFileRequest.getId()
-                        + "] for file " + dbFileRequest.getFileName()
-                        + " from user " + dbFileRequest.getOwnerName());
-                owner = UsersController.getInstance().add(
-                        dbFileRequest.getOwnerName());
-                FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
-                        dbFileRequest.getFileName(), owner, dbFileRequest
-                                .getNumberTries());
-
-                newRequests.put(dbFileRequest.getFileName(), newFileReq);
-            }
-        }
-
-        LOGGER.trace("< getNewRequests");
-
-        return newRequests;
-    }
-
-    public void toStop() {
-        LOGGER.trace("> toStop");
-
-        this.toContinue = false;
-
-        LOGGER.trace("< toStop");
-    }
-
-    /**
-     * This method has a default visibility just for testing purposes.
-     * 
-     * @throws TReqSException
-     */
-    void retrieveNewRequest() throws TReqSException {
-        LOGGER.trace("> retrieveNewRequest");
-
-        // Get new requests
-        MultiMap newRequests = null;
-        newRequests = this.getNewRequests();
-        if (newRequests != null) {
-
-            // Loop through the new requests.
-            if (newRequests.size() > 0) {
-                LOGGER.info("Beginning MetaData fishing on HPSS for {} files",
-                        newRequests.size());
-            }
-            process(newRequests);
-        }
-
-        LOGGER.trace("< retrieveNewRequest");
-    }
-
-    /**
-     * Run periodically over the database to do the work. Call
-     * get_new_requests() and treat all the results
-     * 
-     * @throws TReqSException
-     */
-    public void run() {
-        LOGGER.trace("> run");
-
-        this.toContinue = true;
-
-        while (this.toContinue) {
-
-            try {
-                cleaningReferences();
-            } catch (Exception e2) {
-                LOGGER.error("PROBLEM: {}", e2.getMessage());
-                this.toContinue = false;
-            }
-
-            if (this.toContinue) {
-                try {
-                    retrieveNewRequest();
-                } catch (Exception e1) {
-                    if (e1 instanceof TReqSException) {
-                        TReqSException e = (TReqSException) e1;
-                        LOGGER.error("PROBLEM: {} - {}", e.getCode(), e
-                                .getMessage());
-                    } else {
-                        LOGGER.error("PROBLEM: {}", e1.getMessage());
-                    }
-                    this.toContinue = false;
-                }
-            }
-            if (this.toContinue) {
-                LOGGER.info("Sleeping " + this.millisBetweenLoops
-                        + " milliseconds");
-                try {
-                    Thread.sleep(this.millisBetweenLoops);
-                } catch (InterruptedException e) {
-                }
-            }
-        }
-
-        LOGGER.trace("< run");
-    }
-
-    /**
      * @param newRequests
      * @throws TReqSException
      */
@@ -337,14 +307,14 @@ public class Dispatcher extends Thread {
         assert newRequests != null;
 
         short counter = this.maxFilesBeforeMessage;
-        for (Iterator<String> iterator = (Iterator<String>) newRequests
-                .keySet().iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
+        for (Iterator<String> iterator = newRequests.keySet().iterator(); iterator
+                .hasNext();) {
+            String key = iterator.next();
             Collection<FileRequest> collection = (Collection<FileRequest>) newRequests
                     .get(key);
             for (Iterator<FileRequest> iterator2 = collection.iterator(); iterator2
                     .hasNext();) {
-                FileRequest fileRequest = (FileRequest) iterator2.next();
+                FileRequest fileRequest = iterator2.next();
 
                 // Tape tape = null;
                 boolean cont = true;
@@ -405,6 +375,8 @@ public class Dispatcher extends Thread {
                         // TODO It could eventually happens when the file
                         // instances are being deleted at the same time the
                         // dispatcher ask this question.
+                        // This is a normal case, when there are requests in the
+                        // db, and treqs was started after the insert.
                         cont = false;
                         FilesController.getInstance().remove(file.getName());
                     }
@@ -453,35 +425,11 @@ public class Dispatcher extends Thread {
 
             }
             if (newRequests.size() > 0) {
-                LOGGER.info("Processing {} requests" + newRequests.size());
+                LOGGER.info("Processing {} request(s)", newRequests.size());
             }
         }
 
         LOGGER.trace("< process");
-    }
-
-    /**
-     * @param key
-     * @param fileReq
-     * @throws ProblematicConfiguationFileException
-     */
-    private void fileOnDisk(String key, FileRequest fileReq)
-            throws ProblematicConfiguationFileException {
-        LOGGER.trace("> fileOnDisk");
-
-        assert key != null;
-        assert fileReq != null;
-
-        LOGGER.info("File {} is on disk, set the request as done", key);
-        try {
-            DAOFactory.getReadingDAO().setRequestStatusById(fileReq.getId(),
-                    FileStatus.FS_STAGED, 0, "File is already on disk");
-        } catch (TReqSException e) {
-            LOGGER.error("Error {} trying to update file request status : {}",
-                    e.getCode(), e.getMessage());
-        }
-
-        LOGGER.trace("< fileOnDisk");
     }
 
     private void processException(HSMException e, FileRequest fileReq)
@@ -502,9 +450,9 @@ public class Dispatcher extends Thread {
                     .info("Setting FileRequest " + fileReq.getId()
                             + " as failed");
             try {
-                DAOFactory.getReadingDAO().setRequestStatusById(
-                        fileReq.getId(), FileStatus.FS_FAILED,
-                        e.getHSMErrorCode(), e.getMessage());
+                DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
+                        FileStatus.FS_FAILED, e.getHSMErrorCode(),
+                        e.getMessage());
             } catch (TReqSException e1) {
                 LOGGER.error(
                         "Error {} trying to update file request status : {}",
@@ -513,9 +461,9 @@ public class Dispatcher extends Thread {
         } else {
             LOGGER.warn(e.getMessage());
             try {
-                DAOFactory.getReadingDAO().setRequestStatusById(
-                        fileReq.getId(), FileStatus.FS_FAILED,
-                        e.getHSMErrorCode(), e.getMessage());
+                DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
+                        FileStatus.FS_FAILED, e.getHSMErrorCode(),
+                        e.getMessage());
             } catch (TReqSException e2) {
                 LOGGER.error(
                         "Error {} trying to update file request status : {}",
@@ -524,6 +472,92 @@ public class Dispatcher extends Thread {
         }
 
         LOGGER.trace("< processException");
+    }
+
+    /**
+     * This method has a default visibility just for testing purposes.
+     * 
+     * @throws TReqSException
+     */
+    void retrieveNewRequest() throws TReqSException {
+        LOGGER.trace("> retrieveNewRequest");
+
+        // Get new requests
+        MultiMap newRequests = null;
+        newRequests = this.getNewRequests();
+        if (newRequests != null) {
+
+            // Loop through the new requests.
+            if (newRequests.size() > 0) {
+                LOGGER.info("Beginning MetaData fishing on HPSS for {} files",
+                        newRequests.size());
+            }
+            process(newRequests);
+        }
+
+        LOGGER.trace("< retrieveNewRequest");
+    }
+
+    /**
+     * Run periodically over the database to do the work. Call
+     * get_new_requests() and treat all the results
+     * 
+     * @throws TReqSException
+     */
+    @Override
+    public void run() {
+        LOGGER.trace("> run");
+
+        while (this.toContinue) {
+
+            toStart();
+
+            if (this.toContinue) {
+                LOGGER.info("Sleeping " + this.millisBetweenLoops
+                        + " milliseconds");
+                // Waits before restart the process.
+                try {
+                    Thread.sleep(this.millisBetweenLoops);
+                } catch (InterruptedException e) {
+                    // Nothing.
+                }
+            }
+        }
+
+        LOGGER.trace("< run");
+    }
+
+    void setMaxFilesBeforeMessage(short max) {
+        LOGGER.trace("> setMaxFilesBeforeMessage");
+
+        assert max > 0;
+
+        this.maxFilesBeforeMessage = max;
+
+        LOGGER.trace("< setMaxFilesBeforeMessage");
+    }
+
+    /**
+     * Setter
+     */
+    public void setMaxRequests(short max) {
+        LOGGER.trace("> setMaxRequests");
+
+        assert max > 0;
+
+        this.maxRequests = max;
+
+        LOGGER.trace("< setMaxRequests");
+    }
+
+    public void setSecondsBetweenLoops(byte seconds) {
+        LOGGER.trace("> setSecondsBetweenLoops");
+
+        assert seconds > 0;
+
+        this.millisBetweenLoops = seconds * MILLIS;
+
+        LOGGER.trace("< setSecondsBetweenLoops");
     }
 
     /**
@@ -567,7 +601,7 @@ public class Dispatcher extends Thread {
                 fileReq.getNumberTries());
         LOGGER.debug("FilepositionOnTape registered to a queue");
         try {
-            DAOFactory.getReadingDAO().setRequestStatusById(fileReq.getId(),
+            DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
                     FileStatus.FS_SUBMITTED,
                     "File request submitted to a queue");
         } catch (PersistanceException e) {
@@ -582,28 +616,37 @@ public class Dispatcher extends Thread {
     }
 
     /**
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     * Makes a cycle of the dispatcher.
      */
-    private void cleaningReferences() throws NumberFormatException,
-            ProblematicConfiguationFileException {
-        LOGGER.trace("> cleaningReferences");
+    public void toStart() {
+        try {
+            cleaningReferences();
+        } catch (Exception e2) {
+            LOGGER.error("PROBLEM: {}", e2.getMessage());
+            this.toContinue = false;
+        }
 
-        // clean the finished queues
-        LOGGER.debug("Cleaning unreferenced instances");
-        int cleaned_instances = QueuesController.getInstance()
-                .cleanDoneQueues();
-        LOGGER.debug(cleaned_instances + " Queues cleaned");
-        // TODO cleaned_instances =
-        // FilePositionOnTapesController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " FilePositionOnTapes cleaned");
-        // TODO cleaned_instances = FilesController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " Files cleaned");
-        // TODO cleaned_instances = TapesController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " Tapes cleaned");
-        // TODO cleaned_instances = UsersController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " Users cleaned");
+        if (this.toContinue) {
+            try {
+                retrieveNewRequest();
+            } catch (Exception e1) {
+                if (e1 instanceof TReqSException) {
+                    TReqSException e = (TReqSException) e1;
+                    LOGGER.error("PROBLEM: {} - {}", e.getCode(), e
+                            .getMessage());
+                } else {
+                    LOGGER.error("PROBLEM: {}", e1.getMessage());
+                }
+                this.toContinue = false;
+            }
+        }
+    }
 
-        LOGGER.trace("< cleaningReferences");
+    public void toStop() {
+        LOGGER.trace("> toStop");
+
+        this.toContinue = false;
+
+        LOGGER.trace("< toStop");
     }
 }
