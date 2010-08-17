@@ -48,6 +48,26 @@ import org.junit.Test;
  */
 public class UserTest {
     /**
+     * Tests a negative gid.
+     */
+    @Test
+    public void test01constructor() {
+        short gid = -5;
+        String group = "group";
+        String name = "user";
+        short uid = 15;
+
+        try {
+            new User(name, uid, group, gid);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    /**
      * Tests the constructors.
      */
     @Test
@@ -90,26 +110,6 @@ public class UserTest {
                 + group + ", gid: " + gid + "}";
 
         Assert.assertEquals("toString", expected, actual);
-    }
-
-    /**
-     * Tests a negative gid.
-     */
-    @Test
-    public void test01constructor() {
-        short gid = -5;
-        String group = "group";
-        String name = "user";
-        short uid = 15;
-
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
     }
 
     /**

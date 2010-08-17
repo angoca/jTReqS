@@ -50,12 +50,6 @@ import org.junit.Test;
 public class MediaTypeTest {
 
     @Test
-    public void test01toString() {
-        MediaType media = new MediaType((byte) 1, "media");
-        media.toString();
-    }
-
-    @Test
     public void test01Constructor() {
         try {
             new MediaType((byte) 1, null);
@@ -65,6 +59,12 @@ public class MediaTypeTest {
                 Assert.fail();
             }
         }
+    }
+
+    @Test
+    public void test01toString() {
+        MediaType media = new MediaType((byte) 1, "media");
+        media.toString();
     }
 
     @Test

@@ -59,19 +59,47 @@ public class FileTest {
     }
 
     /**
-     * Tests create a file with a null name.
+     * Tests to add a new file request.
+     * 
+     * @throws InvalidParameterException
+     *             Never.
      */
-    @Test(expected = AssertionError.class)
-    public void test02Constructors() {
-        new File(null, new User("username"), 10);
+    @Test
+    public void test01FileRequest() throws InvalidParameterException {
+        String filename = "tapename";
+        String username = "username";
+        User owner = new User(username);
+        long size = 10;
+
+        File file = new File(filename, owner, size);
+
+        int id = 1;
+        byte nb = 3;
+        FileRequest freq = new FileRequest(id, username, owner, nb);
+
+        file.addFileRequest(freq);
     }
 
     /**
-     * Tests create a file with a negative size.
+     * Tests to add a null name.
      */
-    @Test(expected = AssertionError.class)
-    public void test03Constructors() {
-        new File("name", new User("username"), -10);
+    @Test
+    public void test01name() {
+        String filename = "tapename";
+        String username = "username";
+        User owner = new User(username);
+        long size = 10;
+
+        File file = new File(filename, owner, size);
+
+        try {
+            file.setName(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
     }
 
     /**
@@ -89,6 +117,48 @@ public class FileTest {
                 Assert.fail();
             }
         }
+    }
+
+    /**
+     * Tests to set a negative size.
+     */
+    @Test
+    public void test01size() {
+        String filename = "tapename";
+        String username = "username";
+        User owner = new User(username);
+        long size = 10;
+
+        File file = new File(filename, owner, size);
+
+        try {
+            file.setSize(-50);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    /**
+     * Tests the toString method.
+     */
+    @Test
+    public void test01toString() {
+        String filename = "tapename";
+        String username = "username";
+        User owner = new User(username);
+        long size = 10;
+
+        File file = new File(filename, owner, size);
+
+        String actual = file.toString();
+
+        String expected = "File{ name: " + filename + ", owner: " + username
+                + ", size: " + size + ", file requests size: 0}";
+
+        Assert.assertEquals("toString", expected, actual);
     }
 
     /**
@@ -117,30 +187,18 @@ public class FileTest {
     }
 
     /**
-     * Tests the toString method.
+     * Tests create a file with a null name.
      */
-    @Test
-    public void test01toString() {
-        String filename = "tapename";
-        String username = "username";
-        User owner = new User(username);
-        long size = 10;
-
-        File file = new File(filename, owner, size);
-
-        String actual = file.toString();
-
-        String expected = "File{ name: " + filename + ", owner: " + username
-                + ", size: " + size + ", file requests size: 0}";
-
-        Assert.assertEquals("toString", expected, actual);
+    @Test(expected = AssertionError.class)
+    public void test02Constructors() {
+        new File(null, new User("username"), 10);
     }
 
     /**
-     * Tests to set a negative size.
+     * Tests to add a null file request.
      */
     @Test
-    public void test01size() {
+    public void test02FileRequest() {
         String filename = "tapename";
         String username = "username";
         User owner = new User(username);
@@ -149,29 +207,7 @@ public class FileTest {
         File file = new File(filename, owner, size);
 
         try {
-            file.setSize(-50);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests to add a null name.
-     */
-    @Test
-    public void test01name() {
-        String filename = "tapename";
-        String username = "username";
-        User owner = new User(username);
-        long size = 10;
-
-        File file = new File(filename, owner, size);
-
-        try {
-            file.setName(null);
+            file.addFileRequest(null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -196,47 +232,11 @@ public class FileTest {
     }
 
     /**
-     * Tests to add a new file request.
-     * 
-     * @throws InvalidParameterException
-     *             Never.
+     * Tests create a file with a negative size.
      */
-    @Test
-    public void test01FileRequest() throws InvalidParameterException {
-        String filename = "tapename";
-        String username = "username";
-        User owner = new User(username);
-        long size = 10;
-
-        File file = new File(filename, owner, size);
-
-        int id = 1;
-        byte nb = 3;
-        FileRequest freq = new FileRequest(id, username, owner, nb);
-
-        file.addFileRequest(freq);
-    }
-
-    /**
-     * Tests to add a null file request.
-     */
-    @Test
-    public void test02FileRequest() {
-        String filename = "tapename";
-        String username = "username";
-        User owner = new User(username);
-        long size = 10;
-
-        File file = new File(filename, owner, size);
-
-        try {
-            file.addFileRequest(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
+    @Test(expected = AssertionError.class)
+    public void test03Constructors() {
+        new File("name", new User("username"), -10);
     }
 
     /**

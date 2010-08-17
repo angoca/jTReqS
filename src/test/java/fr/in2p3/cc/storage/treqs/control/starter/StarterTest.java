@@ -44,16 +44,21 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.control.StagersController;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.FileStatus;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException;
+import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
@@ -63,6 +68,19 @@ public class StarterTest {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StarterTest.class);
+
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        RequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() {
+        Configurator.destroyInstance();
+        MySQLBroker.destroyInstance();
+    }
 
     @Before
     public void setUp() throws TReqSException {
@@ -85,12 +103,10 @@ public class StarterTest {
         Activator.destroyInstance();
         Dispatcher.destroyInstance();
         HSMMockBridge.destroyInstance();
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
-        Configurator.destroyInstance();
-        MySQLBroker.destroyInstance();
+        PersistenceFactory.destroyInstance();
+        StagersController.getInstance().conclude();
+        StagersController.getInstance().waitTofinish();
+        StagersController.destroyInstance();
     }
 
     /**
@@ -104,7 +120,11 @@ public class StarterTest {
     @Test
     public void testInsertRequests() throws TReqSException,
             InterruptedException, SQLException {
+        LOGGER.error("Starter TEST ------------");
+
         MySQLBroker.getInstance().connect();
+
+        checkDatabaseWithStaged(0, 0);
 
         String fileName = "filename1";
         String userName = "username1";
@@ -133,6 +153,18 @@ public class StarterTest {
         treqs.toStop();
         Thread.sleep(200);
 
+        checkDatabaseWithStaged(1, 0);
+    }
+
+    /**
+     * @throws MySQLException
+     * @throws SQLException
+     * @throws CloseMySQLException
+     * @throws TReqSException
+     */
+    private void checkDatabaseWithStaged(int staged, int nonStaged)
+            throws MySQLException, SQLException, CloseMySQLException,
+            TReqSException {
         String query = "SELECT count(*) FROM requests WHERE status = "
                 + FileStatus.FS_STAGED.getId();
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
@@ -149,8 +181,13 @@ public class StarterTest {
         int actualNotStaged = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
 
-        Assert.assertEquals(0, actualNotStaged);
-        Assert.assertEquals(1, actualStaged);
+        LOGGER.error("Staged {}, Not staged {}", actualStaged, actualNotStaged);
+        LOGGER.error("Activator {}, Dispatcher {}", Activator.getInstance()
+                .getProcessStatus().name(), Dispatcher.getInstance()
+                .getProcessStatus().name());
+
+        Assert.assertEquals(nonStaged, actualNotStaged);
+        Assert.assertEquals(staged, actualStaged);
     }
 
 }

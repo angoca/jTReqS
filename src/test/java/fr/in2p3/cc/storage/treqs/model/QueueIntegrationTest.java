@@ -97,26 +97,6 @@ public class QueueIntegrationTest {
         }
     }
 
-    /**
-     * Tests to activate a suspended queue
-     */
-    @Test
-    public void test02ActivateSuspendedQueue() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.suspend();
-
-        try {
-            queue.activate();
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidStateException)) {
-                Assert.fail();
-            }
-        }
-    }
-
     @Test
     public void test01dump() throws TReqSException {
         Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
@@ -166,5 +146,25 @@ public class QueueIntegrationTest {
         Reading reading = queue.getNextReading();
         reading.setFileState(FileStatus.FS_QUEUED);
         queue.getNextReading();
+    }
+
+    /**
+     * Tests to activate a suspended queue
+     */
+    @Test
+    public void test02ActivateSuspendedQueue() throws TReqSException {
+        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        queue.changeToActivated();
+        queue.suspend();
+
+        try {
+            queue.activate();
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStateException)) {
+                Assert.fail();
+            }
+        }
     }
 }

@@ -67,6 +67,14 @@ public class PersistenceFactory {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(PersistenceFactory.class);
 
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
+
     /**
      * Singleton access
      * 
@@ -83,14 +91,6 @@ public class PersistenceFactory {
         LOGGER.trace("< getInstance");
 
         return _instance;
-    }
-
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
-
-        _instance = null;
-
-        LOGGER.trace("< destroyInstance");
     }
 
     private ConfigurationDAO configurationDAO = null;

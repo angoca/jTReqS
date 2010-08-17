@@ -64,15 +64,63 @@ public class FilePositionOnTapeTest {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FilePositionOnTapeTest.class);
+    private File file = null;
     private String fileName = "filename";
+    private Tape tape = null;
     private String tapeName = "tapename";
-    private File file = new File(fileName, new User("username"), 400);
-    private Tape tape = new Tape(tapeName, new MediaType((byte) 1, "media"),
-            TapeStatus.TS_UNLOCKED);
 
     @After
     public void tearDown() {
         Configurator.destroyInstance();
+    }
+
+    public FilePositionOnTapeTest() {
+        this.file = new File(fileName, new User("username"), 400);
+        this.tape = new Tape(tapeName, new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+    }
+
+    /**
+     * Tests a fpot with a null file.
+     */
+    @Test
+    public void test01Constructor() {
+        int position = 100;
+        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
+
+        boolean failed = false;
+        try {
+            new FilePositionOnTape(null, timestamp, position, tape);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests a valid timestamp for metadata.
+     * 
+     * @throws ProblematicConfiguationFileException
+     * @throws NullParameterException
+     *             Never.
+     */
+    @Test
+    public void test01MetadataNotOutdated()
+            throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "100");
+
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 100, tape);
+        fpot.setMetadataTimestamp(new GregorianCalendar());
+
+        boolean outdated = fpot.isMetadataOutdated();
+
+        Assert.assertTrue("No outdated metadata", !outdated);
     }
 
     /**
@@ -91,31 +139,6 @@ public class FilePositionOnTapeTest {
         boolean failed = false;
         try {
             fpot.setTape(null);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests the method setFileRef giving a null value.
-     * 
-     * @throws ProblematicConfiguationFileException
-     *             Never
-     */
-    @Test
-    public void test02nullFileRef() throws ProblematicConfiguationFileException {
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), 100, tape);
-
-        boolean failed = false;
-        try {
-            fpot.setFile(null);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -151,16 +174,15 @@ public class FilePositionOnTapeTest {
     }
 
     /**
-     * Tests a fpot with a null file.
+     * Tests a fpot with a null timestamp.
      */
     @Test
-    public void test01Constructor() {
+    public void test02Constructor() {
         int position = 100;
-        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(null, timestamp, position, tape);
+            new FilePositionOnTape(file, null, position, tape);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -173,15 +195,43 @@ public class FilePositionOnTapeTest {
     }
 
     /**
-     * Tests a fpot with a null timestamp.
+     * Test an outdated timestamp for metadata.
+     * 
+     * @throws InterruptedException
+     *             Never.
+     * @throws ProblematicConfiguationFileException
      */
     @Test
-    public void test02Constructor() {
-        int position = 100;
+    public void test02MetadataOutdated() throws InterruptedException,
+            ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
+
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 100, tape);
+        fpot.setMetadataTimestamp(new GregorianCalendar());
+        LOGGER.info("Sleeping thread for 2 seconds");
+        Thread.sleep(2000);
+
+        boolean outdated = fpot.isMetadataOutdated();
+
+        Assert.assertTrue("Outdated metadata", outdated);
+
+    }
+
+    /**
+     * Tests the method setFileRef giving a null value.
+     * 
+     * @throws ProblematicConfiguationFileException
+     *             Never
+     */
+    @Test
+    public void test02nullFileRef() throws ProblematicConfiguationFileException {
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 100, tape);
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(file, null, position, tape);
+            fpot.setFile(null);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -253,50 +303,5 @@ public class FilePositionOnTapeTest {
         Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
 
         new FilePositionOnTape(file, timestamp, position, tape);
-    }
-
-    /**
-     * Tests a valid timestamp for metadata.
-     * 
-     * @throws ProblematicConfiguationFileException
-     * @throws NullParameterException
-     *             Never.
-     */
-    @Test
-    public void test01MetadataNotOutdated()
-            throws ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "100");
-
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), 100, tape);
-        fpot.setMetadataTimestamp(new GregorianCalendar());
-
-        boolean outdated = fpot.isMetadataOutdated();
-
-        Assert.assertTrue("No outdated metadata", !outdated);
-    }
-
-    /**
-     * Test an outdated timestamp for metadata.
-     * 
-     * @throws InterruptedException
-     *             Never.
-     * @throws ProblematicConfiguationFileException
-     */
-    @Test
-    public void test02MetadataOutdated() throws InterruptedException,
-            ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
-
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), 100, tape);
-        fpot.setMetadataTimestamp(new GregorianCalendar());
-        LOGGER.info("Sleeping thread for 2 seconds");
-        Thread.sleep(2000);
-
-        boolean outdated = fpot.isMetadataOutdated();
-
-        Assert.assertTrue("Outdated metadata", outdated);
-
     }
 }

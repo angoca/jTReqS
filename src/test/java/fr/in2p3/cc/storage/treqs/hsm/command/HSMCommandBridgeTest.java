@@ -57,30 +57,6 @@ public class HSMCommandBridgeTest {
         HSMCommandBridge.destroyInstance();
     }
 
-    /**
-     * Tests
-     * 
-     * @throws HSMException
-     */
-    @Test
-    public void testGetProperties03() throws HSMException {
-        String name = "/hpss/filename";
-        long size = 564;
-        int position = 123;
-        String storageName = "IT9876";
-        HSMHelperFileProperties helper = HSMCommandBridge.getInstance()
-                .getFileProperties(name);
-
-        long actualSize = helper.getSize();
-        int actualPosition = helper.getPosition();
-        String actualStorageName = helper.getStorageName();
-
-        Assert.assertEquals(size, actualSize);
-        Assert.assertEquals(position, actualPosition);
-        Assert.assertEquals(storageName, actualStorageName);
-
-    }
-
     @Test
     public void testGetProperties01() throws HSMException {
         String name = null;
@@ -113,6 +89,30 @@ public class HSMCommandBridgeTest {
         if (failed) {
             Assert.fail();
         }
+    }
+
+    /**
+     * Tests
+     * 
+     * @throws HSMException
+     */
+    @Test
+    public void testGetProperties03() throws HSMException {
+        String name = "/hpss/filename";
+        long size = 564;
+        int position = 123;
+        String storageName = "IT9876";
+        HSMHelperFileProperties helper = HSMCommandBridge.getInstance()
+                .getFileProperties(name);
+
+        long actualSize = helper.getSize();
+        int actualPosition = helper.getPosition();
+        String actualStorageName = helper.getStorageName();
+
+        Assert.assertEquals(size, actualSize);
+        Assert.assertEquals(position, actualPosition);
+        Assert.assertEquals(storageName, actualStorageName);
+
     }
 
     @Test

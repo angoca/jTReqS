@@ -323,6 +323,31 @@ public class MySQLBrokerTest {
     }
 
     @Test
+    public void test05Modify() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        String query = "DROP TABLE IF EXISTS t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        MySQLBroker.getInstance().executeModification(query);
+        query = "DROP TABLE t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    @Test
+    public void test05Select() throws TReqSException, SQLException {
+        String query = "show tables";
+        MySQLBroker.getInstance().connect();
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        boolean next = result.next();
+        System.out.println(next);
+        MySQLBroker.getInstance().terminateExecution(objects);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    @Test
     public void test06Modify() throws TReqSException {
         MySQLBroker.getInstance().connect();
         String query = "DROP TABLE IF EXISTS t1 ";
@@ -359,30 +384,5 @@ public class MySQLBrokerTest {
         MySQLBroker.getInstance().disconnect();
 
         Assert.assertTrue(actual == 1);
-    }
-
-    @Test
-    public void test05Modify() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        String query = "DROP TABLE IF EXISTS t1 ";
-        MySQLBroker.getInstance().executeModification(query);
-        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DROP TABLE t1 ";
-        MySQLBroker.getInstance().executeModification(query);
-
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void test05Select() throws TReqSException, SQLException {
-        String query = "show tables";
-        MySQLBroker.getInstance().connect();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        boolean next = result.next();
-        System.out.println(next);
-        MySQLBroker.getInstance().terminateExecution(objects);
-        MySQLBroker.getInstance().disconnect();
     }
 }

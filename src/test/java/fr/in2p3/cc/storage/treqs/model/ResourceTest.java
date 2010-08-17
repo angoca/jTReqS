@@ -61,147 +61,9 @@ public class ResourceTest {
             .getLogger(ResourceTest.class);
 
     @Test
-    public void test01toString() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        resource.toString();
-    }
-
-    @Test
     public void test01constructor() {
         try {
             new Resource(null, new GregorianCalendar(), (byte) 10);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02constructor() {
-        try {
-            new Resource(new MediaType((byte) 1, "1"), null, (byte) 10);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test03constructor() {
-        try {
-            new Resource(new MediaType((byte) 1, "1"), new GregorianCalendar(),
-                    (byte) -10);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test01setMedia() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        try {
-            resource.setMediaType(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test01setUserallocation() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        try {
-            resource.setUserAllocation(null, (byte) 5);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02setUserallocation() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        try {
-            resource.setUserAllocation(new User("user"), (byte) -5);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test03setUserallocation() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        resource.setUserAllocation(new User("user"), (byte) 5);
-    }
-
-    @Test
-    public void test01setUsedResources() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        try {
-            resource.setUsedResources(null, (byte) 5);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02setUsedResources() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        try {
-            resource.setUsedResources(new User("user"), (byte) -5);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test03setUsedResources() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        resource.setUsedResources(new User("user"), (byte) 5);
-    }
-
-    @Test
-    public void test01setTimestamp() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-
-        try {
-            resource.setTimestamp(null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -230,46 +92,6 @@ public class ResourceTest {
     }
 
     @Test
-    public void test01ResourceFree() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        byte freeResources = resource.countFreeResources();
-
-        Assert.assertTrue("free resources", freeResources == 10);
-    }
-
-    @Test
-    public void test02ResourceFree() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        resource.setUsedResources(new User("user1"), (byte) 5);
-        resource.setUsedResources(new User("user2"), (byte) 5);
-        byte freeResources = resource.countFreeResources();
-
-        Assert.assertTrue("free resources", freeResources == 0);
-    }
-
-    @Test
-    public void test03ResourceFree() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        resource.setUsedResources(new User("user1"), (byte) 0);
-        byte freeResources = resource.countFreeResources();
-
-        Assert.assertTrue("free resources", freeResources == 10);
-    }
-
-    @Test
-    public void test04ResourceFree() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        resource.setUsedResources(new User("user1"), (byte) 5);
-        byte freeResources = resource.countFreeResources();
-
-        Assert.assertTrue("free resources", freeResources == 5);
-    }
-
-    @Test
     public void test01getUsedResource() {
         Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 new GregorianCalendar(), (byte) 10);
@@ -283,41 +105,6 @@ public class ResourceTest {
         byte expected = val;
 
         Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test02getUsedResource() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        User user1 = new User("user1");
-        byte val = 3;
-        resource.setUsedResources(user1, val);
-        resource.setUsedResources(new User("user2"), (byte) 4);
-
-        byte actual = resource.getUsedResources(new User("user3"));
-
-        byte expected = -1;
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test03getUsedResource() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        User user1 = new User("user1");
-        byte val = 3;
-        resource.setUsedResources(user1, val);
-        resource.setUsedResources(new User("user2"), (byte) 4);
-
-        try {
-            resource.getUsedResources(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
     }
 
     @Test
@@ -337,58 +124,6 @@ public class ResourceTest {
     }
 
     @Test
-    public void test02getUserAllocation() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        User user1 = new User("user1");
-        byte val = 3;
-        resource.setUserAllocation(user1, val);
-        resource.setUserAllocation(new User("user2"), (byte) 4);
-
-        float actual = resource.getUserAllocation(new User("user3"));
-
-        float expected = 0;
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test03getUserAllocation() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        User user1 = new User("user1");
-        byte val = 3;
-        resource.setUserAllocation(user1, val);
-        resource.setUserAllocation(new User("user2"), (byte) 4);
-
-        try {
-            resource.getUserAllocation(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test01OtherMethods() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        resource.resetTimestamp();
-    }
-
-    @Test
-    public void test02OtherMethods() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
-                new GregorianCalendar(), (byte) 10);
-        resource.setUsedResources(new User("user1"), (byte) 3);
-        resource.setUsedResources(new User("user2"), (byte) 4);
-
-        resource.resetUsedResources();
-    }
-
-    @Test
     public void test01increase() {
         Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 new GregorianCalendar(), (byte) 10);
@@ -400,6 +135,133 @@ public class ResourceTest {
         byte actual = resource.increaseUsedResources(user1);
 
         byte expected = (byte) (val + 1);
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test01OtherMethods() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        resource.resetTimestamp();
+    }
+
+    @Test
+    public void test01ResourceFree() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        byte freeResources = resource.countFreeResources();
+
+        Assert.assertTrue("free resources", freeResources == 10);
+    }
+
+    @Test
+    public void test01setMedia() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        try {
+            resource.setMediaType(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test01setTimestamp() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        try {
+            resource.setTimestamp(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test01setUsedResources() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        try {
+            resource.setUsedResources(null, (byte) 5);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test01setUserallocation() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        try {
+            resource.setUserAllocation(null, (byte) 5);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test01toString() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        resource.toString();
+    }
+
+    @Test
+    public void test02constructor() {
+        try {
+            new Resource(new MediaType((byte) 1, "1"), null, (byte) 10);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test02getUsedResource() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        User user1 = new User("user1");
+        byte val = 3;
+        resource.setUsedResources(user1, val);
+        resource.setUsedResources(new User("user2"), (byte) 4);
+
+        byte actual = resource.getUsedResources(new User("user3"));
+
+        byte expected = -1;
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void test02getUserAllocation() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        User user1 = new User("user1");
+        byte val = 3;
+        resource.setUserAllocation(user1, val);
+        resource.setUserAllocation(new User("user2"), (byte) 4);
+
+        float actual = resource.getUserAllocation(new User("user3"));
+
+        float expected = 0;
 
         Assert.assertEquals(expected, actual);
     }
@@ -425,5 +287,143 @@ public class ResourceTest {
         if (failed) {
             Assert.fail();
         }
+    }
+
+    @Test
+    public void test02OtherMethods() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        resource.setUsedResources(new User("user1"), (byte) 3);
+        resource.setUsedResources(new User("user2"), (byte) 4);
+
+        resource.resetUsedResources();
+    }
+
+    @Test
+    public void test02ResourceFree() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        resource.setUsedResources(new User("user1"), (byte) 5);
+        resource.setUsedResources(new User("user2"), (byte) 5);
+        byte freeResources = resource.countFreeResources();
+
+        Assert.assertTrue("free resources", freeResources == 0);
+    }
+
+    @Test
+    public void test02setUsedResources() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        try {
+            resource.setUsedResources(new User("user"), (byte) -5);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test02setUserallocation() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        try {
+            resource.setUserAllocation(new User("user"), (byte) -5);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test03constructor() {
+        try {
+            new Resource(new MediaType((byte) 1, "1"), new GregorianCalendar(),
+                    (byte) -10);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test03getUsedResource() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        User user1 = new User("user1");
+        byte val = 3;
+        resource.setUsedResources(user1, val);
+        resource.setUsedResources(new User("user2"), (byte) 4);
+
+        try {
+            resource.getUsedResources(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test03getUserAllocation() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        User user1 = new User("user1");
+        byte val = 3;
+        resource.setUserAllocation(user1, val);
+        resource.setUserAllocation(new User("user2"), (byte) 4);
+
+        try {
+            resource.getUserAllocation(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test03ResourceFree() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        resource.setUsedResources(new User("user1"), (byte) 0);
+        byte freeResources = resource.countFreeResources();
+
+        Assert.assertTrue("free resources", freeResources == 10);
+    }
+
+    @Test
+    public void test03setUsedResources() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        resource.setUsedResources(new User("user"), (byte) 5);
+    }
+
+    @Test
+    public void test03setUserallocation() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+
+        resource.setUserAllocation(new User("user"), (byte) 5);
+    }
+
+    @Test
+    public void test04ResourceFree() {
+        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+                new GregorianCalendar(), (byte) 10);
+        resource.setUsedResources(new User("user1"), (byte) 5);
+        byte freeResources = resource.countFreeResources();
+
+        Assert.assertTrue("free resources", freeResources == 5);
     }
 }

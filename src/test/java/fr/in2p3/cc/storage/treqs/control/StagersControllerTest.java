@@ -43,6 +43,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
@@ -61,16 +63,17 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * @author gomez
  */
 public class StagersControllerTest {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(StagersControllerTest.class);
+
     @BeforeClass
     public static void oneTimeSetUp()
             throws ProblematicConfiguationFileException {
         Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
                 "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-    }
-
-    @After
-    public void tearDown() {
-        StagersController.destroyInstance();
     }
 
     @AfterClass
@@ -79,8 +82,13 @@ public class StagersControllerTest {
         Configurator.destroyInstance();
     }
 
+    @After
+    public void tearDown() {
+        StagersController.destroyInstance();
+    }
+
     /**
-     * Tests
+     * Tests // TODO review this tests
      * 
      * @throws TReqSException
      */
@@ -90,15 +98,31 @@ public class StagersControllerTest {
         Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
                 "media"), TapeStatus.TS_UNLOCKED));
         Stager stager1 = StagersController.getInstance().create(queue);
-        stager1.setJobDone(false);
         Stager stager2 = StagersController.getInstance().create(queue);
-        stager2.setJobDone(false);
         int count = StagersController.getInstance().cleanup();
         Assert.assertEquals("Nothing cleaned", 0, count);
-        stager2.setJobDone(true);
+        stager2.start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // Nothing
+        }
+        LOGGER.debug("-------> {}", stager2.toString());
+
+        stager2.conclude();
+        stager2.waitToFinish();
         count = StagersController.getInstance().cleanup();
         Assert.assertEquals("one cleaned", 1, count);
-        stager1.setJobDone(true);
+        stager1.start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // Nothing
+        }
+        LOGGER.debug("-------> {}", stager2.toString());
+
+        stager1.conclude();
+        stager1.waitToFinish();
         count = StagersController.getInstance().cleanup();
         Assert.assertEquals("The other cleaned", 1, count);
         count = StagersController.getInstance().cleanup();

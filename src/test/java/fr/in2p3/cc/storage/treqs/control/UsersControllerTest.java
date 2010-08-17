@@ -57,6 +57,18 @@ public class UsersControllerTest {
         UsersController.destroyInstance();
     }
 
+    @Test
+    public void test01add() {
+        try {
+            UsersController.getInstance().add(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
     /**
      * Tests
      * 
@@ -81,18 +93,6 @@ public class UsersControllerTest {
     public void test01create() {
         try {
             UsersController.getInstance().create(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test01add() {
-        try {
-            UsersController.getInstance().add(null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {

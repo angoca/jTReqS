@@ -40,25 +40,18 @@ package fr.in2p3.cc.storage.treqs.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * Reads files from a queue as a new thread.
  */
-public class Stager extends Thread {
+public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Stager.class);
-    /**
-     * Variable that indicates if the stager has to continue executing.
-     */
-    private boolean cont;
-    /**
-     * Represents if the job has been finished.
-     */
-    private boolean jobDone;
     /**
      * Associated queue.
      */
@@ -69,20 +62,72 @@ public class Stager extends Thread {
         LOGGER.trace("> Creating stager.");
 
         this.queue = q;
-        this.jobDone = true;
+
+        this.kickStart();
 
         LOGGER.trace("< Creating stager.");
     }
 
-    /**
-     * Getter for jobDone member.
-     * 
-     * @return
-     */
-    public boolean isJobDone() {
-        LOGGER.trace(">< isJobDone");
+    private void action() {
+        LOGGER.trace("> action");
 
-        return this.jobDone;
+        if (queue.getStatus() == QueueStatus.QS_ACTIVATED) {
+            LOGGER.info("Stager {}: starting.", this.getName());
+            try {
+                this.stage();
+            } catch (TReqSException e) {
+                LOGGER.error("Error in Staging : {}", e.getMessage());
+            }
+            this.conclude();
+            LOGGER.debug("Staging completed.");
+        } else {
+            LOGGER
+                    .info("Cannot work on a non-activated queue or queue already processed.");
+        }
+
+        LOGGER.trace("< action");
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void oneLoop() {
+        LOGGER.trace("> oneLoop");
+
+        this.changeStatus(ProcessStatus.STARTED);
+
+        action();
+
+        this.changeStatus(ProcessStatus.STOPPED);
+
+        LOGGER.trace("< oneLoop");
+    }
+
+    /**
+     * @throws TReqSException
+     */
+    private void stage() throws TReqSException {
+        LOGGER.trace("> stage");
+
+        Reading readObject = this.queue.getNextReading();
+        while (readObject != null && this.keepOn()) {
+            try {
+                readObject.stage();
+                LOGGER.debug("Thread {}: getting next file", this.getName());
+                readObject = this.queue.getNextReading();
+            } catch (HSMResourceException e) {
+                // For instance, no space left on device should suspend
+                // the staging queue.
+                LOGGER.warn(
+                        "{}: No space left on device, suspending the queue.",
+                        ErrorCode.STGR02);
+                this.queue.suspend();
+                readObject = null;
+            }
+        }
+
+        LOGGER.trace("< stage");
     }
 
     /**
@@ -99,78 +144,12 @@ public class Stager extends Thread {
      * @return true is the queue is not null, false in the other case.
      */
     @Override
-    public void run() {
-        LOGGER.trace("> run");
+    public void toStart() {
+        LOGGER.trace("> toStart");
 
-        if (queue.getStatus() == QueueStatus.QS_ACTIVATED) {
-            this.setJobDone(false);
-            LOGGER.info("Thread " + this.getName() + ": starting.");
-            try {
-                stage();
-            } catch (TReqSException e) {
-                LOGGER.error("Error in Staging : {}", e.getMessage());
-            }
-            this.cont = false;
-            LOGGER.debug("Staging completed.");
-        } else {
-            LOGGER
-                    .info("Cannot work on a non-activated queue or queue already processed.");
-        }
-        this.setJobDone(true);
+        this.action();
 
-        LOGGER.trace("< run");
-    }
-
-    /**
-     * Setter for jobDone member.
-     * 
-     * @param done
-     */
-    public void setJobDone(boolean done) {
-        LOGGER.trace("> setJobDone");
-
-        this.jobDone = done;
-
-        LOGGER.trace("< setJobDone");
-    }
-
-    /**
-     * @throws TReqSException
-     */
-    private void stage() throws TReqSException {
-        LOGGER.trace("> stage");
-
-        this.cont = true;
-        Reading readObject = queue.getNextReading();
-        while (readObject != null && this.cont) {
-            try {
-                readObject.stage();
-                LOGGER
-                        .debug("Thread " + this.getName()
-                                + ": getting next file");
-                readObject = queue.getNextReading();
-            } catch (HSMResourceException e) {
-                // For instance, no space left on device should suspend
-                // the staging queue.
-                LOGGER.warn(ErrorCode.STGR02
-                        + ": No space left on device, suspending the queue.");
-                queue.suspend();
-                readObject = null;
-            }
-        }
-
-        LOGGER.trace("< stage");
-    }
-
-    /**
-     * Indicates that the execution of this thread has to be stopped.
-     */
-    public void toStop() {
-        LOGGER.trace("> toStop");
-
-        this.cont = false;
-
-        LOGGER.trace("< toStop");
+        LOGGER.trace("< toStart");
     }
 
     /**
@@ -184,7 +163,7 @@ public class Stager extends Thread {
         ret += "Stager";
         ret += "{ queue: " + this.queue.getId();
         ret += ", tape: " + this.queue.getTape().getName();
-        ret += ", job: " + this.isJobDone();
+        ret += ", state: " + this.getProcessStatus().name();
         ret += "}";
 
         LOGGER.trace("< toString");

@@ -47,6 +47,7 @@ import org.apache.commons.collections.MultiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.StagersController;
 import fr.in2p3.cc.storage.treqs.model.Queue;
@@ -67,7 +68,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * It is recommended to have a configuration with the maxStager as multiple of
  * the maxStagersPerQueue. TODO write this in the configuration file.
  */
-public class Activator extends Thread {
+public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * The singleton instance.
      */
@@ -87,7 +88,8 @@ public class Activator extends Thread {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        _instance.interrupt();
+        // _instance.conclude();
+        // _instance.waitToFinish();
 
         _instance = null;
 
@@ -138,11 +140,6 @@ public class Activator extends Thread {
 
     private int timeBetweenStagers;
 
-    /**
-     * Variable that indicated the thread to stop.
-     */
-    private boolean toContinue;
-
     private Activator() throws TReqSException {
         super("Activator");
         LOGGER.trace("> create activator");
@@ -179,9 +176,48 @@ public class Activator extends Thread {
 
         this.allocations = new ArrayList<Resource>();
 
-        this.toContinue = true;
+        this.kickStart();
 
         LOGGER.trace("< create activator");
+    }
+
+    private void action() {
+        LOGGER.trace("> action");
+
+        // First remove all done stagers
+        this.activeStagers -= StagersController.getInstance().cleanup();
+        LOGGER.info("Still {} active stagers.", this.activeStagers);
+
+        // If necessary, refresh the resources allocations
+        if (this.allocations.size() == 0
+                || this.allocations.get(0).getAge() > this.getMetadataTimeout()) {
+            try {
+                this.refreshAllocations();
+            } catch (TReqSException e) {
+                LOGGER.error(e.getMessage());
+                this.conclude();
+            }
+        }
+        if (this.keepOn()) {
+            // Count the active queues and update the resources
+            try {
+                this.countUsedResources();
+            } catch (TReqSException e) {
+                LOGGER.error(e.getMessage());
+                this.conclude();
+            }
+        }
+        if (this.keepOn()) {
+            // Loop through the resources
+            try {
+                process();
+            } catch (TReqSException e) {
+                LOGGER.error(e.getMessage());
+                this.conclude();
+            }
+        }
+
+        LOGGER.trace("< action");
     }
 
     /**
@@ -302,6 +338,22 @@ public class Activator extends Thread {
     }
 
     /**
+     * Makes the process of the activator.
+     */
+    @Override
+    public void oneLoop() {
+        LOGGER.trace("> oneLoop");
+
+        this.changeStatus(ProcessStatus.STARTED);
+
+        action();
+
+        this.changeStatus(ProcessStatus.STOPPED);
+
+        LOGGER.trace("< oneLoop");
+    }
+
+    /**
      * @param bestQueue
      * @return
      * @throws ProblematicConfiguationFileException
@@ -418,32 +470,10 @@ public class Activator extends Thread {
     }
 
     /**
-     * Just browse periodically the list of users and queues to activate the
-     * best queue
-     * 
-     * @return
+     * This method is just for tests, because it reinitializes the activator.
      */
-    @Override
-    public void run() {
-        LOGGER.trace("> run");
-
-        while (this.toContinue) {
-
-            toStart();
-
-            if (this.toContinue) {
-                LOGGER.debug("Sleeping {} milliseconds",
-                        this.millisBetweenLoops);
-                // Waits before restart the process.
-                try {
-                    Thread.sleep(this.millisBetweenLoops);
-                } catch (InterruptedException e) {
-                    // Nothing.
-                }
-            }
-        }
-
-        LOGGER.trace("< run");
+    public void restart() {
+        this.status = ProcessStatus.STARTING;
     }
 
     /**
@@ -529,44 +559,31 @@ public class Activator extends Thread {
     }
 
     /**
-     * Makes the process of the activator.
+     * Just browse periodically the list of users and queues to activate the
+     * best queue
+     * 
+     * @return
      */
-    public void toStart() {
-        // First remove all done stagers
-        this.activeStagers -= StagersController.getInstance().cleanup();
-        LOGGER.info("Still {} active stagers.", this.activeStagers);
+    @Override
+    protected void toStart() {
+        LOGGER.trace("> toStart");
 
-        // If necessary, refresh the resources allocations
-        if (this.allocations.size() == 0
-                || this.allocations.get(0).getAge() > this.getMetadataTimeout()) {
-            try {
-                this.refreshAllocations();
-            } catch (TReqSException e) {
-                LOGGER.error(e.getMessage());
-                this.toContinue = false;
-            }
-        }
-        if (this.toContinue) {
-            // Count the active queues and update the resources
-            try {
-                this.countUsedResources();
-            } catch (TReqSException e) {
-                LOGGER.error(e.getMessage());
-                this.toContinue = false;
-            }
-        }
-        if (this.toContinue) {
-            // Loop through the resources
-            try {
-                process();
-            } catch (TReqSException e) {
-                LOGGER.error(e.getMessage());
-                this.toContinue = false;
-            }
-        }
-    }
+        while (this.keepOn()) {
 
-    public void toStop() {
-        this.toContinue = false;
+            this.action();
+
+            if (this.keepOn()) {
+                LOGGER.debug("Sleeping {} milliseconds",
+                        this.millisBetweenLoops);
+                // Waits before restart the process.
+                try {
+                    Thread.sleep(this.millisBetweenLoops);
+                } catch (InterruptedException e) {
+                    // Nothing.
+                }
+            }
+        }
+
+        LOGGER.trace("< toStart");
     }
 }

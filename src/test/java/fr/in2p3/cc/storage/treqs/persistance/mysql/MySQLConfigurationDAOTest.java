@@ -69,58 +69,6 @@ public class MySQLConfigurationDAOTest {
     }
 
     @Test
-    public void test02getMediaAllocation() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM mediatype ";
-        MySQLBroker.getInstance().executeModification(query);
-
-        query = "INSERT INTO mediatype VALUES (1, \"T10K-A\", 5, \"??\", \"JT\")";
-        MySQLBroker.getInstance().executeModification(query);
-
-        List<Resource> actual = MySQLConfigurationDAO.getInstance()
-                .getMediaAllocations();
-
-        Assert.assertTrue(actual.size() == 1);
-
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void test03getMediaAllocation() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM mediatype";
-        MySQLBroker.getInstance().executeModification(query);
-
-        query = "INSERT INTO mediatype VALUES (2, \"T10K-B\", 7, \"??\", \"IT\")";
-        MySQLBroker.getInstance().executeModification(query);
-        query = "INSERT INTO mediatype VALUES (3, \"T10K-C\", 8, \"??\", \"JS\")";
-        MySQLBroker.getInstance().executeModification(query);
-
-        List<Resource> actual = MySQLConfigurationDAO.getInstance()
-                .getMediaAllocations();
-
-        Assert.assertTrue(actual.size() == 2);
-
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void test04getMediaAllocation() throws TReqSException {
-        boolean failed = false;
-        try {
-            MySQLConfigurationDAO.getInstance().getMediaAllocations();
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
     public void test01getResourceAllocation() throws TReqSException {
         MySQLBroker.getInstance().connect();
         String query = "DELETE FROM allocation";
@@ -134,6 +82,23 @@ public class MySQLConfigurationDAOTest {
         int expected = 0;
 
         Assert.assertEquals(expected, actual);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    @Test
+    public void test02getMediaAllocation() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        String query = "DELETE FROM mediatype ";
+        MySQLBroker.getInstance().executeModification(query);
+
+        query = "INSERT INTO mediatype VALUES (1, \"T10K-A\", 5, \"??\", \"JT\")";
+        MySQLBroker.getInstance().executeModification(query);
+
+        List<Resource> actual = MySQLConfigurationDAO.getInstance()
+                .getMediaAllocations();
+
+        Assert.assertTrue(actual.size() == 1);
+
         MySQLBroker.getInstance().disconnect();
     }
 
@@ -157,6 +122,25 @@ public class MySQLConfigurationDAOTest {
     }
 
     @Test
+    public void test03getMediaAllocation() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        String query = "DELETE FROM mediatype";
+        MySQLBroker.getInstance().executeModification(query);
+
+        query = "INSERT INTO mediatype VALUES (2, \"T10K-B\", 7, \"??\", \"IT\")";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "INSERT INTO mediatype VALUES (3, \"T10K-C\", 8, \"??\", \"JS\")";
+        MySQLBroker.getInstance().executeModification(query);
+
+        List<Resource> actual = MySQLConfigurationDAO.getInstance()
+                .getMediaAllocations();
+
+        Assert.assertTrue(actual.size() == 2);
+
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    @Test
     public void test03getResourceAllocation() throws TReqSException {
         MySQLBroker.getInstance().connect();
         String query = "DELETE FROM allocation";
@@ -175,5 +159,21 @@ public class MySQLConfigurationDAOTest {
 
         Assert.assertEquals(expected, actual);
         MySQLBroker.getInstance().disconnect();
+    }
+
+    @Test
+    public void test04getMediaAllocation() throws TReqSException {
+        boolean failed = false;
+        try {
+            MySQLConfigurationDAO.getInstance().getMediaAllocations();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ExecuteMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
     }
 }

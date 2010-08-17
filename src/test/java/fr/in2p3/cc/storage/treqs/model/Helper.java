@@ -12,12 +12,12 @@ public class Helper {
         queue.changeToEnded();
     }
 
-    public static Reading getNextReading(Queue queue) throws TReqSException {
-        return queue.getNextReading();
-    }
-
     public static FilePositionOnTape getMetaData(Reading reading) {
         return reading.getMetaData();
+    }
+
+    public static Reading getNextReading(Queue queue) throws TReqSException {
+        return queue.getNextReading();
     }
 
     public static Queue getQueue(Reading reading) {

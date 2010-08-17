@@ -13,9 +13,9 @@ public class RandomString {
             symbols[idx] = (char) ('a' + idx - 10);
     }
 
-    private final Random random = new Random();
-
     private final char[] buf;
+
+    private final Random random = new Random();
 
     public RandomString(int length) {
         if (length < 1)

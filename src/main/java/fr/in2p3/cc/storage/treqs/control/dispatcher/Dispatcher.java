@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.FilesController;
 import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
+import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.control.UsersController;
@@ -76,7 +77,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 /**
  * This class scans new jobs and assign the requests to queues
  */
-public class Dispatcher extends Thread {
+public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
 
     /**
      * The singleton instance.
@@ -100,7 +101,8 @@ public class Dispatcher extends Thread {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        _instance.interrupt();
+        // _instance.conclude();
+        // _instance.waitToFinish();
 
         _instance = null;
 
@@ -134,8 +136,6 @@ public class Dispatcher extends Thread {
 
     private int millisBetweenLoops;
 
-    private boolean toContinue;
-
     private Dispatcher() throws TReqSException {
         super("Dispatcher");
 
@@ -162,9 +162,37 @@ public class Dispatcher extends Thread {
             throw new ExecutionErrorException(e);
         }
 
-        this.toContinue = true;
+        this.kickStart();
 
         LOGGER.trace("< create Dispatcher");
+    }
+
+    private void action() {
+        LOGGER.trace("> action");
+
+        try {
+            cleaningReferences();
+        } catch (Exception e2) {
+            LOGGER.error("PROBLEM: {}", e2.getMessage());
+            this.conclude();
+        }
+
+        if (this.keepOn()) {
+            try {
+                retrieveNewRequest();
+            } catch (Exception e1) {
+                if (e1 instanceof TReqSException) {
+                    TReqSException e = (TReqSException) e1;
+                    LOGGER.error("PROBLEM: {} - {}", e.getCode(), e
+                            .getMessage());
+                } else {
+                    LOGGER.error("PROBLEM: {}", e1.getMessage());
+                }
+                this.conclude();
+            }
+        }
+
+        LOGGER.trace("< action");
     }
 
     /**
@@ -227,8 +255,8 @@ public class Dispatcher extends Thread {
     }
 
     /**
-     * Scans new requests via MySQLBridge Puts all new requests in the
-     * RequestsList container
+     * Scans new requests via DAO Puts all new requests in the RequestsList
+     * container.
      * 
      * @return A map of all the new requests. The key is the filename
      * @throws TReqSException
@@ -243,6 +271,8 @@ public class Dispatcher extends Thread {
         User owner;
 
         LOGGER.info("Looking for new jobs");
+        // TODO This should be done several times till there are not more
+        // requests in the database.
         try {
             newJobs = DAO.getReadingDAO().getNewJobs(this.maxRequests);
         } catch (PersistanceException e) {
@@ -273,12 +303,6 @@ public class Dispatcher extends Thread {
         return newRequests;
     }
 
-    public byte getSecondsBetweenLoops() {
-        LOGGER.trace(">< getSecondsBetweenLoops");
-
-        return (byte) (this.millisBetweenLoops / MILLIS);
-    }
-
     /**
      * Verify the permissions on a file against the user requesting it
      * <p>
@@ -296,7 +320,32 @@ public class Dispatcher extends Thread {
     // return false;
     // }
 
+    public byte getSecondsBetweenLoops() {
+        LOGGER.trace(">< getSecondsBetweenLoops");
+
+        return (byte) (this.millisBetweenLoops / MILLIS);
+    }
+
     /**
+     * Makes a cycle of the dispatcher.
+     */
+    @Override
+    public void oneLoop() {
+        LOGGER.trace("> oneLoop");
+
+        this.changeStatus(ProcessStatus.STARTED);
+
+        action();
+
+        this.changeStatus(ProcessStatus.STOPPED);
+
+        LOGGER.trace("< oneLoop");
+    }
+
+    /**
+     * TODO This should be multithreaded in order to ask several file properties
+     * to the server simultaneously.
+     * 
      * @param newRequests
      * @throws TReqSException
      */
@@ -475,6 +524,13 @@ public class Dispatcher extends Thread {
     }
 
     /**
+     * This method is just for tests, because it reinitializes the dispatcher.
+     */
+    public void restart() {
+        this.status = ProcessStatus.STARTING;
+    }
+
+    /**
      * This method has a default visibility just for testing purposes.
      * 
      * @throws TReqSException
@@ -496,35 +552,6 @@ public class Dispatcher extends Thread {
         }
 
         LOGGER.trace("< retrieveNewRequest");
-    }
-
-    /**
-     * Run periodically over the database to do the work. Call
-     * get_new_requests() and treat all the results
-     * 
-     * @throws TReqSException
-     */
-    @Override
-    public void run() {
-        LOGGER.trace("> run");
-
-        while (this.toContinue) {
-
-            toStart();
-
-            if (this.toContinue) {
-                LOGGER.info("Sleeping " + this.millisBetweenLoops
-                        + " milliseconds");
-                // Waits before restart the process.
-                try {
-                    Thread.sleep(this.millisBetweenLoops);
-                } catch (InterruptedException e) {
-                    // Nothing.
-                }
-            }
-        }
-
-        LOGGER.trace("< run");
     }
 
     void setMaxFilesBeforeMessage(short max) {
@@ -616,37 +643,31 @@ public class Dispatcher extends Thread {
     }
 
     /**
-     * Makes a cycle of the dispatcher.
+     * Run periodically over the database to do the work. Call
+     * get_new_requests() and treat all the results
+     * 
+     * @throws TReqSException
      */
-    public void toStart() {
-        try {
-            cleaningReferences();
-        } catch (Exception e2) {
-            LOGGER.error("PROBLEM: {}", e2.getMessage());
-            this.toContinue = false;
-        }
+    @Override
+    protected void toStart() {
+        LOGGER.trace("> toStart");
 
-        if (this.toContinue) {
-            try {
-                retrieveNewRequest();
-            } catch (Exception e1) {
-                if (e1 instanceof TReqSException) {
-                    TReqSException e = (TReqSException) e1;
-                    LOGGER.error("PROBLEM: {} - {}", e.getCode(), e
-                            .getMessage());
-                } else {
-                    LOGGER.error("PROBLEM: {}", e1.getMessage());
+        while (this.keepOn()) {
+
+            this.action();
+
+            if (this.keepOn()) {
+                LOGGER.debug("Sleeping {} milliseconds",
+                        this.millisBetweenLoops);
+                // Waits before restart the process.
+                try {
+                    Thread.sleep(this.millisBetweenLoops);
+                } catch (InterruptedException e) {
+                    // Nothing.
                 }
-                this.toContinue = false;
             }
         }
-    }
 
-    public void toStop() {
-        LOGGER.trace("> toStop");
-
-        this.toContinue = false;
-
-        LOGGER.trace("< toStop");
+        LOGGER.trace("< toStart");
     }
 }

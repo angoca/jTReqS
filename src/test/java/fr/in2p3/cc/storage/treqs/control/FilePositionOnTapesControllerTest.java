@@ -79,6 +79,27 @@ public class FilePositionOnTapesControllerTest {
     }
 
     /**
+     * Tests to create a fpot with file null.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void test01createFpotFileNull() throws TReqSException {
+        File file = null;
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+
+        try {
+            FilePositionOnTapesController.getInstance().create(file, tape, 0);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    /**
      * Tests to add a fpot with null tape.
      */
     @Test
@@ -98,6 +119,25 @@ public class FilePositionOnTapesControllerTest {
         }
     }
 
+    /**
+     * Tests to create a fpot with null tape.
+     */
+    @Test
+    public void test02createFpotTapeNull() throws TReqSException {
+        File file = new File("filename", new User("userName", (short) 11,
+                "group", (short) 12), 1000);
+        Tape tape = null;
+
+        try {
+            FilePositionOnTapesController.getInstance().create(file, tape, 0);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
     @Test
     public void test03addFpotTapeNegative() throws TReqSException {
         File file = new File("filename", new User("userName", (short) 11,
@@ -107,6 +147,23 @@ public class FilePositionOnTapesControllerTest {
 
         try {
             FilePositionOnTapesController.getInstance().add(file, tape, -15);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test03createFpotTapeNegative() throws TReqSException {
+        File file = new File("filename", new User("userName", (short) 11,
+                "group", (short) 12), 1000);
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+
+        try {
+            FilePositionOnTapesController.getInstance().create(file, tape, -15);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -136,62 +193,5 @@ public class FilePositionOnTapesControllerTest {
                 .add(file, tape, 0);
         Assert.assertTrue("Same fpot", fpot1 == fpot2);
 
-    }
-
-    /**
-     * Tests to create a fpot with file null.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void test01createFpotFileNull() throws TReqSException {
-        File file = null;
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-
-        try {
-            FilePositionOnTapesController.getInstance().create(file, tape, 0);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests to create a fpot with null tape.
-     */
-    @Test
-    public void test02createFpotTapeNull() throws TReqSException {
-        File file = new File("filename", new User("userName", (short) 11,
-                "group", (short) 12), 1000);
-        Tape tape = null;
-
-        try {
-            FilePositionOnTapesController.getInstance().create(file, tape, 0);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test03createFpotTapeNegative() throws TReqSException {
-        File file = new File("filename", new User("userName", (short) 11,
-                "group", (short) 12), 1000);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-
-        try {
-            FilePositionOnTapesController.getInstance().create(file, tape, -15);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
     }
 }

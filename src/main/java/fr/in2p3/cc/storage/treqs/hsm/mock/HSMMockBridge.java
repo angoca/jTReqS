@@ -92,12 +92,14 @@ public class HSMMockBridge extends AbstractHSMBridge {
     private HSMException filePropertiesException;
     private HSMException stageException;
     private long stageMillis;
+    private Object notifyObject;
 
     private HSMMockBridge() {
         this.fileProperties = generateTape();
         this.filePropertiesException = null;
         this.stageException = null;
         this.stageMillis = 0;
+        this.notifyObject = null;
     }
 
     /**
@@ -204,6 +206,18 @@ public class HSMMockBridge extends AbstractHSMBridge {
             this.stageException = null;
             throw toThrow;
         }
+        if (this.notifyObject != null) {
+            LOGGER.info("Fake staging waiting :p");
+            synchronized (this.notifyObject) {
+                try {
+                    this.notifyObject.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            this.notifyObject = null;
+            LOGGER.info("Fake staging notified :p");
+        }
 
         long wait = 0;
         if (this.stageMillis == 0) {
@@ -219,5 +233,9 @@ public class HSMMockBridge extends AbstractHSMBridge {
         LOGGER.info("Fake staging done ;)");
 
         LOGGER.trace("< stage");
+    }
+
+    public void waitStage(Object notifyObject) {
+        this.notifyObject = notifyObject;
     }
 }

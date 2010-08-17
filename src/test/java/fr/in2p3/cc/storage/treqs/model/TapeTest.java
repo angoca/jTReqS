@@ -63,6 +63,37 @@ public class TapeTest {
     }
 
     @Test
+    public void test01StatusUpdateTime() {
+        String tapename = "tapename";
+        MediaType mediatype = new MediaType((byte) 1, "T10K");
+        TapeStatus status = TapeStatus.TS_UNLOCKED;
+        Tape tape = new Tape(tapename, mediatype, status);
+
+        try {
+            tape.setStatusUpdateTime(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test01toString() {
+        String tapename = "tapename";
+        MediaType mediatype = new MediaType((byte) 1, "T10K");
+        TapeStatus status = TapeStatus.TS_UNLOCKED;
+        Tape tape = new Tape(tapename, mediatype, status);
+
+        String actual = tape.toString();
+
+        String expected = "Tape{ media type: " + mediatype.getName()
+                + ", name: " + tapename + ", status: " + status + "}";
+        Assert.assertEquals("toString", expected, actual);
+    }
+
+    @Test
     public void test02Constructor() {
         MediaType mediatype = new MediaType((byte) 1, "T10K");
 
@@ -74,6 +105,20 @@ public class TapeTest {
                 Assert.fail();
             }
         }
+    }
+
+    @Test
+    public void test02StatusUpdateTime() {
+        String tapename = "tapename";
+        MediaType mediatype = new MediaType((byte) 1, "T10K");
+        TapeStatus status = TapeStatus.TS_UNLOCKED;
+        Tape tape = new Tape(tapename, mediatype, status);
+
+        tape.setStatusUpdateTimeNow();
+
+        Calendar time = tape.getStatusUpdateTime();
+
+        Assert.assertTrue(time != null);
     }
 
     @Test
@@ -118,51 +163,6 @@ public class TapeTest {
                 Assert.fail();
             }
         }
-    }
-
-    @Test
-    public void test01toString() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
-
-        String actual = tape.toString();
-
-        String expected = "Tape{ media type: " + mediatype.getName()
-                + ", name: " + tapename + ", status: " + status + "}";
-        Assert.assertEquals("toString", expected, actual);
-    }
-
-    @Test
-    public void test01StatusUpdateTime() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
-
-        try {
-            tape.setStatusUpdateTime(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02StatusUpdateTime() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
-
-        tape.setStatusUpdateTimeNow();
-
-        Calendar time = tape.getStatusUpdateTime();
-
-        Assert.assertTrue(time != null);
     }
 
 }

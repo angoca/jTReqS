@@ -478,14 +478,19 @@ public class QueuesController {
         String queueName = "";
         // First get the list of queues
 
-        Set<String> keys = this.queuesMap.keySet();
-        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-            String key = iterator.next();
-            List<Queue> queues = this
-                    .sortQueues((Collection<Queue>) this.queuesMap.get(key));
-            for (Iterator<Queue> iterator2 = queues.iterator(); iterator2
-                    .hasNext();) {
-                Queue queue = iterator2.next();
+        List<String> keys = (List<String>) this
+                .convertSetToList((Collection<String>) this.queuesMap.keySet());
+        Collections.sort(keys);
+        int length = keys.size();
+        for (int j = 0; j < length; j++) {
+            String key = keys.get(j);
+            List<Queue> queues = (List<Queue>) this
+                    .convertSetToList((Collection<Queue>) this.queuesMap
+                            .get(key));
+            Collections.sort(queues);
+            int length2 = queues.size();
+            for (int i = 0; i < length2; i++) {
+                Queue queue = queues.get(i);
                 // The queue belong to this user and concerns the given resource
                 if (queue.getOwner().equals(user)
                         && (queue.getTape().getMediaType().equals(resource
@@ -517,7 +522,8 @@ public class QueuesController {
         }
 
         if (ret != null) {
-            LOGGER.info("Best queue for " + user + " is on tape " + queueName);
+            LOGGER.info("Best queue for {}  is on tape {}", user.getName(),
+                    queueName);
         } else {
             LOGGER.info("No queue could be selected");
         }
@@ -615,12 +621,13 @@ public class QueuesController {
         return bestUser;
     }
 
-    private List<Queue> sortQueues(Collection<Queue> queues) {
-        List<Queue> ret = new ArrayList<Queue>();
-        for (Iterator<Queue> iterator = queues.iterator(); iterator.hasNext();) {
+    @SuppressWarnings("unchecked")
+    private List<?> convertSetToList(Collection<?> queues) {
+        List<Object> ret = new ArrayList<Object>();
+        for (Iterator<Object> iterator = (Iterator<Object>) queues.iterator(); iterator
+                .hasNext();) {
             ret.add(iterator.next());
         }
-        Collections.sort(ret);
         return ret;
     }
 

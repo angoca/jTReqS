@@ -60,6 +60,38 @@ public class TapesControllerTest {
         TapesController.destroyInstance();
     }
 
+    @Test
+    public void test01add() throws Exception {
+        TapesController.destroyInstance();
+
+        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        try {
+            TapesController.getInstance().add(null, mediatype,
+                    TapeStatus.TS_UNLOCKED);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test01create() throws Exception {
+        TapesController.destroyInstance();
+
+        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        try {
+            TapesController.getInstance().create(null, mediatype,
+                    TapeStatus.TS_UNLOCKED);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
     /**
      * Tests
      * 
@@ -77,12 +109,12 @@ public class TapesControllerTest {
     }
 
     @Test
-    public void test01create() throws Exception {
+    public void test02add() throws Exception {
         TapesController.destroyInstance();
 
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        String tapename = "tapename";
         try {
-            TapesController.getInstance().create(null, mediatype,
+            TapesController.getInstance().add(tapename, null,
                     TapeStatus.TS_UNLOCKED);
             Assert.fail();
         } catch (Throwable e) {
@@ -109,54 +141,6 @@ public class TapesControllerTest {
     }
 
     @Test
-    public void test03create() throws Exception {
-        TapesController.destroyInstance();
-
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
-        try {
-            TapesController.getInstance().create(tapename, mediatype, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test01add() throws Exception {
-        TapesController.destroyInstance();
-
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
-        try {
-            TapesController.getInstance().add(null, mediatype,
-                    TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02add() throws Exception {
-        TapesController.destroyInstance();
-
-        String tapename = "tapename";
-        try {
-            TapesController.getInstance().add(tapename, null,
-                    TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
     public void test03add() throws Exception {
         TapesController.destroyInstance();
 
@@ -164,6 +148,22 @@ public class TapesControllerTest {
         MediaType mediatype = new MediaType((byte) 1, "mediatype");
         try {
             TapesController.getInstance().add(tapename, mediatype, null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test03create() throws Exception {
+        TapesController.destroyInstance();
+
+        String tapename = "tapename";
+        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        try {
+            TapesController.getInstance().create(tapename, mediatype, null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {

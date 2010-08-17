@@ -62,6 +62,51 @@ public class FileRequestTest {
     }
 
     /**
+     * Tests to re-establish the name
+     * 
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test
+    public void test01setName() throws InvalidParameterException {
+        FileRequest freq = new FileRequest(10, "filename",
+                new User("username"), (byte) 10);
+
+        try {
+            freq.setName("OtherName");
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidParameterException)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    /**
+     * Tests the toString method.
+     * 
+     * @throws InvalidParameterException
+     *             Never.
+     */
+    @Test
+    public void test01toString() throws InvalidParameterException {
+        int id = 1;
+        String filename = "fileName";
+        String username = "Username";
+        byte retries = 2;
+        FileRequest freq = new FileRequest(id, filename, new User(username),
+                retries);
+
+        String actual = freq.toString();
+
+        String expected = "FileRequest{ id: " + id + ", filename: " + filename
+                + ", client: " + username + ", number of tries: " + retries
+                + "}";
+
+        Assert.assertEquals("toString", expected, actual);
+    }
+
+    /**
      * Tests a constructor with null client.
      * 
      * @throws InvalidParameterException
@@ -103,51 +148,6 @@ public class FileRequestTest {
     @Test(expected = AssertionError.class)
     public void test05Contructor() throws InvalidParameterException {
         new FileRequest(10, "file", new User("username"), (byte) -10);
-    }
-
-    /**
-     * Tests the toString method.
-     * 
-     * @throws InvalidParameterException
-     *             Never.
-     */
-    @Test
-    public void test01toString() throws InvalidParameterException {
-        int id = 1;
-        String filename = "fileName";
-        String username = "Username";
-        byte retries = 2;
-        FileRequest freq = new FileRequest(id, filename, new User(username),
-                retries);
-
-        String actual = freq.toString();
-
-        String expected = "FileRequest{ id: " + id + ", filename: " + filename
-                + ", client: " + username + ", number of tries: " + retries
-                + "}";
-
-        Assert.assertEquals("toString", expected, actual);
-    }
-
-    /**
-     * Tests to re-establish the name
-     * 
-     * @throws InvalidParameterException
-     *             Never
-     */
-    @Test
-    public void test01setName() throws InvalidParameterException {
-        FileRequest freq = new FileRequest(10, "filename",
-                new User("username"), (byte) 10);
-
-        try {
-            freq.setName("OtherName");
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
-            }
-        }
     }
 
 }

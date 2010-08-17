@@ -52,6 +52,20 @@ public class MySQLDAOHelper {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLDAOHelper.class);
 
+    private static String getFileName() {
+        String ret = "";
+        int size = (int) (Math.random() * 20) + 5;
+        ret = new RandomString(size).nextString();
+        return ret;
+    }
+
+    private static String getUserName() {
+        String ret = "";
+        ret = new RandomString(1).nextString()
+                + ((int) (Math.random() * 5) + 1);
+        return ret;
+    }
+
     /**
      * @param args
      * @throws TReqSException
@@ -69,19 +83,5 @@ public class MySQLDAOHelper {
             RequestsDAO.insertRow(fileName, userName, status);
         }
         MySQLBroker.getInstance().disconnect();
-    }
-
-    private static String getFileName() {
-        String ret = "";
-        int size = (int) (Math.random() * 20) + 5;
-        ret = new RandomString(size).nextString();
-        return ret;
-    }
-
-    private static String getUserName() {
-        String ret = "";
-        ret = new RandomString(1).nextString()
-                + ((int) (Math.random() * 5) + 1);
-        return ret;
     }
 }

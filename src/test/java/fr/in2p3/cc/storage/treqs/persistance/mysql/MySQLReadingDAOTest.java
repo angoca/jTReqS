@@ -73,19 +73,19 @@ public class MySQLReadingDAOTest {
                 "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
     }
 
+    @AfterClass
+    public static void oneTimeTearDown() {
+        Configurator.destroyInstance();
+        MySQLBroker.destroyInstance();
+        MySQLReadingDAO.destroyInstance();
+    }
+
     @After
     public void tearDown() throws TReqSException {
         MySQLBroker.getInstance().connect();
         RequestsDAO.deleteAll();
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
-        Configurator.destroyInstance();
-        MySQLBroker.destroyInstance();
-        MySQLReadingDAO.destroyInstance();
     }
 
     @Test
@@ -318,556 +318,6 @@ public class MySQLReadingDAOTest {
         MySQLBroker.getInstance().executeModification(query);
         MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message, queue);
         MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void testUpdate01() throws TReqSException {
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = null;
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testUpdate02() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = null;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testUpdate03() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = null;
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testUpdate04() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = -1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests a null message.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate05() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = null;
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to insert an empty message. This is valid.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate06() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void testUpdate07() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = -2;
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testUpdate08() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = null;
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests no connection.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate09() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to update a submitted request.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate10Submitted() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_SUBMITTED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    /**
-     * Tests to update a queued request.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate11Queued() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_QUEUED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    /**
-     * Tests to update a created request.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate12Created() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    /**
-     * Tests to update a created failed.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate13Failed() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_FAILED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    /**
-     * Tests to update a staged staged.
-     * 
-     * @throws TReqSException
-     */
-    @Test
-    public void testUpdate14Staged() throws TReqSException {
-        User owner = new User("username");
-        long size = 100;
-        String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_STAGED;
-        Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(tape);
-
-        MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    /**
-     * Tests without connection
-     * 
-     * @throws PersistanceException
-     */
-    @Test
-    public void testUpdateUnfinishedRequests01() throws PersistanceException {
-        boolean failed = false;
-        try {
-            MySQLReadingDAO.getInstance().updateUnfinishedRequests();
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to update a submitted requests.
-     * 
-     * @throws TReqSException
-     * @throws SQLException
-     */
-    @Test
-    public void testUpdateUnfinishedRequests02() throws TReqSException,
-            SQLException {
-        String fileName = "UpdateUnfinished1";
-        String query = "INSERT INTO requests (hpss_file, status) VALUES ('"
-                + fileName + "', " + FileStatus.FS_SUBMITTED.getId() + ")";
-
-        MySQLBroker.getInstance().connect();
-        MySQLBroker.getInstance().executeModification(query);
-        MySQLReadingDAO.getInstance().updateUnfinishedRequests();
-        query = "SELECT status FROM requests WHERE hpss_file = '" + fileName
-                + "'";
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        if (result.next()) {
-            int actualState = result.getInt(1);
-            int expectedState = FileStatus.FS_CREATED.getId();
-
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-
-            Assert.assertEquals(expectedState, actualState);
-        } else {
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to update a queued requests.
-     * 
-     * @throws TReqSException
-     * @throws SQLException
-     */
-    @Test
-    public void testUpdateUnfinishedRequests03() throws TReqSException,
-            SQLException {
-        String fileName = "UpdateUnfinished2";
-        String query = "INSERT INTO requests (hpss_file, status) VALUES ('"
-                + fileName + "', " + FileStatus.FS_QUEUED.getId() + ")";
-
-        MySQLBroker.getInstance().connect();
-        MySQLBroker.getInstance().executeModification(query);
-        MySQLReadingDAO.getInstance().updateUnfinishedRequests();
-        query = "SELECT status FROM requests WHERE hpss_file = '" + fileName
-                + "'";
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        if (result.next()) {
-            int actualState = result.getInt(1);
-            int expectedState = FileStatus.FS_CREATED.getId();
-
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-
-            Assert.assertEquals(expectedState, actualState);
-        } else {
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to update nothing.
-     * 
-     * @throws TReqSException
-     * @throws SQLException
-     */
-    @Test
-    public void testUpdateUnfinishedRequests04() throws TReqSException,
-            SQLException {
-        MySQLBroker.getInstance().connect();
-        int actual = MySQLReadingDAO.getInstance().updateUnfinishedRequests();
-        MySQLBroker.getInstance().disconnect();
-        int expected = 0;
-
-        Assert.assertEquals(expected, actual);
     }
 
     /**
@@ -1423,5 +873,555 @@ public class MySQLReadingDAOTest {
             MySQLBroker.getInstance().disconnect();
             Assert.fail();
         }
+    }
+
+    @Test
+    public void testUpdate01() throws TReqSException {
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = null;
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testUpdate02() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = null;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testUpdate03() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = null;
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testUpdate04() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = -1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests a null message.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate05() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = null;
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to insert an empty message. This is valid.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate06() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        MySQLBroker.getInstance().connect();
+        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
+                errorMessage, errorCode, queue);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    @Test
+    public void testUpdate07() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = -2;
+        Queue queue = new Queue(tape);
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testUpdate08() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = null;
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests no connection.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate09() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
+                    nbTries, errorMessage, errorCode, queue);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ExecuteMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to update a submitted request.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate10Submitted() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_SUBMITTED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        MySQLBroker.getInstance().connect();
+        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
+                errorMessage, errorCode, queue);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    /**
+     * Tests to update a queued request.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate11Queued() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_QUEUED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        MySQLBroker.getInstance().connect();
+        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
+                errorMessage, errorCode, queue);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    /**
+     * Tests to update a created request.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate12Created() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_CREATED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        MySQLBroker.getInstance().connect();
+        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
+                errorMessage, errorCode, queue);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    /**
+     * Tests to update a created failed.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate13Failed() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_FAILED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        MySQLBroker.getInstance().connect();
+        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
+                errorMessage, errorCode, queue);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    /**
+     * Tests to update a staged staged.
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void testUpdate14Staged() throws TReqSException {
+        User owner = new User("username");
+        long size = 100;
+        String fileName = "hpss/file";
+        File file = new File(fileName, owner, size);
+        int position = 4;
+        MediaType mediaType = new MediaType((byte) 2, "mediaType");
+        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), position, tape);
+        FileStatus status = FileStatus.FS_STAGED;
+        Calendar endTime = new GregorianCalendar();
+        byte nbTries = 1;
+        String errorMessage = "Error message";
+        short errorCode = 2;
+        Queue queue = new Queue(tape);
+
+        MySQLBroker.getInstance().connect();
+        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
+                errorMessage, errorCode, queue);
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    /**
+     * Tests without connection
+     * 
+     * @throws PersistanceException
+     */
+    @Test
+    public void testUpdateUnfinishedRequests01() throws PersistanceException {
+        boolean failed = false;
+        try {
+            MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ExecuteMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to update a submitted requests.
+     * 
+     * @throws TReqSException
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateUnfinishedRequests02() throws TReqSException,
+            SQLException {
+        String fileName = "UpdateUnfinished1";
+        String query = "INSERT INTO requests (hpss_file, status) VALUES ('"
+                + fileName + "', " + FileStatus.FS_SUBMITTED.getId() + ")";
+
+        MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().executeModification(query);
+        MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+        query = "SELECT status FROM requests WHERE hpss_file = '" + fileName
+                + "'";
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        if (result.next()) {
+            int actualState = result.getInt(1);
+            int expectedState = FileStatus.FS_CREATED.getId();
+
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+
+            Assert.assertEquals(expectedState, actualState);
+        } else {
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to update a queued requests.
+     * 
+     * @throws TReqSException
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateUnfinishedRequests03() throws TReqSException,
+            SQLException {
+        String fileName = "UpdateUnfinished2";
+        String query = "INSERT INTO requests (hpss_file, status) VALUES ('"
+                + fileName + "', " + FileStatus.FS_QUEUED.getId() + ")";
+
+        MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().executeModification(query);
+        MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+        query = "SELECT status FROM requests WHERE hpss_file = '" + fileName
+                + "'";
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        if (result.next()) {
+            int actualState = result.getInt(1);
+            int expectedState = FileStatus.FS_CREATED.getId();
+
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+
+            Assert.assertEquals(expectedState, actualState);
+        } else {
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to update nothing.
+     * 
+     * @throws TReqSException
+     * @throws SQLException
+     */
+    @Test
+    public void testUpdateUnfinishedRequests04() throws TReqSException,
+            SQLException {
+        MySQLBroker.getInstance().connect();
+        int actual = MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+        MySQLBroker.getInstance().disconnect();
+        int expected = 0;
+
+        Assert.assertEquals(expected, actual);
     }
 }

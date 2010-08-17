@@ -47,6 +47,7 @@ import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.control.StagersController;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.model.dao.DAO;
@@ -189,9 +190,17 @@ public class Starter {
 
         this.cont = false;
 
-        Activator.getInstance().toStop();
+        Activator.getInstance().conclude();
 
-        Dispatcher.getInstance().toStop();
+        Dispatcher.getInstance().conclude();
+
+        StagersController.getInstance().conclude();
+
+        Activator.getInstance().waitToFinish();
+
+        Dispatcher.getInstance().waitToFinish();
+
+        StagersController.getInstance().waitTofinish();
 
         LOGGER.trace("< stop");
     }

@@ -47,10 +47,12 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.FilesController;
+import fr.in2p3.cc.storage.treqs.control.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
@@ -62,14 +64,16 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
 import fr.in2p3.cc.storage.treqs.persistance.PersistenceHelperFileRequest;
 import fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mock.exception.MockPersistanceException;
+import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 /**
  * DispatcherTest.cpp
@@ -80,8 +84,27 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 public class DispatcherTest {
 
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        RequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+    }
+
+    @AfterClass
+    public static void oneTimeTearDown() throws TReqSException {
+        MockReadingDAO.destroyInstance();
+        PersistenceFactory.destroyInstance();
+
+        MySQLBroker.getInstance().connect();
+        RequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+    }
+
     @Before
-    public void setUp() throws ProblematicConfiguationFileException {
+    public void setUp() throws TReqSException {
         HSMMockBridge.getInstance().setStageTime(100);
         Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
                 "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
@@ -89,48 +112,25 @@ public class DispatcherTest {
                 .getInstance()
                 .setValue("MAIN", "READING_DAO",
                         "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+        MySQLBroker.getInstance().connect();
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws CloseMySQLException {
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
         Dispatcher.destroyInstance();
         Configurator.destroyInstance();
+        QueuesController.destroyInstance();
         FilePositionOnTapesController.destroyInstance();
         FilesController.destroyInstance();
         TapesController.destroyInstance();
         HSMMockBridge.destroyInstance();
     }
 
-    @AfterClass
-    public static void oneTimeTearDown() {
-        MockReadingDAO.destroyInstance();
-        PersistenceFactory.destroyInstance();
-    }
-
     @Test
     public void test01create() throws TReqSException {
         Dispatcher.getInstance().getMaxRequests();
-    }
-
-    @Test(expected = AssertionError.class)
-    public void test01MaxRequest() throws TReqSException {
-        Dispatcher.getInstance().setMaxRequests((short) -5);
-    }
-
-    @Test
-    public void test02MaxRequest() throws TReqSException {
-        Dispatcher.getInstance().setMaxRequests((short) 5);
-    }
-
-    @Test
-    public void test01toStop() throws TReqSException {
-        Dispatcher.getInstance().start();
-        try {
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Dispatcher.getInstance().toStop();
     }
 
     @Test
@@ -149,20 +149,9 @@ public class DispatcherTest {
         }
     }
 
-    @Test
-    public void test01SecondsBetweenLoops() throws TReqSException {
-        boolean failed = false;
-        try {
-            Dispatcher.getInstance().setSecondsBetweenLoops((byte) -1);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
+    @Test(expected = AssertionError.class)
+    public void test01MaxRequest() throws TReqSException {
+        Dispatcher.getInstance().setMaxRequests((short) -5);
     }
 
     /**
@@ -182,7 +171,7 @@ public class DispatcherTest {
                     e.printStackTrace();
                 }
                 try {
-                    Dispatcher.getInstance().toStop();
+                    Dispatcher.getInstance().conclude();
                 } catch (TReqSException e) {
                     e.printStackTrace();
                 }
@@ -192,6 +181,40 @@ public class DispatcherTest {
         thread.start();
         // It waits for Dispatcher.getInstance().getSecondsBetweenLoops() == 3
         Dispatcher.getInstance().run();
+        Dispatcher.getInstance().waitToFinish();
+    }
+
+    @Test
+    public void test01SecondsBetweenLoops() throws TReqSException {
+        boolean failed = false;
+        try {
+            Dispatcher.getInstance().setSecondsBetweenLoops((byte) -1);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test01toStop() throws TReqSException {
+        Dispatcher.getInstance().start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Dispatcher.getInstance().conclude();
+        Dispatcher.getInstance().waitToFinish();
+    }
+
+    @Test
+    public void test02MaxRequest() throws TReqSException {
+        Dispatcher.getInstance().setMaxRequests((short) 5);
     }
 
     /**
@@ -205,17 +228,13 @@ public class DispatcherTest {
                 new SQLException("NO-MESSAGE"));
         MockReadingDAO.getInstance().setNewJobsException(exception);
 
-        boolean failed = false;
         try {
             Dispatcher.getInstance().retrieveNewRequest();
-            failed = true;
+            Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
-                failed = true;
+                Assert.fail();
             }
-        }
-        if (failed) {
-            Assert.fail();
         }
     }
 
@@ -355,17 +374,13 @@ public class DispatcherTest {
                 new SQLException());
         MockReadingDAO.getInstance().setNewJobsException(exception);
 
-        boolean failed = false;
         try {
             Dispatcher.getInstance().retrieveNewRequest();
-            failed = true;
+            Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
-                failed = true;
+                Assert.fail();
             }
-        }
-        if (failed) {
-            Assert.fail();
         }
     }
 
@@ -589,7 +604,7 @@ public class DispatcherTest {
                     e.printStackTrace();
                 }
                 try {
-                    Dispatcher.getInstance().toStop();
+                    Dispatcher.getInstance().conclude();
                 } catch (TReqSException e) {
                     e.printStackTrace();
                 }

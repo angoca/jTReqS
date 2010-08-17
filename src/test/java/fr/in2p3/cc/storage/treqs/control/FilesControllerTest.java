@@ -54,10 +54,35 @@ public class FilesControllerTest {
     }
 
     @Test
+    public void test01AddUser() throws TReqSException {
+        try {
+            FilesController.getInstance().add(null, 10, new User("username"));
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
     public void test01CreateUser() throws TReqSException {
         try {
             FilesController.getInstance()
                     .create(null, 10, new User("username"));
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
+
+    @Test
+    public void test02AddUser() throws TReqSException {
+        try {
+            FilesController.getInstance().add("filename", -10,
+                    new User("username"));
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -86,34 +111,9 @@ public class FilesControllerTest {
      *             Never.
      */
     @Test
-    public void test03CreateUser() throws TReqSException {
+    public void test03AddUser() throws TReqSException {
         try {
-            FilesController.getInstance().create("filename", 10, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test01AddUser() throws TReqSException {
-        try {
-            FilesController.getInstance().add(null, 10, new User("username"));
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02AddUser() throws TReqSException {
-        try {
-            FilesController.getInstance().add("filename", -10,
-                    new User("username"));
+            FilesController.getInstance().add("filename", 10, null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -129,9 +129,9 @@ public class FilesControllerTest {
      *             Never.
      */
     @Test
-    public void test03AddUser() throws TReqSException {
+    public void test03CreateUser() throws TReqSException {
         try {
-            FilesController.getInstance().add("filename", 10, null);
+            FilesController.getInstance().create("filename", 10, null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {

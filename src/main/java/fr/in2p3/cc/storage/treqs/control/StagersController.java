@@ -121,7 +121,7 @@ public class StagersController {
             LOGGER.debug("Scanning stagers {}", iter);
             // TODO this method has to be changed. Stagers have several states,
             // not only 2.
-            if (stager.isJobDone()) {
+            if (stager.getProcessStatus() == ProcessStatus.STOPPED) {
                 LOGGER.debug("Cleaning stagers {}", iter);
                 this.remove(i);
                 i--;
@@ -138,6 +138,18 @@ public class StagersController {
         LOGGER.trace("< cleanup");
 
         return count;
+    }
+
+    public void conclude() {
+        LOGGER.trace("> conclude");
+
+        for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
+                .hasNext();) {
+            Stager stager = iterator.next();
+            stager.conclude();
+        }
+
+        LOGGER.trace("< conclude");
     }
 
     /**
@@ -169,15 +181,38 @@ public class StagersController {
         LOGGER.trace("< remove");
     }
 
-    void stop() {
-        LOGGER.trace("> stop");
+    public void waitTofinish() {
+        LOGGER.trace("> conclude");
 
-        for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
-                .hasNext();) {
-            Stager stager = iterator.next();
-            stager.toStop();
+        boolean stopped = false;
+        while (!stopped) {
+            boolean iteration = true;
+            for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
+                    .hasNext();) {
+                Stager stager = iterator.next();
+                ProcessStatus status = stager.getProcessStatus();
+                if (status == ProcessStatus.STOPPED) {
+                    iteration &= true;
+                } else {
+                    LOGGER.debug("Stager has not finished: {}", stager
+                            .getName());
+                    iteration &= false;
+                }
+            }
+            // All stagers are stopped
+            if (iteration) {
+                stopped = true;
+            } else {
+                LOGGER.debug("Sleeping {} milliseconds", 1000);
+                // Waiting a while for the stagers to finish.
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // Nothing
+                }
+            }
         }
 
-        LOGGER.trace("< stop");
+        LOGGER.trace("< conclude");
     }
 }

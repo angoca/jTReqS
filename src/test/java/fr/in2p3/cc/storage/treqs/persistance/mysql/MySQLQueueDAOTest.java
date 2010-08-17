@@ -63,6 +63,125 @@ public class MySQLQueueDAOTest {
     }
 
     /**
+     * Tests to abort the pending queue when there is not an established
+     * connection.
+     */
+    @Test
+    public void testAbort01() {
+        boolean failed = false;
+        try {
+            MySQLQueueDAO.getInstance().abortPendingQueues();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ExecuteMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testAbort02created() throws TReqSException, SQLException {
+        QueueStatus status = QueueStatus.QS_CREATED;
+        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
+                TapeStatus.TS_UNLOCKED);
+        int size = 987;
+        long byteSize = 987;
+        Calendar creationTime = new GregorianCalendar();
+
+        MySQLBroker.getInstance().connect();
+        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
+                byteSize, creationTime);
+
+        MySQLQueueDAO.getInstance().abortPendingQueues();
+
+        String query = "SELECT status FROM queues WHERE id = " + id;
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        if (result.next()) {
+            int actual = result.getInt(1);
+            int expected = QueueStatus.QS_ENDED.getId();
+
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+
+            Assert.assertEquals(expected, actual);
+        } else {
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testAbort03activated() throws TReqSException, SQLException {
+        QueueStatus status = QueueStatus.QS_ACTIVATED;
+        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
+                TapeStatus.TS_UNLOCKED);
+        int size = 987;
+        long byteSize = 987;
+        Calendar creationTime = new GregorianCalendar();
+
+        MySQLBroker.getInstance().connect();
+        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
+                byteSize, creationTime);
+
+        MySQLQueueDAO.getInstance().abortPendingQueues();
+
+        String query = "SELECT status FROM queues WHERE id = " + id;
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        if (result.next()) {
+            int actual = result.getInt(1);
+            int expected = QueueStatus.QS_ENDED.getId();
+
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+
+            Assert.assertEquals(expected, actual);
+        } else {
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void testAbort04Suspended() throws TReqSException, SQLException {
+        QueueStatus status = QueueStatus.QS_TEMPORARILY_SUSPENDED;
+        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
+                TapeStatus.TS_UNLOCKED);
+        int size = 987;
+        long byteSize = 987;
+        Calendar creationTime = new GregorianCalendar();
+
+        MySQLBroker.getInstance().connect();
+        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
+                byteSize, creationTime);
+
+        MySQLQueueDAO.getInstance().abortPendingQueues();
+
+        String query = "SELECT status FROM queues WHERE id = " + id;
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        if (result.next()) {
+            int actual = result.getInt(1);
+            int expected = QueueStatus.QS_ENDED.getId();
+
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+
+            Assert.assertEquals(expected, actual);
+        } else {
+            MySQLBroker.getInstance().terminateExecution(objects);
+            MySQLBroker.getInstance().disconnect();
+            Assert.fail();
+        }
+    }
+
+    /**
      * Tests an update without and established connection.
      * 
      * @throws TReqSException
@@ -724,124 +843,5 @@ public class MySQLQueueDAOTest {
         MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
                 nbFailed, ownerName, byteSize, id);
         MySQLBroker.getInstance().disconnect();
-    }
-
-    /**
-     * Tests to abort the pending queue when there is not an established
-     * connection.
-     */
-    @Test
-    public void testAbort01() {
-        boolean failed = false;
-        try {
-            MySQLQueueDAO.getInstance().abortPendingQueues();
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testAbort02created() throws TReqSException, SQLException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
-        int size = 987;
-        long byteSize = 987;
-        Calendar creationTime = new GregorianCalendar();
-
-        MySQLBroker.getInstance().connect();
-        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
-
-        MySQLQueueDAO.getInstance().abortPendingQueues();
-
-        String query = "SELECT status FROM queues WHERE id = " + id;
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        if (result.next()) {
-            int actual = result.getInt(1);
-            int expected = QueueStatus.QS_ENDED.getId();
-
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-
-            Assert.assertEquals(expected, actual);
-        } else {
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testAbort03activated() throws TReqSException, SQLException {
-        QueueStatus status = QueueStatus.QS_ACTIVATED;
-        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
-        int size = 987;
-        long byteSize = 987;
-        Calendar creationTime = new GregorianCalendar();
-
-        MySQLBroker.getInstance().connect();
-        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
-
-        MySQLQueueDAO.getInstance().abortPendingQueues();
-
-        String query = "SELECT status FROM queues WHERE id = " + id;
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        if (result.next()) {
-            int actual = result.getInt(1);
-            int expected = QueueStatus.QS_ENDED.getId();
-
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-
-            Assert.assertEquals(expected, actual);
-        } else {
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testAbort04Suspended() throws TReqSException, SQLException {
-        QueueStatus status = QueueStatus.QS_TEMPORARILY_SUSPENDED;
-        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
-        int size = 987;
-        long byteSize = 987;
-        Calendar creationTime = new GregorianCalendar();
-
-        MySQLBroker.getInstance().connect();
-        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
-
-        MySQLQueueDAO.getInstance().abortPendingQueues();
-
-        String query = "SELECT status FROM queues WHERE id = " + id;
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        if (result.next()) {
-            int actual = result.getInt(1);
-            int expected = QueueStatus.QS_ENDED.getId();
-
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-
-            Assert.assertEquals(expected, actual);
-        } else {
-            MySQLBroker.getInstance().terminateExecution(objects);
-            MySQLBroker.getInstance().disconnect();
-            Assert.fail();
-        }
     }
 }

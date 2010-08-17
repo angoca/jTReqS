@@ -9,6 +9,17 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
 
 public class InitDBTest {
 
+    /**
+     * @param query
+     */
+    private static void dropTable(String query) {
+        try {
+            MySQLBroker.getInstance().executeModification(query);
+        } catch (MySQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     @BeforeClass
     public static void oneTimeSetUp() throws TReqSException {
         MySQLBroker.getInstance().connect();
@@ -24,17 +35,6 @@ public class InitDBTest {
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
-    }
-
-    /**
-     * @param query
-     */
-    private static void dropTable(String query) {
-        try {
-            MySQLBroker.getInstance().executeModification(query);
-        } catch (MySQLException e) {
-            e.printStackTrace();
-        }
     }
 
     /**

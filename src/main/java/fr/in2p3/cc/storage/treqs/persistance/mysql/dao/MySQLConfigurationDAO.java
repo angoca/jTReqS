@@ -75,6 +75,17 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLConfigurationDAO.class);
 
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        _instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
+
     public static ConfigurationDAO getInstance() {
         LOGGER.trace("> getInstance");
 
@@ -86,17 +97,6 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
         LOGGER.trace("< getInstance");
 
         return _instance;
-    }
-
-    /**
-     * Destroys the only instance. ONLY for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
-
-        _instance = null;
-
-        LOGGER.trace("< destroyInstance");
     }
 
     /*

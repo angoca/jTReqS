@@ -67,10 +67,6 @@ public class Reading {
     public static final byte MAX_READ_RETRIES = 3;
 
     /**
-     * When the staging finished.
-     */
-    private Calendar endTime;
-    /**
      * Error code of the last reading attempt.
      */
     private short errorCode;
@@ -126,7 +122,6 @@ public class Reading {
             LOGGER.error("{}: {}", code, message);
             throw new NullParameterException(code, message);
         }
-        this.endTime = null;
         this.errorCode = (short) 0;
         this.errorMessage = "";
         this.fileState = FileStatus.FS_SUBMITTED;
@@ -149,17 +144,6 @@ public class Reading {
                 "Registered to Queue", this.queue);
 
         LOGGER.trace("< Creating reading with parameters.");
-    }
-
-    /**
-     * Getter for end time member.
-     * 
-     * @return
-     */
-    Calendar getEndTime() {
-        LOGGER.trace(">< getEndTime");
-
-        return this.endTime;
     }
 
     /**
@@ -272,7 +256,6 @@ public class Reading {
                     this.getMetaData().getFile().getSize());
             this.setFileState(FileStatus.FS_STAGED);
             toDAOState = FileStatus.FS_STAGED;
-            this.endTime = new GregorianCalendar();
             LOGGER.info("File {} successfully staged.", this.getMetaData()
                     .getFile().getName());
         } catch (HSMException e) {
@@ -286,8 +269,8 @@ public class Reading {
                 // The file state is changed to submitted.
                 toDAOState = FileStatus.FS_SUBMITTED;
                 DAO.getReadingDAO().update(this.metaData, toDAOState,
-                        this.endTime, this.getNbTries(), this.errorMessage,
-                        this.errorCode, this.queue);
+                        new GregorianCalendar(), this.getNbTries(),
+                        this.errorMessage, this.errorCode, this.queue);
                 // We report this problem to the caller.
                 throw e;
             } else if (e instanceof HSMOpenException) {
@@ -301,17 +284,17 @@ public class Reading {
                 toDAOState = retryFile(e);
             }
         } catch (Exception e) {
-            LOGGER.warn("Unexpected error while staging {}", this.getMetaData()
-                    .getFile().getName());
+            LOGGER.warn("Unexpected error while staging {}: {}", this
+                    .getMetaData().getFile().getName(), e.getMessage());
             this.setErrorMessage("Unexpected error while staging "
                     + this.getMetaData().getFile().getName());
             this.setFileState(FileStatus.FS_FAILED);
             toDAOState = FileStatus.FS_FAILED;
         }
 
-        DAO.getReadingDAO().update(this.metaData, toDAOState, this.endTime,
-                this.getNbTries(), this.errorMessage, this.errorCode,
-                this.queue);
+        DAO.getReadingDAO().update(this.metaData, toDAOState,
+                new GregorianCalendar(), this.getNbTries(), this.errorMessage,
+                this.errorCode, this.queue);
 
         LOGGER.trace("< realStage");
     }
@@ -497,12 +480,11 @@ public class Reading {
             LOGGER.error("{} failed {} times. Giving up.", this.getMetaData()
                     .getFile().getName(), this.getNbTries());
             this.fileState = FileStatus.FS_FAILED;
-            this.endTime = new GregorianCalendar();
 
             // Send update to the DAO.
             DAO.getReadingDAO().update(this.metaData, this.fileState,
-                    this.endTime, this.getNbTries(), this.errorMessage,
-                    this.errorCode, this.queue);
+                    new GregorianCalendar(), this.getNbTries(),
+                    this.errorMessage, this.errorCode, this.queue);
         } else if (this.fileState == FileStatus.FS_STAGED) {
             // If this file has already been done.
             LOGGER.info("{} already staged.", this.getMetaData().getFile()
@@ -535,7 +517,6 @@ public class Reading {
         String ret = "";
         ret += "Reading";
         ret += "{ Starttime: " + this.getStartTime();
-        ret += ", Endtime: " + this.getEndTime();
         ret += ", Error code: " + this.getErrorCode();
         ret += ", Error message: " + this.getErrorMessage();
         ret += ", File state: " + this.getFileState();
