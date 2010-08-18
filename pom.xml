@@ -1,0 +1,319 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+    Copyright Jonathan Schaeffer 2009-2010, CC-IN2P3, CNRS
+    <jonathan.schaeffer@cc.in2p3.fr>
+  -->
+  <!--
+    Contributors : Andres Gomez, CC-IN2P3, CNRS
+    <andres.gomez@cc.in2p3.fr>
+  -->
+  <!--
+    This software is a computer program whose purpose is to schedule,
+    sort and submit file requests to the hierarchical storage system
+    HPSS.
+  -->
+  <!--
+    This software is governed by the CeCILL license under French law and
+    abiding by the rules of distribution of free software. You can use,
+    modify and/or redistribute the software under the terms of the
+    CeCILL license as circulated by CEA, CNRS and INRIA at the following
+    URL "http://www.cecill.info".
+  -->
+  <!--
+    As a counterpart to the access to the source code and rights to
+    copy, modify and redistribute granted by the license, users are
+    provided only with a limited warranty and the software's author, the
+    holder of the economic rights, and the successive licensors have
+    only limited liability.
+  -->
+  <!--
+    In this respect, the user's attention is drawn to the risks
+    associated with loading, using, modifying and/or developing or
+    reproducing the software by the user in light of its specific status
+    of free software, that may mean that it is complicated to
+    manipulate, and that also therefore means that it is reserved for
+    developers and experienced professionals having in-depth computer
+    knowledge. Users are therefore encouraged to load and test the
+    software's suitability as regards their requirements in conditions
+    enabling the security of their systems and/or data to be ensured
+    and, more generally, to use and operate it in the same conditions as
+    regards security.
+  -->
+  <!--
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+  -->
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>fr.in2p3.cc.storage.treqs</groupId>
+  <artifactId>jtreqs-server</artifactId>
+
+  <version>2.0-SNAPSHOT</version>
+  <name>jTReqS Server</name>
+  <packaging>jar</packaging>
+  <url>https://forge.in2p3.fr/projects/show/treqs</url>
+  <organization>
+    <name>CC IN2P3</name>
+  </organization>
+
+  <dependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>0.9.24</version>
+      <optional>true</optional>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-core</artifactId>
+      <version>0.9.24</version>
+      <optional>true</optional>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.6.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-cli</groupId>
+      <artifactId>commons-cli</artifactId>
+      <version>1.2</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.13</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.8.1</version>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <properties>
+    <compileSource>1.5</compileSource>
+    <encoding>ISO-8859-1</encoding>
+  </properties>
+
+  <profiles>
+    <profile>
+      <!-- mvn -P package -->
+      <id>package</id>
+      <build>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+
+          <!-- mvn resources:resources -->
+          <!-- mvn resources:testResources -->
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <configuration>
+              <encoding>${encoding}</encoding>
+            </configuration>
+          </plugin>
+
+          <!-- mvn compiler:compile -->
+          <!-- mvn compiler:testCompile -->
+          <plugin>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <encoding>${encoding}</encoding>
+              <source>${compileSource}</source>
+              <target>${compileSource}</target>
+            </configuration>
+          </plugin>
+
+          <!--
+            TODO plugin> <groupId>org.codehaus.mojo</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+            <extensions>true</extensions> <configuration> ...
+            </configuration> </plugin
+          -->
+
+          <!-- mvn surefire:test -->
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- The application reads configuration files. -->
+              <workingDirectory>
+                ${project.build.testOutputDirectory}
+                    </workingDirectory>
+              <testFailureIgnore>true</testFailureIgnore>
+            </configuration>
+          </plugin>
+
+          <!-- mvn assembly:single -->
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/main/config/assembly/assembly-package.xml</descriptor>
+              </descriptors>
+              <archive>
+                <!-- List of files included in the distribution -->
+                <index>true</index>
+                <manifest>
+                  <addClasspath>true</addClasspath>
+                  <!-- Application description  -->
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                  <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
+                  <packageName>fr.in2p3.cc.storage.treqs</packageName>
+                </manifest>
+                <manifestEntries>
+                  <Sealed>true</Sealed>
+                </manifestEntries>
+              </archive>
+            </configuration>
+            <!-- Creates the assembly as part of package -->
+            <executions>
+              <execution>
+                <id>make-assembly</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- mvn appassembler:assemble -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>appassembler-maven-plugin</artifactId>
+            <configuration>
+              <!-- Extra JVM arguments that will be included in the bin scripts -->
+              <extraJvmArguments>-Dlogback.configurationFile=logback.xml</extraJvmArguments>
+
+              <configurationDirectory>etc</configurationDirectory>
+              <platforms>
+                <platform>unix</platform>
+              </platforms>
+              <programs>
+                <program>
+                  <name>jtreqs</name>
+                  <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
+
+                </program>
+              </programs>
+              <repositoryLayout>flat</repositoryLayout>
+              <assembleDirectory>${project.build.directory}/treqs</assembleDirectory>
+            </configuration>
+            <executions>
+              <execution>
+                <id>make-appassembler</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>assemble</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- mvn antrun:run -->
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <configuration>
+              <tasks>
+                <property name="ant.regexp.regexpimpl"
+                  value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
+
+                <copy todir="target/treqs/etc">
+                  <fileset dir="target/classes">
+                    <include name="treqs.conf.properties" />
+                    <include name="logback.xml" />
+                    <include name="*.sh" />
+                  </fileset>
+                </copy>
+
+              </tasks>
+            </configuration>
+            <executions>
+              <execution>
+                <id>fix-appassembler</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>release</id>
+      <build>
+        <defaultGoal>package</defaultGoal>
+        <plugins>
+
+        <!-- mvn surefire:test -->
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <!-- The application reads configuration files. -->
+              <workingDirectory>
+                ${project.build.testOutputDirectory}
+                    </workingDirectory>
+              <testFailureIgnore>true</testFailureIgnore>
+            </configuration>
+          </plugin>
+
+          <!-- mvn assembly:single -->
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <finalName>jtreqs</finalName>
+              <descriptors>
+                <descriptor>src/main/config/assembly/assembly-release.xml</descriptor>
+              </descriptors>
+            </configuration>
+            <!-- Creates the assembly as part of package -->
+            <executions>
+              <execution>
+                <id>make-assembly</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+
+
+
+    </plugins>
+  </build>
+</project>
