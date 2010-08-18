@@ -134,7 +134,7 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
 
         if (mediaTypeList.size() == 0) {
             // No entry in table, something wrong with config or tapename
-            LOGGER.warn("No drive found");
+            LOGGER.error("No drive found. Please define them in the database.");
         }
 
         LOGGER.trace("< getMediaAllocations");
@@ -179,7 +179,7 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
         }
         if (allocations.size() == 0) {
             // No entry in table, something wrong with config or tapename
-            LOGGER.warn("No PVR allocation found");
+            LOGGER.error("No PVR allocations found. Please define them in the database.");
         }
 
         LOGGER.trace("< getResourceAllocation");

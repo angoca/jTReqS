@@ -9,7 +9,7 @@ public class Main {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws InterruptedException {
-        System.out.println("TReqS-Server started");
+        System.out.println("jTReqS-Server started");
         try {
             new Starter().process(args);
         } catch (Exception e) {

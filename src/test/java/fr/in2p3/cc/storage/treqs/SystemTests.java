@@ -44,7 +44,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import fr.in2p3.cc.storage.treqs.control.starter.StarterTest;
 
 @RunWith(Suite.class)
-@SuiteClasses( { StarterTest.class, TReqSTests.class })
+@SuiteClasses( { StarterTest.class, TReqSTest.class })
 public class SystemTests {
 
 }

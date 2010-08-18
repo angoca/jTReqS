@@ -1,6 +1,0 @@
-MAILTO=treqsmaster@cc.in2p3.fr
-# TReqS watchdog
-*/3 * * * * sh /opt/treqs/etc/treqs_watchdog.sh | tee -a /var/log/treqs/watchdog.log
-# TReqS archiver
-7 0 * * * /opt/treqs/etc/archiver.py --srcdb treqsjobs --srcuser treqsarch --srcpwd xxxxxxxx --srchost localhost --srcsock /var/lib/mysql/treqs/tmp/mysql.sock --arcdb treqsarchive --arcuser treqsarch --arcpwd xxxxxxxx --archost localhost --arcsock /var/lib/mysql/treqs/tmp/mysql.sock --days 3 >> /var/log/treqs/archiver.log 2>&1
-

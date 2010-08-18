@@ -102,7 +102,7 @@ public class Configurator {
     private Configurator() {
         LOGGER.trace("> TReqSConfig");
 
-        this.confFilename = "treqs.conf";
+        this.confFilename = "treqs.conf.properties";
 
         LOGGER.trace("< TReqSConfig");
     }
@@ -131,11 +131,12 @@ public class Configurator {
     /**
      * Computes the configuration file Order is :
      * <p>
-     * <ul>
-     * <li>1. command line "--config" parameter</li>
-     * <li>2. $HOME/.treqs.conf</li>
-     * <li>3. $TREQSC_HOME/etc/treqs.conf</li>
-     * <li>4. /etc/treqs.conf</li>
+     * <ol>
+     * <li>command line "jtreqsConfigFile" parameter</li>
+     * <li>$HOME/.treqs.conf</li>
+     * <li>$TREQSC_HOME/etc/treqs.conf.properties</li>
+     * <li>/etc/treqs.conf.properties</li>
+     * </ol>
      * <p>
      * If found nowhere, don't try to continue, it's hopeless. Throw an
      * exception
@@ -152,7 +153,7 @@ public class Configurator {
             names.add(this.confFilename);
             LOGGER.debug("Adding " + names.get(names.size() - 1));
         }
-        names.add("/etc/treqs.conf");
+        names.add("/etc/treqs.conf.properties");
         LOGGER.debug("Adding " + names.get(names.size() - 1));
 
         Properties props = new Properties();

@@ -46,7 +46,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 
 /**
  * HPSSCommandBridgeTest.cpp
- * 
+ *
  * @version 2010-03-23
  * @author gomez
  */
@@ -93,7 +93,7 @@ public class HSMCommandBridgeTest {
 
     /**
      * Tests
-     * 
+     *
      * @throws HSMException
      */
     @Test

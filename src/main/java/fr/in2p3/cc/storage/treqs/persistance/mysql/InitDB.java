@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 public class InitDB {
 
@@ -89,10 +88,6 @@ public class InitDB {
         }
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
-
-        // TODO To change this, in order to use two or one database.
-        Configurator.getInstance().setValue("JOBSDB", "URL",
-                "jdbc:mysql://localhost/test");
 
         MySQLBroker.getInstance().connect();
 

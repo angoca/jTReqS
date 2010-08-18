@@ -49,6 +49,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.FilesController;
@@ -77,12 +79,17 @@ import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 /**
  * DispatcherTest.cpp
- *
+ * 
  * @version 2010-07-23
  * @author gomez
  */
 
 public class DispatcherTest {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DispatcherTest.class);
 
     @BeforeClass
     public static void oneTimeSetUp() throws TReqSException {
@@ -156,7 +163,7 @@ public class DispatcherTest {
 
     /**
      * Tests to stop the dispatcher from other thread.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -219,7 +226,7 @@ public class DispatcherTest {
 
     /**
      * Tests to returns an exception when getting the new jobs.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -230,9 +237,11 @@ public class DispatcherTest {
 
         try {
             Dispatcher.getInstance().retrieveNewRequest();
+            LOGGER.error("Error: it passed");
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
+                e.printStackTrace();
                 Assert.fail();
             }
         }
@@ -241,7 +250,7 @@ public class DispatcherTest {
     /**
      * Tests to show the message of MAX files processed simultaneously. The rest
      * is the same as previous test. processException method.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -255,7 +264,7 @@ public class DispatcherTest {
      * Tests getFileProperties then catch HSMStatException with DAOFactory. When
      * the file does not exist. When the file does not exist. processException
      * method.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -270,7 +279,7 @@ public class DispatcherTest {
      * Tests getFileProperties then catch HSMStatException with
      * PersistanceException. When the file does not exist. processException
      * method.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -287,7 +296,7 @@ public class DispatcherTest {
     /**
      * Tests getFileProperties then catch HSMException with DAOFactory. When the
      * file does not exist. processException method.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -301,7 +310,7 @@ public class DispatcherTest {
     /**
      * Tests getFileProperties then catch HSMException with
      * PersistanceException. When the file does not exist.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -319,7 +328,7 @@ public class DispatcherTest {
      * Tests a file in disk. fileOnDisk method.
      * <p>
      * It finish without staging.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -332,7 +341,7 @@ public class DispatcherTest {
 
     /**
      * Tests a file in disk with PersistanceException. fileOnDisk method.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -350,7 +359,7 @@ public class DispatcherTest {
      * Tests a file in tape.
      * <p>
      * It should finish.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -363,7 +372,7 @@ public class DispatcherTest {
 
     /**
      * Tests a file in tape with PersistanceException.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -376,9 +385,11 @@ public class DispatcherTest {
 
         try {
             Dispatcher.getInstance().retrieveNewRequest();
+            LOGGER.error("Error: it passed");
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
+                e.printStackTrace();
                 Assert.fail();
             }
         }
@@ -389,7 +400,7 @@ public class DispatcherTest {
      * the associated file, in order to recreate the request.
      * <p>
      * It finish without queueing.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -411,7 +422,7 @@ public class DispatcherTest {
      * Tests an existing file with metadata non outdated.
      * <p>
      * It should finish.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -437,7 +448,7 @@ public class DispatcherTest {
      * Tests an existing file with metadata outdated.
      * <p>
      * It should finish.
-     *
+     * 
      * @throws TReqSException
      * @throws InterruptedException
      */
@@ -465,7 +476,7 @@ public class DispatcherTest {
 
     /**
      * Tests an existing file with metadata outdated and HSM problem.
-     *
+     * 
      * @throws TReqSException
      * @throws InterruptedException
      */
@@ -498,7 +509,7 @@ public class DispatcherTest {
      * Tests an existing file with metadata outdated and in disk.
      * <p>
      * It does not finish because the file is already staged.
-     *
+     * 
      * @throws TReqSException
      * @throws InterruptedException
      */
@@ -529,7 +540,7 @@ public class DispatcherTest {
     /**
      * Tests an existing file with metadata outdated with persistance problem
      * while retrieving metadata info.
-     *
+     * 
      * @throws TReqSException
      * @throws InterruptedException
      */
@@ -555,17 +566,15 @@ public class DispatcherTest {
 
         Thread.sleep(1500);
 
-        boolean failed = false;
         try {
             Dispatcher.getInstance().retrieveNewRequest();
-            failed = true;
+            LOGGER.error("Error: it passed");
+            Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
-                failed = true;
+                e.printStackTrace();
+                Assert.fail();
             }
-        }
-        if (failed) {
-            Assert.fail();
         }
     }
 
@@ -573,7 +582,7 @@ public class DispatcherTest {
      * Tests a file in tape.
      * <p>
      * It should finish.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -589,7 +598,7 @@ public class DispatcherTest {
 
     /**
      * Tests to stop the dispatcher from other thread.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
