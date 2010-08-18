@@ -111,7 +111,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
 
     /**
      * Access the singleton instance.
-     * 
+     *
      * @throws TReqSException
      */
     public static Dispatcher getInstance() throws TReqSException {
@@ -173,7 +173,10 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
         try {
             cleaningReferences();
         } catch (Exception e2) {
-            LOGGER.error("PROBLEM: {}", e2.getMessage());
+            LOGGER
+                    .error(
+                            "Problem while cleaning references: {}. Stopping Dispatcher.",
+                            e2.getMessage());
             this.conclude();
         }
 
@@ -183,10 +186,15 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
             } catch (Exception e1) {
                 if (e1 instanceof TReqSException) {
                     TReqSException e = (TReqSException) e1;
-                    LOGGER.error("PROBLEM: {} - {}", e.getCode(), e
-                            .getMessage());
+                    LOGGER
+                            .error(
+                                    "Problem retrieving new requests: {} - {}. Stopping Dispatcher.",
+                                    e.getCode(), e.getMessage());
                 } else {
-                    LOGGER.error("PROBLEM: {}", e1.getMessage());
+                    LOGGER
+                            .error(
+                                    "Unknown problem while retrieving new requests: {}. Stopping.",
+                                    e1.getMessage());
                 }
                 this.conclude();
             }
@@ -257,7 +265,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * Scans new requests via DAO Puts all new requests in the RequestsList
      * container.
-     * 
+     *
      * @return A map of all the new requests. The key is the filename
      * @throws TReqSException
      */
@@ -307,7 +315,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
      * Verify the permissions on a file against the user requesting it
      * <p>
      * TODO (jschaeff) implement checkFilePermission
-     * 
+     *
      * @param file
      *            A reference to the file object
      * @param user
@@ -345,7 +353,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * TODO This should be multithreaded in order to ask several file properties
      * to the server simultaneously.
-     * 
+     *
      * @param newRequests
      * @throws TReqSException
      */
@@ -532,7 +540,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
 
     /**
      * This method has a default visibility just for testing purposes.
-     * 
+     *
      * @throws TReqSException
      */
     void retrieveNewRequest() throws TReqSException {
@@ -645,7 +653,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * Run periodically over the database to do the work. Call
      * get_new_requests() and treat all the results
-     * 
+     *
      * @throws TReqSException
      */
     @Override
