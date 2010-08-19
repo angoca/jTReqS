@@ -200,7 +200,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.debug(command);
         Process process = null;
         try {
-            process = Runtime.getRuntime().exec(command + name);
+            process = Runtime.getRuntime().exec(command);
         } catch (final IOException exception) {
             throw new HSMStatException(exception);
         }
