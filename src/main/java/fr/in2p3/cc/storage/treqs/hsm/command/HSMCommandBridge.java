@@ -212,7 +212,9 @@ public class HSMCommandBridge extends AbstractHSMBridge {
         }
         if (process.exitValue() != 0) {
             try {
+                LOGGER.error("Printin output stream");
                 printStream(process.getInputStream());
+                LOGGER.error("Printin error stream");
                 printStream(process.getErrorStream());
             } catch (IOException e) {
                 throw new HSMStatException(e);
