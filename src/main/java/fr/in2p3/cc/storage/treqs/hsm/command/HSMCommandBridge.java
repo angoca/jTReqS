@@ -211,10 +211,35 @@ public class HSMCommandBridge extends AbstractHSMBridge {
             throw new HSMStatException(e);
         }
         if (process.exitValue() != 0) {
-            System.out.println(process.getInputStream());
+            try {
+                printStream(process.getInputStream());
+                printStream(process.getErrorStream());
+            } catch (IOException e) {
+                throw new HSMStatException(e);
+            }
         }
 
         LOGGER.trace("< stage");
+    }
+
+    private void printStream(final InputStream/* ! */inputStream) throws IOException {
+        assert inputStream != null;
+
+        final Reader reader = new InputStreamReader(inputStream);
+        final BufferedReader bfStream = new BufferedReader(reader);
+
+        String current;
+        // Prints the standard output.
+        try {
+            current = bfStream.readLine();
+            while (current != null) {
+                System.out.print(current);
+                current = bfStream.readLine();
+            }
+        } finally {
+            reader.close();
+            bfStream.close();
+        }
     }
 
     public static void main(String[] args) throws ConfigNotFoundException,
