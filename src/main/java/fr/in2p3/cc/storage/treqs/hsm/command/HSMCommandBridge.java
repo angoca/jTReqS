@@ -53,6 +53,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
+import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
@@ -214,5 +215,17 @@ public class HSMCommandBridge extends AbstractHSMBridge {
         }
 
         LOGGER.trace("< stage");
+    }
+
+    public static void main(String[] args) throws ConfigNotFoundException,
+            ProblematicConfiguationFileException, TReqSException {
+        LOGGER.error("Starting HSMCommandBridge");
+        LOGGER.error("Keytab: {}, File {}", args);
+        HSMCommandBridge.getInstance().setKeytabPath(args[0]);
+        LOGGER.error("Getting properties");
+        HSMCommandBridge.getInstance().getFileProperties(args[1]);
+        LOGGER.error("Staging file");
+        HSMCommandBridge.getInstance().stage(args[1], 1);
+        LOGGER.error(";)");
     }
 }
