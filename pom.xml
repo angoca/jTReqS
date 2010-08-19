@@ -216,7 +216,7 @@
                 <program>
                   <name>jtreqs</name>
                   <!--mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass-->
-                  <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
+                  <mainClass>fr.in2p3.cc.storage.treqs.hsm.command.HSMCommandBridge</mainClass>
                 </program>
               </programs>
               <repositoryLayout>flat</repositoryLayout>
