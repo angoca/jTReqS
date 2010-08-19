@@ -206,8 +206,6 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
         if (process.exitValue() != 0) {
             System.out.println(process.getInputStream());
-            final Reader reader = new InputStreamReader(process.getInputStream());
-            final BufferedReader bfStream = new BufferedReader(reader);
         }
 
         LOGGER.trace("< stage");

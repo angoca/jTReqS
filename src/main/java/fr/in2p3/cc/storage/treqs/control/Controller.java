@@ -51,76 +51,76 @@ import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
  */
 public abstract class Controller {
 
-	/**
-	 * Logger log4cxx.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(Controller.class);
+    /**
+     * Logger log4cxx.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(Controller.class);
 
-	/**
-	 * Set of objects controlled by this class.
-	 */
-	protected Map<String, Object> objectMap;
+    /**
+     * Set of objects controlled by this class.
+     */
+    protected Map<String, Object> objectMap;
 
-	/**
-	 * Try to create a new object instance and insert it in the map. Return a
-	 * new instance or throw an exception if already exists. Each specialization
-	 * of the Controller template should ...
-	 * 
-	 * @param key
-	 *            the key of the object in the map.
-	 */
-	protected final void add(String key, Object value)
-			throws ControllerInsertException {
-		LOGGER.trace("> add");
+    /**
+     * Try to create a new object instance and insert it in the map. Return a
+     * new instance or throw an exception if already exists. Each specialization
+     * of the Controller template should ...
+     *
+     * @param key
+     *            the key of the object in the map.
+     */
+    protected final void add(String key, Object value)
+            throws ControllerInsertException {
+        LOGGER.trace("> add");
 
-		assert key != null;
-		assert value != null;
+        assert key != null;
+        assert value != null;
 
-		if (this.objectMap.get(key) != null) {
-			LOGGER.debug("Object " + key + " already exist");
-			throw new ControllerInsertException();
-		}
-		this.objectMap.put(key, value);
+        if (this.objectMap.get(key) != null) {
+            LOGGER.debug("Object {} already exist", key);
+            throw new ControllerInsertException();
+        }
+        this.objectMap.put(key, value);
 
-		LOGGER.trace("< add");
-	}
+        LOGGER.trace("< add");
+    }
 
-	/**
-	 * Find an object using the key and return a pointer to it.
-	 * 
-	 * @param key
-	 *            the key to search for.
-	 * @return a pointer to the object if found. null otherwise.
-	 */
-	public <E> Object exists(String key) {
-		LOGGER.trace("> exists");
+    /**
+     * Find an object using the key and return a pointer to it.
+     *
+     * @param key
+     *            the key to search for.
+     * @return a pointer to the object if found. null otherwise.
+     */
+    public <E> Object exists(String key) {
+        LOGGER.trace("> exists");
 
-		assert key != null;
+        assert key != null;
 
-		Object ret = this.objectMap.get(key);
+        Object ret = this.objectMap.get(key);
 
-		if (ret != null) {
-			LOGGER.debug("Object " + key + " already exists");
-		} else {
-			LOGGER.debug("Object " + key + " does not exist");
-		}
+        if (ret != null) {
+            LOGGER.debug("Object {} already exists", key);
+        } else {
+            LOGGER.debug("Object {} does not exist", key);
+        }
 
-		LOGGER.trace("< exists");
+        LOGGER.trace("< exists");
 
-		return ret;
-	}
+        return ret;
+    }
 
-	public void remove(String key) {
-		LOGGER.trace("> remove");
+    public void remove(String key) {
+        LOGGER.trace("> remove");
 
-		assert key != null;
+        assert key != null;
 
-		this.exists(key);
+        this.exists(key);
 
-		this.objectMap.remove(key);
-		LOGGER.debug("Object " + key + " removed");
+        this.objectMap.remove(key);
+        LOGGER.debug("Object {} removed", key);
 
-		LOGGER.trace("< remove");
-	}
+        LOGGER.trace("< remove");
+    }
 }

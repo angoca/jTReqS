@@ -610,7 +610,7 @@ public class Queue implements Comparable<Queue> {
      *             If the current state is invalid. If the position is invalid.
      *             If the queue has been suspended too many times.
      */
-    Reading getNextReading() throws TReqSException {
+    synchronized Reading getNextReading() throws TReqSException {
         LOGGER.trace("> getNextReading");
 
         Reading ret = null;

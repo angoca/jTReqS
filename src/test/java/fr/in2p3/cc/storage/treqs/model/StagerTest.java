@@ -57,182 +57,182 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * StagerTest.java
- * 
+ *
  * @version 2010-07-21
  * @author gomez
  */
 public class StagerTest {
 
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(StagerTest.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(StagerTest.class);
 
-	@BeforeClass
-	public static void oneTimeSetUp()
-			throws ProblematicConfiguationFileException {
-		Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-				"fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-		Configurator
-				.getInstance()
-				.setValue("MAIN", "READING_DAO",
-						"fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
-	}
+    @BeforeClass
+    public static void oneTimeSetUp()
+            throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "READING_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+    }
 
-	@AfterClass
-	public static void oneTimeTearDown() {
-		Configurator.destroyInstance();
-	}
+    @AfterClass
+    public static void oneTimeTearDown() {
+        Configurator.destroyInstance();
+    }
 
-	@After
-	public void tearDown() {
-		HSMMockBridge.destroyInstance();
-	}
+    @After
+    public void tearDown() {
+        HSMMockBridge.destroyInstance();
+    }
 
-	@Test
-	public void test01run() throws TReqSException {
-		String tapename = "tapename";
-		Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
-				"media"), TapeStatus.TS_UNLOCKED));
-		Stager stager = new Stager(queue);
+    @Test
+    public void test01run() throws TReqSException {
+        String tapename = "tapename";
+        Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        Stager stager = new Stager(1, queue);
 
-		stager.run();
-	}
+        stager.run();
+    }
 
-	@Test
-	public void test01Suspending() throws TReqSException {
-		String tapename = "tapename";
-		User owner = new User("username");
-		File file = new File("filename", owner, 200);
-		Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
-				TapeStatus.TS_UNLOCKED);
-		Queue queue = new Queue(tape);
-		FilePositionOnTape fpot = new FilePositionOnTape(file,
-				new GregorianCalendar(), 5, tape);
-		queue.registerFile(fpot, (byte) 1);
-		final Stager stager = new Stager(queue);
+    @Test
+    public void test01Suspending() throws TReqSException {
+        String tapename = "tapename";
+        User owner = new User("username");
+        File file = new File("filename", owner, 200);
+        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+        Queue queue = new Queue(tape);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 5, tape);
+        queue.registerFile(fpot, (byte) 1);
+        final Stager stager = new Stager(1, queue);
 
-		HSMResourceException exception = new HSMResourceException((short) 1);
-		HSMMockBridge.getInstance().setStageException(exception);
+        HSMResourceException exception = new HSMResourceException((short) 1);
+        HSMMockBridge.getInstance().setStageException(exception);
 
-		queue.activate();
+        queue.activate();
 
-		stager.run();
-	}
+        stager.run();
+    }
 
-	@Test
-	public void test01toStop() throws TReqSException {
-		String tapename = "tapename";
-		User owner = new User("username");
-		File file = new File("filename", owner, 200);
-		Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
-				TapeStatus.TS_UNLOCKED);
-		Queue queue = new Queue(tape);
-		FilePositionOnTape fpot = new FilePositionOnTape(file,
-				new GregorianCalendar(), 5, tape);
-		queue.registerFile(fpot, (byte) 1);
-		final Stager stager = new Stager(queue);
+    @Test
+    public void test01toStop() throws TReqSException {
+        String tapename = "tapename";
+        User owner = new User("username");
+        File file = new File("filename", owner, 200);
+        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+        Queue queue = new Queue(tape);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 5, tape);
+        queue.registerFile(fpot, (byte) 1);
+        final Stager stager = new Stager(1, queue);
 
-		queue.activate();
+        queue.activate();
 
-		Thread thread = new Thread() {
+        Thread thread = new Thread() {
 
-			@Override
-			public void run() {
-				LOGGER.info("Starting " + getName());
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-				}
-				stager.conclude();
-			}
-		};
-		thread.setName("TestStagerRun");
-		thread.start();
+            @Override
+            public void run() {
+                LOGGER.info("Starting " + getName());
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                }
+                stager.conclude();
+            }
+        };
+        thread.setName("TestStagerRun");
+        thread.start();
 
-		HSMMockBridge.getInstance().setStageTime(100);
+        HSMMockBridge.getInstance().setStageTime(100);
 
-		stager.run();
-	}
+        stager.run();
+    }
 
-	@Test
-	public void test01toString() throws TReqSException {
-		String tapename = "tapename";
-		Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
-				"media"), TapeStatus.TS_UNLOCKED));
-		Stager stager = new Stager(queue);
-		String actual = stager.toString();
+    @Test
+    public void test01toString() throws TReqSException {
+        String tapename = "tapename";
+        Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        Stager stager = new Stager(1, queue);
+        String actual = stager.toString();
 
-		String expected = "Stager{ queue: " + 0 + ", tape: " + tapename
-				+ ", state: " + ProcessStatus.STARTING.name() + "}";
+        String expected = "Stager{ queue: " + 0 + ", tape: " + tapename
+                + ", state: " + ProcessStatus.STARTING.name() + "}";
 
-		Assert.assertEquals(expected, actual);
-	}
+        Assert.assertEquals(expected, actual);
+    }
 
-	@Test
-	public void test02run() throws TReqSException {
-		String tapename = "tapename";
-		Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
-				"media"), TapeStatus.TS_UNLOCKED));
-		Stager stager = new Stager(queue);
+    @Test
+    public void test02run() throws TReqSException {
+        String tapename = "tapename";
+        Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        Stager stager = new Stager(1, queue);
 
-		queue.activate();
+        queue.activate();
 
-		stager.run();
-	}
+        stager.run();
+    }
 
-	/**
-	 * Stage just on file.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test03run() throws TReqSException {
-		String tapename = "tapename";
-		File file = new File("filename", new User("username"), 200);
-		Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
-				TapeStatus.TS_UNLOCKED);
-		Queue queue = new Queue(tape);
-		FilePositionOnTape fpot = new FilePositionOnTape(file,
-				new GregorianCalendar(), 5, tape);
-		queue.registerFile(fpot, (byte) 1);
-		Stager stager = new Stager(queue);
+    /**
+     * Stage just on file.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test03run() throws TReqSException {
+        String tapename = "tapename";
+        File file = new File("filename", new User("username"), 200);
+        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+        Queue queue = new Queue(tape);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 5, tape);
+        queue.registerFile(fpot, (byte) 1);
+        Stager stager = new Stager(1, queue);
 
-		queue.activate();
+        queue.activate();
 
-		HSMMockBridge.getInstance().setStageTime(100);
+        HSMMockBridge.getInstance().setStageTime(100);
 
-		stager.run();
-	}
+        stager.run();
+    }
 
-	/**
-	 * Stage several files.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test04run() throws TReqSException {
-		String tapename = "tapename";
-		User user = new User("username");
-		File file1 = new File("filename1", user, 200);
-		File file2 = new File("filename2", user, 200);
-		Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
-				TapeStatus.TS_UNLOCKED);
-		Queue queue = new Queue(tape);
-		FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
-				new GregorianCalendar(), 5, tape);
-		FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
-				new GregorianCalendar(), 50, tape);
-		queue.registerFile(fpot1, (byte) 1);
-		queue.registerFile(fpot2, (byte) 1);
+    /**
+     * Stage several files.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test04run() throws TReqSException {
+        String tapename = "tapename";
+        User user = new User("username");
+        File file1 = new File("filename1", user, 200);
+        File file2 = new File("filename2", user, 200);
+        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+        Queue queue = new Queue(tape);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                new GregorianCalendar(), 5, tape);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                new GregorianCalendar(), 50, tape);
+        queue.registerFile(fpot1, (byte) 1);
+        queue.registerFile(fpot2, (byte) 1);
 
-		Stager stager = new Stager(queue);
+        Stager stager = new Stager(1, queue);
 
-		queue.activate();
+        queue.activate();
 
-		HSMMockBridge.getInstance().setStageTime(100);
+        HSMMockBridge.getInstance().setStageTime(100);
 
-		stager.run();
-	}
+        stager.run();
+    }
 }
