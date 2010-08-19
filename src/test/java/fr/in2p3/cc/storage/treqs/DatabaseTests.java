@@ -49,8 +49,8 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLReadingDAOTest;
 
 @RunWith(Suite.class)
 @SuiteClasses( { MySQLBrokerTest.class, InitDBTest.class,
-        MySQLConfigurationDAOTest.class, MySQLQueueDAOTest.class,
-        MySQLReadingDAOTest.class })
+		MySQLConfigurationDAOTest.class, MySQLQueueDAOTest.class,
+		MySQLReadingDAOTest.class })
 public class DatabaseTests {
 
 }

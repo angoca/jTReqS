@@ -51,91 +51,91 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * this kind of object.
  */
 public class FilesController extends Controller {
-    /**
-     * Instance of the singleton.
-     */
-    private static FilesController _instance = null;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(FilesController.class);
+	/**
+	 * Instance of the singleton.
+	 */
+	private static FilesController _instance = null;
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(FilesController.class);
 
-    /**
-     * Destroys the unique instance. This is useful only for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.debug(">< destroyInstance");
+	/**
+	 * Destroys the unique instance. This is useful only for testing purposes.
+	 */
+	public static void destroyInstance() {
+		LOGGER.debug(">< destroyInstance");
 
-        _instance = null;
-    }
+		_instance = null;
+	}
 
-    /**
-     * Provides a pointer to the singleton instance.
-     * 
-     * @return
-     */
-    public static FilesController getInstance() {
-        LOGGER.trace("> getInstance");
+	/**
+	 * Provides a pointer to the singleton instance.
+	 * 
+	 * @return
+	 */
+	public static FilesController getInstance() {
+		LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
-            LOGGER.debug("Creating instance.");
+		if (_instance == null) {
+			LOGGER.debug("Creating instance.");
 
-            _instance = new FilesController();
-        }
+			_instance = new FilesController();
+		}
 
-        LOGGER.trace("< getInstance");
+		LOGGER.trace("< getInstance");
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    private FilesController() {
-        super.objectMap = new HashMap<String, Object>();
-    }
+	private FilesController() {
+		super.objectMap = new HashMap<String, Object>();
+	}
 
-    public File add(String name, long size, User user) throws TReqSException {
-        LOGGER.trace("> add");
+	public File add(String name, long size, User user) throws TReqSException {
+		LOGGER.trace("> add");
 
-        assert name != null;
-        assert size >= 0;
-        assert user != null;
+		assert name != null;
+		assert size >= 0;
+		assert user != null;
 
-        File file = (File) this.exists(name);
-        if (file == null) {
-            file = create(name, size, user);
-        }
+		File file = (File) this.exists(name);
+		if (file == null) {
+			file = create(name, size, user);
+		}
 
-        LOGGER.trace("< add");
+		LOGGER.trace("< add");
 
-        return file;
-    }
+		return file;
+	}
 
-    /**
-     * Creates a new file and populates the parameters. The created file is
-     * stored in the Files map.
-     * 
-     * @param name
-     *            the HPSS File Name.
-     * @param size
-     *            the size.
-     * @param user
-     *            pointer to the owner of the file.
-     * @return a pointer to the created File.
-     * @throws TReqSException
-     */
-    File create(String name, long size, User user) throws TReqSException {
-        LOGGER.trace("> create");
+	/**
+	 * Creates a new file and populates the parameters. The created file is
+	 * stored in the Files map.
+	 * 
+	 * @param name
+	 *            the HPSS File Name.
+	 * @param size
+	 *            the size.
+	 * @param user
+	 *            pointer to the owner of the file.
+	 * @return a pointer to the created File.
+	 * @throws TReqSException
+	 */
+	File create(String name, long size, User user) throws TReqSException {
+		LOGGER.trace("> create");
 
-        assert name != null;
-        assert size >= 0;
-        assert user != null;
+		assert name != null;
+		assert size >= 0;
+		assert user != null;
 
-        File file = new File(name, user, size);
-        super.add(name, file);
+		File file = new File(name, user, size);
+		super.add(name, file);
 
-        LOGGER.trace("< create");
+		LOGGER.trace("< create");
 
-        return file;
-    }
+		return file;
+	}
 
 }

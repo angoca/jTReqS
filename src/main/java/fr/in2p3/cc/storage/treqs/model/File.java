@@ -49,200 +49,201 @@ import org.slf4j.LoggerFactory;
  * @author jschaff
  */
 public class File {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(File.class);
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(File.class);
 
-    /**
-     * The file requests asking for this file.
-     */
-    private List<FileRequest> fileRequests;
-    /**
-     * The name in HPSS namespace.
-     */
-    private String name;
-    /**
-     * The user owning the file in HPSS.
-     */
-    private User owner;
-    /**
-     * The size of the file.
-     */
-    private long size;
+	/**
+	 * The file requests asking for this file.
+	 */
+	private List<FileRequest> fileRequests;
+	/**
+	 * The name in HPSS namespace.
+	 */
+	private String name;
+	/**
+	 * The user owning the file in HPSS.
+	 */
+	private User owner;
+	/**
+	 * The size of the file.
+	 */
+	private long size;
 
-    /**
-     * Constructor with all parameters. This constructor initializes the object
-     * with all the attributes, and it has a valid internal state.
-     * 
-     * @param name
-     *            Name of the file.
-     * @param owner
-     *            Owner of the file.
-     * @param size
-     *            Size of the file.
-     */
-    public File(String name, User owner, long size) {
-        LOGGER.trace("> Creating file with all parameters.");
+	/**
+	 * Constructor with all parameters. This constructor initializes the object
+	 * with all the attributes, and it has a valid internal state.
+	 * 
+	 * @param name
+	 *            Name of the file.
+	 * @param owner
+	 *            Owner of the file.
+	 * @param size
+	 *            Size of the file.
+	 */
+	public File(String name, User owner, long size) {
+		LOGGER.trace("> Creating file with all parameters.");
 
-        this.fileRequests = new ArrayList<FileRequest>();
-        this.setName(name);
-        this.setOwner(owner);
-        this.setSize(size);
+		this.fileRequests = new ArrayList<FileRequest>();
+		this.setName(name);
+		this.setOwner(owner);
+		this.setSize(size);
 
-        LOGGER.trace("< Creating file with all parameters.");
-    }
+		LOGGER.trace("< Creating file with all parameters.");
+	}
 
-    /**
-     * Associates a file request with this file.
-     * 
-     * @param freq
-     *            File request associated with this file.
-     */
-    void addFileRequest(FileRequest freq) {
-        LOGGER.trace("> removeFileRequest");
+	/**
+	 * Associates a file request with this file.
+	 * 
+	 * @param freq
+	 *            File request associated with this file.
+	 */
+	void addFileRequest(FileRequest freq) {
+		LOGGER.trace("> removeFileRequest");
 
-        assert freq != null;
+		assert freq != null;
 
-        this.fileRequests.add(freq);
+		this.fileRequests.add(freq);
 
-        LOGGER.trace("< removeFileRequest");
-    }
+		LOGGER.trace("< removeFileRequest");
+	}
 
-    /**
-     * Getter for the file requests member.
-     * 
-     * @return List of file requests associated to this file.
-     */
-    List<FileRequest> getFileRequests() {
-        LOGGER.trace(">< getFileRequests");
+	/**
+	 * Getter for the file requests member.
+	 * 
+	 * @return List of file requests associated to this file.
+	 */
+	List<FileRequest> getFileRequests() {
+		LOGGER.trace(">< getFileRequests");
 
-        return this.fileRequests;
-    }
+		return this.fileRequests;
+	}
 
-    /**
-     * Getter for the name member.
-     * 
-     * @return The name of the file.
-     */
-    public String getName() {
-        LOGGER.trace(">< getName");
+	/**
+	 * Getter for the name member.
+	 * 
+	 * @return The name of the file.
+	 */
+	public String getName() {
+		LOGGER.trace(">< getName");
 
-        return this.name;
-    }
+		return this.name;
+	}
 
-    /**
-     * Getter for the owner member
-     * 
-     * @return The owner of the file.
-     */
-    User getOwner() {
-        LOGGER.trace(">< getOwner");
+	/**
+	 * Getter for the owner member
+	 * 
+	 * @return The owner of the file.
+	 */
+	User getOwner() {
+		LOGGER.trace(">< getOwner");
 
-        return this.owner;
-    }
+		return this.owner;
+	}
 
-    /**
-     * Getter for the size member
-     * 
-     * @return The size of the file.
-     */
-    public long getSize() {
-        LOGGER.trace(">< getSize");
+	/**
+	 * Getter for the size member
+	 * 
+	 * @return The size of the file.
+	 */
+	public long getSize() {
+		LOGGER.trace(">< getSize");
 
-        return this.size;
-    }
+		return this.size;
+	}
 
-    /**
-     * Remove the FileRequest having its identifier (fs_id) from the list.
-     * 
-     * @param fileRequestId
-     *            The id of the request to remove.
-     */
-    void removeFileRequest(long fileRequestId) {
-        LOGGER.trace("> removeFileRequest");
+	/**
+	 * Remove the FileRequest having its identifier (fs_id) from the list.
+	 * 
+	 * @param fileRequestId
+	 *            The id of the request to remove.
+	 */
+	void removeFileRequest(long fileRequestId) {
+		LOGGER.trace("> removeFileRequest");
 
-        assert fileRequestId > 0;
+		assert fileRequestId > 0;
 
-        boolean deleted = false;
-        for (int i = 0; i < this.fileRequests.size() && !deleted; i++) {
-            FileRequest fr = this.fileRequests.get(i);
-            if (fr.getId() == fileRequestId) {
-                this.fileRequests.remove(i);
-                deleted = true;
-            }
+		boolean deleted = false;
+		for (int i = 0; i < this.fileRequests.size() && !deleted; i++) {
+			FileRequest fr = this.fileRequests.get(i);
+			if (fr.getId() == fileRequestId) {
+				this.fileRequests.remove(i);
+				deleted = true;
+			}
 
-        }
+		}
 
-        LOGGER.trace("< removeFileRequest");
-    }
+		LOGGER.trace("< removeFileRequest");
+	}
 
-    /**
-     * Setter for the name member.
-     * 
-     * @param name
-     *            The new name of the file.
-     */
-    void setName(String name) {
-        LOGGER.trace("> setName");
+	/**
+	 * Setter for the name member.
+	 * 
+	 * @param name
+	 *            The new name of the file.
+	 */
+	void setName(String name) {
+		LOGGER.trace("> setName");
 
-        assert name != null;
+		assert name != null;
 
-        this.name = name;
+		this.name = name;
 
-        LOGGER.trace("< setName");
-    }
+		LOGGER.trace("< setName");
+	}
 
-    /**
-     * Setter for the owner member.
-     * 
-     * @param owner
-     *            The new owner.
-     */
-    void setOwner(User owner) {
-        LOGGER.trace("> setOwner");
+	/**
+	 * Setter for the owner member.
+	 * 
+	 * @param owner
+	 *            The new owner.
+	 */
+	void setOwner(User owner) {
+		LOGGER.trace("> setOwner");
 
-        assert owner != null;
+		assert owner != null;
 
-        this.owner = owner;
+		this.owner = owner;
 
-        LOGGER.trace("< setOwner");
-    }
+		LOGGER.trace("< setOwner");
+	}
 
-    /**
-     * Setter for the size member.
-     * 
-     * @param size
-     *            The new size of the file.
-     */
-    public void setSize(long size) {
-        LOGGER.trace("> setSize");
+	/**
+	 * Setter for the size member.
+	 * 
+	 * @param size
+	 *            The new size of the file.
+	 */
+	public void setSize(long size) {
+		LOGGER.trace("> setSize");
 
-        assert size >= 0;
+		assert size >= 0;
 
-        this.size = size;
+		this.size = size;
 
-        LOGGER.trace("< setSize");
-    }
+		LOGGER.trace("< setSize");
+	}
 
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        LOGGER.trace("> toString");
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		LOGGER.trace("> toString");
 
-        String ret = "";
-        ret += "File";
-        ret += "{ name: " + this.getName();
-        ret += ", owner: " + this.getOwner().getName();
-        ret += ", size: " + this.getSize();
-        ret += ", file requests size: " + this.getFileRequests().size();
-        ret += "}";
+		String ret = "";
+		ret += "File";
+		ret += "{ name: " + this.getName();
+		ret += ", owner: " + this.getOwner().getName();
+		ret += ", size: " + this.getSize();
+		ret += ", file requests size: " + this.getFileRequests().size();
+		ret += "}";
 
-        LOGGER.trace("< toString");
+		LOGGER.trace("< toString");
 
-        return ret;
-    }
+		return ret;
+	}
 }

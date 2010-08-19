@@ -57,134 +57,134 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
  * Managing Reading object updates to database
  */
 public class MockReadingDAO implements ReadingDAO {
-    /**
-     * Singleton initialization
-     */
-    private static MockReadingDAO _instance = null;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(MockReadingDAO.class);
+	/**
+	 * Singleton initialization
+	 */
+	private static MockReadingDAO _instance = null;
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(MockReadingDAO.class);
 
-    /**
-     * Destroys the only instance. ONLY for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
+	/**
+	 * Destroys the only instance. ONLY for testing purposes.
+	 */
+	public static void destroyInstance() {
+		LOGGER.trace("> destroyInstance");
 
-        _instance = null;
+		_instance = null;
 
-        LOGGER.trace("< destroyInstance");
-    }
+		LOGGER.trace("< destroyInstance");
+	}
 
-    public static MockReadingDAO getInstance() {
-        if (_instance == null) {
-            LOGGER.debug("Creating singleton");
-            _instance = new MockReadingDAO();
-        }
-        return _instance;
-    }
+	public static MockReadingDAO getInstance() {
+		if (_instance == null) {
+			LOGGER.debug("Creating singleton");
+			_instance = new MockReadingDAO();
+		}
+		return _instance;
+	}
 
-    private List<PersistenceHelperFileRequest> newJobs;
+	private List<PersistenceHelperFileRequest> newJobs;
 
-    private PersistanceException newJobsException;
-    private PersistanceException requestStatusByIdException;
+	private PersistanceException newJobsException;
+	private PersistanceException requestStatusByIdException;
 
-    private MockReadingDAO() {
-        this.requestStatusByIdException = null;
-        this.newJobs = createJobs();
-    }
+	private MockReadingDAO() {
+		this.requestStatusByIdException = null;
+		this.newJobs = createJobs();
+	}
 
-    /**
-     * @return
-     */
-    private List<PersistenceHelperFileRequest> createJobs() {
-        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
-        int qty = (int) (Math.random() * 10) - 2;
-        for (int i = 0; i < qty; i++) {
-            createRequest(jobs);
-        }
-        return jobs;
-    }
+	/**
+	 * @return
+	 */
+	private List<PersistenceHelperFileRequest> createJobs() {
+		List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+		int qty = (int) (Math.random() * 10) - 2;
+		for (int i = 0; i < qty; i++) {
+			createRequest(jobs);
+		}
+		return jobs;
+	}
 
-    /**
-     * @param jobs
-     */
-    private void createRequest(List<PersistenceHelperFileRequest> jobs) {
-        short id = (short) (Math.random() * 1000);
-        String filename = "path" + (int) (Math.random() * 10) + "/file"
-                + (int) (Math.random() * 100);
-        byte nbTries = (byte) ((int) (Math.random() * 10) - 9);
-        if (nbTries <= 0) {
-            nbTries = 1;
-        }
-        String owner = "user" + (int) (Math.random() * 10);
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-                id, filename, nbTries, owner);
-        jobs.add(request);
-    }
+	/**
+	 * @param jobs
+	 */
+	private void createRequest(List<PersistenceHelperFileRequest> jobs) {
+		short id = (short) (Math.random() * 1000);
+		String filename = "path" + (int) (Math.random() * 10) + "/file"
+				+ (int) (Math.random() * 100);
+		byte nbTries = (byte) ((int) (Math.random() * 10) - 9);
+		if (nbTries <= 0) {
+			nbTries = 1;
+		}
+		String owner = "user" + (int) (Math.random() * 10);
+		PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+				id, filename, nbTries, owner);
+		jobs.add(request);
+	}
 
-    @Override
-    public void firstUpdate(FilePositionOnTape fpot, FileStatus status,
-            String message, Queue queue) throws ExecuteMySQLException {
+	// @Override
+	public void firstUpdate(FilePositionOnTape fpot, FileStatus status,
+			String message, Queue queue) throws ExecuteMySQLException {
 
-    }
+	}
 
-    public List<PersistenceHelperFileRequest> getNewJobs(int l)
-            throws PersistanceException {
+	public List<PersistenceHelperFileRequest> getNewJobs(int l)
+			throws PersistanceException {
 
-        if (this.newJobsException != null) {
-            PersistanceException toThrow = this.newJobsException;
-            this.newJobsException = null;
-            throw toThrow;
-        }
+		if (this.newJobsException != null) {
+			PersistanceException toThrow = this.newJobsException;
+			this.newJobsException = null;
+			throw toThrow;
+		}
 
-        List<PersistenceHelperFileRequest> ret = this.newJobs;
-        this.newJobs = createJobs();
-        return ret;
-    }
+		List<PersistenceHelperFileRequest> ret = this.newJobs;
+		this.newJobs = createJobs();
+		return ret;
+	}
 
-    public void setNewJobs(List<PersistenceHelperFileRequest> jobs) {
-        this.newJobs = jobs;
-    }
+	public void setNewJobs(List<PersistenceHelperFileRequest> jobs) {
+		this.newJobs = jobs;
+	}
 
-    public void setNewJobsException(PersistanceException exception) {
-        this.newJobsException = exception;
-    }
+	public void setNewJobsException(PersistanceException exception) {
+		this.newJobsException = exception;
+	}
 
-    @Override
-    public void setRequestStatusById(int r, FileStatus fs, int errcode, String m)
-            throws PersistanceException {
-        if (this.requestStatusByIdException != null) {
-            PersistanceException toThrow = this.requestStatusByIdException;
-            this.requestStatusByIdException = null;
-            throw toThrow;
-        }
-    }
+	// @Override
+	public void setRequestStatusById(int r, FileStatus fs, int errcode, String m)
+			throws PersistanceException {
+		if (this.requestStatusByIdException != null) {
+			PersistanceException toThrow = this.requestStatusByIdException;
+			this.requestStatusByIdException = null;
+			throw toThrow;
+		}
+	}
 
-    @Override
-    public void setRequestStatusById(int id, FileStatus status, String message)
-            throws PersistanceException {
-        if (this.requestStatusByIdException != null) {
-            PersistanceException toThrow = this.requestStatusByIdException;
-            this.requestStatusByIdException = null;
-            throw toThrow;
-        }
-    }
+	// @Override
+	public void setRequestStatusById(int id, FileStatus status, String message)
+			throws PersistanceException {
+		if (this.requestStatusByIdException != null) {
+			PersistanceException toThrow = this.requestStatusByIdException;
+			this.requestStatusByIdException = null;
+			throw toThrow;
+		}
+	}
 
-    public void setRequestStatusByIdException(PersistanceException exception) {
-        this.requestStatusByIdException = exception;
-    }
+	public void setRequestStatusByIdException(PersistanceException exception) {
+		this.requestStatusByIdException = exception;
+	}
 
-    @Override
-    public void update(FilePositionOnTape fpot, FileStatus fileState,
-            Calendar endTime, byte nbTries, String errorMessage,
-            short errorCode, Queue queue) throws TReqSException {
-    }
+	// @Override
+	public void update(FilePositionOnTape fpot, FileStatus fileState,
+			Calendar endTime, byte nbTries, String errorMessage,
+			short errorCode, Queue queue) throws TReqSException {
+	}
 
-    public int updateUnfinishedRequests() throws PersistanceException {
-        return 0;
-    }
+	public int updateUnfinishedRequests() throws PersistanceException {
+		return 0;
+	}
 
 }

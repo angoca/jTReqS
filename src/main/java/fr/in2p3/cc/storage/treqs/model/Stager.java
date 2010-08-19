@@ -48,126 +48,126 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * Reads files from a queue as a new thread.
  */
 public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Stager.class);
-    /**
-     * Associated queue.
-     */
-    private Queue queue;
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(Stager.class);
+	/**
+	 * Associated queue.
+	 */
+	private Queue queue;
 
-    public Stager(Queue q) {
-        super("tape" + q.getTape().getName() + "-" + System.currentTimeMillis());
-        LOGGER.trace("> Creating stager.");
+	public Stager(Queue q) {
+		super("tape" + q.getTape().getName() + "-" + System.currentTimeMillis());
+		LOGGER.trace("> Creating stager.");
 
-        this.queue = q;
+		this.queue = q;
 
-        this.kickStart();
+		this.kickStart();
 
-        LOGGER.trace("< Creating stager.");
-    }
+		LOGGER.trace("< Creating stager.");
+	}
 
-    private void action() {
-        LOGGER.trace("> action");
+	private void action() {
+		LOGGER.trace("> action");
 
-        if (queue.getStatus() == QueueStatus.QS_ACTIVATED) {
-            LOGGER.info("Stager {}: starting.", this.getName());
-            try {
-                this.stage();
-            } catch (TReqSException e) {
-                LOGGER.error("Error in Staging : {}", e.getMessage());
-            }
-            this.conclude();
-            LOGGER.debug("Staging completed.");
-        } else {
-            LOGGER
-                    .info("Cannot work on a non-activated queue or queue already processed.");
-        }
+		if (queue.getStatus() == QueueStatus.QS_ACTIVATED) {
+			LOGGER.info("Stager {}: starting.", this.getName());
+			try {
+				this.stage();
+			} catch (TReqSException e) {
+				LOGGER.error("Error in Staging : {}", e.getMessage());
+			}
+			this.conclude();
+			LOGGER.debug("Staging completed.");
+		} else {
+			LOGGER
+					.info("Cannot work on a non-activated queue or queue already processed.");
+		}
 
-        LOGGER.trace("< action");
-    }
+		LOGGER.trace("< action");
+	}
 
-    /**
+	/**
      *
      */
-    @Override
-    public void oneLoop() {
-        LOGGER.trace("> oneLoop");
+	@Override
+	public void oneLoop() {
+		LOGGER.trace("> oneLoop");
 
-        this.changeStatus(ProcessStatus.STARTED);
+		this.changeStatus(ProcessStatus.STARTED);
 
-        action();
+		action();
 
-        this.changeStatus(ProcessStatus.STOPPED);
+		this.changeStatus(ProcessStatus.STOPPED);
 
-        LOGGER.trace("< oneLoop");
-    }
+		LOGGER.trace("< oneLoop");
+	}
 
-    /**
-     * @throws TReqSException
-     */
-    private void stage() throws TReqSException {
-        LOGGER.trace("> stage");
+	/**
+	 * @throws TReqSException
+	 */
+	private void stage() throws TReqSException {
+		LOGGER.trace("> stage");
 
-        Reading readObject = this.queue.getNextReading();
-        while (readObject != null && this.keepOn()) {
-            try {
-                readObject.stage();
-                LOGGER.debug("Thread {}: getting next file", this.getName());
-                readObject = this.queue.getNextReading();
-            } catch (HSMResourceException e) {
-                // For instance, no space left on device should suspend
-                // the staging queue.
-                LOGGER.warn(
-                        "{}: No space left on device, suspending the queue.",
-                        ErrorCode.STGR02);
-                this.queue.suspend();
-                readObject = null;
-            }
-        }
+		Reading readObject = this.queue.getNextReading();
+		while (readObject != null && this.keepOn()) {
+			try {
+				readObject.stage();
+				LOGGER.debug("Thread {}: getting next file", this.getName());
+				readObject = this.queue.getNextReading();
+			} catch (HSMResourceException e) {
+				// For instance, no space left on device should suspend
+				// the staging queue.
+				LOGGER.warn(
+						"{}: No space left on device, suspending the queue.",
+						ErrorCode.STGR02);
+				this.queue.suspend();
+				readObject = null;
+			}
+		}
 
-        LOGGER.trace("< stage");
-    }
+		LOGGER.trace("< stage");
+	}
 
-    /**
-     * This method asks the queue for the next file to stage, until the queue is
-     * completely browsed.
-     * <p>
-     * For each Reading object to stage, it calls the Reading.stage() method and
-     * catch exceptions.
-     * <p>
-     * If the HPSSResourceError is caught, then the queue is suspended.
-     * 
-     * @param queue
-     *            pointer to a queue.
-     * @return true is the queue is not null, false in the other case.
-     */
-    @Override
-    public void toStart() {
-        LOGGER.trace("> toStart");
+	/**
+	 * This method asks the queue for the next file to stage, until the queue is
+	 * completely browsed.
+	 * <p>
+	 * For each Reading object to stage, it calls the Reading.stage() method and
+	 * catch exceptions.
+	 * <p>
+	 * If the HPSSResourceError is caught, then the queue is suspended.
+	 * 
+	 * @param queue
+	 *            pointer to a queue.
+	 * @return true is the queue is not null, false in the other case.
+	 */
+	@Override
+	public void toStart() {
+		LOGGER.trace("> toStart");
 
-        this.action();
+		this.action();
 
-        LOGGER.trace("< toStart");
-    }
+		LOGGER.trace("< toStart");
+	}
 
-    /**
-     * Representation in a String.
-     */
-    @Override
-    public String toString() {
-        LOGGER.trace("> toString");
+	/**
+	 * Representation in a String.
+	 */
+	@Override
+	public String toString() {
+		LOGGER.trace("> toString");
 
-        String ret = "";
-        ret += "Stager";
-        ret += "{ queue: " + this.queue.getId();
-        ret += ", tape: " + this.queue.getTape().getName();
-        ret += ", state: " + this.getProcessStatus().name();
-        ret += "}";
+		String ret = "";
+		ret += "Stager";
+		ret += "{ queue: " + this.queue.getId();
+		ret += ", tape: " + this.queue.getTape().getName();
+		ret += ", state: " + this.getProcessStatus().name();
+		ret += "}";
 
-        LOGGER.trace("< toString");
+		LOGGER.trace("< toString");
 
-        return ret;
-    }
+		return ret;
+	}
 }

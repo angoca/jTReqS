@@ -60,120 +60,120 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  */
 public class PersistenceFactory {
 
-    private static PersistenceFactory _instance = null;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(PersistenceFactory.class);
+	private static PersistenceFactory _instance = null;
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(PersistenceFactory.class);
 
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
+	public static void destroyInstance() {
+		LOGGER.trace("> destroyInstance");
 
-        _instance = null;
+		_instance = null;
 
-        LOGGER.trace("< destroyInstance");
-    }
+		LOGGER.trace("< destroyInstance");
+	}
 
-    /**
-     * Singleton access
-     * 
-     * @return
-     * @throws PersistanceFactoryException
-     */
-    public static PersistenceFactory getInstance()
-            throws PersistanceFactoryException {
-        LOGGER.trace("> getInstance");
+	/**
+	 * Singleton access
+	 * 
+	 * @return
+	 * @throws PersistanceFactoryException
+	 */
+	public static PersistenceFactory getInstance()
+			throws PersistanceFactoryException {
+		LOGGER.trace("> getInstance");
 
-        if (_instance == null)
-            _instance = new PersistenceFactory();
+		if (_instance == null)
+			_instance = new PersistenceFactory();
 
-        LOGGER.trace("< getInstance");
+		LOGGER.trace("< getInstance");
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    private ConfigurationDAO configurationDAO = null;
-    private QueueDAO queueDAO = null;
-    private ReadingDAO readingDAO = null;
+	private ConfigurationDAO configurationDAO = null;
+	private QueueDAO queueDAO = null;
+	private ReadingDAO readingDAO = null;
 
-    private PersistenceFactory() throws PersistanceFactoryException {
+	private PersistenceFactory() throws PersistanceFactoryException {
 
-        try {
-            String dao = Configurator.getInstance().getValue("MAIN",
-                    "CONFIGURATION_DAO");
-            this.configurationDAO = (ConfigurationDAO) getDataSourceAccess(dao);
-            dao = Configurator.getInstance().getValue("MAIN", "QUEUE_DAO");
-            this.queueDAO = (QueueDAO) getDataSourceAccess(dao);
-            dao = Configurator.getInstance().getValue("MAIN", "READING_DAO");
-            this.readingDAO = (ReadingDAO) getDataSourceAccess(dao);
-        } catch (ConfigNotFoundException e) {
-            LOGGER.info("No setting for CONFIGURATION_DAO");
-            throw new PersistanceFactoryException();
-        } catch (ProblematicConfiguationFileException e) {
-            throw new PersistanceFactoryException();
-        }
-    }
+		try {
+			String dao = Configurator.getInstance().getValue("MAIN",
+					"CONFIGURATION_DAO");
+			this.configurationDAO = (ConfigurationDAO) getDataSourceAccess(dao);
+			dao = Configurator.getInstance().getValue("MAIN", "QUEUE_DAO");
+			this.queueDAO = (QueueDAO) getDataSourceAccess(dao);
+			dao = Configurator.getInstance().getValue("MAIN", "READING_DAO");
+			this.readingDAO = (ReadingDAO) getDataSourceAccess(dao);
+		} catch (ConfigNotFoundException e) {
+			LOGGER.info("No setting for CONFIGURATION_DAO");
+			throw new PersistanceFactoryException();
+		} catch (ProblematicConfiguationFileException e) {
+			throw new PersistanceFactoryException();
+		}
+	}
 
-    public ConfigurationDAO getConfigurationDAO() {
-        return this.configurationDAO;
-    }
+	public ConfigurationDAO getConfigurationDAO() {
+		return this.configurationDAO;
+	}
 
-    /**
-     * Retrieves the corresponding data source access. This method checks the
-     * value of MAIN.PERSISTANCE_DATA in the configuration file.
-     * <p>
-     * If no value was specify, it will return MySQL data source access as
-     * default.
-     * 
-     * @return
-     * @throws PersistanceFactoryException
-     */
-    private DAO getDataSourceAccess(String daoName)
-            throws PersistanceFactoryException {
-        LOGGER.trace("> getDataSourceAccess");
+	/**
+	 * Retrieves the corresponding data source access. This method checks the
+	 * value of MAIN.PERSISTANCE_DATA in the configuration file.
+	 * <p>
+	 * If no value was specify, it will return MySQL data source access as
+	 * default.
+	 * 
+	 * @return
+	 * @throws PersistanceFactoryException
+	 */
+	private DAO getDataSourceAccess(String daoName)
+			throws PersistanceFactoryException {
+		LOGGER.trace("> getDataSourceAccess");
 
-        LOGGER.debug("Persistance access to return " + daoName);
+		LOGGER.debug("Persistance access to return " + daoName);
 
-        DAO dsaccess = null;
-        Class<?> hsm = null;
-        try {
-            hsm = Class.forName(daoName);
+		DAO dsaccess = null;
+		Class<?> hsm = null;
+		try {
+			hsm = Class.forName(daoName);
 
-        } catch (ClassNotFoundException e) {
-            throw new PersistanceFactoryException(e);
-        }
-        if (hsm != null) {
-            Method getInstance = null;
-            try {
-                getInstance = hsm.getMethod("getInstance");
-            } catch (SecurityException e) {
-                throw new PersistanceFactoryException(e);
-            } catch (NoSuchMethodException e) {
-                throw new PersistanceFactoryException(e);
-            }
-            if (getInstance != null) {
-                try {
-                    dsaccess = (DAO) getInstance.invoke(null);
-                } catch (IllegalArgumentException e) {
-                    throw new PersistanceFactoryException(e);
-                } catch (IllegalAccessException e) {
-                    throw new PersistanceFactoryException(e);
-                } catch (InvocationTargetException e) {
-                    throw new PersistanceFactoryException(e);
-                }
-            }
-        }
+		} catch (ClassNotFoundException e) {
+			throw new PersistanceFactoryException(e);
+		}
+		if (hsm != null) {
+			Method getInstance = null;
+			try {
+				getInstance = hsm.getMethod("getInstance");
+			} catch (SecurityException e) {
+				throw new PersistanceFactoryException(e);
+			} catch (NoSuchMethodException e) {
+				throw new PersistanceFactoryException(e);
+			}
+			if (getInstance != null) {
+				try {
+					dsaccess = (DAO) getInstance.invoke(null);
+				} catch (IllegalArgumentException e) {
+					throw new PersistanceFactoryException(e);
+				} catch (IllegalAccessException e) {
+					throw new PersistanceFactoryException(e);
+				} catch (InvocationTargetException e) {
+					throw new PersistanceFactoryException(e);
+				}
+			}
+		}
 
-        LOGGER.trace("< getDataSourceAccess");
-        return dsaccess;
-    }
+		LOGGER.trace("< getDataSourceAccess");
+		return dsaccess;
+	}
 
-    public QueueDAO getQueueDAO() {
-        return this.queueDAO;
-    }
+	public QueueDAO getQueueDAO() {
+		return this.queueDAO;
+	}
 
-    public ReadingDAO getReadingDAO() {
-        return this.readingDAO;
-    }
+	public ReadingDAO getReadingDAO() {
+		return this.readingDAO;
+	}
 }

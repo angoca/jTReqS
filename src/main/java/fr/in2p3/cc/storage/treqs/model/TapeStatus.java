@@ -40,12 +40,12 @@ package fr.in2p3.cc.storage.treqs.model;
  */
 
 public enum TapeStatus {
-    /**
-     * The tape is locked.
-     */
-    TS_LOCKED,
-    /**
-     * The tape is unlocked.
-     */
-    TS_UNLOCKED
+	/**
+	 * The tape is locked.
+	 */
+	TS_LOCKED,
+	/**
+	 * The tape is unlocked.
+	 */
+	TS_UNLOCKED
 }

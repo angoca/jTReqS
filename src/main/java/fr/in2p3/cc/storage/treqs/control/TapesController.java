@@ -51,95 +51,95 @@ import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
  * Provides interface to create new Tapes and access Tape Objects.
  */
 public class TapesController extends Controller {
-    /**
-     * The singleton instance.
-     */
-    private static TapesController _instance = null;
+	/**
+	 * The singleton instance.
+	 */
+	private static TapesController _instance = null;
 
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(TapesController.class);
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(TapesController.class);
 
-    /**
-     * Destroys the unique instance. This is useful only for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.debug("> destroyInstance");
+	/**
+	 * Destroys the unique instance. This is useful only for testing purposes.
+	 */
+	public static void destroyInstance() {
+		LOGGER.debug("> destroyInstance");
 
-        _instance = null;
+		_instance = null;
 
-        LOGGER.debug("< destroyInstance");
-    }
+		LOGGER.debug("< destroyInstance");
+	}
 
-    /**
-     * Access the singleton instance.
-     * 
-     * @return
-     */
-    public static TapesController getInstance() {
-        LOGGER.trace("> getInstance");
+	/**
+	 * Access the singleton instance.
+	 * 
+	 * @return
+	 */
+	public static TapesController getInstance() {
+		LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
-            LOGGER.debug("Creating instance.");
+		if (_instance == null) {
+			LOGGER.debug("Creating instance.");
 
-            _instance = new TapesController();
-        }
+			_instance = new TapesController();
+		}
 
-        LOGGER.trace("< getInstance");
+		LOGGER.trace("< getInstance");
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    private TapesController() {
-        super.objectMap = new HashMap<String, Object>();
-    }
+	private TapesController() {
+		super.objectMap = new HashMap<String, Object>();
+	}
 
-    public Tape add(String name, MediaType media, TapeStatus ts)
-            throws ControllerInsertException {
-        LOGGER.trace("> add");
+	public Tape add(String name, MediaType media, TapeStatus ts)
+			throws ControllerInsertException {
+		LOGGER.trace("> add");
 
-        assert name != null;
-        assert media != null;
-        assert ts != null;
+		assert name != null;
+		assert media != null;
+		assert ts != null;
 
-        Tape tape = (Tape) this.exists(name);
-        if (tape == null) {
-            tape = create(name, media, ts);
-        }
+		Tape tape = (Tape) this.exists(name);
+		if (tape == null) {
+			tape = create(name, media, ts);
+		}
 
-        LOGGER.trace("< add");
+		LOGGER.trace("< add");
 
-        return tape;
-    }
+		return tape;
+	}
 
-    /**
-     * Create a new tape. The following parameters are needed.
-     * 
-     * @param name
-     *            Name of the tape.
-     * @param media
-     *            Media type.
-     * @param ts
-     *            Tape status (locked or unlocked.)
-     * @return a pointer to a Tape.
-     * @throws ControllerInsertException
-     *             If there is an object that already exists with the same name.
-     */
-    Tape create(String name, MediaType media, TapeStatus ts)
-            throws ControllerInsertException {
-        LOGGER.trace("> create");
+	/**
+	 * Create a new tape. The following parameters are needed.
+	 * 
+	 * @param name
+	 *            Name of the tape.
+	 * @param media
+	 *            Media type.
+	 * @param ts
+	 *            Tape status (locked or unlocked.)
+	 * @return a pointer to a Tape.
+	 * @throws ControllerInsertException
+	 *             If there is an object that already exists with the same name.
+	 */
+	Tape create(String name, MediaType media, TapeStatus ts)
+			throws ControllerInsertException {
+		LOGGER.trace("> create");
 
-        assert name != null;
-        assert media != null;
-        assert ts != null;
+		assert name != null;
+		assert media != null;
+		assert ts != null;
 
-        Tape tape = new Tape(name, media, ts);
-        super.add(name, tape);
+		Tape tape = new Tape(name, media, ts);
+		super.add(name, tape);
 
-        LOGGER.trace("< create");
+		LOGGER.trace("< create");
 
-        return tape;
-    }
+		return tape;
+	}
 }

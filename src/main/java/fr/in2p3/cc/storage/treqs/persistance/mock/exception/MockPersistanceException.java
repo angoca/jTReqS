@@ -41,13 +41,13 @@ import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
 
 public class MockPersistanceException extends PersistanceException {
 
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 247769961987947808L;
+	/**
+	 * Generated ID.
+	 */
+	private static final long serialVersionUID = 247769961987947808L;
 
-    public MockPersistanceException(Exception e) {
-        super(e);
-    }
+	public MockPersistanceException(Exception e) {
+		super(e);
+	}
 
 }

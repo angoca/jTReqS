@@ -47,168 +47,168 @@ import org.junit.Test;
  * @author gomez
  */
 public class UserTest {
-    /**
-     * Tests a negative gid.
-     */
-    @Test
-    public void test01constructor() {
-        short gid = -5;
-        String group = "group";
-        String name = "user";
-        short uid = 15;
+	/**
+	 * Tests a negative gid.
+	 */
+	@Test
+	public void test01constructor() {
+		short gid = -5;
+		String group = "group";
+		String name = "user";
+		short uid = 15;
 
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new User(name, uid, group, gid);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests the constructors.
-     */
-    @Test
-    public void test01ConstructorUser() {
-        short gid = 12;
-        String group = "group";
-        String name = "user";
-        short uid = 15;
+	/**
+	 * Tests the constructors.
+	 */
+	@Test
+	public void test01ConstructorUser() {
+		short gid = 12;
+		String group = "group";
+		String name = "user";
+		short uid = 15;
 
-        User user1 = new User(name);
-        user1.setGid(gid);
-        user1.setGroup(group);
-        user1.setUid(uid);
+		User user1 = new User(name);
+		user1.setGid(gid);
+		user1.setGroup(group);
+		user1.setUid(uid);
 
-        User user2 = new User(name, uid, group, gid);
+		User user2 = new User(name, uid, group, gid);
 
-        Assert.assertTrue("First second gid", user1.getGid() == user2.getGid());
-        Assert.assertTrue("First second group", user1.getGroup() == user2
-                .getGroup());
-        Assert.assertTrue("First second name", user1.getName() == user2
-                .getName());
-        Assert.assertTrue("First second uid", user1.getUid() == user2.getUid());
-    }
+		Assert.assertTrue("First second gid", user1.getGid() == user2.getGid());
+		Assert.assertTrue("First second group", user1.getGroup() == user2
+				.getGroup());
+		Assert.assertTrue("First second name", user1.getName() == user2
+				.getName());
+		Assert.assertTrue("First second uid", user1.getUid() == user2.getUid());
+	}
 
-    /**
-     * Tests the output of toString.
-     */
-    @Test
-    public void test01toString() {
-        short gid = 12;
-        String group = "group";
-        String name = "user";
-        short uid = 15;
+	/**
+	 * Tests the output of toString.
+	 */
+	@Test
+	public void test01toString() {
+		short gid = 12;
+		String group = "group";
+		String name = "user";
+		short uid = 15;
 
-        User user = new User(name, uid, group, gid);
+		User user = new User(name, uid, group, gid);
 
-        String actual = user.toString();
+		String actual = user.toString();
 
-        String expected = "User{ name: " + name + ", uid: " + uid + ", group: "
-                + group + ", gid: " + gid + "}";
+		String expected = "User{ name: " + name + ", uid: " + uid + ", group: "
+				+ group + ", gid: " + gid + "}";
 
-        Assert.assertEquals("toString", expected, actual);
-    }
+		Assert.assertEquals("toString", expected, actual);
+	}
 
-    /**
-     * Tests a null group.
-     */
-    @Test
-    public void test02constructor() {
-        short gid = 12;
-        String group = null;
-        String name = "user";
-        short uid = 15;
+	/**
+	 * Tests a null group.
+	 */
+	@Test
+	public void test02constructor() {
+		short gid = 12;
+		String group = null;
+		String name = "user";
+		short uid = 15;
 
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new User(name, uid, group, gid);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests a empty group.
-     */
-    @Test
-    public void test03constructor() {
-        short gid = 12;
-        String group = "";
-        String name = "user";
-        short uid = 15;
+	/**
+	 * Tests a empty group.
+	 */
+	@Test
+	public void test03constructor() {
+		short gid = 12;
+		String group = "";
+		String name = "user";
+		short uid = 15;
 
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new User(name, uid, group, gid);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests a null name.
-     */
-    @Test
-    public void test04constructor() {
-        short gid = 12;
-        String group = "group";
-        String name = null;
-        short uid = 15;
+	/**
+	 * Tests a null name.
+	 */
+	@Test
+	public void test04constructor() {
+		short gid = 12;
+		String group = "group";
+		String name = null;
+		short uid = 15;
 
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new User(name, uid, group, gid);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests a empty name.
-     */
-    @Test
-    public void test05constructor() {
-        short gid = 12;
-        String group = "group";
-        String name = "";
-        short uid = 15;
+	/**
+	 * Tests a empty name.
+	 */
+	@Test
+	public void test05constructor() {
+		short gid = 12;
+		String group = "group";
+		String name = "";
+		short uid = 15;
 
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new User(name, uid, group, gid);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests a negative uid.
-     */
-    @Test
-    public void test06constructor() {
-        short gid = 12;
-        String group = "group";
-        String name = "user";
-        short uid = -8;
+	/**
+	 * Tests a negative uid.
+	 */
+	@Test
+	public void test06constructor() {
+		short gid = 12;
+		String group = "group";
+		String name = "user";
+		short uid = -8;
 
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new User(name, uid, group, gid);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 }

@@ -46,20 +46,20 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * @version 2010-03-09
  */
 public class InvalidParameterException extends TReqSException {
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4795338754047868534L;
+	/**
+	 * Generated ID.
+	 */
+	private static final long serialVersionUID = -4795338754047868534L;
 
-    /**
-     * Creates the exception with a explanatory name.
-     * 
-     * @param errCode
-     *            Error code.
-     * @param errMsg
-     *            Explanation.
-     */
-    public InvalidParameterException(ErrorCode errCode, String errMsg) {
-        super(errCode, errMsg);
-    }
+	/**
+	 * Creates the exception with a explanatory name.
+	 * 
+	 * @param errCode
+	 *            Error code.
+	 * @param errMsg
+	 *            Explanation.
+	 */
+	public InvalidParameterException(ErrorCode errCode, String errMsg) {
+		super(errCode, errMsg);
+	}
 };

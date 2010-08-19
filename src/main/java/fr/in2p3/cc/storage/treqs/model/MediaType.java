@@ -43,102 +43,102 @@ import org.slf4j.LoggerFactory;
  * Represents the type of media. A type of media could be T10K-A.
  */
 public class MediaType {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(MediaType.class);
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(MediaType.class);
 
-    /**
-     * Id of the media type.
-     */
-    private byte id;
+	/**
+	 * Id of the media type.
+	 */
+	private byte id;
 
-    /**
-     * Name of the media type.
-     */
-    private String name;
+	/**
+	 * Name of the media type.
+	 */
+	private String name;
 
-    /**
-     * Constructor that relates the name of the media type.
-     * 
-     * @param name
-     */
-    public MediaType(byte id, String name) {
-        LOGGER.trace("> Creating media type");
+	/**
+	 * Constructor that relates the name of the media type.
+	 * 
+	 * @param name
+	 */
+	public MediaType(byte id, String name) {
+		LOGGER.trace("> Creating media type");
 
-        assert name != null;
+		assert name != null;
 
-        this.setId(id);
-        this.setName(name);
+		this.setId(id);
+		this.setName(name);
 
-        LOGGER.trace("< Creating media type");
-    }
+		LOGGER.trace("< Creating media type");
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        boolean ret = false;
-        if (obj instanceof MediaType) {
-            MediaType media = (MediaType) obj;
-            if (media.getId() == this.getId()
-                    && media.getName().equals(this.getName())) {
-                ret = true;
-            }
-        }
-        return ret;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		boolean ret = false;
+		if (obj instanceof MediaType) {
+			MediaType media = (MediaType) obj;
+			if (media.getId() == this.getId()
+					&& media.getName().equals(this.getName())) {
+				ret = true;
+			}
+		}
+		return ret;
+	}
 
-    /**
-     * Getter of the id.
-     * 
-     * @return
-     */
-    public byte getId() {
-        LOGGER.trace(">< getId");
+	/**
+	 * Getter of the id.
+	 * 
+	 * @return
+	 */
+	public byte getId() {
+		LOGGER.trace(">< getId");
 
-        return this.id;
-    }
+		return this.id;
+	}
 
-    /**
-     * Getter of the name.
-     * 
-     * @return
-     */
-    public String getName() {
-        LOGGER.trace(">< getName");
+	/**
+	 * Getter of the name.
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		LOGGER.trace(">< getName");
 
-        return this.name;
-    }
+		return this.name;
+	}
 
-    private void setId(byte id) {
-        LOGGER.trace("> setId");
+	private void setId(byte id) {
+		LOGGER.trace("> setId");
 
-        assert id >= 0;
+		assert id >= 0;
 
-        this.id = id;
+		this.id = id;
 
-        LOGGER.trace("< setId");
-    }
+		LOGGER.trace("< setId");
+	}
 
-    /**
-     * setter of the name.
-     * 
-     * @param name
-     */
-    public void setName(String name) {
-        LOGGER.trace("> setName");
+	/**
+	 * setter of the name.
+	 * 
+	 * @param name
+	 */
+	public void setName(String name) {
+		LOGGER.trace("> setName");
 
-        this.name = name;
+		this.name = name;
 
-        LOGGER.trace("< setName");
-    }
+		LOGGER.trace("< setName");
+	}
 
-    @Override
-    public String toString() {
-        String ret = "";
-        ret += "{ id : " + this.getId();
-        ret += ", name : " + this.getName();
-        ret += "}";
-        return ret;
-    }
+	@Override
+	public String toString() {
+		String ret = "";
+		ret += "{ id : " + this.getId();
+		ret += ", name : " + this.getName();
+		ret += "}";
+		return ret;
+	}
 }

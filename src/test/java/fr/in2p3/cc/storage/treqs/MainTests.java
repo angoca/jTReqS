@@ -43,6 +43,6 @@ import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
 @SuiteClasses( { UnitTests.class, DatabaseTests.class, IntegrationTests.class,
-        SystemTests.class })
+		SystemTests.class })
 public class MainTests {
 }

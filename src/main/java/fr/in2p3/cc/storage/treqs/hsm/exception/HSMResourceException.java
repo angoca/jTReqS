@@ -42,17 +42,17 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  * HPSS disk to stage the file.
  */
 public class HSMResourceException extends HSMOpenException {
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 4271400589349753437L;
+	/**
+	 * Generated ID.
+	 */
+	private static final long serialVersionUID = 4271400589349753437L;
 
-    public HSMResourceException(short hsmErrorcode) {
-        super(hsmErrorcode);
-    }
+	public HSMResourceException(short hsmErrorcode) {
+		super(hsmErrorcode);
+	}
 
-    @Override
-    public String getMessage() {
-        return "No space available on disk." + super.getMessage();
-    }
+	@Override
+	public String getMessage() {
+		return "No space available on disk." + super.getMessage();
+	}
 };

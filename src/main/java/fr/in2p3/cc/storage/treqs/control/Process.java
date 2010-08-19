@@ -41,154 +41,154 @@ import org.slf4j.LoggerFactory;
  */
 
 public abstract class Process extends Thread {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
-    /**
-     *Current state of the thread.
-     * <p>
-     * The possible values are:
-     * <ul>
-     * <li>created</li>
-     * <li>starting</li>
-     * <li>started</li>
-     * <li>stopping</li>
-     * <li>stopped</li>
-     * </ul>
-     * <p>
-     * To change between the different status, a different set of methods have
-     * to be used in order to prevent bad status changes.
-     * <ul>
-     * <li><b>created</b>: Automatic, when the object is created.</li>
-     * <li><b>starting</b>: With kick start.</li>
-     * <li><b>started</b>: With setStatus.</li>
-     * <li><b>stopping</b>: With conclude.</li>
-     * <li><b>stopped</b>: With setStatus.</li>
-     * </ul>
-     * <p>
-     * The method waitToFinish is a special method to wait the thread to finish
-     * its operations. It can be called only when the Process is in Stopping
-     * state or Stopped state.
-     */
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
+	/**
+	 *Current state of the thread.
+	 * <p>
+	 * The possible values are:
+	 * <ul>
+	 * <li>created</li>
+	 * <li>starting</li>
+	 * <li>started</li>
+	 * <li>stopping</li>
+	 * <li>stopped</li>
+	 * </ul>
+	 * <p>
+	 * To change between the different status, a different set of methods have
+	 * to be used in order to prevent bad status changes.
+	 * <ul>
+	 * <li><b>created</b>: Automatic, when the object is created.</li>
+	 * <li><b>starting</b>: With kick start.</li>
+	 * <li><b>started</b>: With setStatus.</li>
+	 * <li><b>stopping</b>: With conclude.</li>
+	 * <li><b>stopped</b>: With setStatus.</li>
+	 * </ul>
+	 * <p>
+	 * The method waitToFinish is a special method to wait the thread to finish
+	 * its operations. It can be called only when the Process is in Stopping
+	 * state or Stopped state.
+	 */
 
-    protected ProcessStatus status = null;
+	protected ProcessStatus status = null;
 
-    public Process(String name) {
-        super(name);
+	public Process(String name) {
+		super(name);
 
-        LOGGER.trace("> Process");
+		LOGGER.trace("> Process");
 
-        this.setStatus(ProcessStatus.CREATED);
+		this.setStatus(ProcessStatus.CREATED);
 
-        LOGGER.trace("< Process");
-    }
+		LOGGER.trace("< Process");
+	}
 
-    public void conclude() {
-        LOGGER.trace("> conclude");
+	public void conclude() {
+		LOGGER.trace("> conclude");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTED
-                || this.getProcessStatus() == ProcessStatus.STOPPED
-                || this.getProcessStatus() == ProcessStatus.STOPPING : "Invalid in state "
-                + this.getProcessStatus().name();
+		assert this.getProcessStatus() == ProcessStatus.STARTED
+				|| this.getProcessStatus() == ProcessStatus.STOPPED
+				|| this.getProcessStatus() == ProcessStatus.STOPPING : "Invalid in state "
+				+ this.getProcessStatus().name();
 
-        if (this.getProcessStatus() == ProcessStatus.STARTED) {
-            this.setStatus(ProcessStatus.STOPPING);
-        }
+		if (this.getProcessStatus() == ProcessStatus.STARTED) {
+			this.setStatus(ProcessStatus.STOPPING);
+		}
 
-        LOGGER.trace("< conclude");
-    }
+		LOGGER.trace("< conclude");
+	}
 
-    public ProcessStatus getProcessStatus() {
-        LOGGER.trace(">< getStatus");
+	public ProcessStatus getProcessStatus() {
+		LOGGER.trace(">< getStatus");
 
-        return this.status;
-    }
+		return this.status;
+	}
 
-    protected boolean keepOn() {
-        LOGGER.trace("> keepOn");
+	protected boolean keepOn() {
+		LOGGER.trace("> keepOn");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTED
-                || this.getProcessStatus() == ProcessStatus.STOPPING;
+		assert this.getProcessStatus() == ProcessStatus.STARTED
+				|| this.getProcessStatus() == ProcessStatus.STOPPING;
 
-        boolean ret = false;
-        if (this.getProcessStatus() == ProcessStatus.STARTED) {
-            ret = true;
-        }
+		boolean ret = false;
+		if (this.getProcessStatus() == ProcessStatus.STARTED) {
+			ret = true;
+		}
 
-        LOGGER.trace("< keepOn");
+		LOGGER.trace("< keepOn");
 
-        return ret;
-    }
+		return ret;
+	}
 
-    protected void kickStart() {
-        LOGGER.trace("> kickStart");
+	protected void kickStart() {
+		LOGGER.trace("> kickStart");
 
-        assert this.getProcessStatus() == ProcessStatus.CREATED;
+		assert this.getProcessStatus() == ProcessStatus.CREATED;
 
-        this.setStatus(ProcessStatus.STARTING);
+		this.setStatus(ProcessStatus.STARTING);
 
-        LOGGER.trace("< kickStart");
-    }
+		LOGGER.trace("< kickStart");
+	}
 
-    /**
-     * This execute the same of run+toStart but just once, not in an infinite
-     * loop.
-     */
-    public abstract void oneLoop();
+	/**
+	 * This execute the same of run+toStart but just once, not in an infinite
+	 * loop.
+	 */
+	public abstract void oneLoop();
 
-    @Override
-    public final void run() {
-        LOGGER.trace("> run");
+	@Override
+	public final void run() {
+		LOGGER.trace("> run");
 
-        this.changeStatus(ProcessStatus.STARTED);
+		this.changeStatus(ProcessStatus.STARTED);
 
-        this.toStart();
+		this.toStart();
 
-        this.changeStatus(ProcessStatus.STOPPED);
+		this.changeStatus(ProcessStatus.STOPPED);
 
-        LOGGER.trace("< run");
-    }
+		LOGGER.trace("< run");
+	}
 
-    protected void changeStatus(ProcessStatus /* ! */status) {
-        LOGGER.trace("> changeStatus");
+	protected void changeStatus(ProcessStatus /* ! */status) {
+		LOGGER.trace("> changeStatus");
 
-        assert status != null;
-        assert (this.getProcessStatus() == ProcessStatus.STARTED)
-                || (this.getProcessStatus() == ProcessStatus.STOPPING && status == ProcessStatus.STOPPED)
-                || (this.getProcessStatus() == ProcessStatus.STARTING && status == ProcessStatus.STARTED);
+		assert status != null;
+		assert (this.getProcessStatus() == ProcessStatus.STARTED)
+				|| (this.getProcessStatus() == ProcessStatus.STOPPING && status == ProcessStatus.STOPPED)
+				|| (this.getProcessStatus() == ProcessStatus.STARTING && status == ProcessStatus.STARTED);
 
-        this.setStatus(status);
+		this.setStatus(status);
 
-        LOGGER.trace("< changeStatus");
-    }
+		LOGGER.trace("< changeStatus");
+	}
 
-    public synchronized void setStatus(ProcessStatus /* ! */status) {
-        LOGGER.trace("> changeStatus");
+	public synchronized void setStatus(ProcessStatus /* ! */status) {
+		LOGGER.trace("> changeStatus");
 
-        assert status != null;
+		assert status != null;
 
-        this.status = status;
-        LOGGER.trace("< changeStatus");
-    }
+		this.status = status;
+		LOGGER.trace("< changeStatus");
+	}
 
-    protected abstract void toStart();
+	protected abstract void toStart();
 
-    public void waitToFinish() {
-        LOGGER.trace("> waitToFinish");
+	public void waitToFinish() {
+		LOGGER.trace("> waitToFinish");
 
-        assert this.getProcessStatus() == ProcessStatus.STOPPING
-                || this.getProcessStatus() == ProcessStatus.STOPPED;
+		assert this.getProcessStatus() == ProcessStatus.STOPPING
+				|| this.getProcessStatus() == ProcessStatus.STOPPED;
 
-        while (this.getProcessStatus() != ProcessStatus.STOPPED) {
-            LOGGER.debug("Waiting {} to be stopped", this.getName());
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                // Nothing.
-            }
-        }
+		while (this.getProcessStatus() != ProcessStatus.STOPPED) {
+			LOGGER.debug("Waiting {} to be stopped", this.getName());
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// Nothing.
+			}
+		}
 
-        LOGGER.trace("< waitToFinish");
-    }
+		LOGGER.trace("< waitToFinish");
+	}
 }

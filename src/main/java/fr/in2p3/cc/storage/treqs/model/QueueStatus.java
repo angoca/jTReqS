@@ -38,30 +38,30 @@ package fr.in2p3.cc.storage.treqs.model;
  */
 
 public enum QueueStatus {
-    /**
+	/**
      *
      */
-    QS_ACTIVATED((byte) 21),
-    /**
+	QS_ACTIVATED((byte) 21),
+	/**
     *
     */
-    QS_CREATED((byte) 20),
-    /**
+	QS_CREATED((byte) 20),
+	/**
      *
      */
-    QS_ENDED((byte) 23),
-    /**
+	QS_ENDED((byte) 23),
+	/**
      *
      */
-    QS_TEMPORARILY_SUSPENDED((byte) 22);
+	QS_TEMPORARILY_SUSPENDED((byte) 22);
 
-    private byte id;
+	private byte id;
 
-    private QueueStatus(byte id) {
-        this.id = id;
-    }
+	private QueueStatus(byte id) {
+		this.id = id;
+	}
 
-    public int getId() {
-        return this.id;
-    }
+	public int getId() {
+		return this.id;
+	}
 }

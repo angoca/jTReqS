@@ -39,12 +39,12 @@ package fr.in2p3.cc.storage.treqs.model.exception;
 
 public class ProblematicConfiguationFileException extends ConfigException {
 
-    /**
-     * Generated Id.
-     */
-    private static final long serialVersionUID = 49803485989907385L;
+	/**
+	 * Generated Id.
+	 */
+	private static final long serialVersionUID = 49803485989907385L;
 
-    public ProblematicConfiguationFileException(String file) {
-        super(file);
-    };
+	public ProblematicConfiguationFileException(String file) {
+		super(file);
+	};
 }

@@ -49,120 +49,120 @@ import org.junit.Test;
  * @author gomez
  */
 public class TapeTest {
-    /**
-     * Tests to create a tape with all attributes passed as parameters.
-     */
-    @Test
-    public void test01Constructor() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        Tape tape = new Tape(tapename, mediatype, TapeStatus.TS_UNLOCKED);
+	/**
+	 * Tests to create a tape with all attributes passed as parameters.
+	 */
+	@Test
+	public void test01Constructor() {
+		String tapename = "tapename";
+		MediaType mediatype = new MediaType((byte) 1, "T10K");
+		Tape tape = new Tape(tapename, mediatype, TapeStatus.TS_UNLOCKED);
 
-        Assert.assertEquals("Complete constructor", mediatype, tape
-                .getMediaType());
-    }
+		Assert.assertEquals("Complete constructor", mediatype, tape
+				.getMediaType());
+	}
 
-    @Test
-    public void test01StatusUpdateTime() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
+	@Test
+	public void test01StatusUpdateTime() {
+		String tapename = "tapename";
+		MediaType mediatype = new MediaType((byte) 1, "T10K");
+		TapeStatus status = TapeStatus.TS_UNLOCKED;
+		Tape tape = new Tape(tapename, mediatype, status);
 
-        try {
-            tape.setStatusUpdateTime(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			tape.setStatusUpdateTime(null);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test01toString() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
+	@Test
+	public void test01toString() {
+		String tapename = "tapename";
+		MediaType mediatype = new MediaType((byte) 1, "T10K");
+		TapeStatus status = TapeStatus.TS_UNLOCKED;
+		Tape tape = new Tape(tapename, mediatype, status);
 
-        String actual = tape.toString();
+		String actual = tape.toString();
 
-        String expected = "Tape{ media type: " + mediatype.getName()
-                + ", name: " + tapename + ", status: " + status + "}";
-        Assert.assertEquals("toString", expected, actual);
-    }
+		String expected = "Tape{ media type: " + mediatype.getName()
+				+ ", name: " + tapename + ", status: " + status + "}";
+		Assert.assertEquals("toString", expected, actual);
+	}
 
-    @Test
-    public void test02Constructor() {
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
+	@Test
+	public void test02Constructor() {
+		MediaType mediatype = new MediaType((byte) 1, "T10K");
 
-        try {
-            new Tape(null, mediatype, TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new Tape(null, mediatype, TapeStatus.TS_UNLOCKED);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test02StatusUpdateTime() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
+	@Test
+	public void test02StatusUpdateTime() {
+		String tapename = "tapename";
+		MediaType mediatype = new MediaType((byte) 1, "T10K");
+		TapeStatus status = TapeStatus.TS_UNLOCKED;
+		Tape tape = new Tape(tapename, mediatype, status);
 
-        tape.setStatusUpdateTimeNow();
+		tape.setStatusUpdateTimeNow();
 
-        Calendar time = tape.getStatusUpdateTime();
+		Calendar time = tape.getStatusUpdateTime();
 
-        Assert.assertTrue(time != null);
-    }
+		Assert.assertTrue(time != null);
+	}
 
-    @Test
-    public void test03Constructor() {
-        String tapename = "";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
+	@Test
+	public void test03Constructor() {
+		String tapename = "";
+		MediaType mediatype = new MediaType((byte) 1, "T10K");
 
-        try {
-            new Tape(tapename, mediatype, TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new Tape(tapename, mediatype, TapeStatus.TS_UNLOCKED);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test04Constructor() {
-        String tapename = "tapename";
+	@Test
+	public void test04Constructor() {
+		String tapename = "tapename";
 
-        try {
-            new Tape(tapename, null, TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new Tape(tapename, null, TapeStatus.TS_UNLOCKED);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test05Constructor() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
+	@Test
+	public void test05Constructor() {
+		String tapename = "tapename";
+		MediaType mediatype = new MediaType((byte) 1, "T10K");
 
-        try {
-            new Tape(tapename, mediatype, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+		try {
+			new Tape(tapename, mediatype, null);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
 }

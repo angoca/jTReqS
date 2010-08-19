@@ -5,40 +5,37 @@
     <jonathan.schaeffer@cc.in2p3.fr>
   -->
   <!--
-    Contributors : Andres Gomez, CC-IN2P3, CNRS
-    <andres.gomez@cc.in2p3.fr>
+    Contributors : Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
   -->
   <!--
-    This software is a computer program whose purpose is to schedule,
-    sort and submit file requests to the hierarchical storage system
-    HPSS.
+    This software is a computer program whose purpose is to schedule, sort
+    and submit file requests to the hierarchical storage system HPSS.
   -->
   <!--
     This software is governed by the CeCILL license under French law and
     abiding by the rules of distribution of free software. You can use,
-    modify and/or redistribute the software under the terms of the
-    CeCILL license as circulated by CEA, CNRS and INRIA at the following
-    URL "http://www.cecill.info".
+    modify and/or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
   -->
   <!--
-    As a counterpart to the access to the source code and rights to
-    copy, modify and redistribute granted by the license, users are
-    provided only with a limited warranty and the software's author, the
-    holder of the economic rights, and the successive licensors have
-    only limited liability.
+    As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided
+    only with a limited warranty and the software's author, the holder of
+    the economic rights, and the successive licensors have only limited
+    liability.
   -->
   <!--
-    In this respect, the user's attention is drawn to the risks
-    associated with loading, using, modifying and/or developing or
-    reproducing the software by the user in light of its specific status
-    of free software, that may mean that it is complicated to
-    manipulate, and that also therefore means that it is reserved for
-    developers and experienced professionals having in-depth computer
-    knowledge. Users are therefore encouraged to load and test the
-    software's suitability as regards their requirements in conditions
-    enabling the security of their systems and/or data to be ensured
-    and, more generally, to use and operate it in the same conditions as
-    regards security.
+    In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean that it is complicated to manipulate, and that also
+    therefore means that it is reserved for developers and experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards
+    their requirements in conditions enabling the security of their
+    systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security.
   -->
   <!--
     The fact that you are presently reading this means that you have had
@@ -113,6 +110,8 @@
   <properties>
     <compileSource>1.5</compileSource>
     <encoding>ISO-8859-1</encoding>
+    <logbackFile>logback.xml</logbackFile>
+    <treqsConfFile>treqs.conf.properties</treqsConfFile>
   </properties>
 
   <profiles>
@@ -123,6 +122,20 @@
         <defaultGoal>package</defaultGoal>
         <plugins>
 
+          <plugin>
+            <artifactId>maven-clean-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>auto-clean</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>clean</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- This plugin copies the sources with a specific encoding. -->
           <!-- mvn resources:resources -->
           <!-- mvn resources:testResources -->
           <plugin>
@@ -132,6 +145,9 @@
             </configuration>
           </plugin>
 
+          <!--
+            Compiles the sources with a specific Java version and encoding.
+          -->
           <!-- mvn compiler:compile -->
           <!-- mvn compiler:testCompile -->
           <plugin>
@@ -146,10 +162,14 @@
           <!--
             TODO plugin> <groupId>org.codehaus.mojo</groupId>
             <artifactId>native-maven-plugin</artifactId>
-            <extensions>true</extensions> <configuration> ...
-            </configuration> </plugin
+            <extensions>true</extensions> <configuration> ... </configuration>
+            </plugin
           -->
 
+          <!--
+            Executes the tests, taking the target directory as working
+            directory.
+          -->
           <!-- mvn surefire:test -->
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
@@ -162,49 +182,31 @@
             </configuration>
           </plugin>
 
-          <!-- mvn assembly:single -->
+          <!-- Creates the jar of jTReqS. -->
           <plugin>
-            <artifactId>maven-assembly-plugin</artifactId>
+            <artifactId>maven-jar-plugin</artifactId>
             <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <descriptors>
-                <descriptor>src/main/config/assembly/assembly-package.xml</descriptor>
-              </descriptors>
-              <archive>
-                <!-- List of files included in the distribution -->
-                <index>true</index>
-                <manifest>
-                  <addClasspath>true</addClasspath>
-                  <!-- Application description  -->
-                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                  <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-                  <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
-                  <packageName>fr.in2p3.cc.storage.treqs</packageName>
-                </manifest>
-                <manifestEntries>
-                  <Sealed>true</Sealed>
-                </manifestEntries>
-              </archive>
+              <excludes>
+                <exclude>${treqsConfFile}</exclude>
+                <exclude>${logbackFile}</exclude>
+                <exclude>*.sample.properties</exclude>
+                <exclude>*.sh</exclude>
+                <exclude>*.py</exclude>
+              </excludes>
             </configuration>
-            <!-- Creates the assembly as part of package -->
-            <executions>
-              <execution>
-                <id>make-assembly</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
 
+          <!--
+            Creates the environment for execution. Integrates the
+            dependencies.
+          -->
           <!-- mvn appassembler:assemble -->
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>appassembler-maven-plugin</artifactId>
             <configuration>
               <!-- Extra JVM arguments that will be included in the bin scripts -->
-              <extraJvmArguments>-Dlogback.configurationFile=logback.xml</extraJvmArguments>
+              <extraJvmArguments>-Dlogback.configurationFile=${logbackFile}</extraJvmArguments>
 
               <configurationDirectory>etc</configurationDirectory>
               <platforms>
@@ -214,7 +216,6 @@
                 <program>
                   <name>jtreqs</name>
                   <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
-
                 </program>
               </programs>
               <repositoryLayout>flat</repositoryLayout>
@@ -231,9 +232,9 @@
             </executions>
           </plugin>
 
+          <!-- Adds some files in the environment for execution. -->
           <!-- mvn antrun:run -->
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <configuration>
               <tasks>
@@ -242,9 +243,11 @@
 
                 <copy todir="target/treqs/etc">
                   <fileset dir="target/classes">
-                    <include name="treqs.conf.properties" />
-                    <include name="logback.xml" />
+                    <include name="${treqsConfFile}" />
+                    <include name="${logbackFile}" />
+                    <include name="*.sample.properties" />
                     <include name="*.sh" />
+                    <include name="*.py" />
                   </fileset>
                 </copy>
 
@@ -260,36 +263,15 @@
               </execution>
             </executions>
           </plugin>
-        </plugins>
-      </build>
-    </profile>
 
-    <profile>
-      <id>release</id>
-      <build>
-        <defaultGoal>package</defaultGoal>
-        <plugins>
-
-        <!-- mvn surefire:test -->
-          <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <!-- The application reads configuration files. -->
-              <workingDirectory>
-                ${project.build.testOutputDirectory}
-                    </workingDirectory>
-              <testFailureIgnore>true</testFailureIgnore>
-            </configuration>
-          </plugin>
-
-          <!-- mvn assembly:single -->
+          <!-- Packs all files in a tar. -->
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
               <finalName>jtreqs</finalName>
               <descriptors>
-                <descriptor>src/main/config/assembly/assembly-release.xml</descriptor>
+                <descriptor>src/main/config/assembly/assembly.xml</descriptor>
               </descriptors>
             </configuration>
             <!-- Creates the assembly as part of package -->
@@ -308,12 +290,4 @@
       </build>
     </profile>
   </profiles>
-
-  <build>
-    <plugins>
-
-
-
-    </plugins>
-  </build>
 </project>

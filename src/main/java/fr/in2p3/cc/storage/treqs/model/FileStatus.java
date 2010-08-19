@@ -67,7 +67,11 @@ public enum FileStatus {
     /**
      * File is registered in a queue
      */
-    FS_SUBMITTED((byte) 11);
+    FS_SUBMITTED((byte) 11),
+    /**
+     * The file is already on disk.
+     */
+    FS_ON_DISK((byte) 15);
 
     private byte id;
 

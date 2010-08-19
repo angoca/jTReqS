@@ -49,50 +49,50 @@ import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
  * DAO factory. Retrieves the corresponding DAO for each object.
  */
 public class DAO {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DAO.class);
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(DAO.class);
 
-    /**
-     * Returns the DAO for the configuration.
-     * 
-     * @return
-     * @throws ProblematicConfiguationFileException
-     * @throws PersistanceFactoryException
-     */
-    public static ConfigurationDAO getConfigurationDAO()
-            throws ProblematicConfiguationFileException,
-            PersistanceFactoryException {
-        LOGGER.trace(">< getConfigurationDAO");
+	/**
+	 * Returns the DAO for the configuration.
+	 * 
+	 * @return
+	 * @throws ProblematicConfiguationFileException
+	 * @throws PersistanceFactoryException
+	 */
+	public static ConfigurationDAO getConfigurationDAO()
+			throws ProblematicConfiguationFileException,
+			PersistanceFactoryException {
+		LOGGER.trace(">< getConfigurationDAO");
 
-        return PersistenceFactory.getInstance().getConfigurationDAO();
-    }
+		return PersistenceFactory.getInstance().getConfigurationDAO();
+	}
 
-    /**
-     * Returns the DAO for the queue.
-     * 
-     * @return
-     * @throws ProblematicConfiguationFileException
-     * @throws PersistanceFactoryException
-     */
-    public static QueueDAO getQueueDAO()
-            throws ProblematicConfiguationFileException,
-            PersistanceFactoryException {
-        LOGGER.trace(">< getQueueDAO");
+	/**
+	 * Returns the DAO for the queue.
+	 * 
+	 * @return
+	 * @throws ProblematicConfiguationFileException
+	 * @throws PersistanceFactoryException
+	 */
+	public static QueueDAO getQueueDAO()
+			throws ProblematicConfiguationFileException,
+			PersistanceFactoryException {
+		LOGGER.trace(">< getQueueDAO");
 
-        return PersistenceFactory.getInstance().getQueueDAO();
-    }
+		return PersistenceFactory.getInstance().getQueueDAO();
+	}
 
-    /**
-     * Returns the DAO for the reading.
-     * 
-     * @return
-     * @throws TReqSException
-     */
-    public static ReadingDAO getReadingDAO() throws TReqSException {
-        LOGGER.trace(">< getReadingDAO");
+	/**
+	 * Returns the DAO for the reading.
+	 * 
+	 * @return
+	 * @throws TReqSException
+	 */
+	public static ReadingDAO getReadingDAO() throws TReqSException {
+		LOGGER.trace(">< getReadingDAO");
 
-        return PersistenceFactory.getInstance().getReadingDAO();
-    }
+		return PersistenceFactory.getInstance().getReadingDAO();
+	}
 }

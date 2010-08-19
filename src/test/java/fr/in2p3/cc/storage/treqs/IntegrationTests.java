@@ -55,10 +55,10 @@ import fr.in2p3.cc.storage.treqs.model.QueueIntegrationTest;
 
 @RunWith(Suite.class)
 @SuiteClasses( { QueueIntegrationTest.class, ControllerTest.class,
-        TapesControllerTest.class, FilesControllerTest.class,
-        UsersControllerTest.class, FilePositionOnTapesControllerTest.class,
-        StagersControllerTest.class, QueuesControllerTest.class,
-        ActivatorTest.class, DispatcherTest.class, HSMCommandBridgeTest.class })
+		TapesControllerTest.class, FilesControllerTest.class,
+		UsersControllerTest.class, FilePositionOnTapesControllerTest.class,
+		StagersControllerTest.class, QueuesControllerTest.class,
+		ActivatorTest.class, DispatcherTest.class, HSMCommandBridgeTest.class })
 public class IntegrationTests {
 
 }

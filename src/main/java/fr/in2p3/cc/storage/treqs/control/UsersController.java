@@ -49,86 +49,86 @@ import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
  * Specialization of the Controller template to manage users.
  */
 public class UsersController extends Controller {
-    /**
-     * Pointer to the singleton instance.
-     */
-    private static UsersController _instance = null;
+	/**
+	 * Pointer to the singleton instance.
+	 */
+	private static UsersController _instance = null;
 
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(UsersController.class);
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(UsersController.class);
 
-    /**
-     * Destroys the unique instance. This is useful only for testing purposes.
-     */
-    static void destroyInstance() {
-        LOGGER.debug("> destroyInstance");
+	/**
+	 * Destroys the unique instance. This is useful only for testing purposes.
+	 */
+	static void destroyInstance() {
+		LOGGER.debug("> destroyInstance");
 
-        _instance = null;
+		_instance = null;
 
-        LOGGER.debug("< destroyInstance");
-    }
+		LOGGER.debug("< destroyInstance");
+	}
 
-    /**
-     * To get an instance to this singleton.
-     * 
-     * @return
-     */
-    public static UsersController getInstance() {
-        LOGGER.trace("> getInstance");
+	/**
+	 * To get an instance to this singleton.
+	 * 
+	 * @return
+	 */
+	public static UsersController getInstance() {
+		LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
-            LOGGER.debug("Creating instance.");
+		if (_instance == null) {
+			LOGGER.debug("Creating instance.");
 
-            _instance = new UsersController();
-        }
+			_instance = new UsersController();
+		}
 
-        LOGGER.trace("< getInstance");
+		LOGGER.trace("< getInstance");
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    private UsersController() {
-        super.objectMap = new HashMap<String, Object>();
-    }
+	private UsersController() {
+		super.objectMap = new HashMap<String, Object>();
+	}
 
-    /**
-     * Add a user to the list. If the user does not exist, create it and return
-     * it. Else, return the already existing instance.
-     * 
-     * @param userName
-     *            the name of the user.
-     * @return a pointer to the user named after u.
-     * @throws ControllerInsertException
-     */
-    public User add(String userName) throws ControllerInsertException {
-        LOGGER.trace("> add");
+	/**
+	 * Add a user to the list. If the user does not exist, create it and return
+	 * it. Else, return the already existing instance.
+	 * 
+	 * @param userName
+	 *            the name of the user.
+	 * @return a pointer to the user named after u.
+	 * @throws ControllerInsertException
+	 */
+	public User add(String userName) throws ControllerInsertException {
+		LOGGER.trace("> add");
 
-        assert userName != null;
+		assert userName != null;
 
-        User user = (User) this.exists(userName);
-        if (user == null) {
-            user = create(userName);
-        }
+		User user = (User) this.exists(userName);
+		if (user == null) {
+			user = create(userName);
+		}
 
-        LOGGER.trace("< add");
+		LOGGER.trace("< add");
 
-        return user;
-    }
+		return user;
+	}
 
-    User create(String userName) throws ControllerInsertException {
-        LOGGER.trace("> create");
+	User create(String userName) throws ControllerInsertException {
+		LOGGER.trace("> create");
 
-        assert userName != null;
+		assert userName != null;
 
-        User user = new User(userName);
-        super.add(userName, user);
-        // TODO AngocA Later the uid, group and gid will be user later
+		User user = new User(userName);
+		super.add(userName, user);
+		// TODO AngocA Later the uid, group and gid will be user later
 
-        LOGGER.trace("< create");
+		LOGGER.trace("< create");
 
-        return user;
-    }
+		return user;
+	}
 }

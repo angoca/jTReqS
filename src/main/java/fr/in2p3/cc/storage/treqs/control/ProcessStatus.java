@@ -38,25 +38,25 @@ package fr.in2p3.cc.storage.treqs.control;
  */
 
 public enum ProcessStatus {
-    /**
-     * The process has just been created.
-     */
-    CREATED,
-    /**
-     * The process is waiting to finish to be started. It is between the method
-     * create and run.
-     */
-    STARTING,
-    /**
-     * The process has been started.
-     */
-    STARTED,
-    /**
-     * The process is being stopped. The execution has to be finished.
-     */
-    STOPPING,
-    /**
-     * The process has been stopped, all activity has been finished correctly.
-     */
-    STOPPED
+	/**
+	 * The process has just been created.
+	 */
+	CREATED,
+	/**
+	 * The process is waiting to finish to be started. It is between the method
+	 * create and run.
+	 */
+	STARTING,
+	/**
+	 * The process has been started.
+	 */
+	STARTED,
+	/**
+	 * The process is being stopped. The execution has to be finished.
+	 */
+	STOPPING,
+	/**
+	 * The process has been stopped, all activity has been finished correctly.
+	 */
+	STOPPED
 }

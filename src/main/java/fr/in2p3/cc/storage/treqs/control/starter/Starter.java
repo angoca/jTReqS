@@ -59,149 +59,149 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 public class Starter {
 
-    // TODO JMX to reload configuration.
-    // TODO JMX to stop treqs
-    //
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
-    private boolean cont = true;
-    private Options options;
-    private long timeBetweenCheck = 1000;
+	// TODO JMX to reload configuration.
+	// TODO JMX to stop treqs
+	//
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
+	private boolean cont = true;
+	private Options options;
+	private long timeBetweenCheck = 1000;
 
-    @SuppressWarnings("static-access")
-    private CommandLine prepareCommandOptions(String[] arguments)
-            throws ParseException {
-        LOGGER.trace("> prepareCommandOptions");
+	@SuppressWarnings("static-access")
+	private CommandLine prepareCommandOptions(String[] arguments)
+			throws ParseException {
+		LOGGER.trace("> prepareCommandOptions");
 
-        options = new Options();
-        options.addOption("h", "help", false, "print this message");
-        options.addOption("c", "config", false, "treqs configuration file");
-        options.addOption(OptionBuilder.withDescription("r").withLongOpt(
-                "reqfile").hasArg().withArgName("REQUESTS_FILE").create());
-        CommandLineParser parser = new PosixParser();
+		options = new Options();
+		options.addOption("h", "help", false, "print this message");
+		options.addOption("c", "config", false, "treqs configuration file");
+		options.addOption(OptionBuilder.withDescription("r").withLongOpt(
+				"reqfile").hasArg().withArgName("REQUESTS_FILE").create());
+		CommandLineParser parser = new PosixParser();
 
-        CommandLine cli = parser.parse(options, arguments);
+		CommandLine cli = parser.parse(options, arguments);
 
-        LOGGER.trace("< prepareCommandOptions");
+		LOGGER.trace("< prepareCommandOptions");
 
-        return cli;
-    }
+		return cli;
+	}
 
-    public void process(String[] arguments) throws Exception {
-        LOGGER.trace("> process");
+	public void process(String[] arguments) throws Exception {
+		LOGGER.trace("> process");
 
-        LOGGER.info("Starting Treqs Server");
+		LOGGER.info("Starting Treqs Server");
 
-        CommandLine cmd = prepareCommandOptions(arguments);
+		CommandLine cmd = prepareCommandOptions(arguments);
 
-        if (cmd.hasOption("help")) {
-            showHelp();
-        } else {
-            LOGGER.info("Finding out the configuration file");
-            // TODO First try to figure out the configuration file : 1. from the
-            // command
-            // line 2. from the configuration file
-            String configurationFile = cmd.getOptionValue("config");
-            if (configurationFile != null) {
-                try {
-                    Configurator.getInstance().setConfFilename(
-                            configurationFile);
-                } catch (ProblematicConfiguationFileException e) {
-                    LOGGER.error("No configuration file found.");
-                }
-            }
+		if (cmd.hasOption("help")) {
+			showHelp();
+		} else {
+			LOGGER.info("Finding out the configuration file");
+			// TODO First try to figure out the configuration file : 1. from the
+			// command
+			// line 2. from the configuration file
+			String configurationFile = cmd.getOptionValue("config");
+			if (configurationFile != null) {
+				try {
+					Configurator.getInstance().setConfFilename(
+							configurationFile);
+				} catch (ProblematicConfiguationFileException e) {
+					LOGGER.error("No configuration file found.");
+				}
+			}
 
-            InitDB.initDB();
+			InitDB.initDB();
 
-            this.toStart();
-        }
+			this.toStart();
+		}
 
-        LOGGER.trace("< process");
-    }
+		LOGGER.trace("< process");
+	}
 
-    private void showHelp() {
-        LOGGER.trace("> showHelp");
+	private void showHelp() {
+		LOGGER.trace("> showHelp");
 
-        HelpFormatter help = new HelpFormatter();
-        help.printHelp("treqs", options);
+		HelpFormatter help = new HelpFormatter();
+		help.printHelp("treqs", options);
 
-        LOGGER.trace("< showHelp");
-    }
+		LOGGER.trace("< showHelp");
+	}
 
-    /**
-     * @throws TReqSException
-     */
-    private void startActivator() throws TReqSException {
-        LOGGER.trace("> startActivator");
+	/**
+	 * @throws TReqSException
+	 */
+	private void startActivator() throws TReqSException {
+		LOGGER.trace("> startActivator");
 
-        LOGGER.debug("Starting an Activator instance");
-        Activator.getInstance().start();
+		LOGGER.debug("Starting an Activator instance");
+		Activator.getInstance().start();
 
-        LOGGER.trace("< startActivator");
-    }
+		LOGGER.trace("< startActivator");
+	}
 
-    /**
-     * @throws TReqSException
-     */
-    private void startDispatcher() throws TReqSException {
-        LOGGER.trace("> startDispatcher");
+	/**
+	 * @throws TReqSException
+	 */
+	private void startDispatcher() throws TReqSException {
+		LOGGER.trace("> startDispatcher");
 
-        LOGGER.info("Starting a Dispatcher instance");
-        Dispatcher.getInstance().start();
+		LOGGER.info("Starting a Dispatcher instance");
+		Dispatcher.getInstance().start();
 
-        LOGGER.trace("< startDispatcher");
-    }
+		LOGGER.trace("< startDispatcher");
+	}
 
-    void toStart() throws TReqSException {
-        LOGGER.trace("> start");
+	void toStart() throws TReqSException {
+		LOGGER.trace("> start");
 
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+		DAO.getQueueDAO().abortPendingQueues();
+		DAO.getReadingDAO().updateUnfinishedRequests();
+		DAO.getConfigurationDAO().getMediaAllocations();
 
-        // Creates the Dispatcher
-        Dispatcher.getInstance();
-        // Creates and retrieve the activation time of the activator.
-        // This time is half of the default activation time.
-        long sleep = Activator.getInstance().getSecondsBetweenLoops() * 1000 / 2;
+		// Creates the Dispatcher
+		Dispatcher.getInstance();
+		// Creates and retrieve the activation time of the activator.
+		// This time is half of the default activation time.
+		long sleep = Activator.getInstance().getSecondsBetweenLoops() * 1000 / 2;
 
-        startDispatcher();
+		startDispatcher();
 
-        LOGGER.info("Waiting {} milliseconds", sleep);
-        try {
-            Thread.sleep(sleep);
+		LOGGER.info("Waiting {} milliseconds", sleep);
+		try {
+			Thread.sleep(sleep);
 
-            startActivator();
+			startActivator();
 
-            while (cont) {
-                Thread.sleep(timeBetweenCheck);
-            }
-        } catch (InterruptedException e) {
-            throw new ExecutionErrorException(e);
-        }
+			while (cont) {
+				Thread.sleep(timeBetweenCheck);
+			}
+		} catch (InterruptedException e) {
+			throw new ExecutionErrorException(e);
+		}
 
-        LOGGER.trace("< start");
-    }
+		LOGGER.trace("< start");
+	}
 
-    void toStop() throws TReqSException {
-        LOGGER.trace("> stop");
+	void toStop() throws TReqSException {
+		LOGGER.trace("> stop");
 
-        this.cont = false;
+		this.cont = false;
 
-        Activator.getInstance().conclude();
+		Activator.getInstance().conclude();
 
-        Dispatcher.getInstance().conclude();
+		Dispatcher.getInstance().conclude();
 
-        StagersController.getInstance().conclude();
+		StagersController.getInstance().conclude();
 
-        Activator.getInstance().waitToFinish();
+		Activator.getInstance().waitToFinish();
 
-        Dispatcher.getInstance().waitToFinish();
+		Dispatcher.getInstance().waitToFinish();
 
-        StagersController.getInstance().waitTofinish();
+		StagersController.getInstance().waitTofinish();
 
-        LOGGER.trace("< stop");
-    }
+		LOGGER.trace("< stop");
+	}
 }

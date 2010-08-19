@@ -51,168 +51,168 @@ import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 
 public class StagersController {
-    /**
-     * Instance of the singleton.
-     */
-    private static StagersController _instance = null;
+	/**
+	 * Instance of the singleton.
+	 */
+	private static StagersController _instance = null;
 
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(StagersController.class);
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(StagersController.class);
 
-    /**
-     * Destroys the unique instance. This is useful only for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.debug("> destroyInstance");
+	/**
+	 * Destroys the unique instance. This is useful only for testing purposes.
+	 */
+	public static void destroyInstance() {
+		LOGGER.debug("> destroyInstance");
 
-        _instance = null;
+		_instance = null;
 
-        LOGGER.debug("< destroyInstance");
-    }
+		LOGGER.debug("< destroyInstance");
+	}
 
-    /**
-     * Provides access to this singleton.
-     * 
-     * @return
-     */
-    public static StagersController getInstance() {
-        LOGGER.trace("> getInstance");
+	/**
+	 * Provides access to this singleton.
+	 * 
+	 * @return
+	 */
+	public static StagersController getInstance() {
+		LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
-            LOGGER.debug(" Creating instance");
+		if (_instance == null) {
+			LOGGER.debug(" Creating instance");
 
-            _instance = new StagersController();
-        }
+			_instance = new StagersController();
+		}
 
-        LOGGER.trace("< getInstance");
+		LOGGER.trace("< getInstance");
 
-        return _instance;
-    }
+		return _instance;
+	}
 
-    /**
-     * List of created stagers.
-     */
-    private List<Stager> stagers;
+	/**
+	 * List of created stagers.
+	 */
+	private List<Stager> stagers;
 
-    private StagersController() {
-        LOGGER.trace("> create StagersController");
+	private StagersController() {
+		LOGGER.trace("> create StagersController");
 
-        this.stagers = new ArrayList<Stager>();
+		this.stagers = new ArrayList<Stager>();
 
-        LOGGER.trace("< create StagersController");
-    }
+		LOGGER.trace("< create StagersController");
+	}
 
-    /**
-     * Cleans the stager that are not longer used.
-     * 
-     * @return the quantity of stagers unreferenced.
-     */
-    public int cleanup() {
-        LOGGER.trace("> cleanup");
+	/**
+	 * Cleans the stager that are not longer used.
+	 * 
+	 * @return the quantity of stagers unreferenced.
+	 */
+	public int cleanup() {
+		LOGGER.trace("> cleanup");
 
-        int iter = 0;
-        int count = 0;
-        for (int i = 0; i < this.stagers.size(); i++) {
-            Stager stager = this.stagers.get(i);
-            iter++;
-            LOGGER.debug("Scanning stagers {}", iter);
-            // TODO this method has to be changed. Stagers have several states,
-            // not only 2.
-            if (stager.getProcessStatus() == ProcessStatus.STOPPED) {
-                LOGGER.debug("Cleaning stagers {}", iter);
-                this.remove(i);
-                i--;
-                count++;
-            } else {
-                LOGGER.debug("Stager {} is still running", iter);
-            }
-        }
+		int iter = 0;
+		int count = 0;
+		for (int i = 0; i < this.stagers.size(); i++) {
+			Stager stager = this.stagers.get(i);
+			iter++;
+			LOGGER.debug("Scanning stagers {}", iter);
+			// TODO this method has to be changed. Stagers have several states,
+			// not only 2.
+			if (stager.getProcessStatus() == ProcessStatus.STOPPED) {
+				LOGGER.debug("Cleaning stagers {}", iter);
+				this.remove(i);
+				i--;
+				count++;
+			} else {
+				LOGGER.debug("Stager {} is still running", iter);
+			}
+		}
 
-        if (count > 0) {
-            LOGGER.info("Cleaned {} stager instances.", count);
-        }
+		if (count > 0) {
+			LOGGER.info("Cleaned {} stager instances.", count);
+		}
 
-        LOGGER.trace("< cleanup");
+		LOGGER.trace("< cleanup");
 
-        return count;
-    }
+		return count;
+	}
 
-    public void conclude() {
-        LOGGER.trace("> conclude");
+	public void conclude() {
+		LOGGER.trace("> conclude");
 
-        for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
-                .hasNext();) {
-            Stager stager = iterator.next();
-            stager.conclude();
-        }
+		for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
+				.hasNext();) {
+			Stager stager = iterator.next();
+			stager.conclude();
+		}
 
-        LOGGER.trace("< conclude");
-    }
+		LOGGER.trace("< conclude");
+	}
 
-    /**
-     * Creates a new stager.
-     * 
-     * @return
-     */
-    public Stager create(Queue queue) {
-        LOGGER.trace("> create");
+	/**
+	 * Creates a new stager.
+	 * 
+	 * @return
+	 */
+	public Stager create(Queue queue) {
+		LOGGER.trace("> create");
 
-        Stager stager = new Stager(queue);
-        this.stagers.add(stager);
+		Stager stager = new Stager(queue);
+		this.stagers.add(stager);
 
-        LOGGER.trace("< create");
+		LOGGER.trace("< create");
 
-        return stager;
-    }
+		return stager;
+	}
 
-    /**
-     * Removes a stager.
-     * 
-     * @param pos
-     */
-    private void remove(int pos) {
-        LOGGER.trace("> remove");
+	/**
+	 * Removes a stager.
+	 * 
+	 * @param pos
+	 */
+	private void remove(int pos) {
+		LOGGER.trace("> remove");
 
-        this.stagers.remove(pos);
+		this.stagers.remove(pos);
 
-        LOGGER.trace("< remove");
-    }
+		LOGGER.trace("< remove");
+	}
 
-    public void waitTofinish() {
-        LOGGER.trace("> conclude");
+	public void waitTofinish() {
+		LOGGER.trace("> conclude");
 
-        boolean stopped = false;
-        while (!stopped) {
-            boolean iteration = true;
-            for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
-                    .hasNext();) {
-                Stager stager = iterator.next();
-                ProcessStatus status = stager.getProcessStatus();
-                if (status == ProcessStatus.STOPPED) {
-                    iteration &= true;
-                } else {
-                    LOGGER.debug("Stager has not finished: {}", stager
-                            .getName());
-                    iteration &= false;
-                }
-            }
-            // All stagers are stopped
-            if (iteration) {
-                stopped = true;
-            } else {
-                LOGGER.debug("Sleeping {} milliseconds", 1000);
-                // Waiting a while for the stagers to finish.
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    // Nothing
-                }
-            }
-        }
+		boolean stopped = false;
+		while (!stopped) {
+			boolean iteration = true;
+			for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
+					.hasNext();) {
+				Stager stager = iterator.next();
+				ProcessStatus status = stager.getProcessStatus();
+				if (status == ProcessStatus.STOPPED) {
+					iteration &= true;
+				} else {
+					LOGGER.debug("Stager has not finished: {}", stager
+							.getName());
+					iteration &= false;
+				}
+			}
+			// All stagers are stopped
+			if (iteration) {
+				stopped = true;
+			} else {
+				LOGGER.debug("Sleeping {} milliseconds", 1000);
+				// Waiting a while for the stagers to finish.
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// Nothing
+				}
+			}
+		}
 
-        LOGGER.trace("< conclude");
-    }
+		LOGGER.trace("< conclude");
+	}
 }

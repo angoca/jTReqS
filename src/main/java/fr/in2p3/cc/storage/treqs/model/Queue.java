@@ -202,7 +202,7 @@ public class Queue implements Comparable<Queue> {
     /**
      * Constructor that associates a tape with the Queue. This constructor also
      * registers the instance in the database and sets the Id of the queue.
-     * 
+     *
      * @param tape
      *            the name of the tape for this queue
      * @throws TReqSException
@@ -258,7 +258,7 @@ public class Queue implements Comparable<Queue> {
      * list has to be sorted according to the files' position.
      * <p>
      * It resets the counters of the queue.
-     * 
+     *
      * @throws TReqSException
      *             If the queue cannot be changed to activate. If the queue has
      *             arrived to the maximal suspension times. If the new state is
@@ -317,7 +317,7 @@ public class Queue implements Comparable<Queue> {
         list.addAll(ownersScores.keySet());
 
         Collections.sort(list, new Comparator<User>() {
-            @Override
+            // @Override
             public int compare(User o1, User o2) {
                 return o1.getName().compareTo(o2.getName());
             }
@@ -347,7 +347,7 @@ public class Queue implements Comparable<Queue> {
     /**
      * Change the state to activated and change the submission time. TODO change
      * to private
-     * 
+     *
      * @throws TReqSException
      *             If there is a problem changing the states.
      */
@@ -362,7 +362,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Change the state to ended and change the end time.
-     * 
+     *
      * @throws TReqSException
      *             If there is a problem changing the states.
      */
@@ -377,7 +377,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Change the state to temporarily suspended and change the suspension time.
-     * 
+     *
      * @throws TReqSException
      *             If there is a problem changing the states.
      */
@@ -395,9 +395,10 @@ public class Queue implements Comparable<Queue> {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    @Override
+    // @Override
     public int compareTo(Queue other) {
         int ret = this.getTape().getName().compareTo(other.getTape().getName());
         if (ret == 0) {
@@ -417,7 +418,7 @@ public class Queue implements Comparable<Queue> {
     /**
      * Count the readObjects making difference between done and failed jobs.
      * Updates NbDone and NbFailed.
-     * 
+     *
      * @throws InvalidStateException
      *             If the queue has an invalid state.
      */
@@ -431,24 +432,24 @@ public class Queue implements Comparable<Queue> {
             Short key = iterator.next();
             Reading reading = this.filesList.get(key);
             switch (reading.getFileState()) {
-                case FS_FAILED:
-                    nbf++;
-                    break;
-                case FS_STAGED:
-                    nbd++;
-                    break;
-                case FS_QUEUED:
-                    // The file is being staged.
-                    break;
-                case FS_SUBMITTED:
-                    // The file is waiting for being staged.
-                    break;
-                default:
-                    // Count jobs is called only when a Queue is in QS_ACTIVATED
-                    // state and all its files must be in FS_QUEUED state or a
-                    // final state.
-                    LOGGER.error("Invalid file state.");
-                    assert false;
+            case FS_FAILED:
+                nbf++;
+                break;
+            case FS_STAGED:
+                nbd++;
+                break;
+            case FS_QUEUED:
+                // The file is being staged.
+                break;
+            case FS_SUBMITTED:
+                // The file is waiting for being staged.
+                break;
+            default:
+                // Count jobs is called only when a Queue is in QS_ACTIVATED
+                // state and all its files must be in FS_QUEUED state or a
+                // final state.
+                LOGGER.error("Invalid file state.");
+                assert false;
             }
         }
         this.nbFailed = nbf;
@@ -502,7 +503,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Sets the queue in a final state if appropriate.
-     * 
+     *
      * @throws TReqSException
      *             If the queue is in an invalid state. If the time is invalid.
      *             If the queue has been suspended too many times.
@@ -511,7 +512,8 @@ public class Queue implements Comparable<Queue> {
         LOGGER.trace("> finalizeQueue");
 
         this.countJobs();
-        Short nextPosition = this.filesList.higherKey(this.getHeadPosition());
+        Short nextPosition = this.filesList.tailMap(this.getHeadPosition())
+                .firstKey();
         Reading currentReading = this.filesList.get(this.getHeadPosition());
         if (currentReading != null) {
             FileStatus fs = currentReading.getFileState();
@@ -549,7 +551,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for creationTime member.
-     * 
+     *
      * @return creation time.
      */
     public Calendar getCreationTime() {
@@ -560,7 +562,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for endTime member.
-     * 
+     *
      * @return End time of the queue.
      */
     Calendar getEndTime() {
@@ -571,7 +573,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for headPosition member.
-     * 
+     *
      * @return current position of the tape's head.
      */
     public short getHeadPosition() {
@@ -582,7 +584,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Returns the id of the queue.
-     * 
+     *
      * @return Id.
      */
     public int getId() {
@@ -601,7 +603,7 @@ public class Queue implements Comparable<Queue> {
      * only returns null.
      * <p>
      * This function also updates the HeadPosition.
-     * 
+     *
      * @return a Reading instance, or NULL if none is found but the queue is
      *         still active.
      * @throws TReqSException
@@ -666,7 +668,7 @@ public class Queue implements Comparable<Queue> {
      * Getter for Owner. If the queue has been created and it still does not
      * have any file, there is not an associated owner. When there is not owner,
      * it returns null.
-     * 
+     *
      * @return
      */
     public User getOwner() {
@@ -677,7 +679,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for Status member
-     * 
+     *
      * @return Status of the queue.
      */
     public QueueStatus getStatus() {
@@ -688,7 +690,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for SubmissionTime member.
-     * 
+     *
      * @return Time of the queue submission.
      */
     Calendar getSubmissionTime() {
@@ -699,7 +701,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for suspend duration in seconds.
-     * 
+     *
      * @return Duration of the suspension.
      */
     public short getSuspendDuration() {
@@ -710,7 +712,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for suspensionTime member
-     * 
+     *
      * @return Time when the queue finish its suspension.
      */
     Calendar getSuspensionTime() {
@@ -721,7 +723,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Retrieves the name of the queue.
-     * 
+     *
      * @return Related tape of this queue.
      */
     public Tape getTape() {
@@ -737,7 +739,7 @@ public class Queue implements Comparable<Queue> {
      * Each time this method is called, the Queue owner is recalculated. This is
      * done by counting the files for each owner and then selecting the biggest
      * one.
-     * 
+     *
      * @param fpot
      *            the metadata of the file.
      * @param nbTries
@@ -806,7 +808,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Validates the given parameters when registering a file.
-     * 
+     *
      * @throws TReqSException
      *             if the state of the queue is invalid. If the current head's
      *             position is after the file.
@@ -844,7 +846,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     * 
+     *
      * @param t
      *            Creation time.
      * @throws InvalidParameterException
@@ -869,7 +871,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     * 
+     *
      * @param t
      *            Time when the queue has finished to be processed.
      * @throws InvalidParameterException
@@ -898,7 +900,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     * 
+     *
      * @param hp
      *            Head position.
      * @throws TReqSException
@@ -931,7 +933,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     * 
+     *
      * @param qs
      *            New status of the queue.
      * @throws TReqSException
@@ -979,7 +981,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     * 
+     *
      * @param t
      *            Submission time.
      * @throws InvalidParameterException
@@ -1004,7 +1006,7 @@ public class Queue implements Comparable<Queue> {
      * Setter for suspend duration in seconds. Default is defined in
      * DEFAULT_SUSPEND_DURATION. This is controlled by the
      * [MAIN]:QUEUE_SUSPEND_TIME parameter.
-     * 
+     *
      * @param duration
      *            Duration of the suspension.
      */
@@ -1024,7 +1026,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     * 
+     *
      * @param time
      *            The time when the queue has to be waked up.
      * @throws InvalidParameterException
@@ -1053,7 +1055,7 @@ public class Queue implements Comparable<Queue> {
      * is ended. Sets the status to QS_TEMPORARILY_SUSPENDED, and writes this
      * new status through DAO. The Activator will ignore such queues and
      * reschedule them when the suspension time is over.
-     * 
+     *
      * @throws TReqSException
      *             If there is a problem changing the state or the time.
      */
@@ -1081,6 +1083,7 @@ public class Queue implements Comparable<Queue> {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     public String toString() {
@@ -1125,7 +1128,7 @@ public class Queue implements Comparable<Queue> {
      * state if there are not other queue for the same tape in created state. If
      * there is another, it is responsibility of the QueuesController to merge
      * both queues and change the suspended one to ended state.
-     * 
+     *
      * @throws TReqSException
      *             If the time is invalid. If the queue has been suspended too
      *             many times.

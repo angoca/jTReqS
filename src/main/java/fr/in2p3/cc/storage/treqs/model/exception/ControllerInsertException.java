@@ -39,8 +39,8 @@ package fr.in2p3.cc.storage.treqs.model.exception;
 
 public class ControllerInsertException extends ControllerException {
 
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 5152867174920422183L;
+	/**
+	 * Generated ID.
+	 */
+	private static final long serialVersionUID = 5152867174920422183L;
 };

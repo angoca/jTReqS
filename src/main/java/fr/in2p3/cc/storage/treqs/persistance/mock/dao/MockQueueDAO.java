@@ -52,57 +52,57 @@ import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
  */
 public class MockQueueDAO implements QueueDAO {
 
-    /**
-     * Singleton initialization
-     */
-    private static MockQueueDAO _instance = null;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(MockQueueDAO.class);
+	/**
+	 * Singleton initialization
+	 */
+	private static MockQueueDAO _instance = null;
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(MockQueueDAO.class);
 
-    /**
-     * Destroys the only instance. ONLY for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
+	/**
+	 * Destroys the only instance. ONLY for testing purposes.
+	 */
+	public static void destroyInstance() {
+		LOGGER.trace("> destroyInstance");
 
-        _instance = null;
+		_instance = null;
 
-        LOGGER.trace("< destroyInstance");
-    }
+		LOGGER.trace("< destroyInstance");
+	}
 
-    /**
-     * @return
-     */
-    public static QueueDAO getInstance() {
-        if (_instance == null) {
-            LOGGER.debug("Creating singleton");
-            _instance = new MockQueueDAO();
-        }
-        return _instance;
-    }
+	/**
+	 * @return
+	 */
+	public static QueueDAO getInstance() {
+		if (_instance == null) {
+			LOGGER.debug("Creating singleton");
+			_instance = new MockQueueDAO();
+		}
+		return _instance;
+	}
 
-    public int abortPendingQueues() throws PersistanceException {
-        return 0;
-    }
+	public int abortPendingQueues() throws PersistanceException {
+		return 0;
+	}
 
-    @Override
-    public int insert(QueueStatus status, Tape tape, int size, long byteSize,
-            Calendar creationTime) {
-        return 0;
-    }
+	// @Override
+	public int insert(QueueStatus status, Tape tape, int size, long byteSize,
+			Calendar creationTime) {
+		return 0;
+	}
 
-    @Override
-    public void updateAddRequest(int jobsSize, String ownerName, long byteSize,
-            int id) {
-    }
+	// @Override
+	public void updateAddRequest(int jobsSize, String ownerName, long byteSize,
+			int id) {
+	}
 
-    @Override
-    public void updateState(Calendar time, QueueStatus status, int size,
-            short nbDone, short nbFailed, String ownerName, long byteSize,
-            int id) {
-    }
+	// @Override
+	public void updateState(Calendar time, QueueStatus status, int size,
+			short nbDone, short nbFailed, String ownerName, long byteSize,
+			int id) {
+	}
 
 }

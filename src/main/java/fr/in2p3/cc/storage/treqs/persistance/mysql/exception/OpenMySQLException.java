@@ -42,12 +42,12 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
  */
 public class OpenMySQLException extends MySQLException {
 
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 4734251355039228712L;
+	/**
+	 * Generated ID.
+	 */
+	private static final long serialVersionUID = 4734251355039228712L;
 
-    public OpenMySQLException(Exception e) {
-        super(e);
-    }
+	public OpenMySQLException(Exception e) {
+		super(e);
+	}
 };

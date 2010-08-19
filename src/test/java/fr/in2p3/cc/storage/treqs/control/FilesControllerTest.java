@@ -48,107 +48,107 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * FilesControllerTest.cpp Created on: 2010-03-24 Author: gomez
  */
 public class FilesControllerTest {
-    @After
-    public void tearDown() {
-        FilesController.destroyInstance();
-    }
+	@After
+	public void tearDown() {
+		FilesController.destroyInstance();
+	}
 
-    @Test
-    public void test01AddUser() throws TReqSException {
-        try {
-            FilesController.getInstance().add(null, 10, new User("username"));
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	@Test
+	public void test01AddUser() throws TReqSException {
+		try {
+			FilesController.getInstance().add(null, 10, new User("username"));
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test01CreateUser() throws TReqSException {
-        try {
-            FilesController.getInstance()
-                    .create(null, 10, new User("username"));
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	@Test
+	public void test01CreateUser() throws TReqSException {
+		try {
+			FilesController.getInstance()
+					.create(null, 10, new User("username"));
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test02AddUser() throws TReqSException {
-        try {
-            FilesController.getInstance().add("filename", -10,
-                    new User("username"));
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	@Test
+	public void test02AddUser() throws TReqSException {
+		try {
+			FilesController.getInstance().add("filename", -10,
+					new User("username"));
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test02CreateUser() throws TReqSException {
-        try {
-            FilesController.getInstance().create("filename", -10,
-                    new User("username"));
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	@Test
+	public void test02CreateUser() throws TReqSException {
+		try {
+			FilesController.getInstance().create("filename", -10,
+					new User("username"));
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests to create a file with a null user.
-     * 
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test03AddUser() throws TReqSException {
-        try {
-            FilesController.getInstance().add("filename", 10, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	/**
+	 * Tests to create a file with a null user.
+	 * 
+	 * @throws TReqSException
+	 *             Never.
+	 */
+	@Test
+	public void test03AddUser() throws TReqSException {
+		try {
+			FilesController.getInstance().add("filename", 10, null);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests to create a file with a null user.
-     * 
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test03CreateUser() throws TReqSException {
-        try {
-            FilesController.getInstance().create("filename", 10, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	/**
+	 * Tests to create a file with a null user.
+	 * 
+	 * @throws TReqSException
+	 *             Never.
+	 */
+	@Test
+	public void test03CreateUser() throws TReqSException {
+		try {
+			FilesController.getInstance().create("filename", 10, null);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    /**
-     * Tests to create a file with a null user.
-     * 
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test04AddUser() throws TReqSException {
-        FilesController.destroyInstance();
-        FilesController.getInstance().add("filename", 10, new User("username"));
-    }
+	/**
+	 * Tests to create a file with a null user.
+	 * 
+	 * @throws TReqSException
+	 *             Never.
+	 */
+	@Test
+	public void test04AddUser() throws TReqSException {
+		FilesController.destroyInstance();
+		FilesController.getInstance().add("filename", 10, new User("username"));
+	}
 }

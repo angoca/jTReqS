@@ -49,33 +49,33 @@ import org.junit.Test;
  */
 public class MediaTypeTest {
 
-    @Test
-    public void test01Constructor() {
-        try {
-            new MediaType((byte) 1, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	@Test
+	public void test01Constructor() {
+		try {
+			new MediaType((byte) 1, null);
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 
-    @Test
-    public void test01toString() {
-        MediaType media = new MediaType((byte) 1, "media");
-        media.toString();
-    }
+	@Test
+	public void test01toString() {
+		MediaType media = new MediaType((byte) 1, "media");
+		media.toString();
+	}
 
-    @Test
-    public void test02Constructor() {
-        try {
-            new MediaType((byte) -1, "type");
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+	@Test
+	public void test02Constructor() {
+		try {
+			new MediaType((byte) -1, "type");
+			Assert.fail();
+		} catch (Throwable e) {
+			if (!(e instanceof AssertionError)) {
+				Assert.fail();
+			}
+		}
+	}
 }

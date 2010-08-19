@@ -38,12 +38,12 @@ package fr.in2p3.cc.storage.treqs.model.exception;
  */
 
 public class ExecutionErrorException extends TReqSException {
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 6425914315230588066L;
+	/**
+	 * Generated ID.
+	 */
+	private static final long serialVersionUID = 6425914315230588066L;
 
-    public ExecutionErrorException(Exception exception) {
-        super(exception);
-    }
+	public ExecutionErrorException(Exception exception) {
+		super(exception);
+	}
 }

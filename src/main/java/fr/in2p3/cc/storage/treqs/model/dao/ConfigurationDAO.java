@@ -49,19 +49,19 @@ import fr.in2p3.cc.storage.treqs.persistance.DAO;
  * Manages the configuration that is stored in the database.
  */
 public interface ConfigurationDAO extends DAO {
-    /**
-     * Get the list of resources, refreshing the list of mediaType.
-     * 
-     * @return list of resources, each one associated to a media type.
-     */
-    List<Resource> getMediaAllocations() throws TReqSException;
+	/**
+	 * Get the list of resources, refreshing the list of mediaType.
+	 * 
+	 * @return list of resources, each one associated to a media type.
+	 */
+	List<Resource> getMediaAllocations() throws TReqSException;
 
-    /**
-     * Collects the resource settings in the configuration table
-     * 
-     * @return a map containing the resource share for each user and each
-     *         element is a pair with values : pvrid => ( user, share )
-     */
-    MultiMap getResourceAllocation() throws TReqSException;
+	/**
+	 * Collects the resource settings in the configuration table
+	 * 
+	 * @return a map containing the resource share for each user and each
+	 *         element is a pair with values : pvrid => ( user, share )
+	 */
+	MultiMap getResourceAllocation() throws TReqSException;
 
 }

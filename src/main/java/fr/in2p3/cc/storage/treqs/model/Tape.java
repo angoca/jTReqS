@@ -47,179 +47,179 @@ import org.slf4j.LoggerFactory;
  * Represents an HPSS tape (or cartridge.)
  */
 public class Tape {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Tape.class);
-    /**
-     * The media type.
-     */
-    private MediaType mediaType;
-    /**
-     * The name of this tape.
-     */
-    private String name;
-    /**
-     * The tape status (Locked/Unlocked).
-     */
-    private TapeStatus status;
-    /**
-     * The time Status got updated.
-     */
-    // TODO AngocA Later Regarder si la bande est encore locké pour changer le
-    // status.
-    private Calendar statusUpdateTime;
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory.getLogger(Tape.class);
+	/**
+	 * The media type.
+	 */
+	private MediaType mediaType;
+	/**
+	 * The name of this tape.
+	 */
+	private String name;
+	/**
+	 * The tape status (Locked/Unlocked).
+	 */
+	private TapeStatus status;
+	/**
+	 * The time Status got updated.
+	 */
+	// TODO AngocA Later Regarder si la bande est encore locké pour changer le
+	// status.
+	private Calendar statusUpdateTime;
 
-    /**
-     * Constructor with name, media type and status.
-     * 
-     * @param name
-     * @param mediaType
-     * @param status
-     */
-    public Tape(String name, MediaType mediaType, TapeStatus status) {
-        LOGGER.trace("> Creating tape");
+	/**
+	 * Constructor with name, media type and status.
+	 * 
+	 * @param name
+	 * @param mediaType
+	 * @param status
+	 */
+	public Tape(String name, MediaType mediaType, TapeStatus status) {
+		LOGGER.trace("> Creating tape");
 
-        this.setMediaType(mediaType);
-        this.setName(name);
-        this.setStatus(status);
-        this.setStatusUpdateTime(new GregorianCalendar());
+		this.setMediaType(mediaType);
+		this.setName(name);
+		this.setStatus(status);
+		this.setStatusUpdateTime(new GregorianCalendar());
 
-        LOGGER.trace("< Creating tape");
-    }
+		LOGGER.trace("< Creating tape");
+	}
 
-    /**
-     * Getter for media type member.
-     * 
-     * @return
-     */
-    public MediaType getMediaType() {
-        LOGGER.trace(">< getMediaType");
+	/**
+	 * Getter for media type member.
+	 * 
+	 * @return
+	 */
+	public MediaType getMediaType() {
+		LOGGER.trace(">< getMediaType");
 
-        return this.mediaType;
-    }
+		return this.mediaType;
+	}
 
-    /**
-     * Getter for name member.
-     * 
-     * @return
-     */
-    public String getName() {
-        LOGGER.trace(">< getName");
+	/**
+	 * Getter for name member.
+	 * 
+	 * @return
+	 */
+	public String getName() {
+		LOGGER.trace(">< getName");
 
-        return this.name;
-    }
+		return this.name;
+	}
 
-    /**
-     * Getter for status member.
-     * 
-     * @return
-     */
-    TapeStatus getStatus() {
-        LOGGER.trace(">< getStatus");
+	/**
+	 * Getter for status member.
+	 * 
+	 * @return
+	 */
+	TapeStatus getStatus() {
+		LOGGER.trace(">< getStatus");
 
-        return this.status;
-    }
+		return this.status;
+	}
 
-    /**
-     * Getter for update time member.
-     * 
-     * @return
-     */
-    Calendar getStatusUpdateTime() {
-        LOGGER.trace(">< getStatusUpdateTime");
+	/**
+	 * Getter for update time member.
+	 * 
+	 * @return
+	 */
+	Calendar getStatusUpdateTime() {
+		LOGGER.trace(">< getStatusUpdateTime");
 
-        return this.statusUpdateTime;
-    }
+		return this.statusUpdateTime;
+	}
 
-    /**
-     * Setter for media type member.
-     * 
-     * @param mediaType
-     */
-    void setMediaType(MediaType mediaType) {
-        LOGGER.trace("> setMediaType");
+	/**
+	 * Setter for media type member.
+	 * 
+	 * @param mediaType
+	 */
+	void setMediaType(MediaType mediaType) {
+		LOGGER.trace("> setMediaType");
 
-        assert mediaType != null;
+		assert mediaType != null;
 
-        this.mediaType = mediaType;
+		this.mediaType = mediaType;
 
-        LOGGER.trace("< setMediaType");
-    }
+		LOGGER.trace("< setMediaType");
+	}
 
-    /**
-     * Setter for name member.
-     * 
-     * @param name
-     */
-    void setName(String name) {
-        LOGGER.trace("> setName");
+	/**
+	 * Setter for name member.
+	 * 
+	 * @param name
+	 */
+	void setName(String name) {
+		LOGGER.trace("> setName");
 
-        assert name != null;
-        assert !name.equals("");
+		assert name != null;
+		assert !name.equals("");
 
-        this.name = name;
+		this.name = name;
 
-        LOGGER.trace("< setName");
-    }
+		LOGGER.trace("< setName");
+	}
 
-    /**
-     * Setter for status member.
-     * 
-     * @param status
-     */
-    void setStatus(TapeStatus status) {
-        LOGGER.trace("> setStatus");
+	/**
+	 * Setter for status member.
+	 * 
+	 * @param status
+	 */
+	void setStatus(TapeStatus status) {
+		LOGGER.trace("> setStatus");
 
-        assert status != null;
+		assert status != null;
 
-        this.status = status;
+		this.status = status;
 
-        LOGGER.trace("< setStatus");
-    }
+		LOGGER.trace("< setStatus");
+	}
 
-    /**
-     * Setter for update time member.
-     * 
-     * @param updateTime
-     */
-    void setStatusUpdateTime(Calendar updateTime) {
-        LOGGER.trace("> setStatusUpdateTime");
+	/**
+	 * Setter for update time member.
+	 * 
+	 * @param updateTime
+	 */
+	void setStatusUpdateTime(Calendar updateTime) {
+		LOGGER.trace("> setStatusUpdateTime");
 
-        assert updateTime != null;
+		assert updateTime != null;
 
-        this.statusUpdateTime = updateTime;
+		this.statusUpdateTime = updateTime;
 
-        LOGGER.trace("< setStatusUpdateTime");
-    }
+		LOGGER.trace("< setStatusUpdateTime");
+	}
 
-    /**
-     * Establishes the status update time to now.
-     */
-    void setStatusUpdateTimeNow() {
-        LOGGER.trace("> setStatusUpdateTimeNow");
+	/**
+	 * Establishes the status update time to now.
+	 */
+	void setStatusUpdateTimeNow() {
+		LOGGER.trace("> setStatusUpdateTimeNow");
 
-        this.statusUpdateTime = new GregorianCalendar();
+		this.statusUpdateTime = new GregorianCalendar();
 
-        LOGGER.trace("< setStatusUpdateTimeNow");
-    }
+		LOGGER.trace("< setStatusUpdateTimeNow");
+	}
 
-    /**
-     * Representation in a String.
-     */
-    @Override
-    public String toString() {
-        LOGGER.trace("> toString");
+	/**
+	 * Representation in a String.
+	 */
+	@Override
+	public String toString() {
+		LOGGER.trace("> toString");
 
-        String ret = "";
-        ret += "Tape";
-        ret += "{ media type: " + this.getMediaType().getName();
-        ret += ", name: " + this.getName();
-        ret += ", status: " + this.getStatus();
-        ret += "}";
+		String ret = "";
+		ret += "Tape";
+		ret += "{ media type: " + this.getMediaType().getName();
+		ret += ", name: " + this.getName();
+		ret += ", status: " + this.getStatus();
+		ret += "}";
 
-        LOGGER.trace("< toString");
+		LOGGER.trace("< toString");
 
-        return ret;
-    }
+		return ret;
+	}
 }

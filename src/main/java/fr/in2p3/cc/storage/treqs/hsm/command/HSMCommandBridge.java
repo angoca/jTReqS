@@ -39,6 +39,7 @@ package fr.in2p3.cc.storage.treqs.hsm.command;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.StringTokenizer;
@@ -50,6 +51,9 @@ import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
+import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * This implementation uses batch script to interact with the HSM. This does not
@@ -81,10 +85,14 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /**
      * Retrieves the unique instance.
-     * 
+     *
      * @return
+     * @throws ProblematicConfiguationFileException
+     * @throws ConfigNotFoundException
      */
-    public static HSMCommandBridge getInstance() {
+    public static HSMCommandBridge getInstance()
+            throws ConfigNotFoundException,
+            ProblematicConfiguationFileException {
         LOGGER.trace("> getInstance");
 
         if (_instance == null) {
@@ -98,8 +106,16 @@ public class HSMCommandBridge extends AbstractHSMBridge {
         return _instance;
     }
 
+    private HSMCommandBridge() throws ConfigNotFoundException,
+            ProblematicConfiguationFileException {
+        String keytabPath = Configurator.getInstance().getValue("MAIN",
+                "KEYTAB_FILE");
+        this.setKeytabPath(keytabPath);
+    }
+
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String, long, int, java.lang.String, int)
@@ -115,9 +131,9 @@ public class HSMCommandBridge extends AbstractHSMBridge {
         String command = HSM_GET_PROPERTIES_COMMAND + " "
                 + this.getKeytabPath() + " " + name;
 
+        LOGGER.debug(command);
         Process process = null;
         try {
-            LOGGER.debug(command);
             process = Runtime.getRuntime().exec(command);
         } catch (final IOException exception) {
             throw new HSMStatException(exception);
@@ -164,6 +180,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
      * long)
@@ -179,10 +196,18 @@ public class HSMCommandBridge extends AbstractHSMBridge {
         String command = HSM_STAGE_COMMAND + " " + this.getKeytabPath() + " "
                 + name;
 
+        LOGGER.debug(command);
+        Process process = null;
         try {
-            Runtime.getRuntime().exec(command + name);
+            process = Runtime.getRuntime().exec(command + name);
         } catch (final IOException exception) {
             throw new HSMStatException(exception);
+        }
+
+        if (process.exitValue() != 0) {
+            System.out.println(process.getInputStream());
+            final Reader reader = new InputStreamReader(process.getInputStream());
+            final BufferedReader bfStream = new BufferedReader(reader);
         }
 
         LOGGER.trace("< stage");

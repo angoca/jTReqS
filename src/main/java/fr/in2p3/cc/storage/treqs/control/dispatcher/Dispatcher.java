@@ -244,7 +244,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
         LOGGER.info("File {} is on disk, set the request as done", key);
         try {
             DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
-                    FileStatus.FS_STAGED, 0, "File is already on disk");
+                    FileStatus.FS_ON_DISK, 0, "File is already on disk");
         } catch (TReqSException e) {
             LOGGER.error("Error {} trying to update file request status : {}",
                     e.getCode(), e.getMessage());

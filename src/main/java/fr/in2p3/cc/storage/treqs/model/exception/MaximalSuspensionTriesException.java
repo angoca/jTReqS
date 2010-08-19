@@ -45,12 +45,12 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * @author gomez
  */
 public class MaximalSuspensionTriesException extends TReqSException {
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -7873750096259668634L;
+	/**
+	 * Generated ID.
+	 */
+	private static final long serialVersionUID = -7873750096259668634L;
 
-    public MaximalSuspensionTriesException(ErrorCode errCode) {
-        super(errCode);
-    }
+	public MaximalSuspensionTriesException(ErrorCode errCode) {
+		super(errCode);
+	}
 }
