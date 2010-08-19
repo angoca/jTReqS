@@ -41,29 +41,29 @@ import java.io.IOException;
 
 /**
  * There is no file registered in the HSM with this name or other problem
- * 
+ *
  * @author gomez
  */
 public class HSMStatException extends HSMException {
 
-	/**
-	 * Generated Id.
-	 */
-	private static final long serialVersionUID = 8267968446883602498L;
+    /**
+     * Generated Id.
+     */
+    private static final long serialVersionUID = 8267968446883602498L;
 
-	public HSMStatException() {
-		super();
-	}
+    public HSMStatException() {
+        super();
+    }
 
-	public HSMStatException(int val) {
-		super(val + "");
-	}
+    public HSMStatException(int val) {
+        super(val + "");
+    }
 
-	public HSMStatException(IOException exception) {
-		super(exception);
-	}
+    public HSMStatException(Exception exception) {
+        super(exception);
+    }
 
-	public HSMStatException(String message) {
-		super(message);
-	}
+    public HSMStatException(String message) {
+        super(message);
+    }
 }

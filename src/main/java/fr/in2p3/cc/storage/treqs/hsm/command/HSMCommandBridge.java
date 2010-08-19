@@ -204,6 +204,11 @@ public class HSMCommandBridge extends AbstractHSMBridge {
             throw new HSMStatException(exception);
         }
 
+        try {
+            process.waitFor();
+        } catch (InterruptedException e) {
+            throw new HSMStatException(e);
+        }
         if (process.exitValue() != 0) {
             System.out.println(process.getInputStream());
         }
