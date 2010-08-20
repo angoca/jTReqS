@@ -46,20 +46,20 @@ import java.sql.SQLException;
  */
 public class ExecuteMySQLException extends MySQLException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = -2824525900625129436L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -2824525900625129436L;
 
-	public ExecuteMySQLException() {
-		super();
-	}
+    public ExecuteMySQLException() {
+        super();
+    }
 
-	public ExecuteMySQLException(SQLException ex) {
-		super(ex);
-	}
+    public ExecuteMySQLException(SQLException ex) {
+        super(ex);
+    }
 
-	public ExecuteMySQLException(String message) {
-		super(message);
-	}
+    public ExecuteMySQLException(String message) {
+        super(message);
+    }
 }

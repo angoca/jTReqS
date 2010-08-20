@@ -47,56 +47,56 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
  * one is just for tests, it retrieves random values for the requests.
  */
 public abstract class AbstractHSMBridge {
-	/**
-	 * The keytab path
-	 */
-	private String keytabPath;
+    /**
+     * The keytab path
+     */
+    private String keytabPath;
 
-	/**
-	 * Gets file metadata from the HSM. Gets file metadata.
-	 * 
-	 * @param name
-	 *            the name of the file.
-	 */
-	public abstract HSMHelperFileProperties getFileProperties(String name)
-			throws HSMException;
+    /**
+     * Gets file metadata from the HSM. Gets file metadata.
+     * 
+     * @param name
+     *            the name of the file.
+     */
+    public abstract HSMHelperFileProperties getFileProperties(String name)
+            throws HSMException;
 
-	/**
-	 * Getter for member.
-	 * 
-	 * @return
-	 */
-	protected String getKeytabPath() {
-		return keytabPath;
-	}
+    /**
+     * Getter for member.
+     * 
+     * @return
+     */
+    protected String getKeytabPath() {
+        return keytabPath;
+    }
 
-	/*
-	 * Find out if the tape is locked or unlocked. TODO Version 2 This feature
-	 * has not been implemented. Ask HPSS database (DB2) for the status of a
-	 * tape
-	 * 
-	 * @param t the tape name
-	 * 
-	 * @return the tape status
-	 */
-	// TapeStatus getTapeProperties(string t);
+    /*
+     * Find out if the tape is locked or unlocked. TODO Version 2 This feature
+     * has not been implemented. Ask HPSS database (DB2) for the status of a
+     * tape
+     * 
+     * @param t the tape name
+     * 
+     * @return the tape status
+     */
+    // TapeStatus getTapeProperties(string t);
 
-	/**
-	 * Setter for member.
-	 * 
-	 * @param keytabPath
-	 */
-	protected void setKeytabPath(String keytabPath) {
-		this.keytabPath = keytabPath;
-	}
+    /**
+     * Setter for member.
+     * 
+     * @param keytabPath
+     */
+    protected void setKeytabPath(String keytabPath) {
+        this.keytabPath = keytabPath;
+    }
 
-	/**
-	 * Do the staging of a file Stages a file to HSM's disks.
-	 * 
-	 * @param name
-	 *            the name of the file
-	 * @param size
-	 *            the size of the file
-	 */
-	public abstract void stage(String name, long size) throws HSMException;
+    /**
+     * Do the staging of a file Stages a file to HSM's disks.
+     * 
+     * @param name
+     *            the name of the file
+     * @param size
+     *            the size of the file
+     */
+    public abstract void stage(String name, long size) throws HSMException;
 }

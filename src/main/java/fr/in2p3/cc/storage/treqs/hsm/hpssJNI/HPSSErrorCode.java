@@ -37,207 +37,207 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
  *
  */
 public enum HPSSErrorCode {
-	/**
-	 * Initialization OK.
-	 */
-	HPSS_E_NOERROR((byte) 0),
-	/**
-	 * (hpss_Open) One of the following conditions occurred:
-	 * <ul>
-	 * <li>Search permission is denied on a component of the path prefix.</li>
-	 * <li>The file exists and the permissions specified by Oflag are denied.</li>
-	 * <li>The file doesn't exist and write permission is denied for the parent
-	 * directory of the file to be created.</li>
-	 * <li>O_TRUNC is specified and write permission is denied.</li>
-	 * </ul>
-	 * <p>
-	 * (hpss_FileGetXAttributes) Search permission is denied for a component of
-	 * the path prefix.
-	 */
-	HPSS_EACCES((byte) -13),
-	/**
-	 * ????.
-	 */
-	HPSS_EAGAIN((byte) -11),
-	/**
-	 * ????.
-	 */
-	HPSS_EBADF((byte) -9),
-	/**
-	 * ????.
-	 */
-	HPSS_EBADMSG((byte) -77),
-	/**
-	 * ????.
-	 */
-	HPSS_EBUSY((byte) -16),
-	/**
-	 * ????.
-	 */
-	HPSS_ECHILD((byte) -10),
-	/**
-	 * ????.
-	 */
-	HPSS_ECONN((byte) -50),
-	/**
-	 * ????.
-	 */
-	HPSS_EDEADLK((byte) -45),
-	/**
-	 * ????.
-	 */
-	HPSS_EDOM((byte) -33),
-	/**
-	 * ????.
-	 */
-	HPSS_EDQUOT((byte) -88),
-	/**
-	 * (hpss_Open) O_CREAT and O_EXCL are set and the named file exists.
-	 */
-	HPSS_EEXIST((byte) -17),
-	/**
-	 * (hpss_Open) The Path parameter is a NULL pointer.
-	 * <p>
-	 * (hpss_FileGetXAttributes) The Path or AttrOut parameter is a NULL
-	 * pointer.
-	 */
-	HPSS_EFAULT((byte) -14),
-	/**
-	 * ????.
-	 */
-	HPSS_EFBIG((byte) -27),
-	/**
-	 * ????.
-	 */
-	HPSS_EINTR((byte) -4),
-	/**
-	 * (hpss_Open) Oflag is not valid, or one or more values input in the
-	 * HintsIn parameter is invalid.
-	 * <p>
-	 * (hpss_FileGetXAttributes) BitfileID is a NULL pointer.
-	 */
-	HPSS_EINVAL((byte) -22),
-	/**
-	 * ????.
-	 */
-	HPSS_EIO((byte) -5),
-	/**
-	 * (hpss_Open) The named file is a directory. Note that opening directories
-	 * via hpss_Open is not supported in any mode.
-	 */
-	HPSS_EISDIR((byte) -21),
-	/**
-	 * (hpss_Open) The client open file table is already full.
-	 */
-	HPSS_EMFILE((byte) -24),
-	/**
-	 * ????.
-	 */
-	HPSS_EMLINK((byte) -31),
-	/**
-	 * ????.
-	 */
-	HPSS_EMSGSIZE((byte) -59),
-	/**
-	 * (hpss_Open) The length of the Path string exceeds the system-imposed path
-	 * name limit or a path name component exceeds the system-imposed limit.
-	 * <p>
-	 * (hpss_FileGetXAttributes) The length of the Path argument exceeds the
-	 * system-imposed limit, or a component of the path name exceeds the
-	 * system-imposed limit.
-	 */
-	HPSS_ENAMETOOLONG((byte) -86),
-	/**
-	 * (hpss_Open) Too many files are open in the system.
-	 */
-	HPSS_ENFILE((byte) -23),
-	/**
-	 * ????.
-	 */
-	HPSS_ENODEV((byte) -19),
-	/**
-	 * (hpss_Open) The named file does not exist and the O_CREAT flag was not
-	 * specified, or the Path argument points to an empty string.
-	 * <p>
-	 * (hpss_FileGetXAttributes) The named file does not exist, or the Path
-	 * argument points to an empty string.
-	 */
-	HPSS_ENOENT((byte) -2),
-	/**
-	 * ????.
-	 */
-	HPSS_ENOLCK((byte) -46),
-	/**
-	 * ????.
-	 */
-	HPSS_ENOLINK((byte) -67),
-	/**
-	 * Memory could not be allocated for the new path name.
-	 */
-	HPSS_ENOMEM((byte) -12),
-	/**
-	 * ????.
-	 */
-	HPSS_ENOSPACE((byte) -28),
-	/**
-	 * ????.
-	 */
-	HPSS_ENOSR((byte) -63),
-	/**
-	 * (hpss_Open) A component of the Path prefix is not a directory.
-	 * <p>
-	 * (hpss_FileGetXAttributes) A component of the Path prefix is not a
-	 * directory.
-	 */
-	HPSS_ENOTDIR((byte) -20),
-	/**
-	 * ????.
-	 */
-	HPSS_ENOTEMPTY((byte) -87),
-	/**
-	 * ????.
-	 */
-	HPSS_ENXIO((byte) -6),
-	/**
-	 * ????.
-	 */
-	HPSS_EOPNOTSUPP((byte) -64),
-	/**
-	 * ????.
-	 */
-	HPSS_EPERM((byte) -1),
-	/**
-	 * ????.
-	 */
-	HPSS_EPIPE((byte) -32),
-	/**
-	 * ????.
-	 */
-	HPSS_ERANGE((byte) -34),
-	/**
-	 * ????.
-	 */
-	HPSS_ESTALE((byte) -52),
-	/**
-	 * ????.
-	 */
-	HPSS_ETIMEDOUT((byte) -78),
-	/**
-	 * ????.
-	 */
-	HPSS_EWRPROTECT((byte) -47),
-	/**
-	 * ????.
-	 */
-	HPSS_EXDEV((byte) -18);
+    /**
+     * Initialization OK.
+     */
+    HPSS_E_NOERROR((byte) 0),
+    /**
+     * (hpss_Open) One of the following conditions occurred:
+     * <ul>
+     * <li>Search permission is denied on a component of the path prefix.</li>
+     * <li>The file exists and the permissions specified by Oflag are denied.</li>
+     * <li>The file doesn't exist and write permission is denied for the parent
+     * directory of the file to be created.</li>
+     * <li>O_TRUNC is specified and write permission is denied.</li>
+     * </ul>
+     * <p>
+     * (hpss_FileGetXAttributes) Search permission is denied for a component of
+     * the path prefix.
+     */
+    HPSS_EACCES((byte) -13),
+    /**
+     * ????.
+     */
+    HPSS_EAGAIN((byte) -11),
+    /**
+     * ????.
+     */
+    HPSS_EBADF((byte) -9),
+    /**
+     * ????.
+     */
+    HPSS_EBADMSG((byte) -77),
+    /**
+     * ????.
+     */
+    HPSS_EBUSY((byte) -16),
+    /**
+     * ????.
+     */
+    HPSS_ECHILD((byte) -10),
+    /**
+     * ????.
+     */
+    HPSS_ECONN((byte) -50),
+    /**
+     * ????.
+     */
+    HPSS_EDEADLK((byte) -45),
+    /**
+     * ????.
+     */
+    HPSS_EDOM((byte) -33),
+    /**
+     * ????.
+     */
+    HPSS_EDQUOT((byte) -88),
+    /**
+     * (hpss_Open) O_CREAT and O_EXCL are set and the named file exists.
+     */
+    HPSS_EEXIST((byte) -17),
+    /**
+     * (hpss_Open) The Path parameter is a NULL pointer.
+     * <p>
+     * (hpss_FileGetXAttributes) The Path or AttrOut parameter is a NULL
+     * pointer.
+     */
+    HPSS_EFAULT((byte) -14),
+    /**
+     * ????.
+     */
+    HPSS_EFBIG((byte) -27),
+    /**
+     * ????.
+     */
+    HPSS_EINTR((byte) -4),
+    /**
+     * (hpss_Open) Oflag is not valid, or one or more values input in the
+     * HintsIn parameter is invalid.
+     * <p>
+     * (hpss_FileGetXAttributes) BitfileID is a NULL pointer.
+     */
+    HPSS_EINVAL((byte) -22),
+    /**
+     * ????.
+     */
+    HPSS_EIO((byte) -5),
+    /**
+     * (hpss_Open) The named file is a directory. Note that opening directories
+     * via hpss_Open is not supported in any mode.
+     */
+    HPSS_EISDIR((byte) -21),
+    /**
+     * (hpss_Open) The client open file table is already full.
+     */
+    HPSS_EMFILE((byte) -24),
+    /**
+     * ????.
+     */
+    HPSS_EMLINK((byte) -31),
+    /**
+     * ????.
+     */
+    HPSS_EMSGSIZE((byte) -59),
+    /**
+     * (hpss_Open) The length of the Path string exceeds the system-imposed path
+     * name limit or a path name component exceeds the system-imposed limit.
+     * <p>
+     * (hpss_FileGetXAttributes) The length of the Path argument exceeds the
+     * system-imposed limit, or a component of the path name exceeds the
+     * system-imposed limit.
+     */
+    HPSS_ENAMETOOLONG((byte) -86),
+    /**
+     * (hpss_Open) Too many files are open in the system.
+     */
+    HPSS_ENFILE((byte) -23),
+    /**
+     * ????.
+     */
+    HPSS_ENODEV((byte) -19),
+    /**
+     * (hpss_Open) The named file does not exist and the O_CREAT flag was not
+     * specified, or the Path argument points to an empty string.
+     * <p>
+     * (hpss_FileGetXAttributes) The named file does not exist, or the Path
+     * argument points to an empty string.
+     */
+    HPSS_ENOENT((byte) -2),
+    /**
+     * ????.
+     */
+    HPSS_ENOLCK((byte) -46),
+    /**
+     * ????.
+     */
+    HPSS_ENOLINK((byte) -67),
+    /**
+     * Memory could not be allocated for the new path name.
+     */
+    HPSS_ENOMEM((byte) -12),
+    /**
+     * ????.
+     */
+    HPSS_ENOSPACE((byte) -28),
+    /**
+     * ????.
+     */
+    HPSS_ENOSR((byte) -63),
+    /**
+     * (hpss_Open) A component of the Path prefix is not a directory.
+     * <p>
+     * (hpss_FileGetXAttributes) A component of the Path prefix is not a
+     * directory.
+     */
+    HPSS_ENOTDIR((byte) -20),
+    /**
+     * ????.
+     */
+    HPSS_ENOTEMPTY((byte) -87),
+    /**
+     * ????.
+     */
+    HPSS_ENXIO((byte) -6),
+    /**
+     * ????.
+     */
+    HPSS_EOPNOTSUPP((byte) -64),
+    /**
+     * ????.
+     */
+    HPSS_EPERM((byte) -1),
+    /**
+     * ????.
+     */
+    HPSS_EPIPE((byte) -32),
+    /**
+     * ????.
+     */
+    HPSS_ERANGE((byte) -34),
+    /**
+     * ????.
+     */
+    HPSS_ESTALE((byte) -52),
+    /**
+     * ????.
+     */
+    HPSS_ETIMEDOUT((byte) -78),
+    /**
+     * ????.
+     */
+    HPSS_EWRPROTECT((byte) -47),
+    /**
+     * ????.
+     */
+    HPSS_EXDEV((byte) -18);
 
-	private byte code = 0;
+    private byte code = 0;
 
-	private HPSSErrorCode(byte code) {
-		this.code = code;
-	}
+    private HPSSErrorCode(byte code) {
+        this.code = code;
+    }
 
-	public byte getCode() {
-		return this.code;
-	}
+    public byte getCode() {
+        return this.code;
+    }
 }

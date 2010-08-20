@@ -46,20 +46,20 @@ import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
  */
 public abstract class MySQLException extends PersistanceException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 7637653660807465428L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 7637653660807465428L;
 
-	public MySQLException() {
-		super();
-	}
+    public MySQLException() {
+        super();
+    }
 
-	public MySQLException(Exception e) {
-		super(e);
-	}
+    public MySQLException(Exception e) {
+        super(e);
+    }
 
-	public MySQLException(String message) {
-		super(message);
-	}
+    public MySQLException(String message) {
+        super(message);
+    }
 };

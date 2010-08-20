@@ -75,7 +75,7 @@ public class StagersController {
 
     /**
      * Provides access to this singleton.
-     *
+     * 
      * @return
      */
     public static StagersController getInstance() {
@@ -107,7 +107,7 @@ public class StagersController {
 
     /**
      * Cleans the stager that are not longer used.
-     *
+     * 
      * @return the quantity of stagers unreferenced.
      */
     public int cleanup() {
@@ -154,7 +154,7 @@ public class StagersController {
 
     /**
      * Creates a new stager.
-     *
+     * 
      * @return
      */
     public Stager create(Queue queue) {
@@ -170,7 +170,7 @@ public class StagersController {
 
     /**
      * Removes a stager.
-     *
+     * 
      * @param pos
      */
     private void remove(int pos) {

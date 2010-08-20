@@ -139,7 +139,7 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      * catch exceptions.
      * <p>
      * If the HPSSResourceError is caught, then the queue is suspended.
-     *
+     * 
      * @param queue
      *            pointer to a queue.
      * @return true is the queue is not null, false in the other case.

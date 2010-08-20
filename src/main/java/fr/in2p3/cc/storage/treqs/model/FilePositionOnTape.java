@@ -59,221 +59,221 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * information has to be updated.
  */
 public class FilePositionOnTape {
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(FilePositionOnTape.class);
-	/**
-	 * Max metadata age in seconds.
-	 */
-	public static final short MAX_METADATA_AGE = 3600;
-	/**
-	 * References a file.
-	 */
-	private File file;
-	/**
-	 * Maximal metadata age.
-	 */
-	private short maxMetadataAge;
-	/**
-	 * The last time the metadata was updated.
-	 */
-	private Calendar metadataTimestamp;
-	/**
-	 * The position of this file on the tape.
-	 */
-	private int position;
-	/**
-	 * References the tape of this file.
-	 */
-	private Tape tape;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(FilePositionOnTape.class);
+    /**
+     * Max metadata age in seconds.
+     */
+    public static final short MAX_METADATA_AGE = 3600;
+    /**
+     * References a file.
+     */
+    private File file;
+    /**
+     * Maximal metadata age.
+     */
+    private short maxMetadataAge;
+    /**
+     * The last time the metadata was updated.
+     */
+    private Calendar metadataTimestamp;
+    /**
+     * The position of this file on the tape.
+     */
+    private int position;
+    /**
+     * References the tape of this file.
+     */
+    private Tape tape;
 
-	/**
-	 * Constructor with all parameters.
-	 * 
-	 * @param file
-	 * @param metadataTimestamp
-	 * @throws ProblematicConfiguationFileException
-	 * @throws NumberFormatException
-	 */
-	public FilePositionOnTape(File file, Calendar metadataTimestamp,
-			int position, Tape tape)
-			throws ProblematicConfiguationFileException {
-		LOGGER.trace("> Creating with parameters.");
+    /**
+     * Constructor with all parameters.
+     * 
+     * @param file
+     * @param metadataTimestamp
+     * @throws ProblematicConfiguationFileException
+     * @throws NumberFormatException
+     */
+    public FilePositionOnTape(File file, Calendar metadataTimestamp,
+            int position, Tape tape)
+            throws ProblematicConfiguationFileException {
+        LOGGER.trace("> Creating with parameters.");
 
-		this.setFile(file);
-		this.setMetadataTimestamp(metadataTimestamp);
-		this.setPosition(position);
-		this.setTape(tape);
+        this.setFile(file);
+        this.setMetadataTimestamp(metadataTimestamp);
+        this.setPosition(position);
+        this.setTape(tape);
 
-		this.maxMetadataAge = MAX_METADATA_AGE;
-		try {
-			this.maxMetadataAge = Short.parseShort(Configurator.getInstance()
-					.getValue("MAIN", "MAX_METADATA_AGE"));
-		} catch (ConfigNotFoundException e) {
-			LOGGER
-					.info("No setting for MAX_METADATA_AGE, default value will be used: "
-							+ this.maxMetadataAge);
-		}
+        this.maxMetadataAge = MAX_METADATA_AGE;
+        try {
+            this.maxMetadataAge = Short.parseShort(Configurator.getInstance()
+                    .getValue("MAIN", "MAX_METADATA_AGE"));
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info("No setting for MAX_METADATA_AGE, default value will be used: "
+                            + this.maxMetadataAge);
+        }
 
-		LOGGER.trace("< Creating with parameters.");
-	}
+        LOGGER.trace("< Creating with parameters.");
+    }
 
-	/**
-	 * Getter for file member.
-	 * 
-	 * @return File to stage.
-	 */
-	public File getFile() {
-		LOGGER.trace(">< getFile");
+    /**
+     * Getter for file member.
+     * 
+     * @return File to stage.
+     */
+    public File getFile() {
+        LOGGER.trace(">< getFile");
 
-		return this.file;
-	}
+        return this.file;
+    }
 
-	/**
-	 * Getter for metadataTimestamp member.
-	 * 
-	 * @return Timestamp when the properties were read.
-	 */
-	Calendar getMetadataTimestamp() {
-		LOGGER.trace(">< getMetadataTimestamp");
+    /**
+     * Getter for metadataTimestamp member.
+     * 
+     * @return Timestamp when the properties were read.
+     */
+    Calendar getMetadataTimestamp() {
+        LOGGER.trace(">< getMetadataTimestamp");
 
-		return this.metadataTimestamp;
-	}
+        return this.metadataTimestamp;
+    }
 
-	/**
-	 * Getter for position member. The information retrieved could eventually be
-	 * outdated. It's a good practice to call this method after a
-	 * isMetadataOutdated.
-	 * 
-	 * @return Position of the file in the tape.
-	 */
-	public int getPosition() {
-		LOGGER.trace(">< getPosition");
+    /**
+     * Getter for position member. The information retrieved could eventually be
+     * outdated. It's a good practice to call this method after a
+     * isMetadataOutdated.
+     * 
+     * @return Position of the file in the tape.
+     */
+    public int getPosition() {
+        LOGGER.trace(">< getPosition");
 
-		return this.position;
-	}
+        return this.position;
+    }
 
-	/**
-	 * Getter for tape member. The information retrieved could eventually be
-	 * outdated. It's a good practice to call this method after a
-	 * isMetadataOutdated.
-	 * 
-	 * @return Tape where the file is stored.
-	 */
-	public Tape getTape() {
-		LOGGER.trace(">< getTape");
+    /**
+     * Getter for tape member. The information retrieved could eventually be
+     * outdated. It's a good practice to call this method after a
+     * isMetadataOutdated.
+     * 
+     * @return Tape where the file is stored.
+     */
+    public Tape getTape() {
+        LOGGER.trace(">< getTape");
 
-		return this.tape;
-	}
+        return this.tape;
+    }
 
-	/**
-	 * Tests if metadata is fresh enough.
-	 * 
-	 * @returnn true if the metadata is still considered valid.
-	 */
-	public boolean isMetadataOutdated() {
-		LOGGER.trace("> isMetadataOutdated");
+    /**
+     * Tests if metadata is fresh enough.
+     * 
+     * @returnn true if the metadata is still considered valid.
+     */
+    public boolean isMetadataOutdated() {
+        LOGGER.trace("> isMetadataOutdated");
 
-		boolean outdated = true;
-		long max = this.metadataTimestamp.getTimeInMillis()
-				+ this.maxMetadataAge * 1000;
-		long current = new GregorianCalendar().getTimeInMillis();
-		if (max > current) {
-			outdated = false;
-		}
+        boolean outdated = true;
+        long max = this.metadataTimestamp.getTimeInMillis()
+                + this.maxMetadataAge * 1000;
+        long current = new GregorianCalendar().getTimeInMillis();
+        if (max > current) {
+            outdated = false;
+        }
 
-		LOGGER.trace("< isMetadataOutdated");
+        LOGGER.trace("< isMetadataOutdated");
 
-		return outdated;
-	}
+        return outdated;
+    }
 
-	/**
-	 * Setter for file member.
-	 * 
-	 * @param file
-	 *            File to stage.
-	 */
-	void setFile(File file) {
-		LOGGER.trace("> setFile");
+    /**
+     * Setter for file member.
+     * 
+     * @param file
+     *            File to stage.
+     */
+    void setFile(File file) {
+        LOGGER.trace("> setFile");
 
-		assert file != null;
+        assert file != null;
 
-		this.file = file;
+        this.file = file;
 
-		LOGGER.trace("< setFile");
-	}
+        LOGGER.trace("< setFile");
+    }
 
-	/**
-	 * Setter for metadataTimestamp member.
-	 * 
-	 * @param timestamp
-	 *            Metadata timestamp.
-	 */
-	public void setMetadataTimestamp(Calendar timestamp) {
-		LOGGER.trace("> setMetadataTimestamp");
+    /**
+     * Setter for metadataTimestamp member.
+     * 
+     * @param timestamp
+     *            Metadata timestamp.
+     */
+    public void setMetadataTimestamp(Calendar timestamp) {
+        LOGGER.trace("> setMetadataTimestamp");
 
-		assert timestamp != null;
+        assert timestamp != null;
 
-		this.metadataTimestamp = timestamp;
+        this.metadataTimestamp = timestamp;
 
-		LOGGER.trace("< setMetadataTimestamp");
-	}
+        LOGGER.trace("< setMetadataTimestamp");
+    }
 
-	/**
-	 * Setter for position member.
-	 * 
-	 * @param position
-	 *            Position of the file in the tape.
-	 */
-	public void setPosition(int position) {
-		LOGGER.trace("> setPosition");
+    /**
+     * Setter for position member.
+     * 
+     * @param position
+     *            Position of the file in the tape.
+     */
+    public void setPosition(int position) {
+        LOGGER.trace("> setPosition");
 
-		assert position >= 0;
+        assert position >= 0;
 
-		this.position = position;
+        this.position = position;
 
-		LOGGER.trace("< setPosition");
-	}
+        LOGGER.trace("< setPosition");
+    }
 
-	/**
-	 * Setter for tape member.
-	 * 
-	 * @param tape
-	 *            Associated tape.
-	 */
-	public void setTape(Tape tape) {
-		LOGGER.trace("> setTape");
+    /**
+     * Setter for tape member.
+     * 
+     * @param tape
+     *            Associated tape.
+     */
+    public void setTape(Tape tape) {
+        LOGGER.trace("> setTape");
 
-		assert tape != null;
+        assert tape != null;
 
-		this.tape = tape;
+        this.tape = tape;
 
-		LOGGER.trace("< setTape");
-	}
+        LOGGER.trace("< setTape");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		LOGGER.trace("> toString");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
 
-		String ret = "";
-		ret += "FilePositionOnTape";
-		ret += "{ MAX_METADATA_AGE: " + this.maxMetadataAge;
-		ret += ", file: " + this.getFile().getName();
-		ret += ", metadataAge: "
-				+ this.getMetadataTimestamp().getTimeInMillis();
-		ret += ", position: " + this.getPosition();
-		ret += ", tape: " + this.getTape().getName();
-		ret += "}";
+        String ret = "";
+        ret += "FilePositionOnTape";
+        ret += "{ MAX_METADATA_AGE: " + this.maxMetadataAge;
+        ret += ", file: " + this.getFile().getName();
+        ret += ", metadataAge: "
+                + this.getMetadataTimestamp().getTimeInMillis();
+        ret += ", position: " + this.getPosition();
+        ret += ", tape: " + this.getTape().getName();
+        ret += "}";
 
-		LOGGER.trace("< toString");
+        LOGGER.trace("< toString");
 
-		return ret;
-	}
+        return ret;
+    }
 }

@@ -65,128 +65,128 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
  * database.
  */
 public class MySQLConfigurationDAO implements ConfigurationDAO {
-	/**
-	 * Singleton initialization
-	 */
-	private static MySQLConfigurationDAO _instance = null;
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MySQLConfigurationDAO.class);
+    /**
+     * Singleton initialization
+     */
+    private static MySQLConfigurationDAO _instance = null;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MySQLConfigurationDAO.class);
 
-	/**
-	 * Destroys the only instance. ONLY for testing purposes.
-	 */
-	public static void destroyInstance() {
-		LOGGER.trace("> destroyInstance");
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
 
-		_instance = null;
+        _instance = null;
 
-		LOGGER.trace("< destroyInstance");
-	}
+        LOGGER.trace("< destroyInstance");
+    }
 
-	public static ConfigurationDAO getInstance() {
-		LOGGER.trace("> getInstance");
+    public static ConfigurationDAO getInstance() {
+        LOGGER.trace("> getInstance");
 
-		if (_instance == null) {
-			LOGGER.debug("Creating singleton");
-			_instance = new MySQLConfigurationDAO();
-		}
+        if (_instance == null) {
+            LOGGER.debug("Creating singleton");
+            _instance = new MySQLConfigurationDAO();
+        }
 
-		LOGGER.trace("< getInstance");
+        LOGGER.trace("< getInstance");
 
-		return _instance;
-	}
+        return _instance;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
-	 * ()
-	 */
-	// @Override
-	public List<Resource> getMediaAllocations() throws TReqSException {
-		LOGGER.trace("> getMediaAllocations");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
+     * ()
+     */
+    // @Override
+    public List<Resource> getMediaAllocations() throws TReqSException {
+        LOGGER.trace("> getMediaAllocations");
 
-		List<Resource> mediaTypeList = new ArrayList<Resource>();
+        List<Resource> mediaTypeList = new ArrayList<Resource>();
 
-		Object[] objects = MySQLBroker.getInstance().executeSelect(
-				MySQLStatements.SQL_SELECT_DRIVES);
+        Object[] objects = MySQLBroker.getInstance().executeSelect(
+                MySQLStatements.SQL_SELECT_DRIVES);
 
-		// store result
-		ResultSet result = (ResultSet) objects[1];
-		try {
-			while (result.next()) {
-				byte id = result.getByte(1);
-				String name = result.getString(2);
-				byte qty = result.getByte(3);
-				MediaType media = MediaTypesController.getInstance().add(name,
-						id);
-				Resource res = new Resource(media, new GregorianCalendar(), qty);
-				mediaTypeList.add(res);
-			}
-		} catch (SQLException e) {
-			throw new ExecuteMySQLException(e);
-		} finally {
-			MySQLBroker.getInstance().terminateExecution(objects);
-		}
+        // store result
+        ResultSet result = (ResultSet) objects[1];
+        try {
+            while (result.next()) {
+                byte id = result.getByte(1);
+                String name = result.getString(2);
+                byte qty = result.getByte(3);
+                MediaType media = MediaTypesController.getInstance().add(name,
+                        id);
+                Resource res = new Resource(media, new GregorianCalendar(), qty);
+                mediaTypeList.add(res);
+            }
+        } catch (SQLException e) {
+            throw new ExecuteMySQLException(e);
+        } finally {
+            MySQLBroker.getInstance().terminateExecution(objects);
+        }
 
-		if (mediaTypeList.size() == 0) {
-			// No entry in table, something wrong with config or tapename
-			LOGGER.error("No drive found. Please define them in the database.");
-		}
+        if (mediaTypeList.size() == 0) {
+            // No entry in table, something wrong with config or tapename
+            LOGGER.error("No drive found. Please define them in the database.");
+        }
 
-		LOGGER.trace("< getMediaAllocations");
+        LOGGER.trace("< getMediaAllocations");
 
-		return mediaTypeList;
-	}
+        return mediaTypeList;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation
-	 * ()
-	 */
-	// @Override
-	public MultiMap getResourceAllocation() throws TReqSException {
-		LOGGER.trace("> getResourceAllocation");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation
+     * ()
+     */
+    // @Override
+    public MultiMap getResourceAllocation() throws TReqSException {
+        LOGGER.trace("> getResourceAllocation");
 
-		// allocations maps a pvr to a pair (user,share)
-		MultiMap allocations = new MultiValueMap();
+        // allocations maps a pvr to a pair (user,share)
+        MultiMap allocations = new MultiValueMap();
 
-		Object[] objects = MySQLBroker.getInstance().executeSelect(
-				MySQLStatements.SQL_SELECT_ALLOCATIONS);
+        Object[] objects = MySQLBroker.getInstance().executeSelect(
+                MySQLStatements.SQL_SELECT_ALLOCATIONS);
 
-		// store result
-		ResultSet result = (ResultSet) objects[1];
-		try {
-			while (result.next()) {
-				byte id = result.getByte(1);
-				String userName = result.getString(2);
-				float share = result.getFloat(4);
-				User user = UsersController.getInstance().add(userName);
-				PersistanceHelperResourceAllocation helper = new PersistanceHelperResourceAllocation(
-						user, share);
-				allocations.put(new Byte(id), helper);
-				LOGGER.debug("Allocation on PVR: " + id + " ; user: "
-						+ userName + " ; share:" + share);
-			}
-		} catch (SQLException e) {
-			throw new ExecuteMySQLException(e);
-		} finally {
-			MySQLBroker.getInstance().terminateExecution(objects);
-		}
-		if (allocations.size() == 0) {
-			// No entry in table, something wrong with config or tapename
-			LOGGER
-					.error("No PVR allocations found. Please define them in the database.");
-		}
+        // store result
+        ResultSet result = (ResultSet) objects[1];
+        try {
+            while (result.next()) {
+                byte id = result.getByte(1);
+                String userName = result.getString(2);
+                float share = result.getFloat(4);
+                User user = UsersController.getInstance().add(userName);
+                PersistanceHelperResourceAllocation helper = new PersistanceHelperResourceAllocation(
+                        user, share);
+                allocations.put(new Byte(id), helper);
+                LOGGER.debug("Allocation on PVR: " + id + " ; user: "
+                        + userName + " ; share:" + share);
+            }
+        } catch (SQLException e) {
+            throw new ExecuteMySQLException(e);
+        } finally {
+            MySQLBroker.getInstance().terminateExecution(objects);
+        }
+        if (allocations.size() == 0) {
+            // No entry in table, something wrong with config or tapename
+            LOGGER
+                    .error("No PVR allocations found. Please define them in the database.");
+        }
 
-		LOGGER.trace("< getResourceAllocation");
+        LOGGER.trace("< getResourceAllocation");
 
-		return allocations;
-	}
+        return allocations;
+    }
 }

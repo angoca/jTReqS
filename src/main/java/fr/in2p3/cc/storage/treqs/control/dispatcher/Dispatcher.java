@@ -94,6 +94,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     private static final short MAX_FILES_BEFORE_MESSAGE = 100;
 
     private static final short MILLIS = 1000;
+    private static final short MAX_REQUESTS_DEFAULT = 500;
 
     /**
      * Destroys the only instance. ONLY for testing purposes.
@@ -111,7 +112,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
 
     /**
      * Access the singleton instance.
-     *
+     * 
      * @throws TReqSException
      */
     public static Dispatcher getInstance() throws TReqSException {
@@ -132,7 +133,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * The number of requests to fetch per run
      */
-    private short maxRequests;
+    private short maxRequests = MAX_REQUESTS_DEFAULT;
 
     private int millisBetweenLoops;
 
@@ -148,7 +149,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
         } catch (ConfigNotFoundException e) {
             LOGGER
                     .info("No setting for MAIN.DISPATCHER_FETCH_MAX, arbitrary default value set to "
-                            + maxRequests);
+                            + MAX_REQUESTS_DEFAULT);
         }
 
         this.setMaxFilesBeforeMessage(MAX_FILES_BEFORE_MESSAGE); // TODO
@@ -265,7 +266,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * Scans new requests via DAO Puts all new requests in the RequestsList
      * container.
-     *
+     * 
      * @return A map of all the new requests. The key is the filename
      * @throws TReqSException
      */
@@ -282,7 +283,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
         // TODO This should be done several times till there are not more
         // requests in the database.
         try {
-            newJobs = DAO.getReadingDAO().getNewJobs(this.maxRequests);
+            newJobs = DAO.getReadingDAO().getNewJobs(this.getMaxRequests());
         } catch (PersistanceException e) {
             LOGGER.error("Exception caught: {}", e.getMessage());
             throw e;
@@ -315,7 +316,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
      * Verify the permissions on a file against the user requesting it
      * <p>
      * TODO (jschaeff) implement checkFilePermission
-     *
+     * 
      * @param file
      *            A reference to the file object
      * @param user
@@ -353,7 +354,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * TODO This should be multithreaded in order to ask several file properties
      * to the server simultaneously.
-     *
+     * 
      * @param newRequests
      * @throws TReqSException
      */
@@ -540,7 +541,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
 
     /**
      * This method has a default visibility just for testing purposes.
-     *
+     * 
      * @throws TReqSException
      */
     void retrieveNewRequest() throws TReqSException {
@@ -653,7 +654,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * Run periodically over the database to do the work. Call
      * get_new_requests() and treat all the results
-     *
+     * 
      * @throws TReqSException
      */
     @Override

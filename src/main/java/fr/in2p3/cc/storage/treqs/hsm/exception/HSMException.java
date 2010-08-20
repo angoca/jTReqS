@@ -40,36 +40,36 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 public abstract class HSMException extends TReqSException {
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 7426851287153707330L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 7426851287153707330L;
 
-	private short hsmErrorcode;
+    private short hsmErrorcode;
 
-	public HSMException() {
-		super();
-	}
+    public HSMException() {
+        super();
+    }
 
-	public HSMException(Exception exception) {
-		super(exception);
-	}
+    public HSMException(Exception exception) {
+        super(exception);
+    }
 
-	HSMException(short hsmErrorcode) {
-		super();
-		this.hsmErrorcode = hsmErrorcode;
-	}
+    HSMException(short hsmErrorcode) {
+        super();
+        this.hsmErrorcode = hsmErrorcode;
+    }
 
-	public HSMException(String message) {
-		super(message);
-	}
+    public HSMException(String message) {
+        super(message);
+    }
 
-	public short getHSMErrorCode() {
-		return this.hsmErrorcode;
-	}
+    public short getHSMErrorCode() {
+        return this.hsmErrorcode;
+    }
 
-	@Override
-	public String getMessage() {
-		return "Code: " + this.hsmErrorcode + super.getMessage();
-	}
+    @Override
+    public String getMessage() {
+        return "Code: " + this.hsmErrorcode + super.getMessage();
+    }
 }

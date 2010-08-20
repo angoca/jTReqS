@@ -9,83 +9,83 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 public class MediaTypesController extends Controller {
-	private static MediaTypesController instance;
+    private static MediaTypesController instance;
 
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MediaTypesController.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MediaTypesController.class);
 
-	/**
-	 * Destroys the only instance. ONLY for testing purposes. TODO change from
-	 * public to default.
-	 */
-	public static void destroyInstance() {
-		LOGGER.trace("> destroyInstance");
+    /**
+     * Destroys the only instance. ONLY for testing purposes. TODO change from
+     * public to default.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
 
-		instance = null;
+        instance = null;
 
-		LOGGER.trace("< destroyInstance");
-	}
+        LOGGER.trace("< destroyInstance");
+    }
 
-	public static MediaTypesController getInstance() {
-		LOGGER.trace("> getInstance");
+    public static MediaTypesController getInstance() {
+        LOGGER.trace("> getInstance");
 
-		if (instance == null) {
-			instance = new MediaTypesController();
-		}
+        if (instance == null) {
+            instance = new MediaTypesController();
+        }
 
-		LOGGER.trace("< getInstance");
+        LOGGER.trace("< getInstance");
 
-		return instance;
-	}
+        return instance;
+    }
 
-	public MediaTypesController() {
-		super.objectMap = new HashMap<String, Object>();
-	}
+    public MediaTypesController() {
+        super.objectMap = new HashMap<String, Object>();
+    }
 
-	public MediaType add(String name, byte id) throws TReqSException {
-		LOGGER.trace("> add");
+    public MediaType add(String name, byte id) throws TReqSException {
+        LOGGER.trace("> add");
 
-		assert name != null;
-		assert !name.equals("");
-		assert id >= 0;
+        assert name != null;
+        assert !name.equals("");
+        assert id >= 0;
 
-		MediaType media = (MediaType) this.exists(name);
-		if (media == null) {
-			media = create(name, id);
-		}
+        MediaType media = (MediaType) this.exists(name);
+        if (media == null) {
+            media = create(name, id);
+        }
 
-		LOGGER.trace("> add");
+        LOGGER.trace("> add");
 
-		return media;
-	}
+        return media;
+    }
 
-	private MediaType create(String name, byte id) throws TReqSException {
-		LOGGER.trace("> create");
+    private MediaType create(String name, byte id) throws TReqSException {
+        LOGGER.trace("> create");
 
-		assert name != null;
-		assert !name.equals("");
-		assert id >= 0;
+        assert name != null;
+        assert !name.equals("");
+        assert id >= 0;
 
-		MediaType media = new MediaType(id, name);
-		super.add(name, media);
+        MediaType media = new MediaType(id, name);
+        super.add(name, media);
 
-		LOGGER.trace("< create");
+        LOGGER.trace("< create");
 
-		return media;
-	}
+        return media;
+    }
 
-	public MediaType getLike(String storageName) {
-		MediaType ret = null;
-		if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
-			ret = (MediaType) this.objectMap.get("T10K-A");
-		} else if (storageName.startsWith("JT")) {
-			ret = (MediaType) this.objectMap.get("T10K-B");
-		}
-		// TODO with regular expressions
-		return ret;
-	}
+    public MediaType getLike(String storageName) {
+        MediaType ret = null;
+        if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
+            ret = (MediaType) this.objectMap.get("T10K-A");
+        } else if (storageName.startsWith("JT")) {
+            ret = (MediaType) this.objectMap.get("T10K-B");
+        }
+        // TODO with regular expressions
+        return ret;
+    }
 
 }

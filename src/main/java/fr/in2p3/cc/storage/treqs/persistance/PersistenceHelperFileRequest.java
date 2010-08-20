@@ -41,99 +41,99 @@ package fr.in2p3.cc.storage.treqs.persistance;
  * TReqS. This objects is only used between MySQLBridge, and Dispatcher.
  */
 public class PersistenceHelperFileRequest {
-	private String fileName;
-	private short id;
-	private byte numberTries;
-	private String ownerName;
+    private String fileName;
+    private short id;
+    private byte numberTries;
+    private String ownerName;
 
-	public PersistenceHelperFileRequest(short id, String fileName,
-			byte nbTries, String ownerName) {
-		this.setId(id);
-		this.setFileName(fileName);
-		this.setNumberTries(nbTries);
-		this.setOwnerName(ownerName);
-	}
+    public PersistenceHelperFileRequest(short id, String fileName,
+            byte nbTries, String ownerName) {
+        this.setId(id);
+        this.setFileName(fileName);
+        this.setNumberTries(nbTries);
+        this.setOwnerName(ownerName);
+    }
 
-	/**
-	 * Getter
-	 * 
-	 * @return
-	 */
-	public String getFileName() {
-		return fileName;
-	}
+    /**
+     * Getter
+     * 
+     * @return
+     */
+    public String getFileName() {
+        return fileName;
+    }
 
-	/**
-	 * Getter
-	 * 
-	 * @return
-	 */
-	public int getId() {
-		return id;
-	}
+    /**
+     * Getter
+     * 
+     * @return
+     */
+    public int getId() {
+        return id;
+    }
 
-	/**
-	 * Getter
-	 * 
-	 * @return
-	 */
-	public byte getNumberTries() {
-		return this.numberTries;
-	}
+    /**
+     * Getter
+     * 
+     * @return
+     */
+    public byte getNumberTries() {
+        return this.numberTries;
+    }
 
-	/**
-	 * Getter
-	 * 
-	 * @return
-	 */
-	public String getOwnerName() {
-		return ownerName;
-	}
+    /**
+     * Getter
+     * 
+     * @return
+     */
+    public String getOwnerName() {
+        return ownerName;
+    }
 
-	/**
-	 * Setter
-	 * 
-	 * @param fileName
-	 */
-	private void setFileName(String fileName) {
-		assert fileName != null;
-		assert !fileName.equals("");
+    /**
+     * Setter
+     * 
+     * @param fileName
+     */
+    private void setFileName(String fileName) {
+        assert fileName != null;
+        assert !fileName.equals("");
 
-		this.fileName = fileName;
-	}
+        this.fileName = fileName;
+    }
 
-	/**
-	 * Setter
-	 * 
-	 * @param id
-	 */
-	private void setId(short id) {
-		assert id > 0;
+    /**
+     * Setter
+     * 
+     * @param id
+     */
+    private void setId(short id) {
+        assert id > 0;
 
-		this.id = id;
-	}
+        this.id = id;
+    }
 
-	/**
-	 * Setter
-	 * 
-	 * @param numberTries
-	 */
-	void setNumberTries(byte numberTries) {
-		assert numberTries >= 0;
+    /**
+     * Setter
+     * 
+     * @param numberTries
+     */
+    void setNumberTries(byte numberTries) {
+        assert numberTries >= 0;
 
-		this.numberTries = numberTries;
-	}
+        this.numberTries = numberTries;
+    }
 
-	/**
-	 * Setter
-	 * 
-	 * @param ownerName
-	 */
-	void setOwnerName(String ownerName) {
-		assert ownerName != null;
-		assert !ownerName.equals("");
+    /**
+     * Setter
+     * 
+     * @param ownerName
+     */
+    void setOwnerName(String ownerName) {
+        assert ownerName != null;
+        assert !ownerName.equals("");
 
-		this.ownerName = ownerName;
-	}
+        this.ownerName = ownerName;
+    }
 
 }

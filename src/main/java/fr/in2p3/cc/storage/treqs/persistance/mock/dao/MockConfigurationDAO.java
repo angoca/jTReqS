@@ -21,150 +21,150 @@ import fr.in2p3.cc.storage.treqs.persistance.mock.exception.MockPersistanceExcep
 
 public class MockConfigurationDAO implements ConfigurationDAO {
 
-	/**
-	 * Singleton initialization
-	 */
-	private static MockConfigurationDAO _instance = null;
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MockConfigurationDAO.class);
+    /**
+     * Singleton initialization
+     */
+    private static MockConfigurationDAO _instance = null;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MockConfigurationDAO.class);
 
-	/**
-	 * Destroys the only instance. ONLY for testing purposes.
-	 */
-	public static void destroyInstance() {
-		LOGGER.trace("> destroyInstance");
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
 
-		_instance = null;
+        _instance = null;
 
-		LOGGER.trace("< destroyInstance");
-	}
+        LOGGER.trace("< destroyInstance");
+    }
 
-	public static MockConfigurationDAO getInstance() {
-		LOGGER.trace("> getInstance");
+    public static MockConfigurationDAO getInstance() {
+        LOGGER.trace("> getInstance");
 
-		if (_instance == null) {
-			LOGGER.debug("Creating singleton");
-			_instance = new MockConfigurationDAO();
-		}
+        if (_instance == null) {
+            LOGGER.debug("Creating singleton");
+            _instance = new MockConfigurationDAO();
+        }
 
-		LOGGER.trace("< getInstance");
+        LOGGER.trace("< getInstance");
 
-		return _instance;
-	}
+        return _instance;
+    }
 
-	/**
-	 * Exception to throw.
-	 */
-	private MockPersistanceException exception;
+    /**
+     * Exception to throw.
+     */
+    private MockPersistanceException exception;
 
-	private MockConfigurationDAO() {
-		this.exception = null;
-	}
+    private MockConfigurationDAO() {
+        this.exception = null;
+    }
 
-	/**
-	 * Quantity of drives per type.
-	 * <p>
-	 * <code>
-	 * Type   Qty
-	 * T10KA  5
-	 * T10KB  8
+    /**
+     * Quantity of drives per type.
+     * <p>
+     * <code>
+     * Type   Qty
+     * T10KA  5
+     * T10KB  8
      * </code>
-	 * 
-	 * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations()
-	 */
-	// @Override
-	public List<Resource> getMediaAllocations() throws TReqSException {
-		if (this.exception != null) {
-			TReqSException toThrow = this.exception;
-			this.exception = null;
-			throw toThrow;
-		}
-		ArrayList<Resource> drives = new ArrayList<Resource>();
-		byte id = 1;
-		String name = "T10K-A";
-		MediaType media = MediaTypesController.getInstance().add(name, id);
-		drives.add(new Resource(media, new GregorianCalendar(), (byte) 5));
-		id = 2;
-		name = "T10K-B";
-		media = MediaTypesController.getInstance().add(name, id);
-		drives.add(new Resource(media, new GregorianCalendar(), (byte) 8));
-		return drives;
-	}
+     * 
+     * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations()
+     */
+    // @Override
+    public List<Resource> getMediaAllocations() throws TReqSException {
+        if (this.exception != null) {
+            TReqSException toThrow = this.exception;
+            this.exception = null;
+            throw toThrow;
+        }
+        ArrayList<Resource> drives = new ArrayList<Resource>();
+        byte id = 1;
+        String name = "T10K-A";
+        MediaType media = MediaTypesController.getInstance().add(name, id);
+        drives.add(new Resource(media, new GregorianCalendar(), (byte) 5));
+        id = 2;
+        name = "T10K-B";
+        media = MediaTypesController.getInstance().add(name, id);
+        drives.add(new Resource(media, new GregorianCalendar(), (byte) 8));
+        return drives;
+    }
 
-	/**
-	 * Drive distribution per user.
-	 * <p>
-	 * <code>
-	 * id type  user1 user2 user3 user4 user5 user6 user7
-	 * 1  T10KA 2     1     1                 2     3
-	 * 2  T10KB 3     2           1                 1
-	 *    T10KC                         1     1     2
+    /**
+     * Drive distribution per user.
+     * <p>
+     * <code>
+     * id type  user1 user2 user3 user4 user5 user6 user7
+     * 1  T10KA 2     1     1                 2     3
+     * 2  T10KB 3     2           1                 1
+     *    T10KC                         1     1     2
      * </code>
-	 * 
-	 * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation()
-	 */
-	// @Override
-	public MultiMap getResourceAllocation() throws PersistanceException {
-		if (this.exception != null) {
-			PersistanceException toThrow = this.exception;
-			this.exception = null;
-			throw toThrow;
-		}
-		MultiMap values = new MultiValueMap();
-		User user1 = new User("user1");
-		User user2 = new User("user2");
-		User user3 = new User("user3");
-		User user4 = new User("user4");
-		User user5 = new User("user5");
-		User user6 = new User("user6");
-		User user7 = new User("user7");
-		// T10KA
-		values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-				user1, 2));
-		values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-				user2, 1));
-		values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-				user3, 1));
-		// No user4
-		// No user5
-		values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-				user6, 2));
-		values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-				user7, 3));
+     * 
+     * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation()
+     */
+    // @Override
+    public MultiMap getResourceAllocation() throws PersistanceException {
+        if (this.exception != null) {
+            PersistanceException toThrow = this.exception;
+            this.exception = null;
+            throw toThrow;
+        }
+        MultiMap values = new MultiValueMap();
+        User user1 = new User("user1");
+        User user2 = new User("user2");
+        User user3 = new User("user3");
+        User user4 = new User("user4");
+        User user5 = new User("user5");
+        User user6 = new User("user6");
+        User user7 = new User("user7");
+        // T10KA
+        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
+                user1, 2));
+        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
+                user2, 1));
+        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
+                user3, 1));
+        // No user4
+        // No user5
+        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
+                user6, 2));
+        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
+                user7, 3));
 
-		// T10KB
-		values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-				user1, 3));
-		values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-				user2, 2));
-		// No user3
-		values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-				user4, 1));
-		// No user5
-		// No user6
-		values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-				user7, 3));
+        // T10KB
+        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
+                user1, 3));
+        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
+                user2, 2));
+        // No user3
+        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
+                user4, 1));
+        // No user5
+        // No user6
+        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
+                user7, 3));
 
-		// T10KC
-		// No user1
-		// No user2
-		// No user3
-		// No user4
-		values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-				user5, 1));
-		values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-				user6, 1));
-		values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-				user7, 2));
+        // T10KC
+        // No user1
+        // No user2
+        // No user3
+        // No user4
+        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
+                user5, 1));
+        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
+                user6, 1));
+        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
+                user7, 2));
 
-		return values;
-	}
+        return values;
+    }
 
-	public void setMediaTypeException(MockPersistanceException exception) {
-		this.exception = exception;
-	}
+    public void setMediaTypeException(MockPersistanceException exception) {
+        this.exception = exception;
+    }
 
 }

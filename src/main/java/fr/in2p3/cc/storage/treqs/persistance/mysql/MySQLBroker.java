@@ -59,270 +59,270 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  *
  */
 public class MySQLBroker {
-	private static MySQLBroker instance;
+    private static MySQLBroker instance;
 
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MySQLBroker.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MySQLBroker.class);
 
-	/**
-	 * Destroys the only instance. ONLY for testing purposes.
-	 */
-	public static void destroyInstance() {
-		LOGGER.trace("> destroyInstance");
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
 
-		if (instance != null && instance.connected) {
-			try {
-				instance.disconnect();
-			} catch (CloseMySQLException e) {
-				LOGGER.error(e.getMessage());
-			}
-		}
-		instance = null;
+        if (instance != null && instance.connected) {
+            try {
+                instance.disconnect();
+            } catch (CloseMySQLException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+        instance = null;
 
-		LOGGER.trace("< destroyInstance");
-	}
+        LOGGER.trace("< destroyInstance");
+    }
 
-	public static MySQLBroker getInstance() {
-		LOGGER.trace("> getInstance");
+    public static MySQLBroker getInstance() {
+        LOGGER.trace("> getInstance");
 
-		if (instance == null) {
-			instance = new MySQLBroker();
-		}
+        if (instance == null) {
+            instance = new MySQLBroker();
+        }
 
-		LOGGER.trace("< getInstance");
+        LOGGER.trace("< getInstance");
 
-		return instance;
-	}
+        return instance;
+    }
 
-	private boolean connected;
+    private boolean connected;
 
-	private Connection connection = null;
+    private Connection connection = null;
 
-	private MySQLBroker() {
-		LOGGER.trace("> MySQLBroker");
+    private MySQLBroker() {
+        LOGGER.trace("> MySQLBroker");
 
-		this.connected = false;
-		this.connection = null;
+        this.connected = false;
+        this.connection = null;
 
-		LOGGER.trace("< MySQLBroker");
-	}
+        LOGGER.trace("< MySQLBroker");
+    }
 
-	/**
-	 * @param result
-	 * @return
-	 */
-	private ResultSet closeResultSet(ResultSet result) {
-		LOGGER.trace("> closeResultSet");
+    /**
+     * @param result
+     * @return
+     */
+    private ResultSet closeResultSet(ResultSet result) {
+        LOGGER.trace("> closeResultSet");
 
-		if (result != null) {
-			try {
-				result.close();
-			} catch (SQLException sqlEx) {
-				LOGGER.error("SQLException: " + sqlEx.getMessage());
-				LOGGER.error("SQLState: " + sqlEx.getSQLState());
-				LOGGER.error("VendorError: " + sqlEx.getErrorCode());
-			}
+        if (result != null) {
+            try {
+                result.close();
+            } catch (SQLException sqlEx) {
+                LOGGER.error("SQLException: " + sqlEx.getMessage());
+                LOGGER.error("SQLState: " + sqlEx.getSQLState());
+                LOGGER.error("VendorError: " + sqlEx.getErrorCode());
+            }
 
-			result = null;
-		}
+            result = null;
+        }
 
-		LOGGER.trace("< closeResultSet");
+        LOGGER.trace("< closeResultSet");
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * @param stmt
-	 * @throws CloseMySQLException
-	 */
-	private void closeStatement(Statement stmt) throws CloseMySQLException {
-		LOGGER.trace("> closeStatement");
+    /**
+     * @param stmt
+     * @throws CloseMySQLException
+     */
+    private void closeStatement(Statement stmt) throws CloseMySQLException {
+        LOGGER.trace("> closeStatement");
 
-		if (stmt != null) {
-			try {
-				stmt.close();
-			} catch (SQLException sqlEx) {
-				handleSQLException(sqlEx);
-				throw new CloseMySQLException(sqlEx);
-			}
-			stmt = null;
-		}
+        if (stmt != null) {
+            try {
+                stmt.close();
+            } catch (SQLException sqlEx) {
+                handleSQLException(sqlEx);
+                throw new CloseMySQLException(sqlEx);
+            }
+            stmt = null;
+        }
 
-		LOGGER.trace("< closeStatement");
-	}
+        LOGGER.trace("< closeStatement");
+    }
 
-	public Connection connect() throws TReqSException {
-		LOGGER.trace("> connect");
+    public Connection connect() throws TReqSException {
+        LOGGER.trace("> connect");
 
-		String url = Configurator.getInstance().getValue("JOBSDB", "URL");
-		String driver = Configurator.getInstance().getValue("JOBSDB", "DRIVER");
-		String user = Configurator.getInstance().getValue("JOBSDB", "USERNAME");
-		String password = Configurator.getInstance().getValue("JOBSDB",
-				"PASSWORD");
-		Connection ret = null;
+        String url = Configurator.getInstance().getValue("JOBSDB", "URL");
+        String driver = Configurator.getInstance().getValue("JOBSDB", "DRIVER");
+        String user = Configurator.getInstance().getValue("JOBSDB", "USERNAME");
+        String password = Configurator.getInstance().getValue("JOBSDB",
+                "PASSWORD");
+        Connection ret = null;
 
-		synchronized (instance) {
-			if (this.connection == null) {
-				try {
-					Class.forName(driver).newInstance();
-				} catch (Exception e) {
-					LOGGER.error("Exception: " + e.getMessage());
-					throw new OpenMySQLException(e);
-				}
-				try {
-					this.connection = (Connection) DriverManager.getConnection(
-							url, user, password);
-					this.connected = true;
-					ret = this.connection;
-				} catch (SQLException ex) {
-					handleSQLException(ex);
-					try {
-						this.disconnect();
-					} catch (Exception e) {
-						// Nothing
-					}
-					throw new OpenMySQLException(ex);
-				}
-			}
-		}
+        synchronized (instance) {
+            if (this.connection == null) {
+                try {
+                    Class.forName(driver).newInstance();
+                } catch (Exception e) {
+                    LOGGER.error("Exception: " + e.getMessage());
+                    throw new OpenMySQLException(e);
+                }
+                try {
+                    this.connection = (Connection) DriverManager.getConnection(
+                            url, user, password);
+                    this.connected = true;
+                    ret = this.connection;
+                } catch (SQLException ex) {
+                    handleSQLException(ex);
+                    try {
+                        this.disconnect();
+                    } catch (Exception e) {
+                        // Nothing
+                    }
+                    throw new OpenMySQLException(ex);
+                }
+            }
+        }
 
-		LOGGER.trace("< connect");
+        LOGGER.trace("< connect");
 
-		return ret;
-	}
+        return ret;
+    }
 
-	public void disconnect() throws CloseMySQLException {
-		LOGGER.trace("> disconnect");
+    public void disconnect() throws CloseMySQLException {
+        LOGGER.trace("> disconnect");
 
-		this.connected = false;
-		synchronized (instance) {
-			if (this.connection != null) {
-				try {
-					this.connection.close();
-				} catch (SQLException ex) {
-					handleSQLException(ex);
-					throw new CloseMySQLException(ex);
-				} finally {
-					this.connection = null;
-				}
-			}
-		}
+        this.connected = false;
+        synchronized (instance) {
+            if (this.connection != null) {
+                try {
+                    this.connection.close();
+                } catch (SQLException ex) {
+                    handleSQLException(ex);
+                    throw new CloseMySQLException(ex);
+                } finally {
+                    this.connection = null;
+                }
+            }
+        }
 
-		LOGGER.trace("< disconnect");
-	}
+        LOGGER.trace("< disconnect");
+    }
 
-	public int executeModification(String query) throws MySQLException {
-		LOGGER.trace("> executeModification");
+    public int executeModification(String query) throws MySQLException {
+        LOGGER.trace("> executeModification");
 
-		assert query != null;
-		assert !query.equals("");
+        assert query != null;
+        assert !query.equals("");
 
-		int rows = -1;
-		Statement statement = null;
-		validConnection();
-		try {
-			statement = (Statement) connection.createStatement();
-			rows = statement.executeUpdate(query);
-		} catch (SQLException ex) {
-			handleSQLException(ex);
-			throw new ExecuteMySQLException(ex);
-		} finally {
-			try {
-				statement.close();
-			} catch (SQLException e) {
-				throw new ExecuteMySQLException(e);
-			}
-		}
+        int rows = -1;
+        Statement statement = null;
+        validConnection();
+        try {
+            statement = (Statement) connection.createStatement();
+            rows = statement.executeUpdate(query);
+        } catch (SQLException ex) {
+            handleSQLException(ex);
+            throw new ExecuteMySQLException(ex);
+        } finally {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                throw new ExecuteMySQLException(e);
+            }
+        }
 
-		LOGGER.trace("< executeModification");
+        LOGGER.trace("< executeModification");
 
-		return rows;
-	}
+        return rows;
+    }
 
-	public Object[] executeSelect(String query) throws MySQLException {
-		LOGGER.trace("> executeSelect");
+    public Object[] executeSelect(String query) throws MySQLException {
+        LOGGER.trace("> executeSelect");
 
-		assert query != null;
-		assert !query.equals("");
+        assert query != null;
+        assert !query.equals("");
 
-		ResultSet rs = null;
-		Statement stmt = null;
-		validConnection();
-		try {
-			stmt = (Statement) this.connection.createStatement();
-			rs = stmt.executeQuery(query);
-		} catch (SQLException ex) {
-			handleSQLException(ex);
-			rs = closeResultSet(rs);
-			throw new ExecuteMySQLException(ex);
-		}
+        ResultSet rs = null;
+        Statement stmt = null;
+        validConnection();
+        try {
+            stmt = (Statement) this.connection.createStatement();
+            rs = stmt.executeQuery(query);
+        } catch (SQLException ex) {
+            handleSQLException(ex);
+            rs = closeResultSet(rs);
+            throw new ExecuteMySQLException(ex);
+        }
 
-		LOGGER.trace("< executeSelect");
+        LOGGER.trace("< executeSelect");
 
-		return new Object[] { stmt, rs };
-	}
+        return new Object[] { stmt, rs };
+    }
 
-	public PreparedStatement getPreparedStatement(String query)
-			throws ExecuteMySQLException {
-		validConnection();
-		PreparedStatement ret = null;
-		try {
-			ret = this.connection.prepareStatement(query,
-					java.sql.Statement.RETURN_GENERATED_KEYS);
-		} catch (SQLException e) {
-			throw new ExecuteMySQLException(e);
-		}
-		return ret;
-	}
+    public PreparedStatement getPreparedStatement(String query)
+            throws ExecuteMySQLException {
+        validConnection();
+        PreparedStatement ret = null;
+        try {
+            ret = this.connection.prepareStatement(query,
+                    java.sql.Statement.RETURN_GENERATED_KEYS);
+        } catch (SQLException e) {
+            throw new ExecuteMySQLException(e);
+        }
+        return ret;
+    }
 
-	/**
-	 * @param ex
-	 */
-	private void handleSQLException(SQLException ex) {
-		LOGGER.trace("> handleSQLException");
+    /**
+     * @param ex
+     */
+    private void handleSQLException(SQLException ex) {
+        LOGGER.trace("> handleSQLException");
 
-		assert ex != null;
+        assert ex != null;
 
-		System.out.println("SQLException: " + ex.getMessage());
-		System.out.println("SQLState: " + ex.getSQLState());
-		System.out.println("VendorError: " + ex.getErrorCode());
+        System.out.println("SQLException: " + ex.getMessage());
+        System.out.println("SQLState: " + ex.getSQLState());
+        System.out.println("VendorError: " + ex.getErrorCode());
 
-		LOGGER.trace("< handleSQLException");
-	}
+        LOGGER.trace("< handleSQLException");
+    }
 
-	public void terminateExecution(Object[] objects) throws CloseMySQLException {
-		closeResultSet((ResultSet) objects[1]);
-		closeStatement((Statement) objects[0]);
-	}
+    public void terminateExecution(Object[] objects) throws CloseMySQLException {
+        closeResultSet((ResultSet) objects[1]);
+        closeStatement((Statement) objects[0]);
+    }
 
-	/**
-	 * Validates if the connection is valid.
-	 * 
-	 * @return
-	 * @throws SQLException
-	 * @throws ExecuteMySQLException
-	 */
-	private void validConnection() throws ExecuteMySQLException {
-		LOGGER.trace("> validConnection");
+    /**
+     * Validates if the connection is valid.
+     * 
+     * @return
+     * @throws SQLException
+     * @throws ExecuteMySQLException
+     */
+    private void validConnection() throws ExecuteMySQLException {
+        LOGGER.trace("> validConnection");
 
-		boolean ret;
-		try {
-			ret = this.connected && this.connection != null
-					&& !this.connection.isClosed();
-		} catch (SQLException e) {
-			handleSQLException(e);
-			throw new ExecuteMySQLException(e);
-		}
-		if (!ret) {
-			LOGGER.error("The connection has not been established.");
-			throw new ExecuteMySQLException(
-					"The connection has not been established.");
-			// TODO Re-establish the connection at least once.
-		}
+        boolean ret;
+        try {
+            ret = this.connected && this.connection != null
+                    && !this.connection.isClosed();
+        } catch (SQLException e) {
+            handleSQLException(e);
+            throw new ExecuteMySQLException(e);
+        }
+        if (!ret) {
+            LOGGER.error("The connection has not been established.");
+            throw new ExecuteMySQLException(
+                    "The connection has not been established.");
+            // TODO Re-establish the connection at least once.
+        }
 
-		LOGGER.trace("< validConnection");
-	}
+        LOGGER.trace("< validConnection");
+    }
 }

@@ -43,20 +43,20 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  */
 public abstract class PersistanceException extends TReqSException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = -7397853011740242653L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -7397853011740242653L;
 
-	public PersistanceException() {
-		super();
-	}
+    public PersistanceException() {
+        super();
+    }
 
-	public PersistanceException(Exception e) {
-		super(e);
-	}
+    public PersistanceException(Exception e) {
+        super(e);
+    }
 
-	public PersistanceException(String message) {
-		super(message);
-	}
+    public PersistanceException(String message) {
+        super(message);
+    }
 }

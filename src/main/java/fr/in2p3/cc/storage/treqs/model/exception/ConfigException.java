@@ -44,95 +44,95 @@ package fr.in2p3.cc.storage.treqs.model.exception;
  */
 public class ConfigException extends TReqSException {
 
-	/**
-	 * Generated Id.
-	 */
-	private static final long serialVersionUID = -8984526634793772647L;
-	private String key;
-	private String path;
-	private String section;
-	private String value;
+    /**
+     * Generated Id.
+     */
+    private static final long serialVersionUID = -8984526634793772647L;
+    private String key;
+    private String path;
+    private String section;
+    private String value;
 
-	public ConfigException() {
-		super();
-	}
+    public ConfigException() {
+        super();
+    }
 
-	public ConfigException(String file) {
-		super(file);
-	}
+    public ConfigException(String file) {
+        super(file);
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param section
-	 *            Section
-	 * @param key
-	 *            Key
-	 * @return
-	 */
-	public ConfigException(String section, String key) {
-		super();
-		setSection(section);
-		setKey(key);
-	}
+    /**
+     * Constructor
+     * 
+     * @param section
+     *            Section
+     * @param key
+     *            Key
+     * @return
+     */
+    public ConfigException(String section, String key) {
+        super();
+        setSection(section);
+        setKey(key);
+    }
 
-	/**
-	 * Constructor
-	 * 
-	 * @param section
-	 *            Section
-	 * @param key
-	 *            Key
-	 * @param value
-	 *            Value
-	 * @param path
-	 *            Path
-	 * @return
-	 */
-	public ConfigException(String section, String key, String value, String path) {
-		super();
-		setSection(section);
-		setKey(key);
-		setValue(value);
-		setPath(path);
-	}
+    /**
+     * Constructor
+     * 
+     * @param section
+     *            Section
+     * @param key
+     *            Key
+     * @param value
+     *            Value
+     * @param path
+     *            Path
+     * @return
+     */
+    public ConfigException(String section, String key, String value, String path) {
+        super();
+        setSection(section);
+        setKey(key);
+        setValue(value);
+        setPath(path);
+    }
 
-	String getKey() {
-		return key;
-	}
+    String getKey() {
+        return key;
+    }
 
-	@Override
-	public String getMessage() {
-		return getSection() + "::" + getKey()
-				+ " : Configuration item not found - " + getValue() + "-"
-				+ getPath();
-	}
+    @Override
+    public String getMessage() {
+        return getSection() + "::" + getKey()
+                + " : Configuration item not found - " + getValue() + "-"
+                + getPath();
+    }
 
-	String getPath() {
-		return path;
-	}
+    String getPath() {
+        return path;
+    }
 
-	String getSection() {
-		return section;
-	}
+    String getSection() {
+        return section;
+    }
 
-	String getValue() {
-		return value;
-	}
+    String getValue() {
+        return value;
+    }
 
-	void setKey(String key) {
-		this.key = key;
-	}
+    void setKey(String key) {
+        this.key = key;
+    }
 
-	void setPath(String path) {
-		this.path = path;
-	}
+    void setPath(String path) {
+        this.path = path;
+    }
 
-	void setSection(String section) {
-		this.section = section;
-	}
+    void setSection(String section) {
+        this.section = section;
+    }
 
-	void setValue(String value) {
-		this.value = value;
-	}
+    void setValue(String value) {
+        this.value = value;
+    }
 };

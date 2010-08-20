@@ -58,250 +58,250 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
  */
 public class MySQLQueueDAO implements QueueDAO {
 
-	/**
-	 * Singleton initialization
-	 */
-	private static MySQLQueueDAO _instance = null;
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MySQLQueueDAO.class);
+    /**
+     * Singleton initialization
+     */
+    private static MySQLQueueDAO _instance = null;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MySQLQueueDAO.class);
 
-	/**
-	 * Destroys the only instance. ONLY for testing purposes.
-	 */
-	public static void destroyInstance() {
-		LOGGER.trace("> destroyInstance");
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
 
-		_instance = null;
+        _instance = null;
 
-		LOGGER.trace("< destroyInstance");
-	}
+        LOGGER.trace("< destroyInstance");
+    }
 
-	/**
-	 * @return
-	 */
-	public static QueueDAO getInstance() {
-		LOGGER.trace("> getInstance");
+    /**
+     * @return
+     */
+    public static QueueDAO getInstance() {
+        LOGGER.trace("> getInstance");
 
-		if (_instance == null) {
-			LOGGER.debug("Creating singleton");
-			_instance = new MySQLQueueDAO();
-		}
+        if (_instance == null) {
+            LOGGER.debug("Creating singleton");
+            _instance = new MySQLQueueDAO();
+        }
 
-		LOGGER.trace("< getInstance");
+        LOGGER.trace("< getInstance");
 
-		return _instance;
-	}
+        return _instance;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
-	 */
-	public int abortPendingQueues() throws PersistanceException {
-		LOGGER.trace("> abortPendingQueues");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
+     */
+    public int abortPendingQueues() throws PersistanceException {
+        LOGGER.trace("> abortPendingQueues");
 
-		LOGGER.info("Cleaning unfinished queues");
+        LOGGER.info("Cleaning unfinished queues");
 
-		int ret = MySQLBroker.getInstance().executeModification(
-				MySQLStatements.SQL_UPDATE_QUEUES_ON_STARTUP);
+        int ret = MySQLBroker.getInstance().executeModification(
+                MySQLStatements.SQL_UPDATE_QUEUES_ON_STARTUP);
 
-		LOGGER.trace("< abortPendingQueues");
+        LOGGER.trace("< abortPendingQueues");
 
-		return ret;
-	}
+        return ret;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#insert(fr.in2p3.cc.storage
-	 * .treqs.model.QueueStatus, fr.in2p3.cc.storage.treqs.model.Tape, int,
-	 * long, java.util.Calendar)
-	 */
-	// @Override
-	public int insert(QueueStatus status, Tape tape, int size, long byteSize,
-			Calendar creationTime) throws ExecuteMySQLException {
-		LOGGER.trace("> insert");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#insert(fr.in2p3.cc.storage
+     * .treqs.model.QueueStatus, fr.in2p3.cc.storage.treqs.model.Tape, int,
+     * long, java.util.Calendar)
+     */
+    // @Override
+    public int insert(QueueStatus status, Tape tape, int size, long byteSize,
+            Calendar creationTime) throws ExecuteMySQLException {
+        LOGGER.trace("> insert");
 
-		assert status != null;
-		assert tape != null;
-		assert size >= 0;
-		assert byteSize >= 0;
-		assert creationTime != null;
+        assert status != null;
+        assert tape != null;
+        assert size >= 0;
+        assert byteSize >= 0;
+        assert creationTime != null;
 
-		int id = 0;
-		PreparedStatement statement = MySQLBroker.getInstance()
-				.getPreparedStatement(MySQLStatements.SQL_INSERT_QUEUE);
-		try {
-			int index = 1;
-			// Insert queue Status
-			statement.setInt(index++, status.getId());
-			// Insert the name
-			statement.setString(index++, tape.getName());
-			// insert nbjobs
-			statement.setInt(index++, size);
-			// insert pvrid
-			statement.setByte(index++, tape.getMediaType().getId());
-			// insert owner
-			statement.setString(index++, "");
-			// insert size
-			statement.setLong(index++, byteSize);
-			// insert time
-			statement.setLong(index++, creationTime.getTimeInMillis());
+        int id = 0;
+        PreparedStatement statement = MySQLBroker.getInstance()
+                .getPreparedStatement(MySQLStatements.SQL_INSERT_QUEUE);
+        try {
+            int index = 1;
+            // Insert queue Status
+            statement.setInt(index++, status.getId());
+            // Insert the name
+            statement.setString(index++, tape.getName());
+            // insert nbjobs
+            statement.setInt(index++, size);
+            // insert pvrid
+            statement.setByte(index++, tape.getMediaType().getId());
+            // insert owner
+            statement.setString(index++, "");
+            // insert size
+            statement.setLong(index++, byteSize);
+            // insert time
+            statement.setLong(index++, creationTime.getTimeInMillis());
 
-			statement.execute();
+            statement.execute();
 
-			ResultSet result = statement.getGeneratedKeys();
-			if (result.next()) {
-				id = result.getInt(1);
-				result.close();
-			} else {
-				result.close();
-				throw new ExecuteMySQLException();
-			}
-		} catch (SQLException e) {
-			throw new ExecuteMySQLException(e);
-		}
-		LOGGER.info("New queue inserted with id " + id);
+            ResultSet result = statement.getGeneratedKeys();
+            if (result.next()) {
+                id = result.getInt(1);
+                result.close();
+            } else {
+                result.close();
+                throw new ExecuteMySQLException();
+            }
+        } catch (SQLException e) {
+            throw new ExecuteMySQLException(e);
+        }
+        LOGGER.info("New queue inserted with id " + id);
 
-		LOGGER.trace("< insert");
+        LOGGER.trace("< insert");
 
-		return id;
-	}
+        return id;
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateAddRequest(int,
-	 * java.lang.String, long, int)
-	 */
-	// @Override
-	public void updateAddRequest(int jobsSize, String ownerName, long byteSize,
-			int id) throws ExecuteMySQLException {
-		LOGGER.trace("> updateAddRequest");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateAddRequest(int,
+     * java.lang.String, long, int)
+     */
+    // @Override
+    public void updateAddRequest(int jobsSize, String ownerName, long byteSize,
+            int id) throws ExecuteMySQLException {
+        LOGGER.trace("> updateAddRequest");
 
-		assert jobsSize > 0;
-		assert ownerName != null;
-		assert !ownerName.equals("");
-		assert byteSize > 0;
-		assert id >= 0;
+        assert jobsSize > 0;
+        assert ownerName != null;
+        assert !ownerName.equals("");
+        assert byteSize > 0;
+        assert id >= 0;
 
-		PreparedStatement statement = MySQLBroker.getInstance()
-				.getPreparedStatement(
-						MySQLStatements.SQL_UPDATE_QUEUE_ADD_REQUEST);
+        PreparedStatement statement = MySQLBroker.getInstance()
+                .getPreparedStatement(
+                        MySQLStatements.SQL_UPDATE_QUEUE_ADD_REQUEST);
 
-		int index = 1;
-		// Insert number of jobs
-		try {
-			statement.setInt(index++, jobsSize);
-			// insert owner
-			statement.setString(index++, ownerName);
-			// insert size
-			statement.setLong(index++, byteSize);
-			// insert Id
-			statement.setInt(index++, id);
+        int index = 1;
+        // Insert number of jobs
+        try {
+            statement.setInt(index++, jobsSize);
+            // insert owner
+            statement.setString(index++, ownerName);
+            // insert size
+            statement.setLong(index++, byteSize);
+            // insert Id
+            statement.setInt(index++, id);
 
-			statement.execute();
-		} catch (SQLException e) {
-			LOGGER.error("Error updating queue " + id);
-			throw new ExecuteMySQLException(e);
-		} finally {
-			try {
-				statement.close();
-			} catch (SQLException e) {
-				throw new ExecuteMySQLException(e);
-			}
-		}
+            statement.execute();
+        } catch (SQLException e) {
+            LOGGER.error("Error updating queue " + id);
+            throw new ExecuteMySQLException(e);
+        } finally {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                throw new ExecuteMySQLException(e);
+            }
+        }
 
-		LOGGER.trace("< updateAddRequest");
-	}
+        LOGGER.trace("< updateAddRequest");
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateState(java.util.Calendar
-	 * , fr.in2p3.cc.storage.treqs.model.QueueStatus, int, short, short,
-	 * java.lang.String, long, int)
-	 */
-	// @Override
-	public void updateState(Calendar time, QueueStatus status, int size,
-			short nbDone, short nbFailed, String ownerName, long byteSize,
-			int id) throws ExecuteMySQLException {
-		LOGGER.trace("> updateState");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateState(java.util.Calendar
+     * , fr.in2p3.cc.storage.treqs.model.QueueStatus, int, short, short,
+     * java.lang.String, long, int)
+     */
+    // @Override
+    public void updateState(Calendar time, QueueStatus status, int size,
+            short nbDone, short nbFailed, String ownerName, long byteSize,
+            int id) throws ExecuteMySQLException {
+        LOGGER.trace("> updateState");
 
-		assert time != null;
-		assert status != null;
-		assert size >= 0;
-		assert nbDone >= 0;
-		assert nbFailed >= 0;
-		assert ownerName != null;
-		assert byteSize >= 0;
-		assert id >= 0;
+        assert time != null;
+        assert status != null;
+        assert size >= 0;
+        assert nbDone >= 0;
+        assert nbFailed >= 0;
+        assert ownerName != null;
+        assert byteSize >= 0;
+        assert id >= 0;
 
-		PreparedStatement statement = null;
-		int index = 1;
+        PreparedStatement statement = null;
+        int index = 1;
 
-		try {
-			switch (status) {
-			case QS_ACTIVATED:
-				statement = MySQLBroker.getInstance().getPreparedStatement(
-						MySQLStatements.SQL_UPDATE_QUEUE_ACTIVATED);
-				// insert activation time
-				statement.setLong(index++, time.getTimeInMillis());
-				break;
-			case QS_CREATED:
-				statement = MySQLBroker.getInstance().getPreparedStatement(
-						MySQLStatements.SQL_UPDATE_QUEUE_UNSUSPENDED);
-				break;
-			case QS_ENDED:
-				// This should be QS_ENDED or QS_ABORTED or
-				// QS_TEMPORALLY_SUSPENDED
-				statement = MySQLBroker.getInstance().getPreparedStatement(
-						MySQLStatements.SQL_UPDATE_QUEUE_ENDED);
-				// insert end time
-				statement.setLong(index++, time.getTimeInMillis());
-				break;
-			default:
-				assert false;
-			}
-		} catch (SQLException e) {
-			throw new ExecuteMySQLException(e);
-		}
+        try {
+            switch (status) {
+            case QS_ACTIVATED:
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_UPDATE_QUEUE_ACTIVATED);
+                // insert activation time
+                statement.setLong(index++, time.getTimeInMillis());
+                break;
+            case QS_CREATED:
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_UPDATE_QUEUE_UNSUSPENDED);
+                break;
+            case QS_ENDED:
+                // This should be QS_ENDED or QS_ABORTED or
+                // QS_TEMPORALLY_SUSPENDED
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_UPDATE_QUEUE_ENDED);
+                // insert end time
+                statement.setLong(index++, time.getTimeInMillis());
+                break;
+            default:
+                assert false;
+            }
+        } catch (SQLException e) {
+            throw new ExecuteMySQLException(e);
+        }
 
-		// Insert queue Status
-		try {
-			statement.setInt(index++, status.getId());
-			// insert nbjobs
-			statement.setInt(index++, size);
-			// insert nbdone
-			statement.setInt(index++, nbDone);
-			// insert nbfailed
-			statement.setInt(index++, nbFailed);
-			// insert owner
-			statement.setString(index++, ownerName);
-			// insert size
-			statement.setLong(index++, byteSize);
-			// insert Id
-			statement.setInt(index++, id);
+        // Insert queue Status
+        try {
+            statement.setInt(index++, status.getId());
+            // insert nbjobs
+            statement.setInt(index++, size);
+            // insert nbdone
+            statement.setInt(index++, nbDone);
+            // insert nbfailed
+            statement.setInt(index++, nbFailed);
+            // insert owner
+            statement.setString(index++, ownerName);
+            // insert size
+            statement.setLong(index++, byteSize);
+            // insert Id
+            statement.setInt(index++, id);
 
-			statement.execute();
+            statement.execute();
 
-			LOGGER.info("Updated queue " + id);
-		} catch (SQLException e) {
-			LOGGER.error("Error updating queue " + id);
-			throw new ExecuteMySQLException(e);
-		} finally {
-			try {
-				statement.close();
-			} catch (SQLException e) {
-				throw new ExecuteMySQLException(e);
-			}
-		}
+            LOGGER.info("Updated queue " + id);
+        } catch (SQLException e) {
+            LOGGER.error("Error updating queue " + id);
+            throw new ExecuteMySQLException(e);
+        } finally {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                throw new ExecuteMySQLException(e);
+            }
+        }
 
-		LOGGER.trace("< updateState");
-	}
+        LOGGER.trace("< updateState");
+    }
 }

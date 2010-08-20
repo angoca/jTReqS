@@ -57,68 +57,68 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * default.
  */
 public class HSMFactory {
-	private static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge";
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(HSMFactory.class);
+    private static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge";
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMFactory.class);
 
-	/**
-	 * Retrieves the corresponding HSM bridge. This method checks the value of
-	 * MAIN.HSM_BRIDGE in the configuration file. If no value was specify, it
-	 * will return HPSS bridge as default.
-	 * 
-	 * @return
-	 * @throws ProblematicConfiguationFileException
-	 */
-	public static AbstractHSMBridge getHSMBridge()
-			throws ProblematicConfiguationFileException {
-		LOGGER.trace("> getHSMBridge");
+    /**
+     * Retrieves the corresponding HSM bridge. This method checks the value of
+     * MAIN.HSM_BRIDGE in the configuration file. If no value was specify, it
+     * will return HPSS bridge as default.
+     * 
+     * @return
+     * @throws ProblematicConfiguationFileException
+     */
+    public static AbstractHSMBridge getHSMBridge()
+            throws ProblematicConfiguationFileException {
+        LOGGER.trace("> getHSMBridge");
 
-		String hsmBridgeClass = DEFAULT_HSM_BRIDGE;
-		try {
-			hsmBridgeClass = Configurator.getInstance().getValue("MAIN",
-					"HSM_BRIDGE");
-		} catch (ConfigNotFoundException e) {
-			LOGGER
-					.info("No setting for MAIN.HSM_BRIDGE, default value will be used: "
-							+ hsmBridgeClass);
-		}
+        String hsmBridgeClass = DEFAULT_HSM_BRIDGE;
+        try {
+            hsmBridgeClass = Configurator.getInstance().getValue("MAIN",
+                    "HSM_BRIDGE");
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info("No setting for MAIN.HSM_BRIDGE, default value will be used: "
+                            + hsmBridgeClass);
+        }
 
-		LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
-		AbstractHSMBridge bridge = null;
-		Class<?> hsm = null;
-		try {
-			hsm = Class.forName(hsmBridgeClass);
+        LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
+        AbstractHSMBridge bridge = null;
+        Class<?> hsm = null;
+        try {
+            hsm = Class.forName(hsmBridgeClass);
 
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		if (hsm != null) {
-			Method getInstance = null;
-			try {
-				getInstance = hsm.getMethod("getInstance");
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			} catch (NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-			if (getInstance != null) {
-				try {
-					bridge = (AbstractHSMBridge) getInstance.invoke(null);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (hsm != null) {
+            Method getInstance = null;
+            try {
+                getInstance = hsm.getMethod("getInstance");
+            } catch (SecurityException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }
+            if (getInstance != null) {
+                try {
+                    bridge = (AbstractHSMBridge) getInstance.invoke(null);
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
-		LOGGER.trace("< getHSMBridge");
-		return bridge;
-	}
+        LOGGER.trace("< getHSMBridge");
+        return bridge;
+    }
 
 }

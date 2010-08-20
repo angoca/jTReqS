@@ -39,17 +39,17 @@ package fr.in2p3.cc.storage.treqs.persistance;
 
 public class PersistanceFactoryException extends PersistanceException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 7140514095169835449L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 7140514095169835449L;
 
-	public PersistanceFactoryException() {
-		super();
-	}
+    public PersistanceFactoryException() {
+        super();
+    }
 
-	public PersistanceFactoryException(Exception e) {
-		super(e);
-	}
+    public PersistanceFactoryException(Exception e) {
+        super(e);
+    }
 
 }

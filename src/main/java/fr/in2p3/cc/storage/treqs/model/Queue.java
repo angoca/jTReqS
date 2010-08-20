@@ -202,7 +202,7 @@ public class Queue implements Comparable<Queue> {
     /**
      * Constructor that associates a tape with the Queue. This constructor also
      * registers the instance in the database and sets the Id of the queue.
-     *
+     * 
      * @param tape
      *            the name of the tape for this queue
      * @throws TReqSException
@@ -226,8 +226,9 @@ public class Queue implements Comparable<Queue> {
                     .getValue("MAIN", "MAX_SUSPEND_RETRIES"));
         } catch (ConfigNotFoundException e) {
             LOGGER
-                    .info("No setting for MAIN.MAX_SUSPEND_RETRIES, default value will be used: "
-                            + this.maxSuspendRetries);
+                    .info(
+                            "No setting for MAIN.MAX_SUSPEND_RETRIES, default value will be used: {}",
+                            this.maxSuspendRetries);
         }
 
         this.headPosition = (short) 0;
@@ -243,8 +244,9 @@ public class Queue implements Comparable<Queue> {
                     .getValue("MAIN", "SUSPEND_DURATION")));
         } catch (ConfigNotFoundException e) {
             LOGGER
-                    .info("No setting for SUSPEND_DURATION, default value will be used: "
-                            + this.getSuspendDuration());
+                    .info(
+                            "No setting for SUSPEND_DURATION, default value will be used: {}",
+                            this.getSuspendDuration());
         }
 
         this.id = DAO.getQueueDAO().insert(this.status, this.tape,
@@ -258,7 +260,7 @@ public class Queue implements Comparable<Queue> {
      * list has to be sorted according to the files' position.
      * <p>
      * It resets the counters of the queue.
-     *
+     * 
      * @throws TReqSException
      *             If the queue cannot be changed to activate. If the queue has
      *             arrived to the maximal suspension times. If the new state is
@@ -271,12 +273,12 @@ public class Queue implements Comparable<Queue> {
         if (this.getStatus() != QueueStatus.QS_CREATED) {
             String message = "Queue is not in QS_CREATED state and it cannot be activated.";
             ErrorCode code = ErrorCode.QUEU09;
-            LOGGER.error(code + ": " + message);
+            LOGGER.error("{}: {}", code, message);
             throw new InvalidStateException(code, message);
         }
 
         this.changeToActivated();
-        LOGGER.info("Queue " + this.getTape().getName() + " activated");
+        LOGGER.info("Queue {} activated.", this.getTape().getName());
         String owner = "NO-OWNER";
         if (this.getOwner() != null) {
             owner = this.getOwner().getName();
@@ -347,7 +349,7 @@ public class Queue implements Comparable<Queue> {
     /**
      * Change the state to activated and change the submission time. TODO change
      * to private
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem changing the states.
      */
@@ -362,7 +364,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Change the state to ended and change the end time.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem changing the states.
      */
@@ -377,7 +379,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Change the state to temporarily suspended and change the suspension time.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem changing the states.
      */
@@ -395,11 +397,13 @@ public class Queue implements Comparable<Queue> {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     // @Override
     public int compareTo(Queue other) {
+        LOGGER.trace("> compareTo");
+
         int ret = this.getTape().getName().compareTo(other.getTape().getName());
         if (ret == 0) {
             if (this.getStatus() == other.getStatus()) {
@@ -412,13 +416,16 @@ public class Queue implements Comparable<Queue> {
                 ret = this.getStatus().getId() - other.getStatus().getId();
             }
         }
+
+        LOGGER.trace("< compareTo");
+
         return ret;
     }
 
     /**
      * Count the readObjects making difference between done and failed jobs.
      * Updates NbDone and NbFailed.
-     *
+     * 
      * @throws InvalidStateException
      *             If the queue has an invalid state.
      */
@@ -444,6 +451,9 @@ public class Queue implements Comparable<Queue> {
             case FS_SUBMITTED:
                 // The file is waiting for being staged.
                 break;
+            case FS_ON_DISK:
+                LOGGER.error("THIS CASE EXISTS, DELETE THIS LOG.");
+                nbd++;
             default:
                 // Count jobs is called only when a Queue is in QS_ACTIVATED
                 // state and all its files must be in FS_QUEUED state or a
@@ -503,7 +513,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Sets the queue in a final state if appropriate.
-     *
+     * 
      * @throws TReqSException
      *             If the queue is in an invalid state. If the time is invalid.
      *             If the queue has been suspended too many times.
@@ -512,18 +522,22 @@ public class Queue implements Comparable<Queue> {
         LOGGER.trace("> finalizeQueue");
 
         this.countJobs();
-        Short nextPosition = this.filesList.tailMap(this.getHeadPosition())
-                .firstKey();
+
+        // Asks for the item in the current position.
         Reading currentReading = this.filesList.get(this.getHeadPosition());
+
         if (currentReading != null) {
-            FileStatus fs = currentReading.getFileState();
-            if (nextPosition == null) {// this.filesList.lastKey()) {
+            // Verifies if the current one is also the last one.
+            Reading last = this.filesList.get(this.filesList.lastKey());
+            if (last == currentReading) {
+                FileStatus fs = currentReading.getFileState();
                 // The last file is in a final state.
                 if ((fs == FileStatus.FS_STAGED)
-                        || (fs == FileStatus.FS_FAILED)) {
+                        || (fs == FileStatus.FS_FAILED)
+                        || (fs == FileStatus.FS_ON_DISK)) {
                     changeToEnded();
 
-                    LOGGER.info("Queue " + this.getTape().getName() + " ended");
+                    LOGGER.info("Queue {} ended", this.getTape().getName());
                     DAO.getQueueDAO().updateState(this.getEndTime(),
                             this.getStatus(), this.filesList.size(),
                             this.nbDone, this.nbFailed,
@@ -536,13 +550,15 @@ public class Queue implements Comparable<Queue> {
                     // considered as an error. There are files in FS_QUEUED
                     // state.
 
-                    LOGGER.info("No more files to stage in queue "
-                            + this.getTape().getName());
+                    LOGGER
+                            .info(
+                                    "No more files to stage in queue {}. Waiting the stagers to finish.",
+                                    this.getTape().getName());
                 }
             }
         } else {
-            LOGGER.error("The queue has not this position "
-                    + this.getHeadPosition());
+            LOGGER.error("The queue has not this position {}", this
+                    .getHeadPosition());
             assert false;
         }
 
@@ -551,7 +567,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for creationTime member.
-     *
+     * 
      * @return creation time.
      */
     public Calendar getCreationTime() {
@@ -562,7 +578,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for endTime member.
-     *
+     * 
      * @return End time of the queue.
      */
     Calendar getEndTime() {
@@ -573,7 +589,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for headPosition member.
-     *
+     * 
      * @return current position of the tape's head.
      */
     public short getHeadPosition() {
@@ -584,7 +600,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Returns the id of the queue.
-     *
+     * 
      * @return Id.
      */
     public int getId() {
@@ -603,7 +619,7 @@ public class Queue implements Comparable<Queue> {
      * only returns null.
      * <p>
      * This function also updates the HeadPosition.
-     *
+     * 
      * @return a Reading instance, or NULL if none is found but the queue is
      *         still active.
      * @throws TReqSException
@@ -627,10 +643,11 @@ public class Queue implements Comparable<Queue> {
                     if (this.getStatus() == QueueStatus.QS_ACTIVATED) {
                         // if the queue is activated, change the current head
                         // position
-                        LOGGER.debug("File : "
-                                + reading.getMetaData().getFile().getName()
-                                + " Position : " + key + " State : "
-                                + reading.getFileState());
+                        LOGGER.debug("File : {}, position {}, state {}",
+                                new Object[] {
+                                        reading.getMetaData().getFile()
+                                                .getName(), key,
+                                        reading.getFileState() });
 
                         this.setHeadPosition(key);
                         this.countJobs();
@@ -655,7 +672,7 @@ public class Queue implements Comparable<Queue> {
                 // There is no file to be queued, all files have been processed,
                 // but probably not all files are in final state. Or the queue
                 // is a new one.
-                finalizeQueue();
+                this.finalizeQueue();
             }
         }
 
@@ -668,7 +685,7 @@ public class Queue implements Comparable<Queue> {
      * Getter for Owner. If the queue has been created and it still does not
      * have any file, there is not an associated owner. When there is not owner,
      * it returns null.
-     *
+     * 
      * @return
      */
     public User getOwner() {
@@ -679,7 +696,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for Status member
-     *
+     * 
      * @return Status of the queue.
      */
     public QueueStatus getStatus() {
@@ -690,7 +707,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for SubmissionTime member.
-     *
+     * 
      * @return Time of the queue submission.
      */
     Calendar getSubmissionTime() {
@@ -701,7 +718,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for suspend duration in seconds.
-     *
+     * 
      * @return Duration of the suspension.
      */
     public short getSuspendDuration() {
@@ -712,7 +729,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Getter for suspensionTime member
-     *
+     * 
      * @return Time when the queue finish its suspension.
      */
     Calendar getSuspensionTime() {
@@ -723,7 +740,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Retrieves the name of the queue.
-     *
+     * 
      * @return Related tape of this queue.
      */
     public Tape getTape() {
@@ -739,7 +756,7 @@ public class Queue implements Comparable<Queue> {
      * Each time this method is called, the Queue owner is recalculated. This is
      * done by counting the files for each owner and then selecting the biggest
      * one.
-     *
+     * 
      * @param fpot
      *            the metadata of the file.
      * @param nbTries
@@ -761,10 +778,10 @@ public class Queue implements Comparable<Queue> {
         // Register the reading.
         Reading readObj = new Reading(fpot, retries, this);
 
-        LOGGER.debug("Queue " + this.getTape().getName() + "-"
-                + this.getStatus()
-                + " Inserting the reading object at position "
-                + fpot.getPosition());
+        LOGGER.debug(
+                "Queue {} - {} Inserting the reading object at position {}",
+                new Object[] { this.getTape().getName(), this.getStatus(),
+                        fpot.getPosition() });
 
         // The insert method ensure that the reading object is inserted
         // in the right place.
@@ -779,9 +796,12 @@ public class Queue implements Comparable<Queue> {
             this.calculateOwner();
             int size = this.filesList.size();
 
-            LOGGER.info("Queue " + this.getTape().getName() + "-"
-                    + this.status.name() + " now contains " + size
-                    + " elements and is owned by " + this.getOwner().getName());
+            LOGGER
+                    .info(
+                            "Queue {} - {} now contains {} elements and is owned by {}",
+                            new Object[] { this.getTape().getName(),
+                                    this.status.name(), size,
+                                    this.getOwner().getName() });
             // Inserts file in any position, because the queue is in QS_CREATED
             // state.
             if (this.getStatus() == QueueStatus.QS_CREATED) {
@@ -796,9 +816,8 @@ public class Queue implements Comparable<Queue> {
             }
         } else {
             // The file is already in the queue.
-            LOGGER.info("Queue " + this.getTape().getName()
-                    + " already has a task for file "
-                    + fpot.getFile().getName());
+            LOGGER.info("Queue {} already has a task for file {}", this
+                    .getTape().getName(), fpot.getFile().getName());
         }
 
         LOGGER.trace("< registerFile");
@@ -808,7 +827,7 @@ public class Queue implements Comparable<Queue> {
 
     /**
      * Validates the given parameters when registering a file.
-     *
+     * 
      * @throws TReqSException
      *             if the state of the queue is invalid. If the current head's
      *             position is after the file.
@@ -827,13 +846,13 @@ public class Queue implements Comparable<Queue> {
                     + this.getTape().getName() + "' with status: "
                     + this.getStatus();
             ErrorCode code = ErrorCode.QUEU11;
-            LOGGER.error(code + ": " + message);
+            LOGGER.error("{}: {}", code, message);
             throw new InvalidStateException(code, message);
         }
         if (fpot.getPosition() < this.getHeadPosition()) {
             String message = "It's not possible to register a file before the current head position.";
             ErrorCode code = ErrorCode.QUEU12;
-            LOGGER.error(code + ": " + message);
+            LOGGER.error("{}: {}", code, message);
             throw new InvalidParameterException(code, message);
         }
 
@@ -846,7 +865,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     *
+     * 
      * @param t
      *            Creation time.
      * @throws InvalidParameterException
@@ -871,7 +890,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     *
+     * 
      * @param t
      *            Time when the queue has finished to be processed.
      * @throws InvalidParameterException
@@ -900,7 +919,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     *
+     * 
      * @param hp
      *            Head position.
      * @throws TReqSException
@@ -913,13 +932,13 @@ public class Queue implements Comparable<Queue> {
         assert hp >= 0;
         assert this.getStatus() == QueueStatus.QS_ACTIVATED;
 
-        // The position is never negative because the 'cp' param is .
+        // The position is never negative.
         if (hp < this.getHeadPosition()) {
             String message = "The new position " + hp
                     + " cannot be before the current head position "
                     + this.getHeadPosition();
             ErrorCode code = ErrorCode.QUEU03;
-            LOGGER.error(code + ": " + message);
+            LOGGER.error("{}: {}", code, message);
             throw new InvalidParameterException(code, message);
         }
 
@@ -933,7 +952,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     *
+     * 
      * @param qs
      *            New status of the queue.
      * @throws TReqSException
@@ -967,8 +986,8 @@ public class Queue implements Comparable<Queue> {
         } else {
             String message = "Invalid change of queue status.";
             ErrorCode code = ErrorCode.QUEU06;
-            LOGGER.error(code + ": " + message + " (from " + this.getStatus()
-                    + " to " + qs + ")");
+            LOGGER.error("{}: {} (from {} to {})", new Object[] { code,
+                    message, this.getStatus(), qs });
             throw new InvalidParameterException(code, message);
         }
 
@@ -981,7 +1000,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     *
+     * 
      * @param t
      *            Submission time.
      * @throws InvalidParameterException
@@ -1006,7 +1025,7 @@ public class Queue implements Comparable<Queue> {
      * Setter for suspend duration in seconds. Default is defined in
      * DEFAULT_SUSPEND_DURATION. This is controlled by the
      * [MAIN]:QUEUE_SUSPEND_TIME parameter.
-     *
+     * 
      * @param duration
      *            Duration of the suspension.
      */
@@ -1026,7 +1045,7 @@ public class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
-     *
+     * 
      * @param time
      *            The time when the queue has to be waked up.
      * @throws InvalidParameterException
@@ -1055,7 +1074,7 @@ public class Queue implements Comparable<Queue> {
      * is ended. Sets the status to QS_TEMPORARILY_SUSPENDED, and writes this
      * new status through DAO. The Activator will ignore such queues and
      * reschedule them when the suspension time is over.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem changing the state or the time.
      */
@@ -1067,8 +1086,8 @@ public class Queue implements Comparable<Queue> {
         // "suspensionTime" field, the time when the status is too old and the
         // queue can be unsuspended (This is changed to QS_CREATED by
         // unsuspend.)
-        LOGGER.info("Queue " + this.getTape().getName() + " suspended for "
-                + this.getSuspendDuration() + " seconds.");
+        LOGGER.info("Queue {} suspended for {} seconds", this.getTape()
+                .getName(), this.getSuspendDuration());
 
         String name = "";
         if (this.getOwner() != null) {
@@ -1083,7 +1102,7 @@ public class Queue implements Comparable<Queue> {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Object#toString()
      */
     public String toString() {
@@ -1128,7 +1147,7 @@ public class Queue implements Comparable<Queue> {
      * state if there are not other queue for the same tape in created state. If
      * there is another, it is responsibility of the QueuesController to merge
      * both queues and change the suspended one to ended state.
-     *
+     * 
      * @throws TReqSException
      *             If the time is invalid. If the queue has been suspended too
      *             many times.
@@ -1140,7 +1159,7 @@ public class Queue implements Comparable<Queue> {
         this.submissionTime = null;
         this.suspensionTime = null;
 
-        LOGGER.info("Queue " + this.getTape().getName() + " unsuspended.");
+        LOGGER.info("Queue {} unsuspended.", this.getTape().getName());
         String name = "";
         if (this.getOwner() != null) {
             name = this.getOwner().getName();

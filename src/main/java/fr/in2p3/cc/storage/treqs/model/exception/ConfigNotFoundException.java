@@ -43,13 +43,13 @@ package fr.in2p3.cc.storage.treqs.model.exception;
  * @author gomez
  */
 public class ConfigNotFoundException extends ConfigException {
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 6418191123079866188L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 6418191123079866188L;
 
-	public ConfigNotFoundException(String section, String key) {
-		super(section, key);
-	}
+    public ConfigNotFoundException(String section, String key) {
+        super(section, key);
+    }
 
 };

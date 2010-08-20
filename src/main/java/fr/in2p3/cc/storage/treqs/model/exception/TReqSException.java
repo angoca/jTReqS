@@ -43,60 +43,60 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * Basic exception. All other are derived from this class.
  */
 public abstract class TReqSException extends Exception {
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 6917322061035496563L;
-	/**
-	 * The error code.
-	 */
-	private ErrorCode code;
-	private Exception exception;
-	/**
-	 * The error message.
-	 */
-	private String message = "No message";
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 6917322061035496563L;
+    /**
+     * The error code.
+     */
+    private ErrorCode code;
+    private Exception exception;
+    /**
+     * The error message.
+     */
+    private String message = "No message";
 
-	public TReqSException() {
-		super();
-	}
+    public TReqSException() {
+        super();
+    }
 
-	public TReqSException(ErrorCode code) {
-		this.code = code;
-	}
+    public TReqSException(ErrorCode code) {
+        this.code = code;
+    }
 
-	protected TReqSException(ErrorCode code, String message) {
-		this.code = code;
-		this.message = message;
-	}
+    protected TReqSException(ErrorCode code, String message) {
+        this.code = code;
+        this.message = message;
+    }
 
-	public TReqSException(Exception exception) {
-		super(exception);
-	}
+    public TReqSException(Exception exception) {
+        super(exception);
+    }
 
-	public TReqSException(String message) {
-		super(message);
-	}
+    public TReqSException(String message) {
+        super(message);
+    }
 
-	/**
-	 * Returns the error code.
-	 * 
-	 * @return the error code.
-	 */
-	public ErrorCode getCode() {
-		return code;
-	}
+    /**
+     * Returns the error code.
+     * 
+     * @return the error code.
+     */
+    public ErrorCode getCode() {
+        return code;
+    }
 
-	@Override
-	public String getMessage() {
-		String ret = "";
-		ret += "{ Code: " + this.code;
-		ret += ", Message: " + this.message;
-		if (this.exception != null) {
-			ret += ", Exception: " + this.exception.getMessage();
-		}
-		ret += "}";
-		ret += super.getMessage();
-		return ret;
-	}
+    @Override
+    public String getMessage() {
+        String ret = "";
+        ret += "{ Code: " + this.code;
+        ret += ", Message: " + this.message;
+        if (this.exception != null) {
+            ret += ", Exception: " + this.exception.getMessage();
+        }
+        ret += "}";
+        ret += super.getMessage();
+        return ret;
+    }
 };

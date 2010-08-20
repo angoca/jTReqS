@@ -1,7 +1,5 @@
 package fr.in2p3.cc.storage.treqs.hsm.exception;
 
-import java.io.IOException;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -41,7 +39,7 @@ import java.io.IOException;
 
 /**
  * There is no file registered in the HSM with this name or other problem
- *
+ * 
  * @author gomez
  */
 public class HSMStatException extends HSMException {

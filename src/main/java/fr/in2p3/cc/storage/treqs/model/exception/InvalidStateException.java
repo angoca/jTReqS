@@ -45,12 +45,12 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * @author gomez
  */
 public class InvalidStateException extends TReqSException {
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = -6062480558866198913L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -6062480558866198913L;
 
-	public InvalidStateException(ErrorCode errCode, String errMsg) {
-		super(errCode, errMsg);
-	}
+    public InvalidStateException(ErrorCode errCode, String errMsg) {
+        super(errCode, errMsg);
+    }
 };

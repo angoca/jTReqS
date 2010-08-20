@@ -44,217 +44,217 @@ import org.slf4j.LoggerFactory;
  * Represents a user.
  */
 public class User {
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory.getLogger(User.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(User.class);
 
-	/**
-	 * Group Id.
-	 */
-	private short gid;
-	/**
-	 * The group it belongs to.
-	 */
-	private String group;
-	/**
-	 * The name of the user.
-	 */
-	private String name;
-	/**
-	 * User Id.
-	 */
-	private short uid;
+    /**
+     * Group Id.
+     */
+    private short gid;
+    /**
+     * The group it belongs to.
+     */
+    private String group;
+    /**
+     * The name of the user.
+     */
+    private String name;
+    /**
+     * User Id.
+     */
+    private short uid;
 
-	/**
-	 * Constructor with name. TODO To delete when uid, group and gid will be
-	 * used.
-	 * 
-	 * @param name
-	 *            the user's name.
-	 */
-	public User(String name) {
-		LOGGER.trace("> Creating user with name as param.");
+    /**
+     * Constructor with name. TODO To delete when uid, group and gid will be
+     * used.
+     * 
+     * @param name
+     *            the user's name.
+     */
+    public User(String name) {
+        LOGGER.trace("> Creating user with name as param.");
 
-		this.setName(name);
-		this.setUid((short) 0);
-		this.setGroup("NA");
-		this.setGid((short) 0);
+        this.setName(name);
+        this.setUid((short) 0);
+        this.setGroup("NA");
+        this.setGid((short) 0);
 
-		LOGGER.trace("< Creating user with name as param.");
-	}
+        LOGGER.trace("< Creating user with name as param.");
+    }
 
-	/**
-	 * Constructor with all parameters. it establishes the valid state as ready.
-	 * 
-	 * @param name
-	 *            the user's name.
-	 * @param uid
-	 *            the user's id.
-	 * @param group
-	 *            the user's group.
-	 * @param gid
-	 *            the user's group id.
-	 */
-	public User(String name, short uid, String group, short gid) {
-		LOGGER.trace("> Creating user with all parameters.");
+    /**
+     * Constructor with all parameters. it establishes the valid state as ready.
+     * 
+     * @param name
+     *            the user's name.
+     * @param uid
+     *            the user's id.
+     * @param group
+     *            the user's group.
+     * @param gid
+     *            the user's group id.
+     */
+    public User(String name, short uid, String group, short gid) {
+        LOGGER.trace("> Creating user with all parameters.");
 
-		this.setName(name);
-		this.setUid(uid);
-		this.setGroup(group);
-		this.setGid(gid);
+        this.setName(name);
+        this.setUid(uid);
+        this.setGroup(group);
+        this.setGid(gid);
 
-		LOGGER.trace("< Creating user with all parameters.");
-	}
+        LOGGER.trace("< Creating user with all parameters.");
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		boolean ret = false;
-		if (obj instanceof User) {
-			User user = (User) obj;
-			if (user.getName().equals(this.getName())) {
-				ret = true;
-			}
-		}
-		return ret;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        boolean ret = false;
+        if (obj instanceof User) {
+            User user = (User) obj;
+            if (user.getName().equals(this.getName())) {
+                ret = true;
+            }
+        }
+        return ret;
+    }
 
-	/**
-	 * Getter for gid member.
-	 * 
-	 * @return Gid.
-	 */
-	short getGid() {
-		LOGGER.trace(">< getGid");
+    /**
+     * Getter for gid member.
+     * 
+     * @return Gid.
+     */
+    short getGid() {
+        LOGGER.trace(">< getGid");
 
-		return this.gid;
-	}
+        return this.gid;
+    }
 
-	/**
-	 * Getter for group member.
-	 * 
-	 * @return name of the group.
-	 */
-	String getGroup() {
-		LOGGER.trace(">< getGroup");
+    /**
+     * Getter for group member.
+     * 
+     * @return name of the group.
+     */
+    String getGroup() {
+        LOGGER.trace(">< getGroup");
 
-		return this.group;
-	}
+        return this.group;
+    }
 
-	/**
-	 * Getter for name member.
-	 * 
-	 * @return name of the user.
-	 */
-	public String getName() {
-		LOGGER.trace(">< getName");
+    /**
+     * Getter for name member.
+     * 
+     * @return name of the user.
+     */
+    public String getName() {
+        LOGGER.trace(">< getName");
 
-		return this.name;
-	}
+        return this.name;
+    }
 
-	/**
-	 * Getter for uid member.
-	 * 
-	 * @return uid
-	 */
-	short getUid() {
-		LOGGER.trace(">< getUid");
+    /**
+     * Getter for uid member.
+     * 
+     * @return uid
+     */
+    short getUid() {
+        LOGGER.trace(">< getUid");
 
-		return this.uid;
-	}
+        return this.uid;
+    }
 
-	@Override
-	public int hashCode() {
-		int ret = this.name.hashCode();
-		ret += this.group.hashCode();
-		ret *= this.uid;
-		ret -= this.gid;
-		return ret;
-	}
+    @Override
+    public int hashCode() {
+        int ret = this.name.hashCode();
+        ret += this.group.hashCode();
+        ret *= this.uid;
+        ret -= this.gid;
+        return ret;
+    }
 
-	/**
-	 * Setter for gid member.
-	 * 
-	 * @param gid
-	 *            Group ID
-	 */
-	public void setGid(short gid) {
-		LOGGER.trace("> setGid");
+    /**
+     * Setter for gid member.
+     * 
+     * @param gid
+     *            Group ID
+     */
+    public void setGid(short gid) {
+        LOGGER.trace("> setGid");
 
-		assert gid >= 0;
+        assert gid >= 0;
 
-		this.gid = gid;
+        this.gid = gid;
 
-		LOGGER.trace("< setGid");
-	}
+        LOGGER.trace("< setGid");
+    }
 
-	/**
-	 * Setter for group member.
-	 * 
-	 * @param group
-	 *            name of the group.
-	 */
-	public void setGroup(String group) {
-		LOGGER.trace("> setGroup");
+    /**
+     * Setter for group member.
+     * 
+     * @param group
+     *            name of the group.
+     */
+    public void setGroup(String group) {
+        LOGGER.trace("> setGroup");
 
-		assert group != null;
-		assert !group.equals("");
+        assert group != null;
+        assert !group.equals("");
 
-		this.group = group;
+        this.group = group;
 
-		LOGGER.trace("< setGroup");
-	}
+        LOGGER.trace("< setGroup");
+    }
 
-	/**
-	 * Setter for name member.
-	 * 
-	 * @param name
-	 *            name of the user.
-	 */
-	void setName(String name) {
-		LOGGER.trace("> setName");
+    /**
+     * Setter for name member.
+     * 
+     * @param name
+     *            name of the user.
+     */
+    void setName(String name) {
+        LOGGER.trace("> setName");
 
-		assert name != null;
-		assert !name.equals("");
+        assert name != null;
+        assert !name.equals("");
 
-		this.name = name;
+        this.name = name;
 
-		LOGGER.trace("< setName");
-	}
+        LOGGER.trace("< setName");
+    }
 
-	/**
-	 * Setter for uid member.
-	 * 
-	 * @param uid
-	 *            UID of the user.
-	 */
-	public void setUid(short uid) {
-		LOGGER.trace("> setUid");
+    /**
+     * Setter for uid member.
+     * 
+     * @param uid
+     *            UID of the user.
+     */
+    public void setUid(short uid) {
+        LOGGER.trace("> setUid");
 
-		assert uid >= 0;
+        assert uid >= 0;
 
-		this.uid = uid;
+        this.uid = uid;
 
-		LOGGER.trace("< setUid");
-	}
+        LOGGER.trace("< setUid");
+    }
 
-	/**
-	 * Representation in a String.
-	 */
-	@Override
-	public String toString() {
-		LOGGER.trace("> toString");
+    /**
+     * Representation in a String.
+     */
+    @Override
+    public String toString() {
+        LOGGER.trace("> toString");
 
-		String ret = "";
-		ret += "User";
-		ret += "{ name: " + this.getName();
-		ret += ", uid: " + this.getUid();
-		ret += ", group: " + this.getGroup();
-		ret += ", gid: " + this.getGid();
-		ret += "}";
+        String ret = "";
+        ret += "User";
+        ret += "{ name: " + this.getName();
+        ret += ", uid: " + this.getUid();
+        ret += ", group: " + this.getGroup();
+        ret += ", gid: " + this.getGid();
+        ret += "}";
 
-		LOGGER.trace("< toString");
+        LOGGER.trace("< toString");
 
-		return ret;
-	}
+        return ret;
+    }
 }

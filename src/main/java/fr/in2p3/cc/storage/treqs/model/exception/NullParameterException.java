@@ -40,12 +40,12 @@ package fr.in2p3.cc.storage.treqs.model.exception;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
 
 public class NullParameterException extends TReqSException {
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 8292943378279524818L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 8292943378279524818L;
 
-	public NullParameterException(ErrorCode errCode, String errMsg) {
-		super(errCode, errMsg);
-	}
+    public NullParameterException(ErrorCode errCode, String errMsg) {
+        super(errCode, errMsg);
+    }
 };

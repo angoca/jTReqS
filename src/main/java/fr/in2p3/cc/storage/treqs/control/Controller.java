@@ -66,7 +66,7 @@ public abstract class Controller {
      * Try to create a new object instance and insert it in the map. Return a
      * new instance or throw an exception if already exists. Each specialization
      * of the Controller template should ...
-     *
+     * 
      * @param key
      *            the key of the object in the map.
      */
@@ -88,7 +88,7 @@ public abstract class Controller {
 
     /**
      * Find an object using the key and return a pointer to it.
-     *
+     * 
      * @param key
      *            the key to search for.
      * @return a pointer to the object if found. null otherwise.

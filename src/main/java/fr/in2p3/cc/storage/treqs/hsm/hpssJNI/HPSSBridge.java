@@ -58,181 +58,190 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  */
 public class HPSSBridge extends AbstractHSMBridge {
 
-	/**
-	 * Instance of the singleton
-	 */
-	private static HPSSBridge _instance = null;
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(HPSSBridge.class);
+    /**
+     * Instance of the singleton
+     */
+    private static HPSSBridge _instance = null;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HPSSBridge.class);
 
-	static {
-		try {
-			System.loadLibrary("HPSSBridge");
-		} catch (java.lang.UnsatisfiedLinkError e) {
-			LOGGER.error("Error loading library: {}", e.getMessage());
-			throw e;
-		}
+    static {
+        try {
+            System.loadLibrary("HPSSBridge");
+        } catch (java.lang.UnsatisfiedLinkError e) {
+            LOGGER.error("Error loading library: {}", e.getMessage());
+            throw e;
+        }
 
-	}
+    }
 
-	private static native int getHPSSFileProperties(String name,
-			HSMHelperFileProperties ret) throws HSMException;
+    private static native int getHPSSFileProperties(String name,
+            HSMHelperFileProperties ret) throws HSMException;
 
-	/**
-	 * Retrieves the unique instance.
-	 * 
-	 * @throws TReqSException
-	 */
-	public static AbstractHSMBridge getInstance() throws TReqSException {
-		LOGGER.trace("> getInstance");
+    /**
+     * Retrieves the unique instance.
+     * 
+     * @throws TReqSException
+     */
+    public static HPSSBridge getInstance() throws TReqSException {
+        LOGGER.trace("> getInstance");
 
-		if (_instance == null) {
-			LOGGER.debug("Creating instance.");
-			_instance = new HPSSBridge();
-		}
+        if (_instance == null) {
+            LOGGER.debug("Creating instance.");
+            _instance = new HPSSBridge();
+        }
 
-		LOGGER.trace("< getInstance");
+        LOGGER.trace("< getInstance");
 
-		return _instance;
-	}
+        return _instance;
+    }
 
-	/**
-	 * Initializes credentials.
-	 * 
-	 * @return
-	 */
-	private static native void hpssInit(String authType);
+    /**
+     * Initializes credentials.
+     * 
+     * @return
+     */
+    private static native void hpssInit(String authType);
 
-	public static void main(String[] args) throws TReqSException {
-		if (args.length > 0 && !args[0].equals("")) {
-			HPSSBridge.getInstance().getFileProperties(args[0]);
-		} else {
-			HPSSBridge.getInstance().getFileProperties("/hpss");
-		}
-	}
+    public static void main(String[] args) throws TReqSException {
+        String fileName = "";
+        if (args.length > 0 && !args[0].equals("")) {
+            fileName = args[0];
+        } else {
+            fileName = "/hpss";
+        }
+        LOGGER.error("Starting HPSSBridge");
+        LOGGER.error("Keytab: {}, File {}", args);
+        HPSSBridge.getInstance().setKeytabPath(args[0]);
+        LOGGER.error("Getting properties");
+        HPSSBridge.getInstance().getFileProperties(fileName);
+        LOGGER.error("Staging file");
+        HPSSBridge.getInstance().stage(fileName, 1);
+        LOGGER.error(";)");
+    }
 
-	/**
-	 * The HSM authorization type.
-	 */
-	private String authType;
+    /**
+     * The HSM authorization type.
+     */
+    private String authType;
 
-	private HPSSBridge() throws HSMException,
-			ProblematicConfiguationFileException {
-		LOGGER.trace("> HPSSBridge creating");
+    private HPSSBridge() throws HSMException,
+            ProblematicConfiguationFileException {
+        LOGGER.trace("> HPSSBridge creating");
 
-		this.setAuthType();
-		this.setKeytab();
+        this.setAuthType();
+        this.setKeytab();
 
-		HPSSBridge.hpssInit(this.getAuthType());
+        HPSSBridge.hpssInit(this.getAuthType());
 
-		if (!this.testKeytab()) {
-			throw new HSMStatException();
-		}
+        if (!this.testKeytab()) {
+            throw new HSMStatException();
+        }
 
-		LOGGER.trace("< HPSSBridge created");
-	}
+        LOGGER.trace("< HPSSBridge created");
+    }
 
-	/**
-	 * Getter for authorization type member.
-	 * 
-	 * @return
-	 */
-	private String getAuthType() {
-		return this.authType;
-	}
+    /**
+     * Getter for authorization type member.
+     * 
+     * @return
+     */
+    private String getAuthType() {
+        return this.authType;
+    }
 
-	@Override
-	public HSMHelperFileProperties getFileProperties(String name)
-			throws HSMException {
-		LOGGER.trace("> getFileProperties");
+    @Override
+    public HSMHelperFileProperties getFileProperties(String name)
+            throws HSMException {
+        LOGGER.trace("> getFileProperties");
 
-		HSMHelperFileProperties ret = new HSMHelperFileProperties();
-		int val = getHPSSFileProperties(name, ret);
-		LOGGER.debug("RETURNED {}", val);
-		if (val != HPSSErrorCode.HPSS_E_NOERROR.getCode()) {
-			throw new HSMStatException(val);
-		}
-		LOGGER.error("position {}", ret.getPosition());
-		LOGGER.error("storageName {}", ret.getStorageName());
-		LOGGER.error("size {}", ret.getSize());
+        HSMHelperFileProperties ret = new HSMHelperFileProperties();
+        int val = getHPSSFileProperties(name, ret);
+        LOGGER.debug("RETURNED {}", val);
+        if (val != HPSSErrorCode.HPSS_E_NOERROR.getCode()) {
+            throw new HSMStatException(val);
+        }
+        LOGGER.error("position {}", ret.getPosition());
+        LOGGER.error("storageName {}", ret.getStorageName());
+        LOGGER.error("size {}", ret.getSize());
 
-		LOGGER.trace("< getFileProperties");
+        LOGGER.trace("< getFileProperties");
 
-		return ret;
-	}
+        return ret;
+    }
 
-	/**
-	 * @throws ProblematicConfiguationFileException
-	 */
-	private void setAuthType() throws ProblematicConfiguationFileException {
-		String authType = "unix";
-		try {
-			authType = Configurator.getInstance().getValue("MAIN", "AUTH_TYPE");
-		} catch (ConfigNotFoundException e) {
-			LOGGER
-					.info("No setting for MAIN.AUTH_TYPE, default value will be used: "
-							+ authType);
-		}
-		this.setAuthType(authType);
-	}
+    /**
+     * @throws ProblematicConfiguationFileException
+     */
+    private void setAuthType() throws ProblematicConfiguationFileException {
+        String authType = "unix";
+        try {
+            authType = Configurator.getInstance().getValue("MAIN", "AUTH_TYPE");
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info("No setting for MAIN.AUTH_TYPE, default value will be used: "
+                            + authType);
+        }
+        this.setAuthType(authType);
+    }
 
-	/**
-	 * Setter for member.
-	 */
-	private void setAuthType(String authType) {
-		this.authType = authType;
-	}
+    /**
+     * Setter for member.
+     */
+    private void setAuthType(String authType) {
+        this.authType = authType;
+    }
 
-	/**
-	 * @throws ProblematicConfiguationFileException
-	 */
-	private void setKeytab() throws ProblematicConfiguationFileException {
-		String keytab = "/hpss/config/keytabs/keytab.treqs";
-		try {
-			keytab = Configurator.getInstance().getValue("MAIN", "KEYTAB_FILE");
-		} catch (ConfigNotFoundException e) {
-			LOGGER
-					.info("No setting for MAIN.KEYTAB_FILE, default value will be used: "
-							+ keytab);
-		}
-		this.setKeytabPath(keytab);
-	}
+    /**
+     * @throws ProblematicConfiguationFileException
+     */
+    private void setKeytab() throws ProblematicConfiguationFileException {
+        String keytab = "/hpss/config/keytabs/keytab.treqs";
+        try {
+            keytab = Configurator.getInstance().getValue("MAIN", "KEYTAB_FILE");
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info("No setting for MAIN.KEYTAB_FILE, default value will be used: "
+                            + keytab);
+        }
+        this.setKeytabPath(keytab);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
-	 * long)
-	 */
-	@Override
-	public void stage(String name, long size) throws HSMException {
-		LOGGER.trace("> stage");
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
+     * long)
+     */
+    @Override
+    public void stage(String name, long size) throws HSMException {
+        LOGGER.trace("> stage");
 
-		LOGGER.trace("< stage");
-	}
+        LOGGER.trace("< stage");
+    }
 
-	/**
-	 * Tests the readability of the keytab file.
-	 * 
-	 * @return true if keytab is readable, false otherwise.
-	 */
-	private boolean testKeytab() {
-		LOGGER.trace("> testKeytab");
+    /**
+     * Tests the readability of the keytab file.
+     * 
+     * @return true if keytab is readable, false otherwise.
+     */
+    private boolean testKeytab() {
+        LOGGER.trace("> testKeytab");
 
-		LOGGER.info("Testing keytab: {}", this.getKeytabPath());
+        LOGGER.info("Testing keytab: {}", this.getKeytabPath());
 
-		File keytab = new File(this.getKeytabPath());
-		boolean ret = false;
-		if (keytab.exists() && keytab.canRead()) {
-			ret = true;
-		}
+        File keytab = new File(this.getKeytabPath());
+        boolean ret = false;
+        if (keytab.exists() && keytab.canRead()) {
+            ret = true;
+        }
 
-		LOGGER.trace("< testKeytab");
+        LOGGER.trace("< testKeytab");
 
-		return ret;
-	}
+        return ret;
+    }
 }

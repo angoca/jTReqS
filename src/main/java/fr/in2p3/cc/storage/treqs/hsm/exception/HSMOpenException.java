@@ -42,12 +42,12 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  */
 public class HSMOpenException extends HSMException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 2901944044450215851L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 2901944044450215851L;
 
-	public HSMOpenException(short hsmErrorcode) {
-		super(hsmErrorcode);
-	}
+    public HSMOpenException(short hsmErrorcode) {
+        super(hsmErrorcode);
+    }
 };

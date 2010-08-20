@@ -39,8 +39,8 @@ package fr.in2p3.cc.storage.treqs.model.exception;
 
 public class ControllerException extends TReqSException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 7929653613270294850L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 7929653613270294850L;
 };

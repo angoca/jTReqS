@@ -86,7 +86,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /**
      * Retrieves the unique instance.
-     *
+     * 
      * @return
      * @throws ProblematicConfiguationFileException
      * @throws ConfigNotFoundException
@@ -116,7 +116,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String, long, int, java.lang.String, int)
@@ -181,7 +181,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
      * long)
@@ -224,7 +224,8 @@ public class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.trace("< stage");
     }
 
-    private void printStream(final InputStream/* ! */inputStream) throws IOException {
+    private void printStream(final InputStream/* ! */inputStream)
+            throws IOException {
         assert inputStream != null;
 
         final Reader reader = new InputStreamReader(inputStream);

@@ -46,12 +46,12 @@ import java.sql.SQLException;
  */
 public class CloseMySQLException extends MySQLException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 1150382072401169495L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 1150382072401169495L;
 
-	public CloseMySQLException(SQLException ex) {
-		super(ex);
-	}
+    public CloseMySQLException(SQLException ex) {
+        super(ex);
+    }
 };
