@@ -1,4 +1,4 @@
-#include "fr_in2p3_cc_storage_treqs_hsm_hpss_HPSSBridge.h"
+#include "fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge.h"
 #include "hpss_api.h"
 #include <stdio.h>
 //#include "hpss_String.h"
