@@ -6,7 +6,7 @@
 
 #define cont (rc == HPSS_E_NOERROR)
 
-JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpss_HPSSBridge_hpssInit(
+JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_hpssInit(
 		JNIEnv* env, jclass js, jstring jAuthType) {
 
 	const char * authType;
@@ -50,7 +50,7 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpss_HPSSBridge_hpssIn
 
 }
 
-JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpss_HPSSBridge_getHPSSFileProperties(
+JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_getHPSSFileProperties(
 		JNIEnv* env, jclass js, jstring jFileName, jobject helper) {
 
 	int i = 0;
