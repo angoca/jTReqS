@@ -51,6 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.OpenMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public class MySQLBrokerTest {
 

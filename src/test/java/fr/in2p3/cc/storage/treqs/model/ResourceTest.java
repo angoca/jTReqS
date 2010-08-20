@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.NullParameterException;
 
 /**
  * ResourceTest.cpp
- *
+ * 
  * @version 2010-0706
  * @author gomez
  */
@@ -77,7 +77,7 @@ public class ResourceTest {
 
     /**
      * Tests to created a reading with null metadata.
-     *
+     * 
      * @throws NullParameterException
      *             Never.
      * @throws InterruptedException

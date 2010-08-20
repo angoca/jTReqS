@@ -55,52 +55,52 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public class UsersControllerTest {
-	@After
-	public void tearDown() {
-		UsersController.destroyInstance();
-	}
+    @After
+    public void tearDown() {
+        UsersController.destroyInstance();
+    }
 
-	@Test
-	public void test01add() {
-		try {
-			UsersController.getInstance().add(null);
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test01add() {
+        try {
+            UsersController.getInstance().add(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	/**
-	 * Tests
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test01addUser() throws TReqSException {
-		String username = "username";
-		UsersController.getInstance().add(username);
+    /**
+     * Tests
+     * 
+     * @throws TReqSException
+     */
+    @Test
+    public void test01addUser() throws TReqSException {
+        String username = "username";
+        UsersController.getInstance().add(username);
 
-		User user = (User) UsersController.getInstance().exists(username);
+        User user = (User) UsersController.getInstance().exists(username);
 
-		// TODO AngocA the object does not have the other parameters
-		user.setGid((short) 100);
-		user.setGroup("groupname");
-		user.setUid((short) 10);
+        // TODO AngocA the object does not have the other parameters
+        user.setGid((short) 100);
+        user.setGroup("groupname");
+        user.setUid((short) 10);
 
-		Assert.assertEquals("add user", username, user.getName());
-	}
+        Assert.assertEquals("add user", username, user.getName());
+    }
 
-	@Test
-	public void test01create() {
-		try {
-			UsersController.getInstance().create(null);
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test01create() {
+        try {
+            UsersController.getInstance().create(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 }

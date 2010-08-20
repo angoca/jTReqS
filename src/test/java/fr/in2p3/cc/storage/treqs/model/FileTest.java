@@ -46,7 +46,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
  * FileTest.java
- *
+ * 
  * @version 2010-03-09
  * @author gomez
  */
@@ -63,7 +63,7 @@ public class FileTest {
 
     /**
      * Tests to add a new file request.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */
@@ -260,7 +260,7 @@ public class FileTest {
 
     /**
      * Tests to add and remove file requests.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */

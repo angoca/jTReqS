@@ -115,7 +115,7 @@ public class StarterTest {
     /**
      * Tests to insert requests in the database in create state, and then create
      * the queue and stage the files. This uses the Starter.
-     *
+     * 
      * @throws TReqSException
      * @throws InterruptedException
      * @throws SQLException

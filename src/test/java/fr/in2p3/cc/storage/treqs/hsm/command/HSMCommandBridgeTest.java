@@ -50,7 +50,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileExce
 
 /**
  * HPSSCommandBridgeTest.cpp
- *
+ * 
  * @version 2010-03-23
  * @author gomez
  */
@@ -97,7 +97,7 @@ public class HSMCommandBridgeTest {
 
     /**
      * Tests
-     *
+     * 
      * @throws HSMException
      * @throws ProblematicConfiguationFileException
      * @throws ConfigNotFoundException

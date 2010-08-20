@@ -61,7 +61,7 @@ import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 /**
  * QueueUnitTest.cpp
- *
+ * 
  * @version Nov 13, 2009
  * @author gomez
  */
@@ -91,7 +91,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the constructor with a null tape.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -109,7 +109,7 @@ public class QueueUnitTest {
 
     /**
      * Tests that a just created queue does not have an owner.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -270,7 +270,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a negative position.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -291,7 +291,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a negative duration.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -326,7 +326,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set the state as activated when it is already in this state.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -348,7 +348,7 @@ public class QueueUnitTest {
 
     /**
      * Tests setting the submission time before the creation time.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -371,7 +371,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the toString method.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -385,7 +385,7 @@ public class QueueUnitTest {
 
     /**
      * Test the value from the coniguration.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -537,7 +537,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a position in a non activated state
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -594,7 +594,7 @@ public class QueueUnitTest {
     /**
      * Tests setting the submission time after the end time. This is
      * unnecessary, it checks the state before the date values.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */
@@ -619,7 +619,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the toString method with submission.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -745,7 +745,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a position before the current one.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -773,7 +773,7 @@ public class QueueUnitTest {
     /**
      * Tests to set the state as created once the queue has already been
      * created.
-     *
+     * 
      * @throws TReqSException
      * @throws InvalidParameterException
      */
@@ -794,7 +794,7 @@ public class QueueUnitTest {
 
     /**
      * Tests setting the end time before the creation time.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */
@@ -819,7 +819,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the toString method with suspension.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -944,7 +944,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set the state as ended without passing by the activated state.
-     *
+     * 
      * @throws InvalidParameterException
      */
     @Test
@@ -964,7 +964,7 @@ public class QueueUnitTest {
 
     /**
      * Tests setting the end time before the submission time.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */
@@ -992,7 +992,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the toString method with end time.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -1131,7 +1131,7 @@ public class QueueUnitTest {
     /**
      * Tests setting the creation time after the submission time. This is
      * unnecessary, the state is checked before the date values.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */
@@ -1204,7 +1204,7 @@ public class QueueUnitTest {
     /**
      * Tests setting the creation time after the end time. This is unnecessary,
      * the state is checked before the date values.
-     *
+     * 
      * @throws InvalidParameterException
      *             Never.
      */

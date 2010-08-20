@@ -46,42 +46,42 @@ import fr.in2p3.cc.storage.treqs.tools.RandomString;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 public class MySQLDAOHelper {
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(MySQLDAOHelper.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MySQLDAOHelper.class);
 
-	private static String getFileName() {
-		String ret = "";
-		int size = (int) (Math.random() * 20) + 5;
-		ret = new RandomString(size).nextString();
-		return ret;
-	}
+    private static String getFileName() {
+        String ret = "";
+        int size = (int) (Math.random() * 20) + 5;
+        ret = new RandomString(size).nextString();
+        return ret;
+    }
 
-	private static String getUserName() {
-		String ret = "";
-		ret = new RandomString(1).nextString()
-				+ ((int) (Math.random() * 5) + 1);
-		return ret;
-	}
+    private static String getUserName() {
+        String ret = "";
+        ret = new RandomString(1).nextString()
+                + ((int) (Math.random() * 5) + 1);
+        return ret;
+    }
 
-	/**
-	 * @param args
-	 * @throws TReqSException
-	 */
-	public static void main(String[] args) throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		RequestsDAO.deleteAll();
-		int size = (int) (Math.random() * 5) + 2;
-		for (int i = 0; i < size; i++) {
-			String fileName = getFileName();
-			String userName = getUserName();
-			FileStatus status = FileStatus.FS_CREATED;
-			LOGGER.warn("Generated: {} - {}, {}", new String[] { (i + 1) + "",
-					fileName, userName });
-			RequestsDAO.insertRow(fileName, userName, status);
-		}
-		MySQLBroker.getInstance().disconnect();
-	}
+    /**
+     * @param args
+     * @throws TReqSException
+     */
+    public static void main(String[] args) throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        RequestsDAO.deleteAll();
+        int size = (int) (Math.random() * 5) + 2;
+        for (int i = 0; i < size; i++) {
+            String fileName = getFileName();
+            String userName = getUserName();
+            FileStatus status = FileStatus.FS_CREATED;
+            LOGGER.warn("Generated: {} - {}, {}", new String[] { (i + 1) + "",
+                    fileName, userName });
+            RequestsDAO.insertRow(fileName, userName, status);
+        }
+        MySQLBroker.getInstance().disconnect();
+    }
 }

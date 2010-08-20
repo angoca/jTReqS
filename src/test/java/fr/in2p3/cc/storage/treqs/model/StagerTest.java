@@ -59,7 +59,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * StagerTest.java
- *
+ * 
  * @version 2010-07-21
  * @author gomez
  */
@@ -189,7 +189,7 @@ public class StagerTest {
 
     /**
      * Stage just on file.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -213,7 +213,7 @@ public class StagerTest {
 
     /**
      * Stage several files.
-     *
+     * 
      * @throws TReqSException
      */
     @Test

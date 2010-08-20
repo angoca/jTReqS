@@ -66,7 +66,7 @@ import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 /**
  * ActivatorTest.cpp
- *
+ * 
  * @version 2010-07-22
  * @author gomez
  */
@@ -179,7 +179,7 @@ public class ActivatorTest {
 
     /**
      * Tests to stop the activator from other thread.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -223,7 +223,7 @@ public class ActivatorTest {
 
     /**
      * Tests the stop method.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -298,7 +298,7 @@ public class ActivatorTest {
 
     /**
      * Tests to refresh the metada in the run method.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -347,7 +347,7 @@ public class ActivatorTest {
 
     /**
      * Tests to retrieve the best user that does not exists.
-     *
+     * 
      * @throws TReqSException
      */
     @Test

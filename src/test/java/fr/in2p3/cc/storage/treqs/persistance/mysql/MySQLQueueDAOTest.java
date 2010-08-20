@@ -55,6 +55,7 @@ import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLQueueDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public class MySQLQueueDAOTest {
 
@@ -185,7 +186,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests an update without and established connection.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -215,7 +216,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests that the quantity of elements inserted is equals to 1.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -238,7 +239,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a null status.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -269,7 +270,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a null tape.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -298,7 +299,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a negative size.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -328,7 +329,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a byteSize negative.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -358,7 +359,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a null creation time.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -498,7 +499,7 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests to update a queue when there is not a established connection.
-     *
+     * 
      * @throws ExecuteMySQLException
      *             Never.
      */

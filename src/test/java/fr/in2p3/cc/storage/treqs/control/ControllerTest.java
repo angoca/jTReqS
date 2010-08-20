@@ -56,121 +56,122 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * 
  * @version 2010-03-23
  * @author gomez
- */@RunWith(RandomBlockJUnit4ClassRunner.class)
+ */
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class ControllerTest {
-	@After
-	public void tearDown() {
-		TapesController.destroyInstance();
-	}
+    @After
+    public void tearDown() {
+        TapesController.destroyInstance();
+    }
 
-	@Test
-	public void test01add() throws TReqSException {
-		String tapename = "tapenameYes";
-		TapesController.getInstance().add(
-				tapename,
-				new Tape(tapename, new MediaType((byte) 1, "media"),
-						TapeStatus.TS_UNLOCKED));
-		try {
-			TapesController.getInstance().add(
-					tapename,
-					new Tape(tapename, new MediaType((byte) 1, "media"),
-							TapeStatus.TS_UNLOCKED));
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof ControllerInsertException)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test01add() throws TReqSException {
+        String tapename = "tapenameYes";
+        TapesController.getInstance().add(
+                tapename,
+                new Tape(tapename, new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED));
+        try {
+            TapesController.getInstance().add(
+                    tapename,
+                    new Tape(tapename, new MediaType((byte) 1, "media"),
+                            TapeStatus.TS_UNLOCKED));
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof ControllerInsertException)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	/**
-	 * Tests to query an existing object.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void test01existYes() throws TReqSException {
-		String tapename = "tapenameYes";
-		TapesController.getInstance().create(tapename,
-				new MediaType((byte) 1, "media"), TapeStatus.TS_UNLOCKED);
+    /**
+     * Tests to query an existing object.
+     * 
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void test01existYes() throws TReqSException {
+        String tapename = "tapenameYes";
+        TapesController.getInstance().create(tapename,
+                new MediaType((byte) 1, "media"), TapeStatus.TS_UNLOCKED);
 
-		Tape tape = (Tape) TapesController.getInstance().exists(tapename);
+        Tape tape = (Tape) TapesController.getInstance().exists(tapename);
 
-		Assert.assertTrue("Existing object", tape != null);
-	}
+        Assert.assertTrue("Existing object", tape != null);
+    }
 
-	@Test
-	public void test01remove() throws TReqSException {
-		String tapename = "tapenameYes";
-		TapesController.getInstance().create(tapename,
-				new MediaType((byte) 1, "media"), TapeStatus.TS_UNLOCKED);
+    @Test
+    public void test01remove() throws TReqSException {
+        String tapename = "tapenameYes";
+        TapesController.getInstance().create(tapename,
+                new MediaType((byte) 1, "media"), TapeStatus.TS_UNLOCKED);
 
-		TapesController.getInstance().remove(tapename);
-	}
+        TapesController.getInstance().remove(tapename);
+    }
 
-	@Test
-	public void test02addnull() throws TReqSException {
-		String tapename = "tapenameYes";
-		try {
-			TapesController.getInstance().add(
-					null,
-					new Tape(tapename, new MediaType((byte) 1, "media"),
-							TapeStatus.TS_UNLOCKED));
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test02addnull() throws TReqSException {
+        String tapename = "tapenameYes";
+        try {
+            TapesController.getInstance().add(
+                    null,
+                    new Tape(tapename, new MediaType((byte) 1, "media"),
+                            TapeStatus.TS_UNLOCKED));
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	/**
-	 * Tests to query an INexisting object.
-	 */
-	@Test
-	public void test02existNo() {
-		String tapename = "tapenameNo";
+    /**
+     * Tests to query an INexisting object.
+     */
+    @Test
+    public void test02existNo() {
+        String tapename = "tapenameNo";
 
-		Tape tape = (Tape) TapesController.getInstance().exists(tapename);
+        Tape tape = (Tape) TapesController.getInstance().exists(tapename);
 
-		Assert.assertTrue("Existing object", tape == null);
-	}
+        Assert.assertTrue("Existing object", tape == null);
+    }
 
-	@Test
-	public void test02removenull() throws TReqSException {
-		try {
-			TapesController.getInstance().remove(null);
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test02removenull() throws TReqSException {
+        try {
+            TapesController.getInstance().remove(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	@Test
-	public void test03addnull() throws TReqSException {
-		String tapename = "tapenameYes";
-		try {
-			TapesController.getInstance().add(tapename, null);
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test03addnull() throws TReqSException {
+        String tapename = "tapenameYes";
+        try {
+            TapesController.getInstance().add(tapename, null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	@Test
-	public void test03existNull() {
-		try {
-			TapesController.getInstance().exists(null);
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test03existNull() {
+        try {
+            TapesController.getInstance().exists(null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 }

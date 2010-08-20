@@ -50,7 +50,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * TReqSConfigTest.cpp
- *
+ * 
  * @version 2010-07-27
  * @author gomez
  */
@@ -64,7 +64,7 @@ public class ConfiguratorTest {
 
     /**
      * Tests to get, then set a value and retrieve it.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -98,7 +98,7 @@ public class ConfiguratorTest {
 
     /**
      * Tests to set a value and retrieve the same.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -157,7 +157,7 @@ public class ConfiguratorTest {
 
     /**
      * Tests an inexistant value from the default properties.
-     *
+     * 
      * @throws ConfigNotFoundException
      */
     @Test
@@ -213,7 +213,7 @@ public class ConfiguratorTest {
 
     /**
      * Tests to delete an existent value.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      *             Never
      */

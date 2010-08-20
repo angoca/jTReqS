@@ -67,6 +67,7 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLReadingDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
+
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public class MySQLReadingDAOTest {
     @BeforeClass
@@ -237,7 +238,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -271,7 +272,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update nothing.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -295,7 +296,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a row.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -324,7 +325,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -346,7 +347,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -368,7 +369,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no new jobs.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -387,7 +388,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests new job without user.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -414,7 +415,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests new job without retries.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -450,7 +451,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests new jobs.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -486,7 +487,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws SQLException
      * @throws TReqSException
      */
@@ -514,7 +515,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws SQLException
      * @throws TReqSException
      */
@@ -542,7 +543,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws SQLException
      * @throws TReqSException
      */
@@ -570,7 +571,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws SQLException
      * @throws TReqSException
      */
@@ -598,7 +599,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * No connection.
-     *
+     * 
      * @throws SQLException
      * @throws TReqSException
      */
@@ -671,7 +672,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -698,7 +699,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -725,7 +726,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -752,7 +753,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -779,7 +780,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -806,7 +807,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -1005,7 +1006,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests a null message.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1043,7 +1044,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to insert an empty message. This is valid.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1138,7 +1139,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1176,7 +1177,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a submitted request.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1205,7 +1206,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a queued request.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1234,7 +1235,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a created request.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1263,7 +1264,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a created failed.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1292,7 +1293,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a staged staged.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -1321,7 +1322,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests without connection
-     *
+     * 
      * @throws PersistanceException
      */
     @Test
@@ -1342,7 +1343,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a submitted requests.
-     *
+     * 
      * @throws TReqSException
      * @throws SQLException
      */
@@ -1377,7 +1378,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a queued requests.
-     *
+     * 
      * @throws TReqSException
      * @throws SQLException
      */
@@ -1412,7 +1413,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update nothing.
-     *
+     * 
      * @throws TReqSException
      * @throws SQLException
      */

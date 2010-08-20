@@ -51,61 +51,61 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
  * @author gomez
  */
 public class RequestsDAO {
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(RequestsDAO.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RequestsDAO.class);
 
-	public static void deleteAll() {
-		String sqlstatement = "delete from requests";
-		LOGGER.debug("The statement is: {}", sqlstatement);
-		try {
-			int nrows = MySQLBroker.getInstance().executeModification(
-					sqlstatement);
-			LOGGER.info("Updated {} requests for file ", nrows);
-		} catch (MySQLException e) {
-			LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
-		}
-	}
+    public static void deleteAll() {
+        String sqlstatement = "delete from requests";
+        LOGGER.debug("The statement is: {}", sqlstatement);
+        try {
+            int nrows = MySQLBroker.getInstance().executeModification(
+                    sqlstatement);
+            LOGGER.info("Updated {} requests for file ", nrows);
+        } catch (MySQLException e) {
+            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        }
+    }
 
-	public static void deleteRow(String fileName) {
-		String sqlstatement = "delete from requests where hpss_file ='"
-				+ fileName + "'";
-		LOGGER.debug("The statement is: {}", sqlstatement);
-		try {
-			int nrows = MySQLBroker.getInstance().executeModification(
-					sqlstatement);
-			LOGGER.info("Updated {} requests for file ", nrows);
-		} catch (MySQLException e) {
-			LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
-		}
-	}
+    public static void deleteRow(String fileName) {
+        String sqlstatement = "delete from requests where hpss_file ='"
+                + fileName + "'";
+        LOGGER.debug("The statement is: {}", sqlstatement);
+        try {
+            int nrows = MySQLBroker.getInstance().executeModification(
+                    sqlstatement);
+            LOGGER.info("Updated {} requests for file ", nrows);
+        } catch (MySQLException e) {
+            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        }
+    }
 
-	public static void insertRow(String fileName) {
-		String sqlstatement = "insert into requests (hpss_file) values ('"
-				+ fileName + "')";
-		LOGGER.debug("The statement is: {}", sqlstatement);
-		try {
-			int nrows = MySQLBroker.getInstance().executeModification(
-					sqlstatement);
-			LOGGER.info("Updated {} requests for file ", nrows);
-		} catch (MySQLException e) {
-			LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
-		}
-	}
+    public static void insertRow(String fileName) {
+        String sqlstatement = "insert into requests (hpss_file) values ('"
+                + fileName + "')";
+        LOGGER.debug("The statement is: {}", sqlstatement);
+        try {
+            int nrows = MySQLBroker.getInstance().executeModification(
+                    sqlstatement);
+            LOGGER.info("Updated {} requests for file ", nrows);
+        } catch (MySQLException e) {
+            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        }
+    }
 
-	public static void insertRow(String fileName, String userName,
-			FileStatus status) {
-		String sqlstatement = "insert into requests (hpss_file, user, status) values ('"
-				+ fileName + "','" + userName + "'," + status.getId() + ")";
-		LOGGER.debug("The statement is: {}", sqlstatement);
-		try {
-			int nrows = MySQLBroker.getInstance().executeModification(
-					sqlstatement);
-			LOGGER.info("Updated {} requests for file ", nrows);
-		} catch (MySQLException e) {
-			LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
-		}
-	}
+    public static void insertRow(String fileName, String userName,
+            FileStatus status) {
+        String sqlstatement = "insert into requests (hpss_file, user, status) values ('"
+                + fileName + "','" + userName + "'," + status.getId() + ")";
+        LOGGER.debug("The statement is: {}", sqlstatement);
+        try {
+            int nrows = MySQLBroker.getInstance().executeModification(
+                    sqlstatement);
+            LOGGER.info("Updated {} requests for file ", nrows);
+        } catch (MySQLException e) {
+            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        }
+    }
 }

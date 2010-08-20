@@ -55,7 +55,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * QueueIntegrationTest.cpp
- *
+ * 
  * @version Nov 13, 2009
  * @author gomez
  */
@@ -80,7 +80,7 @@ public class QueueIntegrationTest {
 
     /**
      * Tests to activate an ended queue
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -129,7 +129,7 @@ public class QueueIntegrationTest {
 
     /**
      * Test for coverage in count jobs.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */

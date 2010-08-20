@@ -39,7 +39,7 @@ public class InitDBTest {
 
     /**
      * Create the first time.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -49,7 +49,7 @@ public class InitDBTest {
 
     /**
      * Not create.
-     *
+     * 
      * @throws TReqSException
      */
     @Test

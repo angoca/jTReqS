@@ -69,7 +69,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * QueuesControllerTest.cpp
- *
+ * 
  * @version 2010-03-23
  * @author gomez
  */
@@ -100,7 +100,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests that there is not best queue.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      * @throws NumberFormatException
      */
@@ -168,7 +168,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests the existence of a non created queue.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      * @throws NumberFormatException
      */
@@ -256,7 +256,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests that the best queue is the only one that exists.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -329,7 +329,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests if a queue is created and if it is found after.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -348,7 +348,7 @@ public class QueuesControllerTest {
     /**
      * Tests to create and to activate a queue, and then create another queue
      * for the same tape.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -431,7 +431,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests that two identical queues, will be returned the first one as best.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -520,7 +520,7 @@ public class QueuesControllerTest {
     /**
      * Tests to create the same queue twice. For the first time is created, the
      * second time it is just returned the pointer.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -585,7 +585,7 @@ public class QueuesControllerTest {
     /**
      * tests that the best queue is the second one, which does not have a
      * activated queue.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -703,7 +703,7 @@ public class QueuesControllerTest {
     /**
      * Tests that two consecutive and identical creation of queues are later the
      * same.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -748,7 +748,7 @@ public class QueuesControllerTest {
 
     /**
      * Null resource.
-     *
+     * 
      * @throws TReqSException
      */
     @Test(expected = AssertionError.class)
@@ -884,7 +884,7 @@ public class QueuesControllerTest {
 
     /**
      * Null user.
-     *
+     * 
      * @throws TReqSException
      */
     @Test

@@ -61,7 +61,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * ReadingTest.cpp
- *
+ * 
  * @version 2010-03-23
  * @author gomez
  */
@@ -143,7 +143,7 @@ public class ReadingTest {
 
     /**
      * Tests to created a reading with null metadata.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -169,7 +169,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file already queued.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -277,7 +277,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file with max retries.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -350,7 +350,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file already staged.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -418,7 +418,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file marked as unreadable.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -487,7 +487,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -556,7 +556,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMClose exception.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -617,7 +617,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMOpen exception.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -664,7 +664,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMStage exception.
-     *
+     * 
      * @throws TReqSException
      */
     @Test
@@ -710,7 +710,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMResource exception.
-     *
+     * 
      * @throws TReqSException
      */
     @Test

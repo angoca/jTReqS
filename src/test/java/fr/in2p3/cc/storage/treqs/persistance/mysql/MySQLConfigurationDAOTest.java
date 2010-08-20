@@ -50,6 +50,7 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public class MySQLConfigurationDAOTest {
     @AfterClass

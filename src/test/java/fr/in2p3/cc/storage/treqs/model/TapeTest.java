@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 
 /**
  * TapeTest.java
- *
+ * 
  * @version 2010-03-09
  * @author gomez
  */

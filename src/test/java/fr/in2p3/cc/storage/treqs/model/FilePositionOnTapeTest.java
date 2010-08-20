@@ -56,7 +56,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * FilePositionOnTapeTest.cpp
- *
+ * 
  * @version Nov 10, 2009
  * @author gomez
  */
@@ -107,7 +107,7 @@ public class FilePositionOnTapeTest {
 
     /**
      * Tests a valid timestamp for metadata.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      * @throws NullParameterException
      *             Never.
@@ -128,7 +128,7 @@ public class FilePositionOnTapeTest {
 
     /**
      * Tests the method setTapeRef giving a null value.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      * @throws NumberFormatException
      * @throws NullParameterException
@@ -155,7 +155,7 @@ public class FilePositionOnTapeTest {
 
     /**
      * Tests the toString.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      * @throws NumberFormatException
      */
@@ -199,7 +199,7 @@ public class FilePositionOnTapeTest {
 
     /**
      * Test an outdated timestamp for metadata.
-     *
+     * 
      * @throws InterruptedException
      *             Never.
      * @throws ProblematicConfiguationFileException
@@ -223,7 +223,7 @@ public class FilePositionOnTapeTest {
 
     /**
      * Tests the method setFileRef giving a null value.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      *             Never
      */
@@ -292,7 +292,7 @@ public class FilePositionOnTapeTest {
 
     /**
      * Tests no configuration value.
-     *
+     * 
      * @throws ConfigNotFoundException
      *             Never.
      * @throws ProblematicConfiguationFileException
