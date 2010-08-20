@@ -42,7 +42,9 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -53,7 +55,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * FilePositionOnTapesController.cpp Created on: 2010-03-23 Author: gomez
- */
+ */@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class FilePositionOnTapesControllerTest {
 	@After
 	public void tearDown() {

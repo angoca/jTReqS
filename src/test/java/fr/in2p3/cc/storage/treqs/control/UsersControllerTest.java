@@ -41,7 +41,9 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
@@ -51,6 +53,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * @version 2010-03-23
  * @author gomez
  */
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class UsersControllerTest {
 	@After
 	public void tearDown() {

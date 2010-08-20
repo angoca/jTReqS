@@ -41,7 +41,9 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
@@ -54,7 +56,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * 
  * @version 2010-03-23
  * @author gomez
- */
+ */@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class ControllerTest {
 	@After
 	public void tearDown() {

@@ -44,7 +44,9 @@ import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
@@ -53,118 +55,119 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * QueueIntegrationTest.cpp
- * 
+ *
  * @version Nov 13, 2009
  * @author gomez
  */
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class QueueIntegrationTest {
-	@BeforeClass
-	public static void oneTimeSetUp()
-			throws ProblematicConfiguationFileException {
-		Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-				"fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-		Configurator
-				.getInstance()
-				.setValue("MAIN", "READING_DAO",
-						"fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
-	}
+    @BeforeClass
+    public static void oneTimeSetUp()
+            throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "READING_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+    }
 
-	@AfterClass
-	public static void oneTimeTearDown() {
-		Configurator.destroyInstance();
-		PersistenceFactory.destroyInstance();
-	}
+    @AfterClass
+    public static void oneTimeTearDown() {
+        Configurator.destroyInstance();
+        PersistenceFactory.destroyInstance();
+    }
 
-	/**
-	 * Tests to activate an ended queue
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test01ActivateEndedQueue() throws TReqSException {
-		Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-				"media"), TapeStatus.TS_UNLOCKED));
-		queue.changeToActivated();
-		queue.changeToEnded();
+    /**
+     * Tests to activate an ended queue
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test01ActivateEndedQueue() throws TReqSException {
+        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        queue.changeToActivated();
+        queue.changeToEnded();
 
-		try {
-			queue.activate();
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof InvalidStateException)) {
-				Assert.fail();
-			}
-		}
-	}
+        try {
+            queue.activate();
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStateException)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	@Test
-	public void test01dump() throws TReqSException {
-		Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-				"media"), TapeStatus.TS_UNLOCKED));
-		FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-				new User("username"), 100), new GregorianCalendar(), 100,
-				new Tape("tapename", new MediaType((byte) 1, "mediatype"),
-						TapeStatus.TS_UNLOCKED));
+    @Test
+    public void test01dump() throws TReqSException {
+        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
+                new User("username"), 100), new GregorianCalendar(), 100,
+                new Tape("tapename", new MediaType((byte) 1, "mediatype"),
+                        TapeStatus.TS_UNLOCKED));
 
-		queue.registerFile(fpot1, (byte) 5);
+        queue.registerFile(fpot1, (byte) 5);
 
-		queue.activate();
+        queue.activate();
 
-		queue.suspend();
-		queue.dump();
+        queue.suspend();
+        queue.dump();
 
-		queue.unsuspend();
-		queue.activate();
+        queue.unsuspend();
+        queue.activate();
 
-		Reading reading = queue.getNextReading();
-		reading.setFileState(FileStatus.FS_QUEUED);
-		reading.setFileState(FileStatus.FS_STAGED);
+        Reading reading = queue.getNextReading();
+        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileState(FileStatus.FS_STAGED);
 
-		queue.getNextReading();
-		queue.dump();
-	}
+        queue.getNextReading();
+        queue.dump();
+    }
 
-	/**
-	 * Test for coverage in count jobs.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void test01otherMethods() throws TReqSException {
-		Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-				"media"), TapeStatus.TS_UNLOCKED));
-		FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-				new User("username"), 100), new GregorianCalendar(), 100,
-				new Tape("tapename", new MediaType((byte) 1, "mediatype"),
-						TapeStatus.TS_UNLOCKED));
+    /**
+     * Test for coverage in count jobs.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void test01otherMethods() throws TReqSException {
+        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
+                new User("username"), 100), new GregorianCalendar(), 100,
+                new Tape("tapename", new MediaType((byte) 1, "mediatype"),
+                        TapeStatus.TS_UNLOCKED));
 
-		queue.registerFile(fpot1, (byte) 5);
+        queue.registerFile(fpot1, (byte) 5);
 
-		queue.activate();
+        queue.activate();
 
-		Reading reading = queue.getNextReading();
-		reading.setFileState(FileStatus.FS_QUEUED);
-		queue.getNextReading();
-	}
+        Reading reading = queue.getNextReading();
+        reading.setFileState(FileStatus.FS_QUEUED);
+        queue.getNextReading();
+    }
 
-	/**
-	 * Tests to activate a suspended queue
-	 */
-	@Test
-	public void test02ActivateSuspendedQueue() throws TReqSException {
-		Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-				"media"), TapeStatus.TS_UNLOCKED));
-		queue.changeToActivated();
-		queue.suspend();
+    /**
+     * Tests to activate a suspended queue
+     */
+    @Test
+    public void test02ActivateSuspendedQueue() throws TReqSException {
+        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
+                "media"), TapeStatus.TS_UNLOCKED));
+        queue.changeToActivated();
+        queue.suspend();
 
-		try {
-			queue.activate();
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof InvalidStateException)) {
-				Assert.fail();
-			}
-		}
-	}
+        try {
+            queue.activate();
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStateException)) {
+                Assert.fail();
+            }
+        }
+    }
 }

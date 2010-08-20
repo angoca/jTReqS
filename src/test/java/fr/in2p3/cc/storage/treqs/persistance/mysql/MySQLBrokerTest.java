@@ -44,345 +44,347 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.OpenMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class MySQLBrokerTest {
 
-	@After
-	public void tearDown() {
-		Configurator.destroyInstance();
-		MySQLBroker.destroyInstance();
-	}
+    @After
+    public void tearDown() {
+        Configurator.destroyInstance();
+        MySQLBroker.destroyInstance();
+    }
 
-	@Test
-	public void tes01Connect() throws TReqSException {
-		Configurator.getInstance().setValue("JOBSDB", "DRIVER", "NO-DRIVER");
+    @Test
+    public void tes01Connect() throws TReqSException {
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER", "NO-DRIVER");
 
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().connect();
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof OpenMySQLException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().connect();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof OpenMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void tes01Disconnect() throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		MySQLBroker.getInstance().disconnect();
-	}
+    @Test
+    public void tes01Disconnect() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().disconnect();
+    }
 
-	@Test
-	public void tes02Connect() throws TReqSException {
-		Configurator.getInstance().setValue("JOBSDB", "DRIVER",
-				"com.mysql.jdbc.Driver");
-		Configurator.getInstance().setValue("JOBSDB", "URL", "bad::url");
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().connect();
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof OpenMySQLException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void tes02Connect() throws TReqSException {
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
+                "com.mysql.jdbc.Driver");
+        Configurator.getInstance().setValue("JOBSDB", "URL", "bad::url");
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().connect();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof OpenMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void tes03Connect() throws TReqSException {
-		Configurator.getInstance().setValue("JOBSDB", "DRIVER",
-				"com.mysql.jdbc.Driver");
-		Configurator.getInstance().setValue("JOBSDB", "URL",
-				"jdbc:mysql://localhost/treqsjobs");
-		Configurator.getInstance().setValue("JOBSDB", "USERNAME", "bad-user");
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().connect();
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof OpenMySQLException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void tes03Connect() throws TReqSException {
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
+                "com.mysql.jdbc.Driver");
+        Configurator.getInstance().setValue("JOBSDB", "URL",
+                "jdbc:mysql://localhost/treqsjobs");
+        Configurator.getInstance().setValue("JOBSDB", "USERNAME", "bad-user");
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().connect();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof OpenMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void tes04Connect() throws TReqSException {
-		Configurator.getInstance().setValue("JOBSDB", "DRIVER",
-				"com.mysql.jdbc.Driver");
-		Configurator.getInstance().setValue("JOBSDB", "URL",
-				"jdbc:mysql://localhost/treqsjobs");
-		Configurator.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
-		Configurator.getInstance().setValue("JOBSDB", "PASSWORD",
-				"bad-password");
+    @Test
+    public void tes04Connect() throws TReqSException {
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
+                "com.mysql.jdbc.Driver");
+        Configurator.getInstance().setValue("JOBSDB", "URL",
+                "jdbc:mysql://localhost/treqsjobs");
+        Configurator.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
+        Configurator.getInstance().setValue("JOBSDB", "PASSWORD",
+                "bad-password");
 
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().connect();
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof OpenMySQLException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().connect();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof OpenMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void tes05Connect() throws TReqSException {
-		Configurator.getInstance().setValue("JOBSDB", "DRIVER",
-				"com.mysql.jdbc.Driver");
-		Configurator.getInstance().setValue("JOBSDB", "URL",
-				"jdbc:mysql://localhost/treqsjobs");
-		Configurator.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
-		Configurator.getInstance().setValue("JOBSDB", "PASSWORD", "treqs");
+    @Test
+    public void tes05Connect() throws TReqSException {
+        Configurator.getInstance().setValue("JOBSDB", "DRIVER",
+                "com.mysql.jdbc.Driver");
+        Configurator.getInstance().setValue("JOBSDB", "URL",
+                "jdbc:mysql://localhost/treqsjobs");
+        Configurator.getInstance().setValue("JOBSDB", "USERNAME", "treqs");
+        Configurator.getInstance().setValue("JOBSDB", "PASSWORD", "treqs");
 
-		MySQLBroker.getInstance().connect();
-		MySQLBroker.getInstance().disconnect();
-	}
+        MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().disconnect();
+    }
 
-	@Test
-	public void tes06Connect() throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		MySQLBroker.getInstance().disconnect();
-	}
+    @Test
+    public void tes06Connect() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().disconnect();
+    }
 
-	@Test
-	public void test01destroy() throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		MySQLBroker.getInstance().disconnect();
-		MySQLBroker.destroyInstance();
-	}
+    @Test
+    public void test01destroy() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+    }
 
-	@Test
-	public void test01Modify() throws TReqSException {
-		String query = null;
-		MySQLBroker.getInstance().connect();
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeModification(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		MySQLBroker.getInstance().disconnect();
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test01Modify() throws TReqSException {
+        String query = null;
+        MySQLBroker.getInstance().connect();
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeModification(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        MySQLBroker.getInstance().disconnect();
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test01Select() throws TReqSException {
-		String query = null;
-		MySQLBroker.getInstance().connect();
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeSelect(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		MySQLBroker.getInstance().disconnect();
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test01Select() throws TReqSException {
+        String query = null;
+        MySQLBroker.getInstance().connect();
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeSelect(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        MySQLBroker.getInstance().disconnect();
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test02Modify() throws TReqSException {
-		String query = "";
-		MySQLBroker.getInstance().connect();
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeModification(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		MySQLBroker.getInstance().disconnect();
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test02Modify() throws TReqSException {
+        String query = "";
+        MySQLBroker.getInstance().connect();
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeModification(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        MySQLBroker.getInstance().disconnect();
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test02Select() throws TReqSException {
-		String query = "";
-		MySQLBroker.getInstance().connect();
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeSelect(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		MySQLBroker.getInstance().disconnect();
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test02Select() throws TReqSException {
+        String query = "";
+        MySQLBroker.getInstance().connect();
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeSelect(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        MySQLBroker.getInstance().disconnect();
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test03Modify() throws TReqSException {
-		String query = "";
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeModification(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test03Modify() throws TReqSException {
+        String query = "";
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeModification(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test03Select() throws TReqSException {
-		String query = "show tables";
+    @Test
+    public void test03Select() throws TReqSException {
+        String query = "show tables";
 
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeSelect(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof ExecuteMySQLException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeSelect(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ExecuteMySQLException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test04Modify() throws TReqSException {
-		String query = "INVALID QUERY";
-		MySQLBroker.getInstance().connect();
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeModification(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof ExecuteMySQLException)) {
-				failed = true;
-			}
-		}
-		MySQLBroker.getInstance().disconnect();
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test04Modify() throws TReqSException {
+        String query = "INVALID QUERY";
+        MySQLBroker.getInstance().connect();
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeModification(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ExecuteMySQLException)) {
+                failed = true;
+            }
+        }
+        MySQLBroker.getInstance().disconnect();
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test04Select() throws TReqSException {
-		String query = "INVALID QUERY";
-		MySQLBroker.getInstance().connect();
+    @Test
+    public void test04Select() throws TReqSException {
+        String query = "INVALID QUERY";
+        MySQLBroker.getInstance().connect();
 
-		boolean failed = false;
-		try {
-			MySQLBroker.getInstance().executeSelect(query);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof ExecuteMySQLException)) {
-				failed = true;
-			}
-		}
-		MySQLBroker.getInstance().disconnect();
-		if (failed) {
-			Assert.fail();
-		}
-	}
+        boolean failed = false;
+        try {
+            MySQLBroker.getInstance().executeSelect(query);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ExecuteMySQLException)) {
+                failed = true;
+            }
+        }
+        MySQLBroker.getInstance().disconnect();
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test05Modify() throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		String query = "DROP TABLE IF EXISTS t1 ";
-		MySQLBroker.getInstance().executeModification(query);
-		query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
-		MySQLBroker.getInstance().executeModification(query);
-		query = "DROP TABLE t1 ";
-		MySQLBroker.getInstance().executeModification(query);
+    @Test
+    public void test05Modify() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        String query = "DROP TABLE IF EXISTS t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        MySQLBroker.getInstance().executeModification(query);
+        query = "DROP TABLE t1 ";
+        MySQLBroker.getInstance().executeModification(query);
 
-		MySQLBroker.getInstance().disconnect();
-	}
+        MySQLBroker.getInstance().disconnect();
+    }
 
-	@Test
-	public void test05Select() throws TReqSException, SQLException {
-		String query = "show tables";
-		MySQLBroker.getInstance().connect();
-		Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-		ResultSet result = (ResultSet) objects[1];
-		boolean next = result.next();
-		System.out.println(next);
-		MySQLBroker.getInstance().terminateExecution(objects);
-		MySQLBroker.getInstance().disconnect();
-	}
+    @Test
+    public void test05Select() throws TReqSException, SQLException {
+        String query = "show tables";
+        MySQLBroker.getInstance().connect();
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        boolean next = result.next();
+        System.out.println(next);
+        MySQLBroker.getInstance().terminateExecution(objects);
+        MySQLBroker.getInstance().disconnect();
+    }
 
-	@Test
-	public void test06Modify() throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		String query = "DROP TABLE IF EXISTS t1 ";
-		MySQLBroker.getInstance().executeModification(query);
-		query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
-		MySQLBroker.getInstance().executeModification(query);
+    @Test
+    public void test06Modify() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        String query = "DROP TABLE IF EXISTS t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        MySQLBroker.getInstance().executeModification(query);
 
-		query = "INSERT INTO t1 (USER) VALUES('1')";
-		MySQLBroker.getInstance().connect();
-		int actual = MySQLBroker.getInstance().executeModification(query);
+        query = "INSERT INTO t1 (USER) VALUES('1')";
+        MySQLBroker.getInstance().connect();
+        int actual = MySQLBroker.getInstance().executeModification(query);
 
-		query = "DROP TABLE t1 ";
-		MySQLBroker.getInstance().executeModification(query);
-		MySQLBroker.getInstance().disconnect();
+        query = "DROP TABLE t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        MySQLBroker.getInstance().disconnect();
 
-		Assert.assertTrue(actual == 1);
-	}
+        Assert.assertTrue(actual == 1);
+    }
 
-	@Test
-	public void test07Modify() throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		String query = "DROP TABLE IF EXISTS t1 ";
-		MySQLBroker.getInstance().executeModification(query);
-		query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
-		MySQLBroker.getInstance().executeModification(query);
-		query = "INSERT INTO t1 (USER) VALUES('1')";
-		MySQLBroker.getInstance().connect();
-		int actual = MySQLBroker.getInstance().executeModification(query);
+    @Test
+    public void test07Modify() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        String query = "DROP TABLE IF EXISTS t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        MySQLBroker.getInstance().executeModification(query);
+        query = "INSERT INTO t1 (USER) VALUES('1')";
+        MySQLBroker.getInstance().connect();
+        int actual = MySQLBroker.getInstance().executeModification(query);
 
-		query = "DELETE FROM t1";
-		MySQLBroker.getInstance().executeModification(query);
-		query = "DROP TABLE t1 ";
-		MySQLBroker.getInstance().executeModification(query);
-		MySQLBroker.getInstance().disconnect();
+        query = "DELETE FROM t1";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "DROP TABLE t1 ";
+        MySQLBroker.getInstance().executeModification(query);
+        MySQLBroker.getInstance().disconnect();
 
-		Assert.assertTrue(actual == 1);
-	}
+        Assert.assertTrue(actual == 1);
+    }
 }

@@ -40,7 +40,9 @@ package fr.in2p3.cc.storage.treqs.hsm.command;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
@@ -48,137 +50,137 @@ import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileExce
 
 /**
  * HPSSCommandBridgeTest.cpp
- * 
+ *
  * @version 2010-03-23
  * @author gomez
  */
-
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class HSMCommandBridgeTest {
-	@After
-	public void tearDown() {
-		HSMCommandBridge.destroyInstance();
-	}
+    @After
+    public void tearDown() {
+        HSMCommandBridge.destroyInstance();
+    }
 
-	@Test
-	public void testGetProperties01() throws HSMException {
-		String name = null;
-		boolean failed = false;
-		try {
-			HSMCommandBridge.getInstance().getFileProperties(name);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void testGetProperties01() throws HSMException {
+        String name = null;
+        boolean failed = false;
+        try {
+            HSMCommandBridge.getInstance().getFileProperties(name);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void testGetProperties02() throws HSMException {
-		String name = "";
-		boolean failed = false;
-		try {
-			HSMCommandBridge.getInstance().getFileProperties(name);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void testGetProperties02() throws HSMException {
+        String name = "";
+        boolean failed = false;
+        try {
+            HSMCommandBridge.getInstance().getFileProperties(name);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	/**
-	 * Tests
-	 * 
-	 * @throws HSMException
-	 * @throws ProblematicConfiguationFileException
-	 * @throws ConfigNotFoundException
-	 */
-	@Test
-	public void testGetProperties03() throws HSMException,
-			ConfigNotFoundException, ProblematicConfiguationFileException {
-		String name = "/hpss/filename";
-		long size = 564;
-		int position = 123;
-		String storageName = "IT9876";
-		HSMHelperFileProperties helper = HSMCommandBridge.getInstance()
-				.getFileProperties(name);
+    /**
+     * Tests
+     *
+     * @throws HSMException
+     * @throws ProblematicConfiguationFileException
+     * @throws ConfigNotFoundException
+     */
+    @Test
+    public void testGetProperties03() throws HSMException,
+            ConfigNotFoundException, ProblematicConfiguationFileException {
+        String name = "/hpss/filename";
+        long size = 564;
+        int position = 123;
+        String storageName = "IT9876";
+        HSMHelperFileProperties helper = HSMCommandBridge.getInstance()
+                .getFileProperties(name);
 
-		long actualSize = helper.getSize();
-		int actualPosition = helper.getPosition();
-		String actualStorageName = helper.getStorageName();
+        long actualSize = helper.getSize();
+        int actualPosition = helper.getPosition();
+        String actualStorageName = helper.getStorageName();
 
-		Assert.assertEquals(size, actualSize);
-		Assert.assertEquals(position, actualPosition);
-		Assert.assertEquals(storageName, actualStorageName);
+        Assert.assertEquals(size, actualSize);
+        Assert.assertEquals(position, actualPosition);
+        Assert.assertEquals(storageName, actualStorageName);
 
-	}
+    }
 
-	@Test
-	public void testStage01() {
-		String name = null;
-		int size = 100;
-		boolean failed = false;
-		try {
-			HSMCommandBridge.getInstance().stage(name, size);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void testStage01() {
+        String name = null;
+        int size = 100;
+        boolean failed = false;
+        try {
+            HSMCommandBridge.getInstance().stage(name, size);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void testStage02() {
-		String name = "";
-		int size = 100;
-		boolean failed = false;
-		try {
-			HSMCommandBridge.getInstance().stage(name, size);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void testStage02() {
+        String name = "";
+        int size = 100;
+        boolean failed = false;
+        try {
+            HSMCommandBridge.getInstance().stage(name, size);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void testStage03() {
-		String name = "name";
-		int size = -100;
-		boolean failed = false;
-		try {
-			HSMCommandBridge.getInstance().stage(name, size);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void testStage03() {
+        String name = "name";
+        int size = -100;
+        boolean failed = false;
+        try {
+            HSMCommandBridge.getInstance().stage(name, size);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void testStage04() throws HSMException, ConfigNotFoundException,
-			ProblematicConfiguationFileException {
-		String name = "name";
-		int size = 100;
-		HSMCommandBridge.getInstance().stage(name, size);
-	}
+    @Test
+    public void testStage04() throws HSMException, ConfigNotFoundException,
+            ProblematicConfiguationFileException {
+        String name = "name";
+        int size = 100;
+        HSMCommandBridge.getInstance().stage(name, size);
+    }
 }

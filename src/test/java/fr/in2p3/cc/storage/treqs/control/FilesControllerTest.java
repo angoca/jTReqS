@@ -40,13 +40,15 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * FilesControllerTest.cpp Created on: 2010-03-24 Author: gomez
- */
+ */@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class FilesControllerTest {
 	@After
 	public void tearDown() {

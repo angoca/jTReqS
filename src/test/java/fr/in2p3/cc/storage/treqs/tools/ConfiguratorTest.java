@@ -41,419 +41,421 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * TReqSConfigTest.cpp
- * 
+ *
  * @version 2010-07-27
  * @author gomez
  */
-
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class ConfiguratorTest {
 
-	@After
-	public void tearDown() {
-		Configurator.destroyInstance();
-	}
+    @After
+    public void tearDown() {
+        Configurator.destroyInstance();
+    }
 
-	/**
-	 * Tests to get, then set a value and retrieve it.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void tes01setValue() throws TReqSException {
-		String sec = "test1";
-		String key = "keytest";
-		String value = "valuetest";
+    /**
+     * Tests to get, then set a value and retrieve it.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void tes01setValue() throws TReqSException {
+        String sec = "test1";
+        String key = "keytest";
+        String value = "valuetest";
 
-		boolean failed = false;
-		try {
-			Configurator.getInstance().getValue(sec, key);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof ConfigNotFoundException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
+        boolean failed = false;
+        try {
+            Configurator.getInstance().getValue(sec, key);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ConfigNotFoundException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
 
-		Configurator.getInstance().setValue(sec, key, value);
+        Configurator.getInstance().setValue(sec, key, value);
 
-		String actual = Configurator.getInstance().getValue(sec, key);
+        String actual = Configurator.getInstance().getValue(sec, key);
 
-		String expected = value;
+        String expected = value;
 
-		Assert.assertEquals(expected, actual);
-	}
+        Assert.assertEquals(expected, actual);
+    }
 
-	/**
-	 * Tests to set a value and retrieve the same.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void tes02setValue() throws TReqSException {
-		String sec = "test1";
-		String key = "keytest";
-		String value = "valuetest";
+    /**
+     * Tests to set a value and retrieve the same.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void tes02setValue() throws TReqSException {
+        String sec = "test1";
+        String key = "keytest";
+        String value = "valuetest";
 
-		Configurator.getInstance().setValue(sec, key, value);
+        Configurator.getInstance().setValue(sec, key, value);
 
-		String actual = Configurator.getInstance().getValue(sec, key);
+        String actual = Configurator.getInstance().getValue(sec, key);
 
-		String expected = value;
+        String expected = value;
 
-		Assert.assertEquals(expected, actual);
-	}
+        Assert.assertEquals(expected, actual);
+    }
 
-	/**
-	 * Tests to delete an inexistant value.
-	 */
-	@Test
-	public void test01DeleteValue() {
-		String sec = "test1";
-		String key = "keytest";
-		Configurator.getInstance().deleteValue(sec, key);
-	}
+    /**
+     * Tests to delete an inexistant value.
+     */
+    @Test
+    public void test01DeleteValue() {
+        String sec = "test1";
+        String key = "keytest";
+        Configurator.getInstance().deleteValue(sec, key);
+    }
 
-	/**
-	 * Tests the configuration file by default.
-	 */
-	@Test
-	public void test01getFileName() {
-		String actual = Configurator.getInstance().getConfFilename();
+    /**
+     * Tests the configuration file by default.
+     */
+    @Test
+    public void test01getFileName() {
+        String actual = Configurator.getInstance().getConfFilename();
 
-		String expected = "treqs.conf.properties";
+        String expected = "treqs.conf.properties";
 
-		Assert.assertEquals(expected, actual);
-	}
+        Assert.assertEquals(expected, actual);
+    }
 
-	@Test
-	public void test01getValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().getValue(null, "KEY");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test01getValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().getValue(null, "KEY");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	/**
-	 * Tests an inexistant value from the default properties.
-	 * 
-	 * @throws ConfigNotFoundException
-	 */
-	@Test
-	public void test01loadDefaultsInexistant() throws ConfigNotFoundException {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().getValue("UNKNOWN", "KEY");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof ConfigNotFoundException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    /**
+     * Tests an inexistant value from the default properties.
+     *
+     * @throws ConfigNotFoundException
+     */
+    @Test
+    public void test01loadDefaultsInexistant() throws ConfigNotFoundException {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().getValue("UNKNOWN", "KEY");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ConfigNotFoundException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test01readFile() throws TReqSException {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setConfFilename("INEXISTANT_FILE");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof ProblematicConfiguationFileException)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test01readFile() throws TReqSException {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setConfFilename("INEXISTANT_FILE");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof ProblematicConfiguationFileException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	/**
-	 * Tests to set an invalid configuration file.
-	 */
-	@Test
-	public void test01setFileName() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setConfFilename(null);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    /**
+     * Tests to set an invalid configuration file.
+     */
+    @Test
+    public void test01setFileName() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setConfFilename(null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	/**
-	 * Tests to delete an existent value.
-	 * 
-	 * @throws ProblematicConfiguationFileException
-	 *             Never
-	 */
-	@Test
-	public void test02DeleteValue() throws ProblematicConfiguationFileException {
-		String sec = "test1";
-		String key = "keytest";
-		String value = "valuetest";
-		Configurator.getInstance().setValue(sec, key, value);
-		Configurator.getInstance().deleteValue(sec, key);
-	}
+    /**
+     * Tests to delete an existent value.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             Never
+     */
+    @Test
+    public void test02DeleteValue() throws ProblematicConfiguationFileException {
+        String sec = "test1";
+        String key = "keytest";
+        String value = "valuetest";
+        Configurator.getInstance().setValue(sec, key, value);
+        Configurator.getInstance().deleteValue(sec, key);
+    }
 
-	@Test
-	public void test02getValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().getValue("", "KEY");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test02getValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().getValue("", "KEY");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	/**
-	 * Tests to set an invalid configuration file.
-	 */
-	@Test
-	public void test02setFileName() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setConfFilename("");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    /**
+     * Tests to set an invalid configuration file.
+     */
+    @Test
+    public void test02setFileName() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setConfFilename("");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test03deleteValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().deleteValue(null, "KEY");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test03deleteValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().deleteValue(null, "KEY");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test03getValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().getValue("SEC", null);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test03getValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().getValue("SEC", null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test03setFileName() throws ProblematicConfiguationFileException {
-		Configurator.getInstance().setConfFilename("treqs.conf.properties");
-	}
+    @Test
+    public void test03setFileName() throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setConfFilename("treqs.conf.properties");
+    }
 
-	@Test
-	public void test03setValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setValue(null, "KEY", "VALUE");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test03setValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setValue(null, "KEY", "VALUE");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test04deleteValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().deleteValue("", "KEY");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test04deleteValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().deleteValue("", "KEY");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test04getValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().getValue("SEC", "");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test04getValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().getValue("SEC", "");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test04setValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setValue("", "KEY", "VALUE");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test04setValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setValue("", "KEY", "VALUE");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test05deleteValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().deleteValue("SEC", null);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test05deleteValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().deleteValue("SEC", null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test05setValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setValue("SEC", null, "VALUE");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test05setValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setValue("SEC", null, "VALUE");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test06deleteValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().deleteValue("SEC", "");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test06deleteValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().deleteValue("SEC", "");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test06setValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setValue("SEC", "", "VALUE");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test06setValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setValue("SEC", "", "VALUE");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test07setValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setValue("SEC", "KEY", null);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test07setValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setValue("SEC", "KEY", null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	@Test
-	public void test08setValue() {
-		boolean failed = false;
-		try {
-			Configurator.getInstance().setValue("SEC", "KEY", "");
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+    @Test
+    public void test08setValue() {
+        boolean failed = false;
+        try {
+            Configurator.getInstance().setValue("SEC", "KEY", "");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
 }

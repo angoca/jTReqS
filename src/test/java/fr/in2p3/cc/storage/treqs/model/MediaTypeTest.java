@@ -40,42 +40,46 @@ package fr.in2p3.cc.storage.treqs.model;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 
 /**
  *MediaTypeTest.cpp
- * 
+ *
  * @version 2010-07-16
  * @author gomez
  */
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class MediaTypeTest {
 
-	@Test
-	public void test01Constructor() {
-		try {
-			new MediaType((byte) 1, null);
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test01Constructor() {
+        try {
+            new MediaType((byte) 1, null);
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	@Test
-	public void test01toString() {
-		MediaType media = new MediaType((byte) 1, "media");
-		media.toString();
-	}
+    @Test
+    public void test01toString() {
+        MediaType media = new MediaType((byte) 1, "media");
+        media.toString();
+    }
 
-	@Test
-	public void test02Constructor() {
-		try {
-			new MediaType((byte) -1, "type");
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void test02Constructor() {
+        try {
+            new MediaType((byte) -1, "type");
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                Assert.fail();
+            }
+        }
+    }
 }

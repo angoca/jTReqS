@@ -39,115 +39,118 @@ package fr.in2p3.cc.storage.treqs.model;
 import junit.framework.Assert;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
  * FileRequestTest.java
- * 
+ *
  * @version 2010-03-09
  * @author gomez
  */
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class FileRequestTest {
 
-	/**
-	 * Tests a constructor with a negative id.
-	 * 
-	 * @throws InvalidParameterException
-	 *             Never
-	 */
-	@Test(expected = AssertionError.class)
-	public void test01Contructor() throws InvalidParameterException {
-		new FileRequest(-10, "file", new User("username"), (byte) 10);
-	}
+    /**
+     * Tests a constructor with a negative id.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void test01Contructor() throws InvalidParameterException {
+        new FileRequest(-10, "file", new User("username"), (byte) 10);
+    }
 
-	/**
-	 * Tests to re-establish the name
-	 * 
-	 * @throws InvalidParameterException
-	 *             Never
-	 */
-	@Test
-	public void test01setName() throws InvalidParameterException {
-		FileRequest freq = new FileRequest(10, "filename",
-				new User("username"), (byte) 10);
+    /**
+     * Tests to re-establish the name
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test
+    public void test01setName() throws InvalidParameterException {
+        FileRequest freq = new FileRequest(10, "filename",
+                new User("username"), (byte) 10);
 
-		try {
-			freq.setName("OtherName");
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof InvalidParameterException)) {
-				Assert.fail();
-			}
-		}
-	}
+        try {
+            freq.setName("OtherName");
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidParameterException)) {
+                Assert.fail();
+            }
+        }
+    }
 
-	/**
-	 * Tests the toString method.
-	 * 
-	 * @throws InvalidParameterException
-	 *             Never.
-	 */
-	@Test
-	public void test01toString() throws InvalidParameterException {
-		int id = 1;
-		String filename = "fileName";
-		String username = "Username";
-		byte retries = 2;
-		FileRequest freq = new FileRequest(id, filename, new User(username),
-				retries);
+    /**
+     * Tests the toString method.
+     *
+     * @throws InvalidParameterException
+     *             Never.
+     */
+    @Test
+    public void test01toString() throws InvalidParameterException {
+        int id = 1;
+        String filename = "fileName";
+        String username = "Username";
+        byte retries = 2;
+        FileRequest freq = new FileRequest(id, filename, new User(username),
+                retries);
 
-		String actual = freq.toString();
+        String actual = freq.toString();
 
-		String expected = "FileRequest{ id: " + id + ", filename: " + filename
-				+ ", client: " + username + ", number of tries: " + retries
-				+ "}";
+        String expected = "FileRequest{ id: " + id + ", filename: " + filename
+                + ", client: " + username + ", number of tries: " + retries
+                + "}";
 
-		Assert.assertEquals("toString", expected, actual);
-	}
+        Assert.assertEquals("toString", expected, actual);
+    }
 
-	/**
-	 * Tests a constructor with null client.
-	 * 
-	 * @throws InvalidParameterException
-	 *             Never
-	 */
-	@Test(expected = AssertionError.class)
-	public void test02Contructor() throws InvalidParameterException {
-		new FileRequest(10, null, new User("username"), (byte) 10);
-	}
+    /**
+     * Tests a constructor with null client.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void test02Contructor() throws InvalidParameterException {
+        new FileRequest(10, null, new User("username"), (byte) 10);
+    }
 
-	/**
-	 * Tests a constructor with null client.
-	 * 
-	 * @throws InvalidParameterException
-	 *             Never
-	 */
-	@Test(expected = AssertionError.class)
-	public void test03Contructor() throws InvalidParameterException {
-		new FileRequest(10, "", new User("username"), (byte) 10);
-	}
+    /**
+     * Tests a constructor with null client.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void test03Contructor() throws InvalidParameterException {
+        new FileRequest(10, "", new User("username"), (byte) 10);
+    }
 
-	/**
-	 * Tests a constructor with null client.
-	 * 
-	 * @throws InvalidParameterException
-	 *             Never
-	 */
-	@Test(expected = AssertionError.class)
-	public void test04Contructor() throws InvalidParameterException {
-		new FileRequest(10, "file", null, (byte) 10);
-	}
+    /**
+     * Tests a constructor with null client.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void test04Contructor() throws InvalidParameterException {
+        new FileRequest(10, "file", null, (byte) 10);
+    }
 
-	/**
-	 * Tests a constructor with null client.
-	 * 
-	 * @throws InvalidParameterException
-	 *             Never
-	 */
-	@Test(expected = AssertionError.class)
-	public void test05Contructor() throws InvalidParameterException {
-		new FileRequest(10, "file", new User("username"), (byte) -10);
-	}
+    /**
+     * Tests a constructor with null client.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void test05Contructor() throws InvalidParameterException {
+        new FileRequest(10, "file", new User("username"), (byte) -10);
+    }
 
 }

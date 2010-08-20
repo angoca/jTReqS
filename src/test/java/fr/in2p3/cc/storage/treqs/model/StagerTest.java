@@ -45,9 +45,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
@@ -61,6 +63,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * @version 2010-07-21
  * @author gomez
  */
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class StagerTest {
 
     /**
@@ -164,10 +167,12 @@ public class StagerTest {
         Stager stager = new Stager(1, queue);
         String actual = stager.toString();
 
-        String expected = "Stager{ queue: " + 0 + ", tape: " + tapename
+        String expectedStarts = "Stager{ thread: ";
+        String expectedEnds = ", queue: " + 0 + ", tape: " + tapename
                 + ", state: " + ProcessStatus.STARTING.name() + "}";
 
-        Assert.assertEquals(expected, actual);
+        Assert.assertTrue(actual.startsWith(expectedStarts));
+        Assert.assertTrue(actual.endsWith(expectedEnds));
     }
 
     @Test

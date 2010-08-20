@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +33,7 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class TReqSTest {
 	/**
 	 * Logger.

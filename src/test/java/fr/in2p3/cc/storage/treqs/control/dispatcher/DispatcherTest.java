@@ -49,9 +49,11 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.FilesController;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
@@ -79,548 +81,548 @@ import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 /**
  * DispatcherTest.cpp
- * 
+ *
  * @version 2010-07-23
  * @author gomez
  */
-
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class DispatcherTest {
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(DispatcherTest.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DispatcherTest.class);
 
-	@BeforeClass
-	public static void oneTimeSetUp() throws TReqSException {
-		MySQLBroker.getInstance().connect();
-		RequestsDAO.deleteAll();
-		MySQLBroker.getInstance().disconnect();
-		MySQLBroker.destroyInstance();
-	}
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        RequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+    }
 
-	@AfterClass
-	public static void oneTimeTearDown() throws TReqSException {
-		MockReadingDAO.destroyInstance();
-		PersistenceFactory.destroyInstance();
+    @AfterClass
+    public static void oneTimeTearDown() throws TReqSException {
+        MockReadingDAO.destroyInstance();
+        PersistenceFactory.destroyInstance();
 
-		MySQLBroker.getInstance().connect();
-		RequestsDAO.deleteAll();
-		MySQLBroker.getInstance().disconnect();
-		MySQLBroker.destroyInstance();
-	}
+        MySQLBroker.getInstance().connect();
+        RequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+    }
 
-	@Before
-	public void setUp() throws TReqSException {
-		HSMMockBridge.getInstance().setStageTime(100);
-		Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-				"fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-		Configurator
-				.getInstance()
-				.setValue("MAIN", "READING_DAO",
-						"fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
-		MySQLBroker.getInstance().connect();
-	}
+    @Before
+    public void setUp() throws TReqSException {
+        HSMMockBridge.getInstance().setStageTime(100);
+        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
+                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator
+                .getInstance()
+                .setValue("MAIN", "READING_DAO",
+                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+        MySQLBroker.getInstance().connect();
+    }
 
-	@After
-	public void tearDown() throws CloseMySQLException {
-		MySQLBroker.getInstance().disconnect();
-		MySQLBroker.destroyInstance();
-		Dispatcher.destroyInstance();
-		Configurator.destroyInstance();
-		QueuesController.destroyInstance();
-		FilePositionOnTapesController.destroyInstance();
-		FilesController.destroyInstance();
-		TapesController.destroyInstance();
-		HSMMockBridge.destroyInstance();
-	}
+    @After
+    public void tearDown() throws CloseMySQLException {
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+        Dispatcher.destroyInstance();
+        Configurator.destroyInstance();
+        QueuesController.destroyInstance();
+        FilePositionOnTapesController.destroyInstance();
+        FilesController.destroyInstance();
+        TapesController.destroyInstance();
+        HSMMockBridge.destroyInstance();
+    }
 
-	@Test
-	public void test01create() throws TReqSException {
-		Dispatcher.getInstance().getMaxRequests();
-	}
+    /**
+     * Tests to stop the dispatcher from other thread.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test01run() throws TReqSException {
+        Thread thread = new Thread() {
 
-	@Test
-	public void test01maxFileBeforeMessage() throws TReqSException {
-		boolean failed = false;
-		try {
-			Dispatcher.getInstance().setMaxFilesBeforeMessage((short) -1);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Dispatcher.getInstance().conclude();
+                } catch (TReqSException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.setName("TestRun");
+        thread.start();
+        // It waits for Dispatcher.getInstance().getSecondsBetweenLoops() == 3
+        Dispatcher.getInstance().run();
+        Dispatcher.getInstance().waitToFinish();
+    }
 
-	@Test(expected = AssertionError.class)
-	public void test01MaxRequest() throws TReqSException {
-		Dispatcher.getInstance().setMaxRequests((short) -5);
-	}
+    /**
+     * Tests to returns an exception when getting the new jobs.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test02run() throws TReqSException {
+        PersistanceException exception = new MockPersistanceException(
+                new SQLException("NO-MESSAGE"));
+        MockReadingDAO.getInstance().setNewJobsException(exception);
 
-	/**
-	 * Tests to stop the dispatcher from other thread.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test01run() throws TReqSException {
-		Thread thread = new Thread() {
+        try {
+            Dispatcher.getInstance().retrieveNewRequest();
+            LOGGER.error("Error: it passed");
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof MockPersistanceException)) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+        }
+    }
 
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				try {
-					Dispatcher.getInstance().conclude();
-				} catch (TReqSException e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		thread.setName("TestRun");
-		thread.start();
-		// It waits for Dispatcher.getInstance().getSecondsBetweenLoops() == 3
-		Dispatcher.getInstance().run();
-		Dispatcher.getInstance().waitToFinish();
-	}
+    /**
+     * Tests to show the message of MAX files processed simultaneously. The rest
+     * is the same as previous test. processException method.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test03run() throws TReqSException {
+        Dispatcher.getInstance().setMaxFilesBeforeMessage((short) 1);
 
-	@Test
-	public void test01SecondsBetweenLoops() throws TReqSException {
-		boolean failed = false;
-		try {
-			Dispatcher.getInstance().setSecondsBetweenLoops((byte) -1);
-			failed = true;
-		} catch (Throwable e) {
-			if (!(e instanceof AssertionError)) {
-				failed = true;
-			}
-		}
-		if (failed) {
-			Assert.fail();
-		}
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	@Test
-	public void test01toStop() throws TReqSException {
-		Dispatcher.getInstance().start();
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		Dispatcher.getInstance().conclude();
-		Dispatcher.getInstance().waitToFinish();
-	}
+    /**
+     * Tests getFileProperties then catch HSMStatException with DAOFactory. When
+     * the file does not exist. When the file does not exist. processException
+     * method.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test04run() throws TReqSException {
+        HSMException exception = new HSMStatException(new IOException(1 + ""));
+        HSMMockBridge.getInstance().setFilePropertiesException(exception);
 
-	@Test
-	public void test02MaxRequest() throws TReqSException {
-		Dispatcher.getInstance().setMaxRequests((short) 5);
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests to returns an exception when getting the new jobs.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test02run() throws TReqSException {
-		PersistanceException exception = new MockPersistanceException(
-				new SQLException("NO-MESSAGE"));
-		MockReadingDAO.getInstance().setNewJobsException(exception);
+    /**
+     * Tests getFileProperties then catch HSMStatException with
+     * PersistanceException. When the file does not exist. processException
+     * method.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test05run() throws TReqSException {
+        HSMException exception = new HSMStatException(new IOException(1 + ""));
+        HSMMockBridge.getInstance().setFilePropertiesException(exception);
+        PersistanceException exception2 = new MockPersistanceException(
+                new SQLException());
+        MockReadingDAO.getInstance().setRequestStatusByIdException(exception2);
 
-		try {
-			Dispatcher.getInstance().retrieveNewRequest();
-			LOGGER.error("Error: it passed");
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof MockPersistanceException)) {
-				e.printStackTrace();
-				Assert.fail();
-			}
-		}
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests to show the message of MAX files processed simultaneously. The rest
-	 * is the same as previous test. processException method.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test03run() throws TReqSException {
-		Dispatcher.getInstance().setMaxFilesBeforeMessage((short) 1);
+    /**
+     * Tests getFileProperties then catch HSMException with DAOFactory. When the
+     * file does not exist. processException method.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test06run() throws TReqSException {
+        HSMException exception = new HSMOpenException((short) 1);
+        HSMMockBridge.getInstance().setFilePropertiesException(exception);
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests getFileProperties then catch HSMStatException with DAOFactory. When
-	 * the file does not exist. When the file does not exist. processException
-	 * method.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test04run() throws TReqSException {
-		HSMException exception = new HSMStatException(new IOException(1 + ""));
-		HSMMockBridge.getInstance().setFilePropertiesException(exception);
+    /**
+     * Tests getFileProperties then catch HSMException with
+     * PersistanceException. When the file does not exist.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test07run() throws TReqSException {
+        HSMException exception = new HSMOpenException((short) 1);
+        HSMMockBridge.getInstance().setFilePropertiesException(exception);
+        PersistanceException exception2 = new MockPersistanceException(
+                new SQLException());
+        MockReadingDAO.getInstance().setRequestStatusByIdException(exception2);
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests getFileProperties then catch HSMStatException with
-	 * PersistanceException. When the file does not exist. processException
-	 * method.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test05run() throws TReqSException {
-		HSMException exception = new HSMStatException(new IOException(1 + ""));
-		HSMMockBridge.getInstance().setFilePropertiesException(exception);
-		PersistanceException exception2 = new MockPersistanceException(
-				new SQLException());
-		MockReadingDAO.getInstance().setRequestStatusByIdException(exception2);
+    /**
+     * Tests a file in disk. fileOnDisk method.
+     * <p>
+     * It finish without staging.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test08run() throws TReqSException {
+        HSMMockBridge.getInstance().setFileProperties(
+                new HSMHelperFileProperties("DISK0001", 1, 20, (byte) 0));
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests getFileProperties then catch HSMException with DAOFactory. When the
-	 * file does not exist. processException method.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test06run() throws TReqSException {
-		HSMException exception = new HSMOpenException((short) 1);
-		HSMMockBridge.getInstance().setFilePropertiesException(exception);
+    /**
+     * Tests a file in disk with PersistanceException. fileOnDisk method.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test09run() throws TReqSException {
+        HSMMockBridge.getInstance().setFileProperties(
+                new HSMHelperFileProperties("DISK0002", 2, 40, (byte) 0));
+        PersistanceException exception2 = new MockPersistanceException(
+                new SQLException());
+        MockReadingDAO.getInstance().setRequestStatusByIdException(exception2);
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests getFileProperties then catch HSMException with
-	 * PersistanceException. When the file does not exist.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test07run() throws TReqSException {
-		HSMException exception = new HSMOpenException((short) 1);
-		HSMMockBridge.getInstance().setFilePropertiesException(exception);
-		PersistanceException exception2 = new MockPersistanceException(
-				new SQLException());
-		MockReadingDAO.getInstance().setRequestStatusByIdException(exception2);
+    /**
+     * Tests a file in tape.
+     * <p>
+     * It should finish.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test10run() throws TReqSException {
+        HSMMockBridge.getInstance().setFileProperties(
+                new HSMHelperFileProperties("IT0123", 1, 20, (byte) 0));
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests a file in disk. fileOnDisk method.
-	 * <p>
-	 * It finish without staging.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test08run() throws TReqSException {
-		HSMMockBridge.getInstance().setFileProperties(
-				new HSMHelperFileProperties("DISK0001", 1, 20, (byte) 0));
+    /**
+     * Tests a file in tape with PersistanceException.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test11run() throws TReqSException {
+        HSMMockBridge.getInstance().setFileProperties(
+                new HSMHelperFileProperties("JT5678", 1, 20, (byte) 0));
+        PersistanceException exception = new MockPersistanceException(
+                new SQLException());
+        MockReadingDAO.getInstance().setNewJobsException(exception);
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        try {
+            Dispatcher.getInstance().retrieveNewRequest();
+            LOGGER.error("Error: it passed");
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof MockPersistanceException)) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+        }
+    }
 
-	/**
-	 * Tests a file in disk with PersistanceException. fileOnDisk method.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test09run() throws TReqSException {
-		HSMMockBridge.getInstance().setFileProperties(
-				new HSMHelperFileProperties("DISK0002", 2, 40, (byte) 0));
-		PersistanceException exception2 = new MockPersistanceException(
-				new SQLException());
-		MockReadingDAO.getInstance().setRequestStatusByIdException(exception2);
+    /**
+     * Tests an existing file. But there is not FPOT associated. It then delete
+     * the associated file, in order to recreate the request.
+     * <p>
+     * It finish without queueing.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test12run() throws TReqSException {
+        String filename = "filename1";
+        byte size = 3;
+        String username = "owner";
+        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+                (short) 1, filename, size, username);
+        jobs.add(request);
+        MockReadingDAO.getInstance().setNewJobs(jobs);
+        FilesController.getInstance().add(filename, size, new User(username));
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests a file in tape.
-	 * <p>
-	 * It should finish.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test10run() throws TReqSException {
-		HSMMockBridge.getInstance().setFileProperties(
-				new HSMHelperFileProperties("IT0123", 1, 20, (byte) 0));
+    /**
+     * Tests an existing file with metadata non outdated.
+     * <p>
+     * It should finish.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test13run() throws TReqSException {
+        String filename = "filename1";
+        byte size = 3;
+        String username = "owner";
+        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+                (short) 1, filename, size, username);
+        jobs.add(request);
+        MockReadingDAO.getInstance().setNewJobs(jobs);
+        File file = FilesController.getInstance().add(filename, size,
+                new User(username));
+        Tape tape = TapesController.getInstance().add("tapename",
+                new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
+        FilePositionOnTapesController.getInstance().add(file, tape, 0);
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-	/**
-	 * Tests a file in tape with PersistanceException.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test11run() throws TReqSException {
-		HSMMockBridge.getInstance().setFileProperties(
-				new HSMHelperFileProperties("JT5678", 1, 20, (byte) 0));
-		PersistanceException exception = new MockPersistanceException(
-				new SQLException());
-		MockReadingDAO.getInstance().setNewJobsException(exception);
+    /**
+     * Tests an existing file with metadata outdated.
+     * <p>
+     * It should finish.
+     *
+     * @throws TReqSException
+     * @throws InterruptedException
+     */
+    @Test
+    public void test14run() throws TReqSException, InterruptedException {
+        String filename = "filename1";
+        byte size = 3;
+        String username = "owner";
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
+        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+                (short) 1, filename, size, username);
+        jobs.add(request);
+        MockReadingDAO.getInstance().setNewJobs(jobs);
+        File file = FilesController.getInstance().add(filename, size,
+                new User(username));
+        Tape tape = TapesController.getInstance().add("tapename",
+                new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
+        FilePositionOnTapesController.getInstance().add(file, tape, 0);
 
-		try {
-			Dispatcher.getInstance().retrieveNewRequest();
-			LOGGER.error("Error: it passed");
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof MockPersistanceException)) {
-				e.printStackTrace();
-				Assert.fail();
-			}
-		}
-	}
+        Thread.sleep(1500);
 
-	/**
-	 * Tests an existing file. But there is not FPOT associated. It then delete
-	 * the associated file, in order to recreate the request.
-	 * <p>
-	 * It finish without queueing.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test12run() throws TReqSException {
-		String filename = "filename1";
-		byte size = 3;
-		String username = "owner";
-		List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
-		PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-				(short) 1, filename, size, username);
-		jobs.add(request);
-		MockReadingDAO.getInstance().setNewJobs(jobs);
-		FilesController.getInstance().add(filename, size, new User(username));
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+    /**
+     * Tests an existing file with metadata outdated and HSM problem.
+     *
+     * @throws TReqSException
+     * @throws InterruptedException
+     */
+    @Test
+    public void test15run() throws TReqSException, InterruptedException {
+        String filename = "filename1";
+        byte size = 3;
+        String username = "owner";
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
+        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+                (short) 1, filename, size, username);
+        jobs.add(request);
+        MockReadingDAO.getInstance().setNewJobs(jobs);
+        File file = FilesController.getInstance().add(filename, size,
+                new User(username));
+        Tape tape = TapesController.getInstance().add("tapename",
+                new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
+        FilePositionOnTapesController.getInstance().add(file, tape, 0);
 
-	/**
-	 * Tests an existing file with metadata non outdated.
-	 * <p>
-	 * It should finish.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test13run() throws TReqSException {
-		String filename = "filename1";
-		byte size = 3;
-		String username = "owner";
-		List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
-		PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-				(short) 1, filename, size, username);
-		jobs.add(request);
-		MockReadingDAO.getInstance().setNewJobs(jobs);
-		File file = FilesController.getInstance().add(filename, size,
-				new User(username));
-		Tape tape = TapesController.getInstance().add("tapename",
-				new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
-		FilePositionOnTapesController.getInstance().add(file, tape, 0);
+        HSMOpenException exception = new HSMOpenException((short) 1);
+        HSMMockBridge.getInstance().setFilePropertiesException(exception);
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Thread.sleep(1500);
 
-	/**
-	 * Tests an existing file with metadata outdated.
-	 * <p>
-	 * It should finish.
-	 * 
-	 * @throws TReqSException
-	 * @throws InterruptedException
-	 */
-	@Test
-	public void test14run() throws TReqSException, InterruptedException {
-		String filename = "filename1";
-		byte size = 3;
-		String username = "owner";
-		Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
-		List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
-		PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-				(short) 1, filename, size, username);
-		jobs.add(request);
-		MockReadingDAO.getInstance().setNewJobs(jobs);
-		File file = FilesController.getInstance().add(filename, size,
-				new User(username));
-		Tape tape = TapesController.getInstance().add("tapename",
-				new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
-		FilePositionOnTapesController.getInstance().add(file, tape, 0);
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-		Thread.sleep(1500);
+    /**
+     * Tests an existing file with metadata outdated and in disk.
+     * <p>
+     * It does not finish because the file is already staged.
+     *
+     * @throws TReqSException
+     * @throws InterruptedException
+     */
+    @Test
+    public void test16run() throws TReqSException, InterruptedException {
+        String filename = "filename1";
+        byte size = 3;
+        String username = "owner";
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
+        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+                (short) 1, filename, size, username);
+        jobs.add(request);
+        MockReadingDAO.getInstance().setNewJobs(jobs);
+        File file = FilesController.getInstance().add(filename, size,
+                new User(username));
+        Tape tape = TapesController.getInstance().add("tapename",
+                new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
+        FilePositionOnTapesController.getInstance().add(file, tape, 0);
+        HSMMockBridge.getInstance().setFileProperties(
+                new HSMHelperFileProperties("DISK0003", 1, 20, (byte) 0));
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        Thread.sleep(1500);
 
-	/**
-	 * Tests an existing file with metadata outdated and HSM problem.
-	 * 
-	 * @throws TReqSException
-	 * @throws InterruptedException
-	 */
-	@Test
-	public void test15run() throws TReqSException, InterruptedException {
-		String filename = "filename1";
-		byte size = 3;
-		String username = "owner";
-		Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
-		List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
-		PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-				(short) 1, filename, size, username);
-		jobs.add(request);
-		MockReadingDAO.getInstance().setNewJobs(jobs);
-		File file = FilesController.getInstance().add(filename, size,
-				new User(username));
-		Tape tape = TapesController.getInstance().add("tapename",
-				new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
-		FilePositionOnTapesController.getInstance().add(file, tape, 0);
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-		HSMOpenException exception = new HSMOpenException((short) 1);
-		HSMMockBridge.getInstance().setFilePropertiesException(exception);
+    /**
+     * Tests an existing file with metadata outdated with persistance problem
+     * while retrieving metadata info.
+     *
+     * @throws TReqSException
+     * @throws InterruptedException
+     */
+    @Test
+    public void test17run() throws TReqSException, InterruptedException {
+        String filename = "filename1";
+        byte size = 3;
+        String username = "owner";
+        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
+        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+                (short) 1, filename, size, username);
+        jobs.add(request);
+        MockReadingDAO.getInstance().setNewJobs(jobs);
+        File file = FilesController.getInstance().add(filename, size,
+                new User(username));
+        Tape tape = TapesController.getInstance().add("tapename",
+                new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
+        FilePositionOnTapesController.getInstance().add(file, tape, 0);
+        PersistanceException exception = new MockPersistanceException(
+                new SQLException());
+        MockReadingDAO.getInstance().setNewJobsException(exception);
 
-		Thread.sleep(1500);
+        Thread.sleep(1500);
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+        try {
+            Dispatcher.getInstance().retrieveNewRequest();
+            LOGGER.error("Error: it passed");
+            Assert.fail();
+        } catch (Throwable e) {
+            if (!(e instanceof MockPersistanceException)) {
+                e.printStackTrace();
+                Assert.fail();
+            }
+        }
+    }
 
-	/**
-	 * Tests an existing file with metadata outdated and in disk.
-	 * <p>
-	 * It does not finish because the file is already staged.
-	 * 
-	 * @throws TReqSException
-	 * @throws InterruptedException
-	 */
-	@Test
-	public void test16run() throws TReqSException, InterruptedException {
-		String filename = "filename1";
-		byte size = 3;
-		String username = "owner";
-		Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
-		List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
-		PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-				(short) 1, filename, size, username);
-		jobs.add(request);
-		MockReadingDAO.getInstance().setNewJobs(jobs);
-		File file = FilesController.getInstance().add(filename, size,
-				new User(username));
-		Tape tape = TapesController.getInstance().add("tapename",
-				new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
-		FilePositionOnTapesController.getInstance().add(file, tape, 0);
-		HSMMockBridge.getInstance().setFileProperties(
-				new HSMHelperFileProperties("DISK0003", 1, 20, (byte) 0));
+    /**
+     * Tests a file in tape.
+     * <p>
+     * It should finish.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test18run() throws TReqSException {
+        HSMMockBridge.getInstance().setFileProperties(
+                new HSMHelperFileProperties("IS9510", 1, 20, (byte) 0));
+        PersistanceException exception = new MockPersistanceException(
+                new SQLException());
+        MockReadingDAO.getInstance().setRequestStatusByIdException(exception);
 
-		Thread.sleep(1500);
+        Dispatcher.getInstance().retrieveNewRequest();
+    }
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+    /**
+     * Tests to stop the dispatcher from other thread.
+     *
+     * @throws TReqSException
+     */
+    @Test
+    public void test19run() throws TReqSException {
+        Thread thread = new Thread() {
 
-	/**
-	 * Tests an existing file with metadata outdated with persistance problem
-	 * while retrieving metadata info.
-	 * 
-	 * @throws TReqSException
-	 * @throws InterruptedException
-	 */
-	@Test
-	public void test17run() throws TReqSException, InterruptedException {
-		String filename = "filename1";
-		byte size = 3;
-		String username = "owner";
-		Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
-		List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
-		PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-				(short) 1, filename, size, username);
-		jobs.add(request);
-		MockReadingDAO.getInstance().setNewJobs(jobs);
-		File file = FilesController.getInstance().add(filename, size,
-				new User(username));
-		Tape tape = TapesController.getInstance().add("tapename",
-				new MediaType((byte) 1, "media1"), TapeStatus.TS_UNLOCKED);
-		FilePositionOnTapesController.getInstance().add(file, tape, 0);
-		PersistanceException exception = new MockPersistanceException(
-				new SQLException());
-		MockReadingDAO.getInstance().setNewJobsException(exception);
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    Dispatcher.getInstance().conclude();
+                } catch (TReqSException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.setName("TestRun");
+        thread.start();
+        Dispatcher.getInstance().run();
+    }
 
-		Thread.sleep(1500);
+    @Test
+    public void testCreate01() throws TReqSException {
+        Dispatcher.getInstance().getMaxRequests();
+    }
 
-		try {
-			Dispatcher.getInstance().retrieveNewRequest();
-			LOGGER.error("Error: it passed");
-			Assert.fail();
-		} catch (Throwable e) {
-			if (!(e instanceof MockPersistanceException)) {
-				e.printStackTrace();
-				Assert.fail();
-			}
-		}
-	}
+    @Test
+    public void testMaxFileBeforeMessage01() throws TReqSException {
+        boolean failed = false;
+        try {
+            Dispatcher.getInstance().setMaxFilesBeforeMessage((short) -1);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-	/**
-	 * Tests a file in tape.
-	 * <p>
-	 * It should finish.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test18run() throws TReqSException {
-		HSMMockBridge.getInstance().setFileProperties(
-				new HSMHelperFileProperties("IS9510", 1, 20, (byte) 0));
-		PersistanceException exception = new MockPersistanceException(
-				new SQLException());
-		MockReadingDAO.getInstance().setRequestStatusByIdException(exception);
+    @Test(expected = AssertionError.class)
+    public void testMaxRequest01() throws TReqSException {
+        Dispatcher.getInstance().setMaxRequests((short) -5);
+    }
 
-		Dispatcher.getInstance().retrieveNewRequest();
-	}
+    @Test
+    public void testMaxRequest02() throws TReqSException {
+        Dispatcher.getInstance().setMaxRequests((short) 5);
+    }
 
-	/**
-	 * Tests to stop the dispatcher from other thread.
-	 * 
-	 * @throws TReqSException
-	 */
-	@Test
-	public void test19run() throws TReqSException {
-		Thread thread = new Thread() {
+    @Test
+    public void testSecondsBetweenLoops01() throws TReqSException {
+        boolean failed = false;
+        try {
+            Dispatcher.getInstance().setSecondsBetweenLoops((byte) -1);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 
-			@Override
-			public void run() {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				try {
-					Dispatcher.getInstance().conclude();
-				} catch (TReqSException e) {
-					e.printStackTrace();
-				}
-			}
-		};
-		thread.setName("TestRun");
-		thread.start();
-		Dispatcher.getInstance().run();
-	}
+    @Test
+    public void testToStop01() throws TReqSException {
+        Dispatcher.getInstance().start();
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Dispatcher.getInstance().conclude();
+        Dispatcher.getInstance().waitToFinish();
+    }
 }

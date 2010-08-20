@@ -43,9 +43,11 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Stager;
@@ -61,7 +63,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * 
  * @version 2010-07-07
  * @author gomez
- */
+ */@RunWith(RandomBlockJUnit4ClassRunner.class)
 public class StagersControllerTest {
 	/**
 	 * Logger.
