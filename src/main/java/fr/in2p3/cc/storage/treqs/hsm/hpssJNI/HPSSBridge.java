@@ -83,7 +83,7 @@ public class HPSSBridge extends AbstractHSMBridge {
 
     /**
      * Retrieves the unique instance.
-     * 
+     *
      * @throws TReqSException
      */
     public static HPSSBridge getInstance() throws TReqSException {
@@ -101,21 +101,22 @@ public class HPSSBridge extends AbstractHSMBridge {
 
     /**
      * Initializes credentials.
-     * 
+     *
      * @return
      */
     private static native void hpssInit(String authType);
 
     public static void main(String[] args) throws TReqSException {
         String fileName = "";
-        if (args.length > 0 && !args[0].equals("")) {
-            fileName = args[0];
+        if (args.length > 1 && !args[1].equals("")) {
+            fileName = args[1];
         } else {
             fileName = "/hpss";
         }
         LOGGER.error("Starting HPSSBridge");
         LOGGER.error("Keytab: {}, File {}", args);
-        HPSSBridge.getInstance().setKeytabPath(args[0]);
+        Configurator.getInstance().setValue("MAIN", "KEYTAB_FILE", args[0]);
+        // TODO delete HPSSBridge.getInstance().setKeytabPath(args[0]);
         LOGGER.error("Getting properties");
         HPSSBridge.getInstance().getFileProperties(fileName);
         LOGGER.error("Staging file");
@@ -146,7 +147,7 @@ public class HPSSBridge extends AbstractHSMBridge {
 
     /**
      * Getter for authorization type member.
-     * 
+     *
      * @return
      */
     private String getAuthType() {
@@ -196,10 +197,12 @@ public class HPSSBridge extends AbstractHSMBridge {
     }
 
     /**
+     * TODO delete
+     *
      * @throws ProblematicConfiguationFileException
      */
     private void setKeytab() throws ProblematicConfiguationFileException {
-        String keytab = "/hpss/config/keytabs/keytab.treqs";
+        String keytab = "";
         try {
             keytab = Configurator.getInstance().getValue("MAIN", "KEYTAB_FILE");
         } catch (ConfigNotFoundException e) {
@@ -212,7 +215,7 @@ public class HPSSBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
      * long)
@@ -226,7 +229,7 @@ public class HPSSBridge extends AbstractHSMBridge {
 
     /**
      * Tests the readability of the keytab file.
-     * 
+     *
      * @return true if keytab is readable, false otherwise.
      */
     private boolean testKeytab() {
@@ -236,8 +239,15 @@ public class HPSSBridge extends AbstractHSMBridge {
 
         File keytab = new File(this.getKeytabPath());
         boolean ret = false;
-        if (keytab.exists() && keytab.canRead()) {
-            ret = true;
+        if (keytab.exists()) {
+            LOGGER.debug("Exists");
+            if (keytab.canRead()) {
+                LOGGER.debug("Can be read");
+                ret = true;
+            } else {
+                LOGGER.error("Cannot be read: {}", keytab.getAbsolutePath());}
+        } else {
+            LOGGER.error("It does not exist: {}", keytab.getAbsolutePath());
         }
 
         LOGGER.trace("< testKeytab");

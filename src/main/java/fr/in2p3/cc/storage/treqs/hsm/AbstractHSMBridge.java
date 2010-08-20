@@ -54,7 +54,7 @@ public abstract class AbstractHSMBridge {
 
     /**
      * Gets file metadata from the HSM. Gets file metadata.
-     * 
+     *
      * @param name
      *            the name of the file.
      */
@@ -63,7 +63,7 @@ public abstract class AbstractHSMBridge {
 
     /**
      * Getter for member.
-     * 
+     *
      * @return
      */
     protected String getKeytabPath() {
@@ -74,16 +74,16 @@ public abstract class AbstractHSMBridge {
      * Find out if the tape is locked or unlocked. TODO Version 2 This feature
      * has not been implemented. Ask HPSS database (DB2) for the status of a
      * tape
-     * 
+     *
      * @param t the tape name
-     * 
+     *
      * @return the tape status
      */
     // TapeStatus getTapeProperties(string t);
 
     /**
      * Setter for member.
-     * 
+     *
      * @param keytabPath
      */
     protected void setKeytabPath(String keytabPath) {
@@ -92,7 +92,7 @@ public abstract class AbstractHSMBridge {
 
     /**
      * Do the staging of a file Stages a file to HSM's disks.
-     * 
+     *
      * @param name
      *            the name of the file
      * @param size

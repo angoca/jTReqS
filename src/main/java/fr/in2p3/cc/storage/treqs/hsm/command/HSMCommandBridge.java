@@ -86,7 +86,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /**
      * Retrieves the unique instance.
-     * 
+     *
      * @return
      * @throws ProblematicConfiguationFileException
      * @throws ConfigNotFoundException
@@ -116,7 +116,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String, long, int, java.lang.String, int)
@@ -181,7 +181,7 @@ public class HSMCommandBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
      * long)
@@ -249,7 +249,8 @@ public class HSMCommandBridge extends AbstractHSMBridge {
             ProblematicConfiguationFileException, TReqSException {
         LOGGER.error("Starting HSMCommandBridge");
         LOGGER.error("Keytab: {}, File {}", args);
-        HSMCommandBridge.getInstance().setKeytabPath(args[0]);
+        Configurator.getInstance().setValue("MAIN","KEYTAB_FILE", args[0]);
+        // TODO delete HSMCommandBridge.getInstance().setKeytabPath(args[0]);
         LOGGER.error("Getting properties");
         HSMCommandBridge.getInstance().getFileProperties(args[1]);
         LOGGER.error("Staging file");
