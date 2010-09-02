@@ -75,7 +75,6 @@ public class HPSSBridge extends AbstractHSMBridge {
             LOGGER.error("Error loading library: {}", e.getMessage());
             throw e;
         }
-
     }
 
     private static native int getHPSSFileProperties(String name,
@@ -102,9 +101,16 @@ public class HPSSBridge extends AbstractHSMBridge {
     /**
      * Initializes credentials.
      *
-     * @return
+     * @param authType
+     *            Type of authorization: unix.
+     * @param keytab
+     *            Absolute path of the keytab.
+     * @param user
+     *            User to connect to HPSS.
+     * @return 0 if the login was successful.
      */
-    private static native void hpssInit(String authType);
+    private static native int hpssInit(String authType, String keytab,
+            String user);
 
     public static void main(String[] args) throws TReqSException {
         String fileName = "";
@@ -128,6 +134,7 @@ public class HPSSBridge extends AbstractHSMBridge {
      * The HSM authorization type.
      */
     private String authType;
+    private String user;
 
     private HPSSBridge() throws HSMException,
             ProblematicConfiguationFileException {
@@ -135,14 +142,41 @@ public class HPSSBridge extends AbstractHSMBridge {
 
         this.setAuthType();
         this.setKeytab();
+        this.setUser();
 
-        HPSSBridge.hpssInit(this.getAuthType());
+        String env = HPSSBridge.getenv("HPSS_API_DEBUG");
+        LOGGER.error("env {}", env);
+
+        int ret = HPSSBridge.hpssInit(this.getAuthType(), this.getKeytabPath(),
+                this.getUser());
+        LOGGER.debug("Returned code by hpssInit {}", ret);
+//        if (ret < 0) {
+//            throw new HSMInitException();
+//        }
 
         if (!this.testKeytab()) {
             throw new HSMStatException();
         }
 
         LOGGER.trace("< HPSSBridge created");
+    }
+
+    private static native String getenv(String name);
+
+    private void setUser() throws ProblematicConfiguationFileException {
+        String user = "treqs";
+        try {
+            authType = Configurator.getInstance().getValue("MAIN", "USER");
+        } catch (ConfigNotFoundException e) {
+            LOGGER
+                    .info("No setting for MAIN.USER, default value will be used: "
+                            + user);
+        }
+        this.user = user;
+    }
+
+    private String getUser() {
+        return this.user;
     }
 
     /**
@@ -186,13 +220,6 @@ public class HPSSBridge extends AbstractHSMBridge {
                     .info("No setting for MAIN.AUTH_TYPE, default value will be used: "
                             + authType);
         }
-        this.setAuthType(authType);
-    }
-
-    /**
-     * Setter for member.
-     */
-    private void setAuthType(String authType) {
         this.authType = authType;
     }
 
@@ -245,7 +272,8 @@ public class HPSSBridge extends AbstractHSMBridge {
                 LOGGER.debug("Can be read");
                 ret = true;
             } else {
-                LOGGER.error("Cannot be read: {}", keytab.getAbsolutePath());}
+                LOGGER.error("Cannot be read: {}", keytab.getAbsolutePath());
+            }
         } else {
             LOGGER.error("It does not exist: {}", keytab.getAbsolutePath());
         }
