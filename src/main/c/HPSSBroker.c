@@ -52,7 +52,6 @@ int init(const char * authType, const char * keytab, const char * user) {
 	}
 
 	// Establishes the type of authentication mechanism.
-	hpss_authn_mech_t authMech;
 	if (strcmp(authType, "kerberos") == 0) {
 		printf("auth kerb");
 		authMech = hpss_authn_mech_krb5;
@@ -69,7 +68,8 @@ int init(const char * authType, const char * keytab, const char * user) {
 
 	return rc;
 }
-void processProperties(hpss_xfileattr_t attrOut, int * position,
+
+int processProperties(hpss_xfileattr_t attrOut, int * position,
 		int * higherStorageLevel, char * tape, u_signed64 length) {
 
 	int rc = 0;

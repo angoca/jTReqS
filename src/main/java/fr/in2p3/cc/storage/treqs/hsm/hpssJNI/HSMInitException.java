@@ -9,4 +9,8 @@ public class HSMInitException extends HSMException {
      */
     private static final long serialVersionUID = -7896315209618198341L;
 
+    public HSMInitException(String message) {
+        System.out.println("message " + message);
+    }
+
 }

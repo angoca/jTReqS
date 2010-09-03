@@ -36,20 +36,22 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-#include "fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge.h"
 #include "HPSSBroker.h"
+#include "fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge.h"
+#include <stdlib.h>
 
 #define cont (rc == HPSS_E_NOERROR)
 
 char* LOGGER;
 
-JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_hpssInit(
+JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_hpssInit(
 		JNIEnv* env, jclass js, jstring jAuthType, jstring jKeytab,
 		jstring jUser) {
 	const char * authType;
 	const char * keytab;
 	const char * user;
 	jclass hsmInitException;
+	jint rc;
 
 	LOGGER = getenv("TREQS_TRACE");
 	if (LOGGER == "TRACE") {
@@ -62,7 +64,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_
 	user = (*env)->GetStringUTFChars(env, jUser, JNI_FALSE);
 
 	// Calls the Broker.
-	jint rc = init(authType, keytab, user);
+	rc = init(authType, keytab, user);
 
 	// Release JNI components.
 	(*env)->ReleaseStringUTFChars(env, jAuthType, authType);
@@ -73,14 +75,12 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_
 	if (rc != HPSS_E_NOERROR) {
 		hsmInitException = (*env)->FindClass(env,
 				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMInitException");
-		(*env)->ThrowNew(env, hsmInitException, rc);
+		(*env)->ThrowNew(env, hsmInitException, "Problem " + rc);
 	}
 
 	if (LOGGER == "TRACE") {
 		printf("< hpssInit\n");
 	}
-
-	return rc;
 }
 
 JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_getFileProperties(
@@ -91,7 +91,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 	int position = 0;
 	int storageLevel = 0;
 	char tape[12];
-	u_signed64 length = 0;
+	unsigned long length = 0;
 	unsigned long long int size = 0;
 
 	// JNI
@@ -101,6 +101,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 	jmethodID jmethodSetSize;
 	jstring jtape;
 	jclass hsmStatException;
+	jint rc =0;
 
 	if (LOGGER == "TRACE") {
 		printf("> getFileProperties\n");
@@ -110,7 +111,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 	filename = (*env)->GetStringUTFChars(env, jFileName, JNI_FALSE);
 
 	// Calls the broker.
-	jint rc = getFileProperties(filename, &position, &storageLevel, tape,
+	rc = getFileProperties(filename, &position, &storageLevel, tape,
 			length);
 
 	// Release JNI component.
@@ -120,7 +121,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 	if (rc != HPSS_E_NOERROR) {
 		hsmStatException = (*env)->FindClass(env,
 				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException");
-		(*env)->ThrowNew(env, hsmStatException, rc);
+		(*env)->ThrowNew(env, hsmStatException, "Problem " + rc);
 	}
 
 	if (LOGGER == "TRACE") {

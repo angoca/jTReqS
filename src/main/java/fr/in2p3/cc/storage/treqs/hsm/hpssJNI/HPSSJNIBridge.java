@@ -70,7 +70,9 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
 
     static {
         try {
+            LOGGER.info("Loading the HPSS JNI Bridge");
             System.loadLibrary("HPSSJNIBridge");
+            LOGGER.debug("Load succesfully");
         } catch (java.lang.UnsatisfiedLinkError e) {
             LOGGER.error("Error loading library: {}", e.getMessage());
             throw e;
@@ -148,8 +150,8 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
         this.setUser();
 
         // Initializes the HPSS environment.
-        HPSSJNIBridge.hpssInit(this.getAuthType(), this.getKeytabPath(),
-                this.getUser());
+        HPSSJNIBridge.hpssInit(this.getAuthType(), this.getKeytabPath(), this
+                .getUser());
 
         // Tests if the keytab could be acceded from HPSS.
         if (!this.testKeytab()) {
@@ -158,8 +160,6 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
 
         LOGGER.trace("< HPSSBridge created");
     }
-
-    private static native String getenv(String name);
 
     /**
      * Sets the user that will be used to authenticate the communication with
@@ -233,8 +233,9 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             authType = Configurator.getInstance().getValue("MAIN", "AUTH_TYPE");
         } catch (ConfigNotFoundException e) {
-            LOGGER.info("No setting for MAIN.AUTH_TYPE, default value will be used: "
-                    + authType);
+            LOGGER
+                    .info("No setting for MAIN.AUTH_TYPE, default value will be used: "
+                            + authType);
         }
         this.authType = authType;
     }
