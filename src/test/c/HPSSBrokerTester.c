@@ -36,11 +36,12 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-#include "Broker.h"
+#include "fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge.h"
+#include "hpss_api.h"
 
 int main(int argc, char **argv) {
 	printf("Starting HPSS bridge\n");
-	const char * name;
+	const char * name = "/hpss/in2p3.fr/home/p/pbrinett/16848.ccdvli08.md5";
 	const char * authType = "unix";
 	const char * keytab = "/var/hpss/etc/keytab.treqs";
 	const char * user = "treqs";
@@ -48,15 +49,17 @@ int main(int argc, char **argv) {
 	int position = 0;
 	int storageLevel = 0;
 	char tape[80];
-	u_signed64 length = 0;
+	unsigned long length = 0;
+	int rc = 0;
+
+	printf("> Starting tester\n");
 
 	// Initializes the api.
-	int rc = init(authType, keytab, user);
-	printf("code out init: %d\n", rc);
+	rc = init(authType, keytab, user);
+	printf("Code out from init: %d\n", rc);
 	if (rc == HPSS_E_NOERROR) {
-		name = "/hpss/in2p3.fr/home/p/pbrinett/16848.ccdvli08.md5";
-
 		rc = getFileProperties(name, &position, &storageLevel, tape, length);
+		printf("Code out from getProps: %d\n", rc);
 		if (rc == HPSS_E_NOERROR) {
 			printf("%s, %d, %d, %s\n", name, position, storageLevel, tape);
 		} else {
@@ -65,6 +68,8 @@ int main(int argc, char **argv) {
 	} else {
 		printf("Error in init\n");
 	}
+
+	printf("< Stopping tester\n");
 
 	return 0;
 }

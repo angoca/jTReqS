@@ -3,12 +3,11 @@ export LD_LIBRARY_PATH=`pwd`
 export HPSS_API_DEBUG=255
 
 # HPSS Broker
-gcc -I /opt/hpss/include/ -DLINUX -fPIC -o classes/HPSSBroker.o -c src/main/c/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSBroker.c
+gcc -I /opt/hpss/include/ -DLINUX -fPIC -o HPSSBroker.o -c ../src/main/c/HPSSBroker.c
 
 # JNI Bridge
-javac -d classes/ ../src/main/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridge.java
-javah -classpath classes/ -d classes/ -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridge
-gcc -I /usr/java/jdk1.5.0_14/include/linux -I classes/ -fPIC -o classes/HPSSJNIBridge.o -c src/main/c/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSBroker.c
-ld -o bin/libHPSSJNIBridge.so classes/HPSSBroker.o classes/HPSSJNIBridge.o -shared -lhpss -L/opt/hpss/lib 
-java -Djava.library.path=classes -cp bin fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridge
+javac -cp ../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar:. -d . ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridge.java
+javah -classpath ./ -d ./ -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridge
+gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -fPIC -o HPSSJNIBridge.o -c ../src/main/c/HPSSJNIBridge.c
+ld -o ./libHPSSJNIBridge.so ./HPSSBroker.o ./HPSSJNIBridge.o -shared -lhpss -L/opt/hpss/lib
 
