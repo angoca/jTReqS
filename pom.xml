@@ -206,7 +206,7 @@
             <artifactId>appassembler-maven-plugin</artifactId>
             <configuration>
               <!-- Extra JVM arguments that will be included in the bin scripts -->
-              <extraJvmArguments>-Dlogback.configurationFile=${logbackFile}</extraJvmArguments>
+              <extraJvmArguments>-Dlogback.configurationFile=${logbackFile} -Djava.library.path=/opt/hpss/lib</extraJvmArguments>
 
               <configurationDirectory>etc</configurationDirectory>
               <platforms>
@@ -215,7 +215,8 @@
               <programs>
                 <program>
                   <name>jtreqs</name>
-                  <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
+                  <!--mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass-->
+                  <mainClass>fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSBridge</mainClass>
                 </program>
               </programs>
               <repositoryLayout>flat</repositoryLayout>
