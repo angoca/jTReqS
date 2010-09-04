@@ -70,7 +70,7 @@ int init(const char * authType, const char * keytab, const char * user) {
 }
 
 int processProperties(hpss_xfileattr_t attrOut, int * position,
-		int * higherStorageLevel, char * tape, u_signed64 length) {
+		int * higherStorageLevel, char * tape, unsigned long length) {
 
 	int rc = 0;
 	hpssoid_t bitFileId;
@@ -138,7 +138,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 
 // TODO review if higherStorageLevel is really necessary.
 int getFileProperties(const char * name, int * position,
-		int * higherStorageLevel, char * tape, u_signed64 length) {
+		int * higherStorageLevel, char * tape, unsigned long length) {
 
 	int rc = 0;
 
