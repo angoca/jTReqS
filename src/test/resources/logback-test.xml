@@ -48,7 +48,7 @@
     level="DEBUG"> <appender-ref ref="Console" /> </logger
   -->
 
-  <root level="info">
+  <root level="DEBUG">
     <appender-ref ref="Console" />
   </root>
 </configuration>
