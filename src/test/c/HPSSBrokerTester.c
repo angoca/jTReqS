@@ -20,13 +20,13 @@ int main(int argc, char **argv) {
 	char * tape;
 	unsigned long size;
 
-	printf("> Starting tester\n");
+	printf("> Starting broker tester\n");
 	rc = init(authType, keytab, user);
 	printf("Code init %d\n", rc);
-	if (rc == HPSS_E_NOERROR) {
+	if (rc == 0) {
 		rc = getFileProperties(filename, &position, &higherStorageLevel, tape,
 				size);
 		printf("Code getFileProps %d\n", rc);
 	}
-	printf("< Ending tester\n");
+	printf("< Ending broker tester\n");
 }

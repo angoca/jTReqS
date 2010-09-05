@@ -36,9 +36,9 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-#include "HPSSBroker.h"
-#include "fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge.h"
 #include <stdlib.h>
+#include "fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge.h"
+#include "HPSSBroker.h"
 
 #define cont (rc == HPSS_E_NOERROR)
 
@@ -54,7 +54,7 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_
 	jint rc;
 
 	LOGGER = getenv("TREQS_TRACE");
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("> hpssInit\n");
 	}
 
@@ -75,10 +75,11 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_
 	if (rc != HPSS_E_NOERROR) {
 		hsmInitException = (*env)->FindClass(env,
 				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMInitException");
-		(*env)->ThrowNew(env, hsmInitException, "Problem " + rc);
+		// FIXME there is a problem here while throwing the exception.
+//		(*env)->ThrowNew(env, hsmInitException, "Problem " + rc);
 	}
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("< hpssInit\n");
 	}
 }
@@ -90,7 +91,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 
 	int position = 0;
 	int storageLevel = 0;
-	char tape[12];
+	char * tape;
 	unsigned long length = 0;
 	unsigned long long int size = 0;
 
@@ -103,7 +104,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 	jclass hsmStatException;
 	jint rc =0;
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("> getFileProperties\n");
 	}
 
@@ -124,7 +125,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 		(*env)->ThrowNew(env, hsmStatException, "Problem " + rc);
 	}
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("Converting results\n");
 	}
 	// Returns the elements to java and release JNI components.
@@ -187,7 +188,7 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 		}
 	}
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("< getFileProperties\n");
 	}
 

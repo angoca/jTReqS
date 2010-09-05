@@ -26,13 +26,16 @@ public class HPSSJNIBridgeTester {
      *             If there is any error.
      */
     public static void main(String[] args) throws TReqSException {
+        LOGGER.error("> Starting HPSSBridge");
         String fileName = "";
-        if (args.length > 1 && !args[1].equals("")) {
+        if (args.length == 0) {
+            args = new String[] { "/var/hpss/etc/keytab.treqs",
+                    "/hpss/home/p/pbrinett/file" };
+        } else if (args.length > 1 && !args[1].equals("")) {
             fileName = args[1];
         } else {
             fileName = "/hpss";
         }
-        LOGGER.error("Starting HPSSBridge");
         LOGGER.error("Keytab: {}, File {}", args);
         Configurator.getInstance().setValue("MAIN", "KEYTAB_FILE", args[0]);
         LOGGER.error("Getting properties");
@@ -41,5 +44,4 @@ public class HPSSJNIBridgeTester {
         HPSSJNIBridge.getInstance().stage(fileName, 1);
         LOGGER.error(";)");
     }
-
 }

@@ -47,22 +47,22 @@ int init(const char * authType, const char * keytab, const char * user) {
 	hpss_authn_mech_t authMech;
 
 	LOGGER = getenv("TREQS_TRACE");
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("> init\n");
 	}
 
 	// Establishes the type of authentication mechanism.
 	if (strcmp(authType, "kerberos") == 0) {
-		printf("auth kerb");
+		printf("auth kerb\n");
 		authMech = hpss_authn_mech_krb5;
 	} else {
-		printf("auth unix");
+		printf("auth unix\n");
 		authMech = hpss_authn_mech_unix;
 	}
 	rc = hpss_SetLoginCred((char *) user, authMech, hpss_rpc_cred_client,
 			hpss_rpc_auth_type_keytab, (void *) keytab);
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("< init\n");
 	}
 
@@ -82,7 +82,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 	int lowestStorageLevelFound = FALSE;
 	int i;
 	int j;
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("> processProperties\n");
 	}
 
@@ -129,7 +129,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		}
 	}
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("< processProperties\n");
 	}
 
@@ -148,7 +148,7 @@ int getFileProperties(const char * name, int * position,
 	unsigned32 storagelevel = 0;
 	hpss_xfileattr_t attrOut;
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("> getFileProperties\n");
 	}
 
@@ -162,7 +162,7 @@ int getFileProperties(const char * name, int * position,
 		}
 	}
 
-	if (LOGGER == "TRACE") {
+	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("< getFileProperties\n");
 	}
 

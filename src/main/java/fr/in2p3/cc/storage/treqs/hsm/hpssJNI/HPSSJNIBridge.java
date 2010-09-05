@@ -150,8 +150,12 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
         this.setUser();
 
         // Initializes the HPSS environment.
-        HPSSJNIBridge.hpssInit(this.getAuthType(), this.getKeytabPath(), this
-                .getUser());
+        LOGGER.debug(
+                "Passing this params to init: {}, {}, {}",
+                new String[] { this.getAuthType(), this.getKeytabPath(),
+                        this.getUser() });
+        HPSSJNIBridge.hpssInit(this.getAuthType(), this.getKeytabPath(),
+                this.getUser());
 
         // Tests if the keytab could be acceded from HPSS.
         if (!this.testKeytab()) {
@@ -172,9 +176,9 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
      */
     private void setUser() throws ConfigNotFoundException,
             ProblematicConfiguationFileException {
-        final String keytab = Configurator.getInstance().getValue("MAIN",
+        final String user = Configurator.getInstance().getValue("MAIN",
                 "HPSS_USER");
-        this.setKeytabPath(keytab);
+        this.user = user;
     }
 
     /**
@@ -233,9 +237,8 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             authType = Configurator.getInstance().getValue("MAIN", "AUTH_TYPE");
         } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAIN.AUTH_TYPE, default value will be used: "
-                            + authType);
+            LOGGER.info("No setting for MAIN.AUTH_TYPE, default value will be used: "
+                    + authType);
         }
         this.authType = authType;
     }
