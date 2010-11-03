@@ -30,7 +30,7 @@ public class HPSSJNIBridgeTester {
         String fileName = "";
         if (args.length == 0) {
             args = new String[] { "/var/hpss/etc/keytab.treqs",
-                    "/hpss/home/p/pbrinett/file" };
+                    "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy" };
         } else if (args.length > 1 && !args[1].equals("")) {
             fileName = args[1];
         } else {
