@@ -1,8 +1,4 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
- * File: TapeStatus.h
- *
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
  * Contributors : Andres Gomez,
@@ -38,14 +34,21 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
+/**
+ * These are the possible states of a tape.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
+ */
 public enum TapeStatus {
     /**
-     * The tape is locked.
+     * The tape is locked and it cannot be read.
      */
     TS_LOCKED,
     /**
-     * The tape is unlocked.
+     * The tape is unlocked, and it is available to read its files.
      */
     TS_UNLOCKED
 }
