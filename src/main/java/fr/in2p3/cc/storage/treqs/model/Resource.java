@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -48,7 +47,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class contains the resource allocation for a given PVR (aka media type)
+ * Contains the resource allocation for a given media type (aka PVR).
+ * <p>
+ * Allocations is the minimal quantity of reserved drives for the users.
+ * <p>
+ * Resources is the quantity of drives used in "this moment" for a user.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
 public class Resource {
     /**
@@ -57,15 +63,15 @@ public class Resource {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Resource.class);
     /**
-     * ID of the PVR for this resource
+     * ID of the media type for this resource.
      */
     private MediaType mediaType;
     /**
-     * Date of the last data refresh
+     * Date of the last data refresh.
      */
     private Calendar timestamp;
     /**
-     * Total resource (drives) attribution
+     * Total resource (drives) attribution.
      */
     private byte totalAllocation;
     /**
@@ -73,25 +79,26 @@ public class Resource {
      */
     private Map<User, Byte> usedResources;
     /**
-     * Allocated resource for a user, as a fraction of TotalAllocation
+     * Allocated resource for a user, as a fraction of TotalAllocation.
      */
     private Map<User, Float> userAllocation;
 
     /**
      * Constructs a resource with the necessary parameters.
-     * 
+     *
      * @param media
-     * @param timestamp
-     * @param totalAllocation
+     *            Type of media.
+     * @param resourceTimestamp
+     *            Time when the data was obtained.
+     * @param totalDriveAllocation
+     *            Total quantity of drive allocation for a user.
      */
-    public Resource(MediaType media, Calendar timestamp, byte totalAllocation) {
+    public Resource(final MediaType media, final Calendar resourceTimestamp,
+            final byte totalDriveAllocation) {
         LOGGER.trace("> Creating Resource");
 
-        assert media != null;
-        assert timestamp != null;
-
         this.setMediaType(media);
-        this.setTimestamp(timestamp);
+        this.setTimestamp(resourceTimestamp);
         this.setTotalAllocation(totalAllocation);
 
         this.userAllocation = new HashMap<User, Float>();
@@ -102,36 +109,36 @@ public class Resource {
 
     /**
      * Returns the count of resources available.
-     * 
-     * @return
+     *
+     * @return Quantity of free drives per type.
      */
-    public byte countFreeResources() {
+    public final byte countFreeResources() {
         LOGGER.trace("> countFreeResources");
 
-        byte resource_left = this.totalAllocation;
+        byte resourceLeft = this.totalAllocation;
 
         Set<User> keySet = this.usedResources.keySet();
         for (Iterator<User> iterator = keySet.iterator(); iterator.hasNext();) {
             User key = iterator.next();
-            resource_left -= this.usedResources.get(key);
+            resourceLeft -= this.usedResources.get(key);
         }
 
         LOGGER.trace("< countFreeResources");
 
-        return resource_left;
+        return resourceLeft;
     }
 
     /**
      * Returns the age of the data in seconds.
-     * 
+     *
      * @return seconds since last data refresh
      */
-    public int getAge() {
+    public final int getAge() {
         LOGGER.trace("> getAge");
 
         Calendar now = new GregorianCalendar();
         int seconds = (int) ((now.getTimeInMillis() - this.getTimestamp()
-                .getTimeInMillis()) / 1000);
+                .getTimeInMillis()) / Constants.MILLISECONDS);
 
         LOGGER.debug("Age: {}", seconds);
 
@@ -141,64 +148,68 @@ public class Resource {
     }
 
     /**
-     * Getter for member
+     * Getter for the media type (aka PVRID).
+     *
+     * @return The type of media.
      */
-    public MediaType getMediaType() {
+    public final MediaType getMediaType() {
         LOGGER.trace(">< getMediaType");
 
         return this.mediaType;
     }
 
     /**
-     * Getter for member.
-     * 
-     * @return
+     * Getter for last time when the resource was checked.
+     *
+     * @return Timestamp of the resource check.
      */
-    Calendar getTimestamp() {
+    final Calendar getTimestamp() {
         LOGGER.trace(">< getTimestamp");
 
         return this.timestamp;
     }
 
     /**
-     * Getter for member.
-     * 
-     * @return
+     * Getter for the total quantity of allocation per type of drive.
+     *
+     * @return Total allocation.
      */
-    public byte getTotalAllocation() {
+    public final byte getTotalAllocation() {
         LOGGER.trace(">< getTotalAllocation");
 
         return this.totalAllocation;
     }
 
     /**
-     * Returns the resource usage for a given user.
-     * 
-     * @param user
-     *            the user name
-     * @return the number of used resources
+     * Returns the map of used resources. The map is composed of users and the
+     * quantity for each one.
+     *
+     * @return the number of used resources for all users.
      */
-    Map<User, Byte> getUsedResources() {
+    final Map<User, Byte> getUsedResources() {
         LOGGER.trace(">< getUsedResources");
+
         return this.usedResources;
     }
 
     /**
-     * Returns a pointer to the map of used resources.
-     * 
-     * @param u
-     * @return a pointer to the map of used resources
+     * Returns the resource usage for a given user.
+     *
+     * @param userName
+     *            User to be queried.
+     * @return Quantity of used resources for the given user, or -1 if the user
+     *         is not defined in the resources.
      */
-    public byte getUsedResources(User u) {
+    public final byte getUsedResources(final User userName) {
         LOGGER.trace("> getUsedResources");
 
-        assert u != null;
+        assert userName != null;
 
         byte ret = 0;
-        if (!this.usedResources.containsKey(u)) {
+        if (!this.usedResources.containsKey(userName)) {
             ret = -1;
         } else {
-            ret = this.usedResources.get(u);
+            ret = this.usedResources.get(userName);
         }
 
         LOGGER.trace("< getUsedResources");
@@ -207,11 +218,12 @@ public class Resource {
     }
 
     /**
-     * Returns a pointer to the map of user allocations.
-     * 
-     * @return a pointer to the map of user allocations
+     * Returns a map of user allocations. The map is the users and the
+     * allocation for each one.
+     *
+     * @return Map of user allocations.
      */
-    Map<User, Float> getUserAllocation() {
+    final Map<User, Float> getUserAllocation() {
         LOGGER.trace(">< getUserAllocation");
 
         return this.userAllocation;
@@ -219,12 +231,12 @@ public class Resource {
 
     /**
      * Returns the allocation for a given user.
-     * 
+     *
      * @param user
-     *            the user name
-     * @return the allocation, 0 if none
+     *            The user to be queried.
+     * @return The allocation for that user, or 0 if none.
      */
-    public float getUserAllocation(User user) {
+    public final float getUserAllocation(final User user) {
         LOGGER.trace("> getUserAllocation");
 
         assert user != null;
@@ -242,15 +254,15 @@ public class Resource {
     }
 
     /**
-     * Increment the used resources for a given user. If the user reference
-     * doesn't exist, create it.
-     * 
-     * @param u
+     * Increment the used resources for a given user. If the user reference does
+     * not exist, it creates it.
+     *
+     * @param user
      *            the reference to the user.
-     * @return
+     * @return The quantity of resources currently used for the given user.
      */
-    public byte increaseUsedResources(User user) {
-        LOGGER.trace("> incUsedResources");
+    public final byte increaseUsedResources(final User user) {
+        LOGGER.trace("> increaseUsedResources");
 
         assert user != null;
 
@@ -260,15 +272,15 @@ public class Resource {
             usedResources.put(user, (byte) 1);
         }
 
-        LOGGER.trace("< incUsedResources");
+        LOGGER.trace("< increaseUsedResources");
 
         return usedResources.get(user);
     }
 
     /**
-     * Sets timestamp to now.
+     * Sets timestamp to 'now'.
      */
-    void resetTimestamp() {
+    final void resetTimestamp() {
         LOGGER.trace("> resetTimestamp");
 
         this.timestamp = new GregorianCalendar();
@@ -279,7 +291,7 @@ public class Resource {
     /**
      * Sets all used resources to 0.
      */
-    public void resetUsedResources() {
+    public final void resetUsedResources() {
         LOGGER.trace("> resetUsedResources");
 
         Set<User> keySet = this.usedResources.keySet();
@@ -291,7 +303,13 @@ public class Resource {
         LOGGER.trace("< resetUsedResources");
     }
 
-    public void setMediaType(MediaType media) {
+    /**
+     * Establishes the type of media for the resource.
+     *
+     * @param media
+     *            Media type.
+     */
+    public final void setMediaType(final MediaType media) {
         LOGGER.trace("> setMediaType");
 
         assert media != null;
@@ -302,11 +320,12 @@ public class Resource {
     }
 
     /**
-     * Setter for member.
-     * 
+     * Setter for the time when the resource was refreshed from the database.
+     *
      * @param time
+     *            Timestamp of the last update.
      */
-    public void setTimestamp(Calendar time) {
+    public final void setTimestamp(final Calendar time) {
         LOGGER.trace("> setTimestamp");
 
         assert time != null;
@@ -317,27 +336,30 @@ public class Resource {
     }
 
     /**
-     * Setter for member.
-     * 
-     * @param time
+     * Setter for the quantity of allocation for the resource.
+     *
+     * @param qty
+     *            Total allocation for this media type.
      */
-    public void setTotalAllocation(byte time) {
+    public final void setTotalAllocation(final byte qty) {
         LOGGER.trace("> setTotalAllocation");
 
-        assert time > 0;
+        assert qty > 0;
 
-        this.totalAllocation = time;
+        this.totalAllocation = qty;
 
         LOGGER.trace("< setTotalAllocation");
     }
 
     /**
-     * Setter for member.
-     * 
+     * Setter for a user and the quantity of used drives for this resource.
+     *
      * @param user
+     *            User to use resources.
      * @param resource
+     *            Quantity of reserved resources for this user.
      */
-    void setUsedResources(User user, Byte resource) {
+    final void setUsedResources(final User user, final Byte resource) {
         LOGGER.trace("> setUsedResources");
 
         assert user != null;
@@ -349,12 +371,15 @@ public class Resource {
     }
 
     /**
-     * Setter for member.
-     * 
+     * Setter for a user and the allocation for it. Allocation is the minimal
+     * reserved quantity of drives for a given user.
+     *
      * @param user
+     *            User to query.
      * @param allocation
+     *            Minimal quantity of reserved drives.
      */
-    public void setUserAllocation(User user, float allocation) {
+    public final void setUserAllocation(final User user, final float allocation) {
         LOGGER.trace("> setUserAllocation");
 
         assert user != null;
@@ -365,11 +390,12 @@ public class Resource {
         LOGGER.trace("< setUserAllocation");
     }
 
-    /**
-     * Representation in a String.
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     @Override
-    public String toString() {
+    public final String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
@@ -387,5 +413,4 @@ public class Resource {
 
         return ret;
     }
-
 }
