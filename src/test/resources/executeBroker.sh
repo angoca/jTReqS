@@ -12,5 +12,7 @@ gcc -I /opt/hpss/include -I ./ -lhpss -L /opt/hpss/lib/ -lHPSSBroker -L./ -DLINU
 
 # Execute.
 echo Executing
-export HPSS_API_DEBUG=255
+#export HPSS_API_DEBUG=255
+#export TREQS_TRACE=TRACE
+export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
 ./brokerTester
