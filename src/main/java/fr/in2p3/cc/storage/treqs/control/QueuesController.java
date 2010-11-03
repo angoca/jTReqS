@@ -573,6 +573,7 @@ public class QueuesController {
                     // just setting a default best user
                     bestUser = queue.getOwner();
                     if (bestUser != null) {
+                        // TODO Cambiar el algoritmo
                         score = (resource.getTotalAllocation() * resource
                                 .getUserAllocation(bestUser))
                                 - resource.getUsedResources(bestUser);
