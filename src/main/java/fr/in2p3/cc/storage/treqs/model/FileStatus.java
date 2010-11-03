@@ -1,8 +1,6 @@
 package fr.in2p3.cc.storage.treqs.model;
 
 /*
- * File: FileStatus.h
- *
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
  * Contributors : Andres Gomez,
