@@ -1,5 +1,3 @@
-/*
- * Copyright      Jonathan Schaeffer 2009-2010,
  /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -76,7 +74,7 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_
 		hsmInitException = (*env)->FindClass(env,
 				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMInitException");
 		// FIXME there is a problem here while throwing the exception.
-//		(*env)->ThrowNew(env, hsmInitException, "Problem " + rc);
+		//		(*env)->ThrowNew(env, hsmInitException, "" + rc);
 	}
 
 	if (strcmp(LOGGER, "TRACE") == 0) {
@@ -89,10 +87,10 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 
 	const char * filename;
 
-	int position = 0;
-	int storageLevel = 0;
-	char * tape;
-	unsigned long length = 0;
+	int position;
+	int storageLevel;
+	char tape[12];
+	unsigned long length;
 	unsigned long long int size = 0;
 
 	// JNI
@@ -101,8 +99,8 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 	jmethodID jmethodSetStorageName;
 	jmethodID jmethodSetSize;
 	jstring jtape;
-	jclass hsmStatException;
-	jint rc =0;
+	jclass hsmInitException;
+	jint rc = 0;
 
 	if (strcmp(LOGGER, "TRACE") == 0) {
 		printf("> getFileProperties\n");
@@ -112,17 +110,16 @@ JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_get
 	filename = (*env)->GetStringUTFChars(env, jFileName, JNI_FALSE);
 
 	// Calls the broker.
-	rc = getFileProperties(filename, &position, &storageLevel, tape,
-			length);
+	rc = getFileProperties(filename, &position, &storageLevel, tape, &length);
 
 	// Release JNI component.
 	(*env)->ReleaseStringUTFChars(env, jFileName, filename);
 
 	// Throws an exception if there is a problem.
 	if (rc != HPSS_E_NOERROR) {
-		hsmStatException = (*env)->FindClass(env,
-				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException");
-		(*env)->ThrowNew(env, hsmStatException, "Problem " + rc);
+		hsmInitException = (*env)->FindClass(env,
+				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMInitException");
+		(*env)->ThrowNew(env, hsmInitException, "" + rc);
 	}
 
 	if (strcmp(LOGGER, "TRACE") == 0) {

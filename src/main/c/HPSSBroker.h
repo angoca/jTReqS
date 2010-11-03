@@ -60,4 +60,4 @@ int init(const char * authType, const char * keytab, const char * user);
  * @length (out) Size of the file.
  */
 int getFileProperties(const char * name, int * position, int * storageLevel,
-		char * tape, unsigned long length);
+		char * tape, unsigned long * length);

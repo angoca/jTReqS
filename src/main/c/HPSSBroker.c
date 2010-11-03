@@ -1,5 +1,3 @@
-/*
- * Copyright      Jonathan Schaeffer 2009-2010,
  /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -47,7 +45,7 @@ int init(const char * authType, const char * keytab, const char * user) {
 	hpss_authn_mech_t authMech;
 
 	LOGGER = getenv("TREQS_TRACE");
-	if (strcmp(LOGGER, "TRACE") == 0) {
+	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
 		printf("> init\n");
 	}
 
@@ -62,7 +60,7 @@ int init(const char * authType, const char * keytab, const char * user) {
 	rc = hpss_SetLoginCred((char *) user, authMech, hpss_rpc_cred_client,
 			hpss_rpc_auth_type_keytab, (void *) keytab);
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
+	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
 		printf("< init\n");
 	}
 
@@ -70,7 +68,7 @@ int init(const char * authType, const char * keytab, const char * user) {
 }
 
 int processProperties(hpss_xfileattr_t attrOut, int * position,
-		int * higherStorageLevel, char * tape, unsigned long length) {
+		int * higherStorageLevel, char * tape, unsigned long * length) {
 
 	int rc = 0;
 	hpssoid_t bitFileId;
@@ -82,7 +80,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 	int lowestStorageLevelFound = FALSE;
 	int i;
 	int j;
-	if (strcmp(LOGGER, "TRACE") == 0) {
+	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
 		printf("> processProperties\n");
 	}
 
@@ -101,7 +99,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		if (cont && (lowestStorageLevelFound == FALSE)
 				&& (attrOut.SCAttrib[i].Flags & BFS_BFATTRS_DATAEXISTS_AT_LEVEL)) {
 			bitFileId = attrOut.Attrs.BitfileId;
-			length = attrOut.SCAttrib[i].BytesAtLevel;
+			*length = attrOut.SCAttrib[i].BytesAtLevel;
 			vvid = attrOut.SCAttrib[i].VVAttrib[0].VVID;
 			*position = attrOut.SCAttrib[i].VVAttrib[0].RelPosition;
 			fileType = attrOut.Attrs.Type;
@@ -129,7 +127,12 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		}
 	}
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
+	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+		printf("File properties %d, %d, %s, %d\n", *position,
+				*higherStorageLevel, tape, *length);
+	}
+
+	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
 		printf("< processProperties\n");
 	}
 
@@ -138,7 +141,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 
 // TODO review if higherStorageLevel is really necessary.
 int getFileProperties(const char * name, int * position,
-		int * higherStorageLevel, char * tape, unsigned long length) {
+		int * higherStorageLevel, char * tape, unsigned long * size) {
 
 	int rc = 0;
 
@@ -148,7 +151,7 @@ int getFileProperties(const char * name, int * position,
 	unsigned32 storagelevel = 0;
 	hpss_xfileattr_t attrOut;
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
+	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
 		printf("> getFileProperties\n");
 	}
 
@@ -156,13 +159,13 @@ int getFileProperties(const char * name, int * position,
 
 	if (rc >= 0) {
 		rc = processProperties(attrOut, position, higherStorageLevel, tape,
-				length);
-		if (rc < 0){
+				size);
+		if (rc < 0) {
 			printf("Error in file %s\n", name);
 		}
 	}
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
+	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
 		printf("< getFileProperties\n");
 	}
 

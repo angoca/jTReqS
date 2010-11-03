@@ -13,20 +13,32 @@ int main(int argc, char **argv) {
 	const char * keytab = "/var/hpss/etc/keytab.treqs";
 	const char * user = "treqs";
 
-	const char * filename = "/hpss/home/p/pbrinett/file";
+	const char * filename = "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy";
 
 	int position;
 	int higherStorageLevel;
-	char * tape;
+	char tape[12];
 	unsigned long size;
 
-	printf("> Starting broker tester\n");
+	printf("> Starting Broker tester\n");
+
+	// Initializes the api.
 	rc = init(authType, keytab, user);
-	printf("Code init %d\n", rc);
+	printf("Code from init: %d\n", rc);
 	if (rc == 0) {
 		rc = getFileProperties(filename, &position, &higherStorageLevel, tape,
-				size);
-		printf("Code getFileProps %d\n", rc);
+				&size);
+		printf("Code from getFileProps: %d\n", rc);
+		if (rc == 0) {
+			printf("File properties %s, %d, %d, %s, %d\n", filename, position,
+					higherStorageLevel, tape, size);
+		} else {
+			printf("Error getting properties\n");
+		}
+	} else {
+		printf("Error in init\n");
 	}
-	printf("< Ending broker tester\n");
+	printf("< Ending Broker tester\n");
+
+	return rc;
 }
