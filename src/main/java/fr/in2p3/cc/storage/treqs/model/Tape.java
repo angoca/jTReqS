@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -44,7 +43,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents an HPSS tape (or cartridge.)
+ * Represents an HPSS tape (or cartridge). This object contains the media type,
+ * the name of the tape and the status.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
 public class Tape {
     /**
@@ -66,34 +69,41 @@ public class Tape {
     /**
      * The time Status got updated.
      */
-    // TODO AngocA Later Regarder si la bande est encore locké pour changer le
-    // status.
+    // TODO v2.0 AngocA This part has not been used, and the application should
+    // check if the tape is still locked/unlocked once the state has been
+    // obtained. It means, it has to check periodically if the state changes.
     private Calendar statusUpdateTime;
 
     /**
      * Constructor with name, media type and status.
-     * 
-     * @param name
-     * @param mediaType
-     * @param status
+     *
+     * @param tapeName
+     *            Name of the tape.
+     * @param tapeMediaType
+     *            Type of media (T10KA, T10KB, LTO).
+     * @param tapeStatus
+     *            Status that indicates if the tape is locked or not.
      */
-    public Tape(String name, MediaType mediaType, TapeStatus status) {
+    public Tape(final String tapeName, final MediaType tapeMediaType,
+            final TapeStatus tapeStatus) {
         LOGGER.trace("> Creating tape");
 
-        this.setMediaType(mediaType);
-        this.setName(name);
-        this.setStatus(status);
-        this.setStatusUpdateTime(new GregorianCalendar());
+        // The asserts are done in the setters.
+
+        this.setMediaType(tapeMediaType);
+        this.setName(tapeName);
+        this.setStatus(tapeStatus);
+        this.setStatusUpdateTimeNow();
 
         LOGGER.trace("< Creating tape");
     }
 
     /**
      * Getter for media type member.
-     * 
-     * @return
+     *
+     * @return Returns the type of media.
      */
-    public MediaType getMediaType() {
+    public final MediaType getMediaType() {
         LOGGER.trace(">< getMediaType");
 
         return this.mediaType;
@@ -101,10 +111,10 @@ public class Tape {
 
     /**
      * Getter for name member.
-     * 
-     * @return
+     *
+     * @return Returns the name of the tape.
      */
-    public String getName() {
+    public final String getName() {
         LOGGER.trace(">< getName");
 
         return this.name;
@@ -112,10 +122,10 @@ public class Tape {
 
     /**
      * Getter for status member.
-     * 
-     * @return
+     *
+     * @return Returns if the tape is locked or not.
      */
-    TapeStatus getStatus() {
+    final TapeStatus getStatus() {
         LOGGER.trace(">< getStatus");
 
         return this.status;
@@ -123,10 +133,10 @@ public class Tape {
 
     /**
      * Getter for update time member.
-     * 
-     * @return
+     *
+     * @return Returns the last time when the status was checked.
      */
-    Calendar getStatusUpdateTime() {
+    final Calendar getStatusUpdateTime() {
         LOGGER.trace(">< getStatusUpdateTime");
 
         return this.statusUpdateTime;
@@ -134,56 +144,60 @@ public class Tape {
 
     /**
      * Setter for media type member.
-     * 
-     * @param mediaType
+     *
+     * @param tapeMediaType
+     *            Type of the media (T10KA, T10KB, LTO).
      */
-    void setMediaType(MediaType mediaType) {
+    final void setMediaType(final MediaType tapeMediaType) {
         LOGGER.trace("> setMediaType");
 
-        assert mediaType != null;
+        assert tapeMediaType != null;
 
-        this.mediaType = mediaType;
+        this.mediaType = tapeMediaType;
 
         LOGGER.trace("< setMediaType");
     }
 
     /**
      * Setter for name member.
-     * 
-     * @param name
+     *
+     * @param tapeName
+     *            Name of the tape.
      */
-    void setName(String name) {
+    final void setName(final String tapeName) {
         LOGGER.trace("> setName");
 
-        assert name != null;
-        assert !name.equals("");
+        assert tapeName != null;
+        assert !tapeName.equals("");
 
-        this.name = name;
+        this.name = tapeName;
 
         LOGGER.trace("< setName");
     }
 
     /**
      * Setter for status member.
-     * 
-     * @param status
+     *
+     * @param tapeStatus
+     *            Status of the tape. Locked or unlocked (available to be read).
      */
-    void setStatus(TapeStatus status) {
+    final void setStatus(final TapeStatus tapeStatus) {
         LOGGER.trace("> setStatus");
 
         assert status != null;
 
-        this.status = status;
+        this.status = tapeStatus;
 
         LOGGER.trace("< setStatus");
     }
 
     /**
      * Setter for update time member.
-     * 
+     *
      * @param updateTime
+     *            Time when the status was checked.
      */
-    void setStatusUpdateTime(Calendar updateTime) {
+    final void setStatusUpdateTime(final Calendar updateTime) {
         LOGGER.trace("> setStatusUpdateTime");
 
         assert updateTime != null;
@@ -196,19 +210,20 @@ public class Tape {
     /**
      * Establishes the status update time to now.
      */
-    void setStatusUpdateTimeNow() {
+    final void setStatusUpdateTimeNow() {
         LOGGER.trace("> setStatusUpdateTimeNow");
 
-        this.statusUpdateTime = new GregorianCalendar();
+        setStatusUpdateTime(new GregorianCalendar());
 
         LOGGER.trace("< setStatusUpdateTimeNow");
     }
 
-    /**
-     * Representation in a String.
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     @Override
-    public String toString() {
+    public final String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
