@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +44,14 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
- * Reads files from a queue as a new thread.
+ * Reads files from a queue as a new thread. This is the responsible to demand
+ * to the HSM to stage a specific file. This components sends the command to the
+ * HSM and process the error code returned. There are multiple stagers asking
+ * for files simultaneously for the same tape, this behavior is to prevent the
+ * tape be dismounted.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
 public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
@@ -57,18 +63,31 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      */
     private Queue queue;
 
-    public Stager(int id, Queue q) {
-        super("tape" + q.getTape().getName() + "-" + System.currentTimeMillis()
-                + "-" + id);
+    /**
+     * Constructor with the id of the stager and the associated queue.
+     *
+     * @param id
+     *            Unique id of the stager.
+     * @param stagerQueue
+     *            Associated queue.
+     */
+    public Stager(final int id, final Queue stagerQueue) {
+        // This concatenation permits to have a unique name id for the thread.
+        super("tape" + stagerQueue.getTape().getName() + "-"
+                + System.currentTimeMillis() + "-" + id);
         LOGGER.trace("> Creating stager.");
 
-        this.queue = q;
+        this.queue = stagerQueue;
 
         this.kickStart();
 
         LOGGER.trace("< Creating stager.");
     }
 
+    /**
+     * This method wraps the process of staging a file, and puts other elements
+     * of the process object.
+     */
     private void action() {
         LOGGER.trace("> action");
 
@@ -77,23 +96,24 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
             try {
                 this.stage();
             } catch (TReqSException e) {
-                LOGGER.error("Error in Staging : {}", e.getMessage());
+                LOGGER.error("Error in Staging: {}", e.getMessage());
             }
             this.conclude();
             LOGGER.debug("Staging completed.");
         } else {
-            LOGGER
-                    .info("Cannot work on a non-activated queue or queue already processed.");
+            LOGGER.info("Cannot work on a non-activated queue or queue already"
+                    + " processed.");
         }
 
         LOGGER.trace("< action");
     }
 
-    /**
-     *
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.control.Process#oneLoop()
      */
     @Override
-    public void oneLoop() {
+    public final void oneLoop() {
         LOGGER.trace("> oneLoop");
 
         this.changeStatus(ProcessStatus.STARTED);
@@ -106,7 +126,17 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
+     * Performs the action of staging a file. Actually, it does not performs the
+     * stage, but ask to the HSM to stage the file.
+     * <p>
+     * For each Reading object to stage, it calls the Reading.stage() method and
+     * catch exceptions.
+     * <p>
+     * If the HPSSResourceError is caught, then the queue is suspended.
+     *
      * @throws TReqSException
+     *             If there is a problem retrieving the next reading, or dealing
+     *             with the queue.
      */
     private void stage() throws TReqSException {
         LOGGER.trace("> stage");
@@ -134,30 +164,25 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * This method asks the queue for the next file to stage, until the queue is
      * completely browsed.
-     * <p>
-     * For each Reading object to stage, it calls the Reading.stage() method and
-     * catch exceptions.
-     * <p>
-     * If the HPSSResourceError is caught, then the queue is suspended.
-     * 
-     * @param queue
-     *            pointer to a queue.
-     * @return true is the queue is not null, false in the other case.
+     *
+     * @see fr.in2p3.cc.storage.treqs.control.Process#toStart()
      */
     @Override
-    public void toStart() {
+    public final void toStart() {
         LOGGER.trace("> toStart");
 
+        // This is the only call, because the same method is used by oneLoop.
         this.action();
 
         LOGGER.trace("< toStart");
     }
 
-    /**
-     * Representation in a String.
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Thread#toString()
      */
     @Override
-    public String toString() {
+    public final String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
