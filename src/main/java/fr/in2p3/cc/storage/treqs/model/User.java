@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,25 +34,28 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Represents a user.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
 public class User {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(User.class);
-
     /**
-     * Group Id.
+     * Group Id of the user.
      */
     private short gid;
     /**
-     * The group it belongs to.
+     * The name of the group it belongs to.
      */
     private String group;
     /**
@@ -67,16 +68,16 @@ public class User {
     private short uid;
 
     /**
-     * Constructor with name. TODO To delete when uid, group and gid will be
-     * used.
-     * 
-     * @param name
-     *            the user's name.
+     * Constructor with name. TODO This method should be deleted when uid, group
+     * and gid will be used.
+     *
+     * @param username
+     *            The user's name.
      */
-    public User(String name) {
+    public User(final String username) {
         LOGGER.trace("> Creating user with name as param.");
 
-        this.setName(name);
+        this.setName(username);
         this.setUid((short) 0);
         this.setGroup("NA");
         this.setGid((short) 0);
@@ -85,30 +86,37 @@ public class User {
     }
 
     /**
-     * Constructor with all parameters. it establishes the valid state as ready.
-     * 
-     * @param name
-     *            the user's name.
-     * @param uid
-     *            the user's id.
-     * @param group
-     *            the user's group.
-     * @param gid
-     *            the user's group id.
+     * Constructor with all parameters. It establishes the valid state as ready.
+     *
+     * @param username
+     *            The user's name.
+     * @param userid
+     *            The user's id.
+     * @param usergroup
+     *            The user's group.
+     * @param groupid
+     *            The user's group id.
      */
-    public User(String name, short uid, String group, short gid) {
+    public User(final String username, final short userid,
+            final String usergroup, final short groupid) {
         LOGGER.trace("> Creating user with all parameters.");
 
-        this.setName(name);
-        this.setUid(uid);
-        this.setGroup(group);
-        this.setGid(gid);
+        this.setName(username);
+        this.setUid(userid);
+        this.setGroup(usergroup);
+        this.setGid(groupid);
 
         LOGGER.trace("< Creating user with all parameters.");
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(final Object obj) {
+        LOGGER.trace("> equals");
+
         boolean ret = false;
         if (obj instanceof User) {
             User user = (User) obj;
@@ -116,15 +124,18 @@ public class User {
                 ret = true;
             }
         }
+
+        LOGGER.trace("< equals");
+
         return ret;
     }
 
     /**
      * Getter for gid member.
-     * 
-     * @return Gid.
+     *
+     * @return The gid, or id of the group.
      */
-    short getGid() {
+    final short getGid() {
         LOGGER.trace(">< getGid");
 
         return this.gid;
@@ -132,10 +143,10 @@ public class User {
 
     /**
      * Getter for group member.
-     * 
-     * @return name of the group.
+     *
+     * @return Name of the group.
      */
-    String getGroup() {
+    final String getGroup() {
         LOGGER.trace(">< getGroup");
 
         return this.group;
@@ -143,10 +154,10 @@ public class User {
 
     /**
      * Getter for name member.
-     * 
-     * @return name of the user.
+     *
+     * @return Name of the user.
      */
-    public String getName() {
+    public final String getName() {
         LOGGER.trace(">< getName");
 
         return this.name;
@@ -154,95 +165,105 @@ public class User {
 
     /**
      * Getter for uid member.
-     * 
-     * @return uid
+     *
+     * @return Uid, or id of the user.
      */
-    short getUid() {
+    final short getUid() {
         LOGGER.trace(">< getUid");
 
         return this.uid;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
     @Override
-    public int hashCode() {
+    public final int hashCode() {
+        LOGGER.trace("> hashCode");
+
         int ret = this.name.hashCode();
         ret += this.group.hashCode();
         ret *= this.uid;
         ret -= this.gid;
+
+        LOGGER.trace("< hashCode");
+
         return ret;
     }
 
     /**
      * Setter for gid member.
-     * 
-     * @param gid
-     *            Group ID
+     *
+     * @param groupid
+     *            Group ID.
      */
-    public void setGid(short gid) {
+    public final void setGid(final short groupid) {
         LOGGER.trace("> setGid");
 
-        assert gid >= 0;
+        assert groupid >= 0;
 
-        this.gid = gid;
+        this.gid = groupid;
 
         LOGGER.trace("< setGid");
     }
 
     /**
      * Setter for group member.
-     * 
-     * @param group
+     *
+     * @param usergroup
      *            name of the group.
      */
-    public void setGroup(String group) {
+    public final void setGroup(final String usergroup) {
         LOGGER.trace("> setGroup");
 
-        assert group != null;
-        assert !group.equals("");
+        assert usergroup != null;
+        assert !usergroup.equals("");
 
-        this.group = group;
+        this.group = usergroup;
 
         LOGGER.trace("< setGroup");
     }
 
     /**
      * Setter for name member.
-     * 
-     * @param name
+     *
+     * @param username
      *            name of the user.
      */
-    void setName(String name) {
+    final void setName(final String username) {
         LOGGER.trace("> setName");
 
-        assert name != null;
-        assert !name.equals("");
+        assert username != null;
+        assert !username.equals("");
 
-        this.name = name;
+        this.name = username;
 
         LOGGER.trace("< setName");
     }
 
     /**
      * Setter for uid member.
-     * 
-     * @param uid
+     *
+     * @param userid
      *            UID of the user.
      */
-    public void setUid(short uid) {
+    public final void setUid(final short userid) {
         LOGGER.trace("> setUid");
 
-        assert uid >= 0;
+        assert userid >= 0;
 
-        this.uid = uid;
+        this.uid = userid;
 
         LOGGER.trace("< setUid");
     }
 
-    /**
-     * Representation in a String.
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     @Override
-    public String toString() {
+    public final String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
