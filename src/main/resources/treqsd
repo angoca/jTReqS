@@ -1,9 +1,9 @@
 #!/bin/sh
 # File:  treqsd
 #
-# Copyright      Jonathan Schaeffer 2009-2010, 
+# Copyright      Jonathan Schaeffer 2009-2010,
 #                CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
-# Contributors : Andres Gomez, 
+# Contributors   Andres Gomez,
 #                CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
 #
 # This software is a computer program whose purpose is to schedule, sort
@@ -13,7 +13,7 @@
 # abiding by the rules of distribution of free software.  You can  use,
 # modify and/or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
+# "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and rights to copy,
 # modify and redistribute granted by the license, users are provided only
@@ -54,13 +54,13 @@ PAGSH_PFIX="/usr/afsws/bin/pagsh -c"
 export TREQS_HOME=/opt/treqs
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/lib:/usr/local/log4cxx/0.10.0/lib:/opt/hpss/lib
 
-TREQSPID=`pgrep -x treqs` 
-case "$1" in 
+TREQSPID=`pgrep -x treqs`
+case "$1" in
   start)
     echo -n $"Starting treqs: "
     if [ -z $TREQSPID ]; then
       su ${USER} -c "${PAGSH_PFIX} ${TREQS_HOME}/etc/registerInfo.sh &" >> /var/log/treqs/treqs.log #2>&1 < /dev/null
-      su ${USER} -c "${PAGSH_PFIX} ${TREQS_HOME}/bin/treqs --config ${TREQS_HOME}/etc/treqs.conf &" >> /var/log/treqs/treqs.log #2>&1 < /dev/null 
+      su ${USER} -c "${PAGSH_PFIX} ${TREQS_HOME}/bin/treqs --config ${TREQS_HOME}/etc/treqs.conf &" >> /var/log/treqs/treqs.log #2>&1 < /dev/null
       [ $? = 0 ] && success start || failure start
     else
       echo -n "already running (pid: $TREQSPID)"
@@ -72,7 +72,7 @@ case "$1" in
     echo -n $"Shutting down treqs: "
     killproc $TREQS_HOME/bin/treqs
     #[ ! -z $TREQSPID ] && \
-    #kill $TREQSPID &>/dev/null 
+    #kill $TREQSPID &>/dev/null
     echo
     ;;
   status)
@@ -93,6 +93,6 @@ case "$1" in
     $0 start
     ;;
   *)
-    echo "usage: $0 {start|stop|restart|status|test|gdb}"  
+    echo "usage: $0 {start|stop|restart|status|test|gdb}"
 esac
 exit 0
