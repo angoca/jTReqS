@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.model;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -61,7 +61,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * ReadingTest.cpp
- * 
+ *
  * @version 2010-03-23
  * @author gomez
  */
@@ -113,7 +113,7 @@ public class ReadingTest {
                 (byte) 1, queue);
 
         reading.setMaxTries((byte) 2);
-        reading.setNbTries((byte) 2);
+        reading.setNumberOfTries((byte) 2);
         reading.stage();
     }
 
@@ -143,7 +143,7 @@ public class ReadingTest {
 
     /**
      * Tests to created a reading with null metadata.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -169,7 +169,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file already queued.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -182,7 +182,7 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         reading.stage();
     }
@@ -199,7 +199,7 @@ public class ReadingTest {
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_STAGED);
+            reading.setFileRequestStatus(FileStatus.FS_STAGED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -277,13 +277,13 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file with max retries.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void test02StageMaxRetries() throws TReqSException {
-        byte max = Reading.MAX_READ_RETRIES;
+        byte max = Constants.MAX_READ_RETRIES;
         try {
             max = Byte.parseByte(Configurator.getInstance().getValue("MAIN",
                     "MAX_READ_RETRIES"));
@@ -312,7 +312,7 @@ public class ReadingTest {
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_FAILED);
+            reading.setFileRequestStatus(FileStatus.FS_FAILED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -350,7 +350,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file already staged.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -363,8 +363,8 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
 
         reading.stage();
     }
@@ -381,7 +381,7 @@ public class ReadingTest {
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_CREATED);
+            reading.setFileRequestStatus(FileStatus.FS_CREATED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -418,7 +418,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file marked as unreadable.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -431,8 +431,8 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
 
         reading.stage();
     }
@@ -449,7 +449,7 @@ public class ReadingTest {
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_SUBMITTED);
+            reading.setFileRequestStatus(FileStatus.FS_SUBMITTED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -487,7 +487,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -514,11 +514,11 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_CREATED);
+            reading.setFileRequestStatus(FileStatus.FS_CREATED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -542,7 +542,7 @@ public class ReadingTest {
 
         boolean failed = false;
         try {
-            reading.setNbTries((byte) -5);
+            reading.setNumberOfTries((byte) -5);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -556,7 +556,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMClose exception.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -584,11 +584,11 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_QUEUED);
+            reading.setFileRequestStatus(FileStatus.FS_QUEUED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -617,7 +617,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMOpen exception.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -645,12 +645,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_CREATED);
+            reading.setFileRequestStatus(FileStatus.FS_CREATED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -664,7 +664,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMStage exception.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -691,12 +691,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_SUBMITTED);
+            reading.setFileRequestStatus(FileStatus.FS_SUBMITTED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -710,7 +710,7 @@ public class ReadingTest {
 
     /**
      * Tests to stage a file, but generates an HSMResource exception.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -749,12 +749,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_QUEUED);
+            reading.setFileRequestStatus(FileStatus.FS_QUEUED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -775,12 +775,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_FAILED);
+            reading.setFileRequestStatus(FileStatus.FS_FAILED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -801,12 +801,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_STAGED);
+            reading.setFileRequestStatus(FileStatus.FS_STAGED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -827,12 +827,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_CREATED);
+            reading.setFileRequestStatus(FileStatus.FS_CREATED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -853,12 +853,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_SUBMITTED);
+            reading.setFileRequestStatus(FileStatus.FS_SUBMITTED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -879,12 +879,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_QUEUED);
+            reading.setFileRequestStatus(FileStatus.FS_QUEUED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -905,12 +905,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_STAGED);
+            reading.setFileRequestStatus(FileStatus.FS_STAGED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
@@ -931,12 +931,12 @@ public class ReadingTest {
                 "filename", new User("username", (short) 1, "groupname",
                         (short) 10), 100), new GregorianCalendar(), 1, tape),
                 (byte) 1, queue);
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
 
         boolean failed = false;
         try {
-            reading.setFileState(FileStatus.FS_FAILED);
+            reading.setFileRequestStatus(FileStatus.FS_FAILED);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {

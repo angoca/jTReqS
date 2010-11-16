@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.model;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -61,7 +61,7 @@ import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 /**
  * QueueUnitTest.cpp
- * 
+ *
  * @version Nov 13, 2009
  * @author gomez
  */
@@ -91,7 +91,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the constructor with a null tape.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -109,7 +109,7 @@ public class QueueUnitTest {
 
     /**
      * Tests that a just created queue does not have an owner.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -164,14 +164,13 @@ public class QueueUnitTest {
         RequestsDAO.insertRow(filename2);
 
         Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
         User owner = new User(username, (short) 11, "group", (short) 13);
 
         // Sets the first file.
         File file1 = new File(filename1, owner, 10);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 new GregorianCalendar(), position1, tape);
-        queue.registerFile(fpot1, (byte) 1);
+        Queue queue = new Queue(fpot1, (byte) 1);
 
         // Sets the second file.
         File file2 = new File(filename2, owner, 10);
@@ -180,12 +179,11 @@ public class QueueUnitTest {
         queue.registerFile(fpot2, (byte) 1);
 
         queue.changeToActivated();
-        queue.dump();
 
         // Retrieves the first file from the queue.
         Reading reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
         queue.suspend();
         // Reactivates the queue.
         queue.unsuspend();
@@ -203,12 +201,15 @@ public class QueueUnitTest {
      */
     @Test
     public void test01ReadingGetNull() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                new User("username"), 10), new GregorianCalendar(), 1,
+                new Tape("tapename", new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(fpot, (byte) 1);
 
         Reading reading = queue.getNextReading();
 
-        Assert.assertTrue("Null reading", null == reading);
+        Assert.assertTrue("Null reading", null != reading);
     }
 
     /**
@@ -270,7 +271,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a negative position.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -291,7 +292,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a negative duration.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -326,7 +327,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set the state as activated when it is already in this state.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -347,20 +348,20 @@ public class QueueUnitTest {
     }
 
     /**
-     * Tests setting the submission time before the creation time.
-     * 
+     * Tests setting the activation time before the creation time.
+     *
      * @throws TReqSException
      */
     @Test
-    public void test01TimeSubmissionBeforeCreation() throws TReqSException {
-        Calendar submissionTime = new GregorianCalendar(2008, 5, 14);
+    public void test01TimeActivationBeforeCreation() throws TReqSException {
+        Calendar activationTime = new GregorianCalendar(2008, 5, 14);
 
         Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
                 "media"), TapeStatus.TS_UNLOCKED));
         queue.setStatus(QueueStatus.QS_ACTIVATED);
 
         try {
-            queue.setSubmissionTime(submissionTime);
+            queue.setActivationTime(activationTime);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -371,7 +372,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the toString method.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -385,7 +386,7 @@ public class QueueUnitTest {
 
     /**
      * Test the value from the coniguration.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -436,13 +437,12 @@ public class QueueUnitTest {
         RequestsDAO.insertRow(filename2);
 
         Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
         User owner = new User(username, (short) 11, "group", (short) 13);
 
         File file1 = new File(filename1, owner, 10);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 new GregorianCalendar(), position1, tape);
-        queue.registerFile(fpot1, (byte) 1);
+        Queue queue = new Queue(fpot1, (byte) 1);
 
         File file2 = new File(filename2, owner, 10);
         FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
@@ -456,42 +456,42 @@ public class QueueUnitTest {
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
 
         // Queue activated
         queue.changeToActivated();
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("All queued files, next reading", filename1,
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
 
         // First file staged
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("One file staged, next reading", filename2, reading
                 .getMetaData().getFile().getName());
         Assert.assertTrue("One file staged, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file staged, position", position2, queue
-                .getHeadPosition());
+        Assert.assertEquals("One file staged, position", position2,
+                queue.getHeadPosition());
 
         // Second file staged
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
         reading = queue.getNextReading();
 
         Assert.assertTrue("All files staged, next reading", null == reading);
         Assert.assertTrue("All files staged, queue state",
                 QueueStatus.QS_ENDED == queue.getStatus());
-        Assert.assertEquals("All files staged, position", position2, queue
-                .getHeadPosition());
+        Assert.assertEquals("All files staged, position", position2,
+                queue.getHeadPosition());
     }
 
     /**
@@ -499,15 +499,14 @@ public class QueueUnitTest {
      */
     @Test
     public void test02RegisterFileInEndedQueue() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
+                TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
+                new User("username"), 100), new GregorianCalendar(), 100, tape);
+
+        Queue queue = new Queue(fpot1, (byte) 1);
         queue.changeToActivated();
         queue.changeToEnded();
-
-        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                new User("username"), 100), new GregorianCalendar(), 100,
-                new Tape("tapename", new MediaType((byte) 1, "mediatype"),
-                        TapeStatus.TS_UNLOCKED));
 
         try {
             queue.registerFile(fpot1, (byte) 0);
@@ -537,7 +536,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a position in a non activated state
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -592,15 +591,15 @@ public class QueueUnitTest {
     }
 
     /**
-     * Tests setting the submission time after the end time. This is
+     * Tests setting the activation time after the end time. This is
      * unnecessary, it checks the state before the date values.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never.
      */
     @Test
-    public void test02TimeSubmissionAfterEnd() throws TReqSException {
-        Calendar submissionTime = new GregorianCalendar(3000, 5, 13);
+    public void test02TimeActivationAfterEnd() throws TReqSException {
+        Calendar activationTime = new GregorianCalendar(3000, 5, 13);
 
         Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
                 "media"), TapeStatus.TS_UNLOCKED));
@@ -608,7 +607,7 @@ public class QueueUnitTest {
         queue.changeToEnded();
 
         try {
-            queue.setSubmissionTime(submissionTime);
+            queue.setActivationTime(activationTime);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -618,8 +617,8 @@ public class QueueUnitTest {
     }
 
     /**
-     * Tests the toString method with submission.
-     * 
+     * Tests the toString method with activation.
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -637,7 +636,7 @@ public class QueueUnitTest {
         Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
                 "media"), TapeStatus.TS_UNLOCKED));
         try {
-            queue.setSubmissionTime(null);
+            queue.setActivationTime(null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -686,35 +685,35 @@ public class QueueUnitTest {
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
 
         // Queue activated
         queue.changeToActivated();
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("All queued files, next reading", filename1,
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
 
         // First file staged
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("One file staged, next reading", filename2, reading
                 .getMetaData().getFile().getName());
         Assert.assertTrue("One file staged, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file staged, position", position2, queue
-                .getHeadPosition());
+        Assert.assertEquals("One file staged, position", position2,
+                queue.getHeadPosition());
 
         // Second file failed
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
         reading = queue.getNextReading();
 
         Assert.assertTrue("All files staged or failed, next reading",
@@ -745,7 +744,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set a position before the current one.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -773,7 +772,7 @@ public class QueueUnitTest {
     /**
      * Tests to set the state as created once the queue has already been
      * created.
-     * 
+     *
      * @throws TReqSException
      * @throws InvalidParameterException
      */
@@ -794,7 +793,7 @@ public class QueueUnitTest {
 
     /**
      * Tests setting the end time before the creation time.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never.
      */
@@ -819,7 +818,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the toString method with suspension.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -873,35 +872,35 @@ public class QueueUnitTest {
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
 
         // Queue activated
         queue.changeToActivated();
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("All queued files, next reading", filename1,
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
 
         // First file failed
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("One file failed, next reading", filename2, reading
                 .getMetaData().getFile().getName());
         Assert.assertTrue("One file failed, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file failed, position", position2, queue
-                .getHeadPosition());
+        Assert.assertEquals("One file failed, position", position2,
+                queue.getHeadPosition());
 
         // Second file failed
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
         reading = queue.getNextReading();
 
         Assert.assertTrue("All files staged or failed, next reading",
@@ -944,7 +943,7 @@ public class QueueUnitTest {
 
     /**
      * Tests to set the state as ended without passing by the activated state.
-     * 
+     *
      * @throws InvalidParameterException
      */
     @Test
@@ -963,21 +962,21 @@ public class QueueUnitTest {
     }
 
     /**
-     * Tests setting the end time before the submission time.
-     * 
+     * Tests setting the end time before the activation time.
+     *
      * @throws InvalidParameterException
      *             Never.
      */
     @Test
-    public void test04TimeEndBeforeSubmission() throws TReqSException {
-        Calendar submissionTime = new GregorianCalendar(3000, 6, 15);
+    public void test04TimeEndBeforeActivation() throws TReqSException {
+        Calendar activationTime = new GregorianCalendar(3000, 6, 15);
 
         Calendar endime = new GregorianCalendar(2500, 5, 11);
 
         Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
                 "media"), TapeStatus.TS_UNLOCKED));
         queue.setStatus(QueueStatus.QS_ACTIVATED);
-        queue.setSubmissionTime(submissionTime);
+        queue.setActivationTime(activationTime);
         queue.setStatus(QueueStatus.QS_ENDED);
 
         try {
@@ -992,7 +991,7 @@ public class QueueUnitTest {
 
     /**
      * Tests the toString method with end time.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -1045,42 +1044,42 @@ public class QueueUnitTest {
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
 
         // Queue activated
         queue.changeToActivated();
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("All queued files, next reading", filename1,
                 reading.getMetaData().getFile().getName());
         Assert.assertTrue("All queued files, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1, queue
-                .getHeadPosition());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
 
         // First file failed
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
         reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
 
         Assert.assertEquals("One file failed, next reading", filename2, reading
                 .getMetaData().getFile().getName());
         Assert.assertTrue("One file failed, queue state",
                 QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file failed, position", position2, queue
-                .getHeadPosition());
+        Assert.assertEquals("One file failed, position", position2,
+                queue.getHeadPosition());
 
         // Second file staged
-        reading.setFileState(FileStatus.FS_FAILED);
+        reading.setFileRequestStatus(FileStatus.FS_FAILED);
         reading = queue.getNextReading();
 
         Assert.assertTrue("All files failed, next reading", null == reading);
         Assert.assertTrue("All files failed, queue state",
                 QueueStatus.QS_ENDED == queue.getStatus());
-        Assert.assertEquals("All files failed, position", position2, queue
-                .getHeadPosition());
+        Assert.assertEquals("All files failed, position", position2,
+                queue.getHeadPosition());
     }
 
     /**
@@ -1129,14 +1128,14 @@ public class QueueUnitTest {
     }
 
     /**
-     * Tests setting the creation time after the submission time. This is
+     * Tests setting the creation time after the activation time. This is
      * unnecessary, the state is checked before the date values.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never.
      */
     @Test
-    public void test05TimeCreationAfterSubmission() throws TReqSException {
+    public void test05TimeCreationAfterActivation() throws TReqSException {
         Calendar creationTime = new GregorianCalendar(3000, 8, 18);
 
         Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
@@ -1204,7 +1203,7 @@ public class QueueUnitTest {
     /**
      * Tests setting the creation time after the end time. This is unnecessary,
      * the state is checked before the date values.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never.
      */
@@ -1704,7 +1703,7 @@ public class QueueUnitTest {
     public void test13StateSuspendeSuspendedSuspended() throws TReqSException {
         Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
                 "media"), TapeStatus.TS_UNLOCKED));
-        short max = Queue.MAX_SUSPEND_RETRIES;
+        short max = Constants.MAX_SUSPEND_RETRIES;
         try {
             max = Short.parseShort(Configurator.getInstance().getValue("MAIN",
                     "MAX_SUSPEND_RETRIES"));

@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.control;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -64,12 +64,13 @@ import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
 import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * QueuesControllerTest.cpp
- * 
+ *
  * @version 2010-03-23
  * @author gomez
  */
@@ -95,12 +96,12 @@ public class QueuesControllerTest {
     public void tearDown() {
         QueuesController.destroyInstance();
         Configurator.destroyInstance();
-        PersistenceFactory.destroyInstance();
+        DAOFactory.destroyInstance();
     }
 
     /**
      * Tests that there is not best queue.
-     * 
+     *
      * @throws ProblematicConfiguationFileException
      * @throws NumberFormatException
      */
@@ -168,7 +169,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests the existence of a non created queue.
-     * 
+     *
      * @throws ProblematicConfiguationFileException
      * @throws NumberFormatException
      */
@@ -210,12 +211,16 @@ public class QueuesControllerTest {
         Assert.assertTrue("First updated", QueuesController.getInstance()
                 .exists(tapename1, QueueStatus.QS_ACTIVATED)
                 .getSuspendDuration() == 100);
-        Assert.assertTrue("Second updated",
-                QueuesController.getInstance().exists(tapename1,
-                        QueueStatus.QS_CREATED).getSuspendDuration() == 100);
-        Assert.assertTrue("Third updated",
-                QueuesController.getInstance().exists(tapename3,
-                        QueueStatus.QS_ENDED).getSuspendDuration() == 100);
+        Assert.assertTrue(
+                "Second updated",
+                QueuesController.getInstance()
+                        .exists(tapename1, QueueStatus.QS_CREATED)
+                        .getSuspendDuration() == 100);
+        Assert.assertTrue(
+                "Third updated",
+                QueuesController.getInstance()
+                        .exists(tapename3, QueueStatus.QS_ENDED)
+                        .getSuspendDuration() == 100);
     }
 
     /**
@@ -244,10 +249,8 @@ public class QueuesControllerTest {
                 .exists(tapename, QueueStatus.QS_CREATED) == null);
         Assert.assertTrue("Activated queue", QueuesController.getInstance()
                 .exists(tapename, QueueStatus.QS_ACTIVATED) != null);
-        Assert
-                .assertTrue("Activated queue",
-                        QueuesController.getInstance().exists(tapename,
-                                QueueStatus.QS_TEMPORARILY_SUSPENDED) == null);
+        Assert.assertTrue("Activated queue", QueuesController.getInstance()
+                .exists(tapename, QueueStatus.QS_TEMPORARILY_SUSPENDED) == null);
         Assert.assertTrue(queue1 == queue2);
         FilePositionOnTape actual = Helper.getMetaData(Helper
                 .getNextReading(queue1));
@@ -256,7 +259,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests that the best queue is the only one that exists.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -269,10 +272,9 @@ public class QueuesControllerTest {
                 (byte) 5);
         File file = new File("filename", user, 300);
         Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
-        Queue queue = QueuesController.getInstance().create(tape);
         FilePositionOnTape fpot = new FilePositionOnTape(file,
                 new GregorianCalendar(), 20, tape);
-        queue.registerFile(fpot, (byte) 1);
+        Queue queue = QueuesController.getInstance().create(fpot, (byte)1);
 
         Queue actual = QueuesController.getInstance().selectBestQueue(resource,
                 user);
@@ -290,10 +292,9 @@ public class QueuesControllerTest {
                 (byte) 5);
         File file = new File("filename", user, 300);
         Tape tape = new Tape("tapename", media, TapeStatus.TS_UNLOCKED);
-        Queue queue = QueuesController.getInstance().create(tape);
         FilePositionOnTape fpot = new FilePositionOnTape(file,
                 new GregorianCalendar(), 20, tape);
-        queue.registerFile(fpot, (byte) 1);
+        Queue queue = QueuesController.getInstance().create(fpot, (byte) 1);
 
         User actual = QueuesController.getInstance().selectBestUser(resource);
         User expected = user;
@@ -329,7 +330,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests if a queue is created and if it is found after.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -348,7 +349,7 @@ public class QueuesControllerTest {
     /**
      * Tests to create and to activate a queue, and then create another queue
      * for the same tape.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -363,16 +364,19 @@ public class QueuesControllerTest {
                 new Tape(tapename, new MediaType((byte) 1, "media"),
                         TapeStatus.TS_UNLOCKED));
 
-        Assert.assertTrue("Exist activated queue",
+        Assert.assertTrue(
+                "Exist activated queue",
                 QueuesController.getInstance().exists(tapename,
                         QueueStatus.QS_ACTIVATED) != null);
         Assert.assertTrue("Exist created queue", QueuesController.getInstance()
                 .exists(tapename, QueueStatus.QS_CREATED) != null);
 
-        Assert.assertTrue("Exist activated queue equals",
+        Assert.assertTrue(
+                "Exist activated queue equals",
                 QueuesController.getInstance().exists(tapename,
                         QueueStatus.QS_ACTIVATED) == queue1);
-        Assert.assertTrue("Exist created queue equals",
+        Assert.assertTrue(
+                "Exist created queue equals",
                 QueuesController.getInstance().exists(tapename,
                         QueueStatus.QS_CREATED) == queue2);
     }
@@ -419,10 +423,8 @@ public class QueuesControllerTest {
                 .exists(tapename, QueueStatus.QS_CREATED) != null);
         Assert.assertTrue("Activated queue", QueuesController.getInstance()
                 .exists(tapename, QueueStatus.QS_ACTIVATED) != null);
-        Assert
-                .assertTrue("Activated queue",
-                        QueuesController.getInstance().exists(tapename,
-                                QueueStatus.QS_TEMPORARILY_SUSPENDED) == null);
+        Assert.assertTrue("Activated queue", QueuesController.getInstance()
+                .exists(tapename, QueueStatus.QS_TEMPORARILY_SUSPENDED) == null);
         Assert.assertTrue(queue1 != queue2);
         FilePositionOnTape actual = Helper.getMetaData(Helper
                 .getNextReading(queue2));
@@ -431,7 +433,7 @@ public class QueuesControllerTest {
 
     /**
      * Tests that two identical queues, will be returned the first one as best.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -520,7 +522,7 @@ public class QueuesControllerTest {
     /**
      * Tests to create the same queue twice. For the first time is created, the
      * second time it is just returned the pointer.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -573,10 +575,8 @@ public class QueuesControllerTest {
                 .exists(tapename, QueueStatus.QS_CREATED) == queue2);
         Assert.assertTrue("Activated queue", QueuesController.getInstance()
                 .exists(tapename, QueueStatus.QS_ACTIVATED) == queue1);
-        Assert
-                .assertTrue("Activated queue",
-                        QueuesController.getInstance().exists(tapename,
-                                QueueStatus.QS_TEMPORARILY_SUSPENDED) == null);
+        Assert.assertTrue("Activated queue", QueuesController.getInstance()
+                .exists(tapename, QueueStatus.QS_TEMPORARILY_SUSPENDED) == null);
         Queue actual = Helper.getQueue(Helper.getNextReading(queue1));
         Queue expected = queue1;
         Assert.assertEquals(expected, actual);
@@ -585,7 +585,7 @@ public class QueuesControllerTest {
     /**
      * tests that the best queue is the second one, which does not have a
      * activated queue.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -703,7 +703,7 @@ public class QueuesControllerTest {
     /**
      * Tests that two consecutive and identical creation of queues are later the
      * same.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
@@ -742,13 +742,13 @@ public class QueuesControllerTest {
         Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
                 fpot, (byte) 1);
 
-        Assert.assertTrue("same queue after the head", Helper
-                .getMetaData(Helper.getNextReading(queue1)) == fpot);
+        Assert.assertTrue("same queue after the head",
+                Helper.getMetaData(Helper.getNextReading(queue1)) == fpot);
     }
 
     /**
      * Null resource.
-     * 
+     *
      * @throws TReqSException
      */
     @Test(expected = AssertionError.class)
@@ -819,8 +819,22 @@ public class QueuesControllerTest {
     }
 
     @Test(expected = AssertionError.class)
-    public void test05create() throws TReqSException {
-        QueuesController.getInstance().create(null);
+    public void testCreate05() throws TReqSException {
+        byte max = 3;
+        MediaType media1 = new MediaType((byte) 1, "media1");
+        Tape tape = new Tape("tapename1", media1, TapeStatus.TS_UNLOCKED);
+        QueuesController.getInstance().create(null, max);
+    }
+
+    @Test(expected = AssertionError.class)
+    public void testCreate05a() throws TReqSException {
+        File file = new File("filename", new User("username"), 300);
+        MediaType media1 = new MediaType((byte) 1, "media1");
+        Tape tape = new Tape("tapename1", media1, TapeStatus.TS_UNLOCKED);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                new GregorianCalendar(), 20, tape);
+        byte max = 3;
+        QueuesController.getInstance().create(fpot, max);
     }
 
     @Test(expected = AssertionError.class)
@@ -872,10 +886,8 @@ public class QueuesControllerTest {
                 .exists(tapename, QueueStatus.QS_CREATED) == null);
         Assert.assertTrue("Activated queue", QueuesController.getInstance()
                 .exists(tapename, QueueStatus.QS_ACTIVATED) == null);
-        Assert
-                .assertTrue("Activated queue",
-                        QueuesController.getInstance().exists(tapename,
-                                QueueStatus.QS_TEMPORARILY_SUSPENDED) != null);
+        Assert.assertTrue("Activated queue", QueuesController.getInstance()
+                .exists(tapename, QueueStatus.QS_TEMPORARILY_SUSPENDED) != null);
         Assert.assertTrue(queue1 == queue2);
         FilePositionOnTape actual = Helper.getMetaData(Helper
                 .getNextReading(queue1));
@@ -884,7 +896,7 @@ public class QueuesControllerTest {
 
     /**
      * Null user.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1180,10 +1192,12 @@ public class QueuesControllerTest {
 
         Assert.assertTrue("First and third ended and cleaned", QueuesController
                 .getInstance().exists(tapename1, QueueStatus.QS_ENDED) != null);
-        Assert.assertTrue("Second activated and not cleaned",
+        Assert.assertTrue(
+                "Second activated and not cleaned",
                 QueuesController.getInstance().exists(tapename1,
                         QueueStatus.QS_ACTIVATED) != null);
-        Assert.assertTrue("Fourth ended and not cleaned",
+        Assert.assertTrue(
+                "Fourth ended and not cleaned",
                 QueuesController.getInstance().exists(tapename1,
                         QueueStatus.QS_CREATED) != null);
     }
@@ -1198,34 +1212,34 @@ public class QueuesControllerTest {
         String tapename2 = "getQueuetape2";
         MediaType media = new MediaType((byte) 1, "media");
 
-        // First queue : tapename1 - ended.
+        // First queue: tapename1 - ended.
         Queue queue1 = QueuesController.getInstance().create(
                 new Tape(tapename1, media, TapeStatus.TS_UNLOCKED));
         Helper.changeToActivated(queue1);
         Helper.changeToEnded(queue1);
 
-        // Second queue : tapename2 - ended.
+        // Second queue: tapename2 - ended.
         Queue queue2 = QueuesController.getInstance().create(
                 new Tape(tapename2, media, TapeStatus.TS_UNLOCKED));
         Helper.changeToActivated(queue2);
         Helper.changeToEnded(queue2);
 
-        // Third queue : tapename2 - created.
+        // Third queue: tapename2 - created.
         QueuesController.getInstance().create(
                 new Tape(tapename2, media, TapeStatus.TS_UNLOCKED));
 
-        // Fourth queue : tapename1 - ended.
+        // Fourth queue: tapename1 - ended.
         Queue queue3 = QueuesController.getInstance().create(
                 new Tape(tapename1, media, TapeStatus.TS_UNLOCKED));
         Helper.changeToActivated(queue3);
         Helper.changeToEnded(queue3);
 
-        // Fifth queue : tapename1 - activated.
+        // Fifth queue: tapename1 - activated.
         Queue queue4 = QueuesController.getInstance().create(
                 new Tape(tapename1, media, TapeStatus.TS_UNLOCKED));
         Helper.changeToActivated(queue4);
 
-        // Sixth queue : tapename1 - created.
+        // Sixth queue: tapename1 - created.
         QueuesController.getInstance().create(
                 new Tape(tapename1, media, TapeStatus.TS_UNLOCKED));
 

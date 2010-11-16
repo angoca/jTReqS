@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistance.mock;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -40,48 +40,35 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.RandomString;
-import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
+import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
+import fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockConfigurationDAO;
+import fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO;
+import fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO;
 
-public class MySQLDAOHelper {
+/**
+ * DAO factory. This is the implementation of the Factory method for the Mock
+ * data source access.
+ */
+public final class MockDAOFactory extends DAOFactory {
+
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLDAOHelper.class);
+            .getLogger(MockDAOFactory.class);
 
-    private static String getFileName() {
-        String ret = "";
-        int size = (int) (Math.random() * 20) + 5;
-        ret = new RandomString(size).nextString();
-        return ret;
+    public ConfigurationDAO getConfigurationDAO() {
+        return new MockConfigurationDAO();
     }
 
-    private static String getUserName() {
-        String ret = "";
-        ret = new RandomString(1).nextString()
-                + ((int) (Math.random() * 5) + 1);
-        return ret;
+    public QueueDAO getQueueDAO() {
+        return new MockQueueDAO();
     }
 
-    /**
-     * @param args
-     * @throws TReqSException
-     */
-    public static void main(String[] args) throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        RequestsDAO.deleteAll();
-        int size = (int) (Math.random() * 5) + 2;
-        for (int i = 0; i < size; i++) {
-            String fileName = getFileName();
-            String userName = getUserName();
-            FileStatus status = FileStatus.FS_CREATED;
-            LOGGER.warn("Generated: {} - {}, {}", new String[] { (i + 1) + "",
-                    fileName, userName });
-            RequestsDAO.insertRow(fileName, userName, status);
-        }
-        MySQLBroker.getInstance().disconnect();
+    public ReadingDAO getReadingDAO() {
+        return new MockReadingDAO();
     }
 }

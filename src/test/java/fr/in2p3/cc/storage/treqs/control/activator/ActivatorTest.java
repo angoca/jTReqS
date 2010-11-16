@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.control.activator;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -59,14 +59,14 @@ import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
+import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 /**
  * ActivatorTest.cpp
- * 
+ *
  * @version 2010-07-22
  * @author gomez
  */
@@ -99,7 +99,7 @@ public class ActivatorTest {
     public static void oneTimeTearDown() throws TReqSException {
         HSMMockBridge.destroyInstance();
         Configurator.destroyInstance();
-        PersistenceFactory.destroyInstance();
+        DAOFactory.destroyInstance();
 
         MySQLBroker.getInstance().connect();
         RequestsDAO.deleteAll();
@@ -179,7 +179,7 @@ public class ActivatorTest {
 
     /**
      * Tests to stop the activator from other thread.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -223,7 +223,7 @@ public class ActivatorTest {
 
     /**
      * Tests the stop method.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -298,7 +298,7 @@ public class ActivatorTest {
 
     /**
      * Tests to refresh the metada in the run method.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -347,7 +347,7 @@ public class ActivatorTest {
 
     /**
      * Tests to retrieve the best user that does not exists.
-     * 
+     *
      * @throws TReqSException
      */
     @Test

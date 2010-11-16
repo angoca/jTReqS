@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.control;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -37,6 +37,8 @@ package fr.in2p3.cc.storage.treqs.control;
  *
  */
 
+import java.util.GregorianCalendar;
+
 import junit.framework.Assert;
 
 import org.junit.After;
@@ -48,19 +50,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.TapeStatus;
+import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
+import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * StagersControllerTest.cpp
- * 
+ *
  * @version 2010-07-07
  * @author gomez
  */
@@ -81,7 +86,7 @@ public class StagersControllerTest {
 
     @AfterClass
     public static void oneTimeTearDown() {
-        PersistenceFactory.destroyInstance();
+        DAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 
@@ -92,14 +97,16 @@ public class StagersControllerTest {
 
     /**
      * Tests // TODO review this tests
-     * 
+     *
      * @throws TReqSException
      */
     @Test
     public void test01createTape() throws TReqSException {
         String tapename = "tapename";
-        Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                new User("username"), 10), new GregorianCalendar(), 50,
+                new Tape(tapename, new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED)), (byte) 3);
         Stager stager1 = StagersController.getInstance().create(queue);
         Stager stager2 = StagersController.getInstance().create(queue);
         int count = StagersController.getInstance().cleanup();

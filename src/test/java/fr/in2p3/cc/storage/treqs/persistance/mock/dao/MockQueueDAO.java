@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistance.mock.dao;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -37,51 +37,46 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
  *
  */
 
+import java.util.Calendar;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.tools.RandomString;
-import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
+import fr.in2p3.cc.storage.treqs.model.QueueStatus;
+import fr.in2p3.cc.storage.treqs.model.Tape;
+import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
+import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
 
-public class MySQLDAOHelper {
+/**
+ * Managing Queues object updates to database
+ */
+public class MockQueueDAO implements QueueDAO {
+
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLDAOHelper.class);
+            .getLogger(MockQueueDAO.class);
 
-    private static String getFileName() {
-        String ret = "";
-        int size = (int) (Math.random() * 20) + 5;
-        ret = new RandomString(size).nextString();
-        return ret;
+    public int abortPendingQueues() throws PersistanceException {
+        return 0;
     }
 
-    private static String getUserName() {
-        String ret = "";
-        ret = new RandomString(1).nextString()
-                + ((int) (Math.random() * 5) + 1);
-        return ret;
+    // @Override
+    public int insert(QueueStatus status, Tape tape, int size, long byteSize,
+            Calendar creationTime) {
+        return 0;
     }
 
-    /**
-     * @param args
-     * @throws TReqSException
-     */
-    public static void main(String[] args) throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        RequestsDAO.deleteAll();
-        int size = (int) (Math.random() * 5) + 2;
-        for (int i = 0; i < size; i++) {
-            String fileName = getFileName();
-            String userName = getUserName();
-            FileStatus status = FileStatus.FS_CREATED;
-            LOGGER.warn("Generated: {} - {}, {}", new String[] { (i + 1) + "",
-                    fileName, userName });
-            RequestsDAO.insertRow(fileName, userName, status);
-        }
-        MySQLBroker.getInstance().disconnect();
+    // @Override
+    public void updateAddRequest(int jobsSize, String ownerName, long byteSize,
+            int id) {
     }
+
+    // @Override
+    public void updateState(Calendar time, QueueStatus status, int size,
+            short nbDone, short nbFailed, String ownerName, long byteSize,
+            int id) {
+    }
+
 }

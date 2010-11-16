@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.model;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -50,12 +50,11 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * QueueIntegrationTest.cpp
- * 
+ *
  * @version Nov 13, 2009
  * @author gomez
  */
@@ -75,18 +74,19 @@ public class QueueIntegrationTest {
     @AfterClass
     public static void oneTimeTearDown() {
         Configurator.destroyInstance();
-        PersistenceFactory.destroyInstance();
     }
 
     /**
      * Tests to activate an ended queue
-     * 
+     *
      * @throws TReqSException
      */
     @Test
     public void test01ActivateEndedQueue() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                new User("username"), 10), new GregorianCalendar(), 50,
+                new Tape("tapename", new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED)), (byte) 3);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -102,52 +102,44 @@ public class QueueIntegrationTest {
 
     @Test
     public void test01dump() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
         FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
                 new User("username"), 100), new GregorianCalendar(), 100,
                 new Tape("tapename", new MediaType((byte) 1, "mediatype"),
                         TapeStatus.TS_UNLOCKED));
-
-        queue.registerFile(fpot1, (byte) 5);
+        Queue queue = new Queue(fpot1, (byte) 5);
 
         queue.activate();
 
         queue.suspend();
-        queue.dump();
 
         queue.unsuspend();
         queue.activate();
 
         Reading reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
-        reading.setFileState(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_STAGED);
 
         queue.getNextReading();
-        queue.dump();
     }
 
     /**
      * Test for coverage in count jobs.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void test01otherMethods() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
         FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
                 new User("username"), 100), new GregorianCalendar(), 100,
                 new Tape("tapename", new MediaType((byte) 1, "mediatype"),
                         TapeStatus.TS_UNLOCKED));
-
-        queue.registerFile(fpot1, (byte) 5);
+        Queue queue = new Queue(fpot1, (byte) 5);
 
         queue.activate();
 
         Reading reading = queue.getNextReading();
-        reading.setFileState(FileStatus.FS_QUEUED);
+        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
         queue.getNextReading();
     }
 
@@ -156,8 +148,10 @@ public class QueueIntegrationTest {
      */
     @Test
     public void test02ActivateSuspendedQueue() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                new User("username"), 10), new GregorianCalendar(), 50,
+                new Tape("tapename", new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED)), (byte) 3);
         queue.changeToActivated();
         queue.suspend();
 

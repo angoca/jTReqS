@@ -22,10 +22,10 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.dao.DAO;
 import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceFactoryException;
+import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
+import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactoryException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException;
@@ -70,9 +70,9 @@ public class TReqSTest {
      * @throws InterruptedException
      */
     private void executeTReqS() throws TReqSException, InterruptedException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();
@@ -99,9 +99,9 @@ public class TReqSTest {
      * @throws InterruptedException
      */
     private void startTReqS() throws TReqSException, InterruptedException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();
@@ -572,9 +572,9 @@ public class TReqSTest {
     @Test
     public void testUserInDriveMappingAvailable() throws TReqSException,
             InterruptedException, SQLException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();
@@ -684,9 +684,9 @@ public class TReqSTest {
     @Test
     public void testUserInDriveMappingLimit() throws TReqSException,
             InterruptedException, SQLException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();
@@ -873,17 +873,17 @@ public class TReqSTest {
      * more that the total capacity.
      * 
      * @throws ProblematicConfiguationFileException
-     * @throws PersistanceFactoryException
+     * @throws PersistenceFactoryException
      * @throws TReqSException
      * @throws SQLException
      */
     @Test
     public void testUserNotDefinedUsingAll()
             throws ProblematicConfiguationFileException,
-            PersistanceFactoryException, TReqSException, SQLException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+            PersistenceFactoryException, TReqSException, SQLException {
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();
@@ -982,9 +982,9 @@ public class TReqSTest {
     @Test
     public void testUserDefinedAndNotDefined1() throws TReqSException,
             SQLException, InterruptedException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();
@@ -1058,9 +1058,9 @@ public class TReqSTest {
     @Test
     public void testUserDefinedAndNotDefined2() throws TReqSException,
             SQLException, InterruptedException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();
@@ -1124,9 +1124,9 @@ public class TReqSTest {
     @Test
     public void testUserDefinedAndNotDefined3() throws TReqSException,
             SQLException, InterruptedException {
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        DAOFactory.getQueueDAO().abortPendingQueues();
+        DAOFactory.getReadingDAO().updateUnfinishedRequests();
+        DAOFactory.getConfigurationDAO().getMediaAllocations();
 
         Dispatcher.getInstance();
         Activator.getInstance();

@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.model;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -59,7 +59,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * StagerTest.java
- * 
+ *
  * @version 2010-07-21
  * @author gomez
  */
@@ -96,8 +96,10 @@ public class StagerTest {
     @Test
     public void test01run() throws TReqSException {
         String tapename = "tapename";
-        Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                new User("username"), 10), new GregorianCalendar(), 50,
+                new Tape(tapename, new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED)), (byte) 3);
         Stager stager = new Stager(1, queue);
 
         stager.run();
@@ -110,10 +112,9 @@ public class StagerTest {
         File file = new File("filename", owner, 200);
         Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
                 TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
         FilePositionOnTape fpot = new FilePositionOnTape(file,
                 new GregorianCalendar(), 5, tape);
-        queue.registerFile(fpot, (byte) 1);
+        Queue queue = new Queue(fpot, (byte) 1);
         final Stager stager = new Stager(1, queue);
 
         HSMResourceException exception = new HSMResourceException((short) 1);
@@ -131,10 +132,9 @@ public class StagerTest {
         File file = new File("filename", owner, 200);
         Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
                 TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
         FilePositionOnTape fpot = new FilePositionOnTape(file,
                 new GregorianCalendar(), 5, tape);
-        queue.registerFile(fpot, (byte) 1);
+        Queue queue = new Queue(fpot, (byte) 1);
         final Stager stager = new Stager(1, queue);
 
         queue.activate();
@@ -162,8 +162,10 @@ public class StagerTest {
     @Test
     public void test01toString() throws TReqSException {
         String tapename = "tapename";
-        Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                new User("username"), 10), new GregorianCalendar(), 50,
+                new Tape(tapename, new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED)), (byte) 3);
         Stager stager = new Stager(1, queue);
         String actual = stager.toString();
 
@@ -178,8 +180,10 @@ public class StagerTest {
     @Test
     public void test02run() throws TReqSException {
         String tapename = "tapename";
-        Queue queue = new Queue(new Tape(tapename, new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                new User("username"), 10), new GregorianCalendar(), 50,
+                new Tape(tapename, new MediaType((byte) 1, "media"),
+                        TapeStatus.TS_UNLOCKED)), (byte) 3);
         Stager stager = new Stager(1, queue);
 
         queue.activate();
@@ -189,7 +193,7 @@ public class StagerTest {
 
     /**
      * Stage just on file.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -198,10 +202,9 @@ public class StagerTest {
         File file = new File("filename", new User("username"), 200);
         Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
                 TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
         FilePositionOnTape fpot = new FilePositionOnTape(file,
                 new GregorianCalendar(), 5, tape);
-        queue.registerFile(fpot, (byte) 1);
+        Queue queue = new Queue(fpot, (byte) 1);
         Stager stager = new Stager(1, queue);
 
         queue.activate();
@@ -213,7 +216,7 @@ public class StagerTest {
 
     /**
      * Stage several files.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -224,12 +227,11 @@ public class StagerTest {
         File file2 = new File("filename2", user, 200);
         Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
                 TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 new GregorianCalendar(), 5, tape);
         FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
                 new GregorianCalendar(), 50, tape);
-        queue.registerFile(fpot1, (byte) 1);
+        Queue queue = new Queue(fpot1, (byte) 1);
         queue.registerFile(fpot2, (byte) 1);
 
         Stager stager = new Stager(1, queue);

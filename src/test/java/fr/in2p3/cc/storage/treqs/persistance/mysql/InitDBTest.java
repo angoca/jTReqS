@@ -44,7 +44,7 @@ public class InitDBTest {
      */
     @Test
     public void test01create() throws TReqSException {
-        InitDB.initDB();
+        InitDB.initializeDatabase();
     }
 
     /**
@@ -54,7 +54,7 @@ public class InitDBTest {
      */
     @Test
     public void test02create() throws TReqSException {
-        InitDB.initDB();
+        InitDB.initializeDatabase();
     }
 
 }

@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.control.starter;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -57,7 +57,6 @@ import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.FileStatus;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceFactory;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
@@ -106,7 +105,6 @@ public class StarterTest {
         Activator.destroyInstance();
         Dispatcher.destroyInstance();
         HSMMockBridge.destroyInstance();
-        PersistenceFactory.destroyInstance();
         StagersController.getInstance().conclude();
         StagersController.getInstance().waitTofinish();
         StagersController.destroyInstance();
@@ -115,7 +113,7 @@ public class StarterTest {
     /**
      * Tests to insert requests in the database in create state, and then create
      * the queue and stage the files. This uses the Starter.
-     * 
+     *
      * @throws TReqSException
      * @throws InterruptedException
      * @throws SQLException

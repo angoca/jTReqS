@@ -3,7 +3,7 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -62,7 +62,7 @@ import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistance.helper.PersistenceHelperFileRequest;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLReadingDAO;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
@@ -99,7 +99,7 @@ public class MySQLReadingDAOTest {
         FilePositionOnTape fpot = null;
         FileStatus status = FileStatus.FS_CREATED;
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -129,7 +129,7 @@ public class MySQLReadingDAOTest {
                 new GregorianCalendar(), position, tape);
         FileStatus status = null;
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -159,7 +159,7 @@ public class MySQLReadingDAOTest {
                 new GregorianCalendar(), position, tape);
         FileStatus status = FileStatus.FS_CREATED;
         String message = null;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -189,7 +189,7 @@ public class MySQLReadingDAOTest {
                 new GregorianCalendar(), position, tape);
         FileStatus status = FileStatus.FS_CREATED;
         String message = "";
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -238,7 +238,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -253,7 +253,7 @@ public class MySQLReadingDAOTest {
                 new GregorianCalendar(), position, tape);
         FileStatus status = FileStatus.FS_CREATED;
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -272,7 +272,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update nothing.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -287,7 +287,7 @@ public class MySQLReadingDAOTest {
                 new GregorianCalendar(), position, tape);
         FileStatus status = FileStatus.FS_CREATED;
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
         MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message, queue);
@@ -296,7 +296,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a row.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -312,7 +312,7 @@ public class MySQLReadingDAOTest {
                 new GregorianCalendar(), position, tape);
         FileStatus status = FileStatus.FS_CREATED;
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         String query = "insert into requests (hpss_file) values ('" + fileName
                 + "')";
@@ -325,7 +325,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -347,7 +347,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -369,7 +369,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no new jobs.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -388,7 +388,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests new job without user.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -415,7 +415,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests new job without retries.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -451,7 +451,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests new jobs.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -487,7 +487,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws SQLException
      * @throws TReqSException
      */
@@ -515,7 +515,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws SQLException
      * @throws TReqSException
      */
@@ -543,7 +543,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws SQLException
      * @throws TReqSException
      */
@@ -571,7 +571,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws SQLException
      * @throws TReqSException
      */
@@ -599,7 +599,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * No connection.
-     * 
+     *
      * @throws SQLException
      * @throws TReqSException
      */
@@ -672,7 +672,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -699,7 +699,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -726,7 +726,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -753,7 +753,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -780,7 +780,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests assertion.
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -807,7 +807,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -888,7 +888,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -921,7 +921,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -954,7 +954,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -987,7 +987,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = -1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -1006,7 +1006,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests a null message.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1025,7 +1025,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = null;
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -1044,7 +1044,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to insert an empty message. This is valid.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1063,7 +1063,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
         MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
@@ -1087,7 +1087,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = -2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -1139,7 +1139,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests no connection.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1158,7 +1158,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
@@ -1177,7 +1177,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a submitted request.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1196,7 +1196,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
         MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
@@ -1206,7 +1206,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a queued request.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1225,7 +1225,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
         MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
@@ -1235,7 +1235,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a created request.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1254,7 +1254,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
         MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
@@ -1264,7 +1264,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a created failed.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1283,7 +1283,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
         MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
@@ -1293,7 +1293,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a staged staged.
-     * 
+     *
      * @throws TReqSException
      */
     @Test
@@ -1312,7 +1312,7 @@ public class MySQLReadingDAOTest {
         byte nbTries = 1;
         String errorMessage = "Error message";
         short errorCode = 2;
-        Queue queue = new Queue(tape);
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
         MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
@@ -1322,7 +1322,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests without connection
-     * 
+     *
      * @throws PersistanceException
      */
     @Test
@@ -1343,7 +1343,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a submitted requests.
-     * 
+     *
      * @throws TReqSException
      * @throws SQLException
      */
@@ -1378,7 +1378,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update a queued requests.
-     * 
+     *
      * @throws TReqSException
      * @throws SQLException
      */
@@ -1413,7 +1413,7 @@ public class MySQLReadingDAOTest {
 
     /**
      * Tests to update nothing.
-     * 
+     *
      * @throws TReqSException
      * @throws SQLException
      */
