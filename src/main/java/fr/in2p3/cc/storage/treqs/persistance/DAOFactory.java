@@ -67,7 +67,7 @@ public abstract class DAOFactory {
     /**
      * The singleton instance.
      */
-    private static DAOFactory _instance = null;
+    private static DAOFactory instance = null;
 
     /**
      * Returns the DAO for the configuration.
@@ -110,7 +110,7 @@ public abstract class DAOFactory {
                     + "value will be used: {}", daoName);
         }
 
-        _instance = getDataSourceAccess(daoName);
+        instance = getDataSourceAccess(daoName);
 
         LOGGER.trace("< createDAOFactory");
     }
@@ -121,7 +121,7 @@ public abstract class DAOFactory {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        _instance = null;
+        instance = null;
 
         LOGGER.trace("< destroyInstance");
     }
@@ -138,14 +138,14 @@ public abstract class DAOFactory {
     public static DAOFactory getDAOFactoryInstance() throws TReqSException {
         LOGGER.trace("> getDAOFactoryInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
             createDAOFactory();
         }
         LOGGER.trace("< getDAOFactoryInstance");
 
-        return _instance;
+        return instance;
     }
 
     /**
