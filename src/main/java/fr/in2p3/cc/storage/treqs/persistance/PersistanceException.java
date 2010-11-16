@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.persistance;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -35,11 +33,15 @@ package fr.in2p3.cc.storage.treqs.persistance;
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
+package fr.in2p3.cc.storage.treqs.persistance;
 
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
- * Basic Persistance exception.
+ * Basic Persistence exception.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
 public abstract class PersistanceException extends TReqSException {
 
@@ -48,15 +50,30 @@ public abstract class PersistanceException extends TReqSException {
      */
     private static final long serialVersionUID = -7397853011740242653L;
 
+    /**
+     * Constructor without parameters.
+     */
     public PersistanceException() {
         super();
     }
 
-    public PersistanceException(Exception e) {
-        super(e);
+    /**
+     * Wrapping an exception.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    public PersistanceException(final Exception exception) {
+        super(exception);
     }
 
-    public PersistanceException(String message) {
+    /**
+     * Exception with an explicit message.
+     *
+     * @param message
+     *            Descriptive message of the problem.
+     */
+    public PersistanceException(final String message) {
         super(message);
     }
 }
