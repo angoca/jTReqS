@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistance.mysql;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -51,16 +50,20 @@ import com.mysql.jdbc.Statement;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.OpenMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
+ * Manages the connection to the database and its state.
  *
+ * @author Andrés Gómez
+ * @since 1.5
  */
-public class MySQLBroker {
+public final class MySQLBroker {
+    /**
+     * Singleton instance.
+     */
     private static MySQLBroker instance;
-
     /**
      * Logger.
      */
@@ -85,6 +88,11 @@ public class MySQLBroker {
         LOGGER.trace("< destroyInstance");
     }
 
+    /**
+     * Method to call the singleton.
+     *
+     * @return Retrieves the unique instance of this object.
+     */
     public static MySQLBroker getInstance() {
         LOGGER.trace("> getInstance");
 
@@ -92,15 +100,26 @@ public class MySQLBroker {
             instance = new MySQLBroker();
         }
 
+        assert instance != null;
+
         LOGGER.trace("< getInstance");
 
         return instance;
     }
 
+    /**
+     * If there is as active connection to the database.
+     */
     private boolean connected;
 
-    private Connection connection = null;
+    /**
+     * Connection to the database.
+     */
+    private Connection connection;
 
+    /**
+     * Constructor of the broker where the object are initialized.
+     */
     private MySQLBroker() {
         LOGGER.trace("> MySQLBroker");
 
@@ -111,34 +130,38 @@ public class MySQLBroker {
     }
 
     /**
+     * Closes the result set of a query. This could be due to an exception, or
+     * when the query has been already processed.
+     *
      * @param result
-     * @return
+     *            Result set to close.
      */
-    private ResultSet closeResultSet(ResultSet result) {
+    private void closeResultSet(final ResultSet result) {
         LOGGER.trace("> closeResultSet");
 
         if (result != null) {
             try {
                 result.close();
             } catch (SQLException sqlEx) {
-                LOGGER.error("SQLException: " + sqlEx.getMessage());
-                LOGGER.error("SQLState: " + sqlEx.getSQLState());
-                LOGGER.error("VendorError: " + sqlEx.getErrorCode());
+                LOGGER.error("SQLException: {}", sqlEx.getMessage());
+                LOGGER.error("SQLState: {}", sqlEx.getSQLState());
+                LOGGER.error("VendorError: {}", sqlEx.getErrorCode());
             }
-
-            result = null;
         }
 
         LOGGER.trace("< closeResultSet");
-
-        return result;
     }
 
     /**
+     * Close a given statement.
+     *
      * @param stmt
+     *            Statement to close.
      * @throws CloseMySQLException
+     *             If there is a problem while closing the statement.
      */
-    private void closeStatement(Statement stmt) throws CloseMySQLException {
+    private void closeStatement(final Statement stmt)
+            throws CloseMySQLException {
         LOGGER.trace("> closeStatement");
 
         if (stmt != null) {
@@ -146,15 +169,23 @@ public class MySQLBroker {
                 stmt.close();
             } catch (SQLException sqlEx) {
                 handleSQLException(sqlEx);
+                // TODO
                 throw new CloseMySQLException(sqlEx);
             }
-            stmt = null;
         }
 
         LOGGER.trace("< closeStatement");
     }
 
-    public Connection connect() throws TReqSException {
+    /**
+     * Establishes a connection to the database.
+     *
+     * @throws TReqSException
+     *             If there is a problem retrieving the database values from the
+     *             configuration. Or retrieving the driver, or connecting to the
+     *             database.
+     */
+    public void connect() throws TReqSException {
         LOGGER.trace("> connect");
 
         String url = Configurator.getInstance().getValue("JOBSDB", "URL");
@@ -162,21 +193,21 @@ public class MySQLBroker {
         String user = Configurator.getInstance().getValue("JOBSDB", "USERNAME");
         String password = Configurator.getInstance().getValue("JOBSDB",
                 "PASSWORD");
-        Connection ret = null;
 
+        // There can be only a connection per instance.
         synchronized (instance) {
             if (this.connection == null) {
                 try {
                     Class.forName(driver).newInstance();
                 } catch (Exception e) {
-                    LOGGER.error("Exception: " + e.getMessage());
+                    LOGGER.error("Exception: {}", e.getMessage());
+                    // TODO
                     throw new OpenMySQLException(e);
                 }
                 try {
                     this.connection = (Connection) DriverManager.getConnection(
                             url, user, password);
                     this.connected = true;
-                    ret = this.connection;
                 } catch (SQLException ex) {
                     handleSQLException(ex);
                     try {
@@ -184,56 +215,77 @@ public class MySQLBroker {
                     } catch (Exception e) {
                         // Nothing
                     }
+                    // TODO
                     throw new OpenMySQLException(ex);
                 }
             }
         }
 
         LOGGER.trace("< connect");
-
-        return ret;
     }
 
+    /**
+     * Disconnects from the database.
+     *
+     * @throws CloseMySQLException
+     *             If there is a problem closing the connection.
+     */
     public void disconnect() throws CloseMySQLException {
         LOGGER.trace("> disconnect");
 
-        this.connected = false;
         synchronized (instance) {
             if (this.connection != null) {
                 try {
                     this.connection.close();
                 } catch (SQLException ex) {
                     handleSQLException(ex);
+                    // TODO
                     throw new CloseMySQLException(ex);
                 } finally {
                     this.connection = null;
                 }
             }
+            this.connected = false;
         }
 
         LOGGER.trace("< disconnect");
     }
 
-    public int executeModification(String query) throws MySQLException {
+    /**
+     * Executes a statement in the database.
+     *
+     * @param query
+     *            Statement to execute.
+     * @return Quantity of modified rows.
+     * @throws TReqSException
+     *             If there is a problem while validating the connection or
+     *             while executing.
+     */
+    public int executeModification(final String query) throws TReqSException {
         LOGGER.trace("> executeModification");
 
         assert query != null;
         assert !query.equals("");
 
-        int rows = -1;
+        int rows;
         Statement statement = null;
-        validConnection();
-        try {
-            statement = (Statement) connection.createStatement();
-            rows = statement.executeUpdate(query);
-        } catch (SQLException ex) {
-            handleSQLException(ex);
-            throw new ExecuteMySQLException(ex);
-        } finally {
+        // The Broker can process just one query at a time.
+        synchronized (instance) {
+            validConnection();
             try {
-                statement.close();
-            } catch (SQLException e) {
-                throw new ExecuteMySQLException(e);
+                statement = (Statement) connection.createStatement();
+                rows = statement.executeUpdate(query);
+            } catch (SQLException ex) {
+                handleSQLException(ex);
+                // TODO
+                throw new ExecuteMySQLException(ex);
+            } finally {
+                try {
+                    statement.close();
+                } catch (SQLException e) {
+                    // TODO
+                    throw new ExecuteMySQLException(e);
+                }
             }
         }
 
@@ -242,70 +294,138 @@ public class MySQLBroker {
         return rows;
     }
 
-    public Object[] executeSelect(String query) throws MySQLException {
+    /**
+     * Executes a select in the database returning the resultSet. The Broker can
+     * process just one query at a time.
+     *
+     * @param query
+     *            Query statement to execute in the databases.
+     * @return Set of objects: [Statement, ResultSet].
+     * @throws TReqSException
+     *             If there is a problem validating the connection or executing
+     *             the query.
+     */
+    public Object[] executeSelect(final String query) throws TReqSException {
         LOGGER.trace("> executeSelect");
 
         assert query != null;
         assert !query.equals("");
 
-        ResultSet rs = null;
-        Statement stmt = null;
-        validConnection();
-        try {
-            stmt = (Statement) this.connection.createStatement();
-            rs = stmt.executeQuery(query);
-        } catch (SQLException ex) {
-            handleSQLException(ex);
-            rs = closeResultSet(rs);
-            throw new ExecuteMySQLException(ex);
+        ResultSet rs;
+        Statement stmt;
+        Object[] ret;
+        // The Broker can process just one query at a time.
+        synchronized (instance) {
+            rs = null;
+            stmt = null;
+            validConnection();
+            try {
+                stmt = (Statement) this.connection.createStatement();
+                rs = stmt.executeQuery(query);
+            } catch (SQLException ex) {
+                handleSQLException(ex);
+                closeResultSet(rs);
+                // TODO
+                throw new ExecuteMySQLException(ex);
+            }
+            ret = new Object[] { stmt, rs };
         }
+
+        assert ret != null;
 
         LOGGER.trace("< executeSelect");
 
-        return new Object[] { stmt, rs };
-    }
-
-    public PreparedStatement getPreparedStatement(String query)
-            throws ExecuteMySQLException {
-        validConnection();
-        PreparedStatement ret = null;
-        try {
-            ret = this.connection.prepareStatement(query,
-                    java.sql.Statement.RETURN_GENERATED_KEYS);
-        } catch (SQLException e) {
-            throw new ExecuteMySQLException(e);
-        }
         return ret;
     }
 
     /**
-     * @param ex
+     * Retrieves a prepared statement. The Broker can process just one query at
+     * a time.
+     *
+     * @param query
+     *            Query to prepare.
+     * @return Prepared statement to fill with the data to execute.
+     * @throws TReqSException
+     *             If there is a problem validating the connection or while
+     *             preparing the statement.
      */
-    private void handleSQLException(SQLException ex) {
+    public PreparedStatement getPreparedStatement(final String query)
+            throws TReqSException {
+        LOGGER.trace("> getPreparedStatement");
+
+        assert query != null;
+        assert !query.equals("");
+
+        validConnection();
+        PreparedStatement ret;
+        // The Broker can process just one query at a time.
+        synchronized (instance) {
+            ret = null;
+            try {
+                ret = this.connection.prepareStatement(query,
+                        java.sql.Statement.RETURN_GENERATED_KEYS);
+            } catch (SQLException e) {
+                // TODO
+                throw new ExecuteMySQLException(e);
+            }
+        }
+
+        assert ret != null;
+
+        LOGGER.trace("< getPreparedStatement");
+
+        return ret;
+    }
+
+    /**
+     * Handle an exception, logging the messages.
+     *
+     * @param exception
+     *            Exception to process.
+     */
+    private void handleSQLException(final SQLException exception) {
         LOGGER.trace("> handleSQLException");
 
-        assert ex != null;
+        assert exception != null;
 
-        System.out.println("SQLException: " + ex.getMessage());
-        System.out.println("SQLState: " + ex.getSQLState());
-        System.out.println("VendorError: " + ex.getErrorCode());
+        System.out.println("SQLException: " + exception.getMessage());
+        System.out.println("SQLState: " + exception.getSQLState());
+        System.out.println("VendorError: " + exception.getErrorCode());
 
         LOGGER.trace("< handleSQLException");
     }
 
-    public void terminateExecution(Object[] objects) throws CloseMySQLException {
+    /**
+     * Close the result set and the statement of a previous select.
+     *
+     * @param objects
+     *            Set of object to close [statement, resultSet].
+     * @throws CloseMySQLException
+     *             If there is a problem closing the object.
+     */
+    public void terminateExecution(final Object[] objects)
+            throws CloseMySQLException {
+        LOGGER.trace("> terminateExecution");
+
+        assert objects != null;
+        assert objects.length == 2;
+
         closeResultSet((ResultSet) objects[1]);
+        objects[1] = null;
         closeStatement((Statement) objects[0]);
+        objects[0] = null;
+
+        LOGGER.trace("< terminateExecution");
     }
 
     /**
      * Validates if the connection is valid.
-     * 
-     * @return
-     * @throws SQLException
-     * @throws ExecuteMySQLException
+     *
+     * @throws TReqSException
+     *             While verifying the connection status or when reestablishing
+     *             the connection.
      */
-    private void validConnection() throws ExecuteMySQLException {
+    private void validConnection() throws TReqSException {
         LOGGER.trace("> validConnection");
 
         boolean ret;
@@ -314,13 +434,13 @@ public class MySQLBroker {
                     && !this.connection.isClosed();
         } catch (SQLException e) {
             handleSQLException(e);
+            // TODO
             throw new ExecuteMySQLException(e);
         }
         if (!ret) {
-            LOGGER.error("The connection has not been established.");
-            throw new ExecuteMySQLException(
-                    "The connection has not been established.");
-            // TODO Re-establish the connection at least once.
+            LOGGER.error("The connection has not been established. "
+                    + "Reestablishing the connection.");
+            this.connect();
         }
 
         LOGGER.trace("< validConnection");
