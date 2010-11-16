@@ -46,27 +46,27 @@ public final class InitDBStatements {
     /**
      * Media type table name.
      */
-    public static final String MEDIATYPE = "mediatype";
+    public static final String MEDIATYPE = MySQLStatements.MEDIATYPE;
     /**
      * User allocation table name.
      */
-    public static final String ALLOCATION = "allocation";
+    public static final String ALLOCATION = MySQLStatements.ALLOCATION;
     /**
      * Queues history table name.
      */
-    public static final String QUEUES_HISTORY = "queues_history";
+    public static final String QUEUES_HISTORY = MySQLStatements.QUEUES_HISTORY;
     /**
      * Queues table name.
      */
-    public static final String QUEUES = "queues";
+    public static final String QUEUES = MySQLStatements.QUEUES;
     /**
      * Request history table name.
      */
-    public static final String REQUESTS_HISTORY = "requests_history";
+    public static final String REQUESTS_HISTORY = MySQLStatements.REQUESTS_HISTORY;
     /**
      * Requests table name.
      */
-    public static final String REQUESTS = "requests";
+    public static final String REQUESTS = MySQLStatements.REQUESTS;
 
     /**
      * Command to show all tables.
@@ -147,5 +147,4 @@ public final class InitDBStatements {
     private InitDBStatements() {
         // Nothing
     }
-
 }
