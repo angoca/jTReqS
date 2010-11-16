@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistance.mysql;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +50,9 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLReadingDAO;
 /**
  * DAO factory. This is the implementation of the Factory method for the MySQL
  * data source access.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
 public final class MySQLDAOFactory extends DAOFactory {
 
@@ -60,15 +62,37 @@ public final class MySQLDAOFactory extends DAOFactory {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLDAOFactory.class);
 
+    /*
+     * (non-Javadoc)
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getConfigurationDAO()
+     */
+    @Override
     public ConfigurationDAO getConfigurationDAO() {
+        LOGGER.trace(">< getConfigurationDAO");
+
         return new MySQLConfigurationDAO();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getQueueDAO()
+     */
+    @Override
     public QueueDAO getQueueDAO() {
+        LOGGER.trace(">< getQueueDAO");
+
         return new MySQLQueueDAO();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getReadingDAO()
+     */
+    @Override
     public ReadingDAO getReadingDAO() {
+        LOGGER.trace(">< getReadingDAO");
+
         return new MySQLReadingDAO();
     }
 }
