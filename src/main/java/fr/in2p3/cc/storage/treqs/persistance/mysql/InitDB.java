@@ -101,10 +101,10 @@ public final class InitDB {
                 if (tablename.equals(InitDBStatements.QUEUES_HISTORY)) {
                     tableQueuesHistoryFound = true;
                 }
-                if (tablename.equals(InitDBStatements.ALLOCATION)) {
+                if (tablename.equals(InitDBStatements.ALLOCATIONS)) {
                     tableUsersFound = true;
                 }
-                if (tablename.equals(InitDBStatements.MEDIATYPE)) {
+                if (tablename.equals(InitDBStatements.MEDIATYPES)) {
                     tableMediatypeFound = true;
                 }
                 LOGGER.debug("Table found: {}", tablename);
@@ -132,12 +132,12 @@ public final class InitDB {
                     InitDBStatements.STRUCTURE_TABLE_QUEUES);
         }
         if (!tableUsersFound) {
-            createTable(InitDBStatements.ALLOCATION,
-                    InitDBStatements.STRUCTURE_TABLE_ALLOCATION);
+            createTable(InitDBStatements.ALLOCATIONS,
+                    InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
         }
         if (!tableMediatypeFound) {
-            createTable(InitDBStatements.MEDIATYPE,
-                    InitDBStatements.STRUCTURE_TABLE_MEDIATYPE);
+            createTable(InitDBStatements.MEDIATYPES,
+                    InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
         }
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
