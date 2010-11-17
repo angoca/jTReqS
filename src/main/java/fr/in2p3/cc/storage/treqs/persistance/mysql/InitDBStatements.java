@@ -44,102 +44,253 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
  */
 public final class InitDBStatements {
     /**
-     * Media type table name.
+     * Command to show all tables.
      */
-    public static final String MEDIATYPE = MySQLStatements.MEDIATYPE;
+    public static final String ALL_TABLES = "show tables";
     /**
      * User allocation table name.
      */
-    public static final String ALLOCATION = MySQLStatements.ALLOCATION;
+    public static final String ALLOCATIONS = MySQLStatements.ALLOCATIONS;
     /**
-     * Queues history table name.
+     * Allocations table: Id of the allocation.
      */
-    public static final String QUEUES_HISTORY = MySQLStatements.QUEUES_HISTORY;
+    private static final String ALLOCATIONS_ID = MySQLStatements.ALLOCATIONS_ID;
+    /**
+     * Allocations table: Quantity of allocation for a user.
+     */
+    private static final String ALLOCATIONS_SHARE = MySQLStatements.ALLOCATIONS_SHARE;
+    /**
+     * Allocations table: allocation for a given user.
+     */
+    private static final String ALLOCATIONS_USER = MySQLStatements.ALLOCATIONS_USER;
+    /**
+     * Start of the command to create a table.
+     */
+    public static final String CREATE_TABLE = "CREATE TABLE ";
+
+    /**
+     * Media type table name.
+     */
+    public static final String MEDIATYPES = MySQLStatements.MEDIATYPES;
+    /**
+     * Media types table: Quantity of drives for the media type.
+     */
+    private static final String MEDIATYPES_DRIVES = MySQLStatements.MEDIATYPES_DRIVES;
+    /**
+     * Media types table: Id of the media type.
+     */
+    private static final String MEDIATYPES_ID = MySQLStatements.MEDIATYPES_ID;
+    /**
+     * Media types table: Name of the media type.
+     */
+    private static final String MEDIATYPES_NAME = MySQLStatements.MEDIATYPES_NAME;
     /**
      * Queues table name.
      */
     public static final String QUEUES = MySQLStatements.QUEUES;
     /**
-     * Request history table name.
+     * Queues table: When the queue was activated.
      */
-    public static final String REQUESTS_HISTORY = MySQLStatements.REQUESTS_HISTORY;
+    private static final String QUEUES_ACTIVATION_TIME = MySQLStatements.QUEUES_ACTIVATION_TIME;
+    /**
+     * Queues table: Quantity of bytes to stage with the queue.
+     */
+    private static final String QUEUES_BYTE_SIZE = MySQLStatements.QUEUES_BYTE_SIZE;
+    /**
+     * Queues table: When the queue was created.
+     */
+    private static final String QUEUES_CREATION_TIME = MySQLStatements.QUEUES_CREATION_TIME;
+    /**
+     * Queues table: When the queue has been completely processed.
+     */
+    private static final String QUEUES_END_TIME = MySQLStatements.QUEUES_END_TIME;
+    /**
+     * Queues history table name.
+     */
+    public static final String QUEUES_HISTORY = MySQLStatements.QUEUES_HISTORY;
+    /**
+     * Queues table: Id of the queue.
+     */
+    private static final String QUEUES_ID = MySQLStatements.QUEUES_ID;
+    /**
+     * Queues table: Related type of media for the queue.
+     */
+    private static final String QUEUES_MEDIATYPE_ID = MySQLStatements.QUEUES_MEDIATYPE_ID;
+    /**
+     * Queues table: Name of the queue. Normally it is the name of the
+     * associated tape.
+     */
+    private static final String QUEUES_NAME = MySQLStatements.QUEUES_NAME;
+    /**
+     * Queues table: Quantity of requests for the queue.
+     */
+    private static final String QUEUES_NB_REQS = MySQLStatements.QUEUES_NB_REQS;
+    /**
+     * Queues table: Quantity of requests already done.
+     */
+    private static final String QUEUES_NB_REQS_DONE = MySQLStatements.QUEUES_NB_REQS_DONE;
+    /**
+     * Queues table: Quantity of requests that have failed.
+     */
+    private static final String QUEUES_NB_REQS_FAILED = MySQLStatements.QUEUES_NB_REQS_FAILED;
+    /**
+     * Queues table: User with more associated requests.
+     */
+    private static final String QUEUES_OWNER = MySQLStatements.QUEUES_OWNER;
+    /**
+     * Queues table: Current status of the queue.
+     */
+    private static final String QUEUES_STATUS = MySQLStatements.QUEUES_STATUS;
     /**
      * Requests table name.
      */
     public static final String REQUESTS = MySQLStatements.REQUESTS;
+    /**
+     * Requests table: Name of the tape where the file is currently stored.
+     */
+    private static final String REQUESTS_CARTRIDGE = MySQLStatements.REQUESTS_CARTRIDGE;
+    /**
+     * Requests table: Name or IP of the client that is demanding the file. It's
+     * only used by the client.
+     */
+    private static final String REQUESTS_CLIENT = MySQLStatements.REQUESTS_CLIENT;
+    /**
+     * Requests table: When the request was created. It's only used by the
+     * client.
+     */
+    private static final String REQUESTS_CREATION_TIME = MySQLStatements.REQUESTS_CREATION_TIME;
+    /**
+     * Requests table: email of the person asking for the file. It's only used
+     * by the client.
+     */
+    private static final String REQUESTS_EMAIL = MySQLStatements.REQUESTS_EMAIL;
+    /**
+     * Requests table: When the request was processed (staged or failed).
+     */
+    private static final String REQUESTS_END_TIME = MySQLStatements.REQUESTS_END_TIME;
+    /**
+     * Requests table: Last error code returned by the operations.
+     */
+    private static final String REQUESTS_ERRORCODE = MySQLStatements.REQUESTS_ERRORCODE;
+    /**
+     * Requests table: Name of the file to stage.
+     */
+    private static final String REQUESTS_FILE = MySQLStatements.REQUESTS_FILE;
+    /**
+     * Request history table name.
+     */
+    public static final String REQUESTS_HISTORY = MySQLStatements.REQUESTS_HISTORY;
+    /**
+     * Requests table: Id of the request.
+     */
+    private static final String REQUESTS_ID = MySQLStatements.REQUESTS_ID;
+    /**
+     * Requests table: Level where the file can be found.
+     */
+    private static final String REQUESTS_LEVEL = MySQLStatements.REQUESTS_LEVEL;
+    /**
+     * Requests table: Message of the last operation.
+     */
+    private static final String REQUESTS_MESSAGE = MySQLStatements.REQUESTS_MESSAGE;
+    /**
+     * Requests table: Position of the file in the tape.
+     */
+    private static final String REQUESTS_POSITION = MySQLStatements.REQUESTS_POSITION;
+    /**
+     * Requests table: Associated queue when the request has been submitted to a
+     * queue.
+     */
+    private static final String REQUESTS_QUEUE_ID = MySQLStatements.REQUESTS_QUEUE_ID;
+    /**
+     * Requests table: When the request was asked for stage.
+     */
+    private static final String REQUESTS_QUEUED_TIME = MySQLStatements.REQUESTS_QUEUED_TIME;
+    /**
+     * Requests table: Size of the file requested.
+     */
+    private static final String REQUESTS_SIZE = MySQLStatements.REQUESTS_SIZE;
+    /**
+     * Requests table: Status of the request.
+     */
+    private static final String REQUESTS_STATUS = MySQLStatements.REQUESTS_STATUS;
+    /**
+     * Requests table: When the request was added to a queue.
+     */
+    private static final String REQUESTS_SUBMISSION_TIME = MySQLStatements.REQUESTS_SUBMISSION_TIME;
+    /**
+     * Requests table: How many retries have been done for this request.
+     */
+    private static final String REQUESTS_TRIES = MySQLStatements.REQUESTS_TRIES;
 
     /**
-     * Command to show all tables.
+     * Requests table: Name of the user demanding the request.
      */
-    public static final String ALL_TABLES = "show tables";
+    private static final String REQUESTS_USER = MySQLStatements.REQUESTS_USER;
     /**
-     * Start of the command to create a table.
+     * Requests table: Version of the client who inserts the request. It's only
+     * used by the client.
+     *
+     * @since 1.5
      */
-    public static final String CREATE_TABLE = "CREATE TABLE ";
+    private static final String REQUESTS_VERSION = MySQLStatements.REQUESTS_VERSION;
     /**
-     * Structure of the table requests. The columns were sorted in order to have
-     * the primary at first, followed by the more volatile columns. TODO
-     * validate the precision of the DB columns with Java types.
+     * Structure of the table allocations.
      */
-    public static final String STRUCTURE_TABLE_REQUESTS = "("
-            + "`id` int(11) NOT null auto_increment, "
-            + "`status` tinyint(4) default 0, "
-            + "`message` varchar(128) default null, "
-            + "`errorcode` int(11) default '0',"
-            + "`queued_time` datetime default null, "
-            + "`end_time` datetime default null, "
-            + "`submission_time` datetime default null, "
-            + "`tries` int(11) default '0', "
-            + "`queue_id` int(11) default null, "
-            + "`cartridge` varchar(8) default '', "
-            + "`position` int(11) default '-1', "
-            + "`cos` int(11) default '-1', "
-            + "`size` bigint(20)  default '0', " + "`file` varchar(256), "
-            + "`creation_time` datetime default null, "
-            + "`expiration_time` mediumint(9) default null, "
-            + "`user` varchar(32) default null, " + "`client` varchar(128), "
-            + "`email` varchar(128) default null, " + "PRIMARY KEY  (`id`)"
-            + ")";
+    public static final String STRUCTURE_TABLE_ALLOCATIONS = "("
+            + ALLOCATIONS_ID + " tinyint default null, " + ALLOCATIONS_USER
+            + " varchar(32) default null, " + ALLOCATIONS_SHARE
+            + " decimal(5,2) default null )";
+
+    /**
+     * Structure of the table media types.
+     */
+    public static final String STRUCTURE_TABLE_MEDIATYPES = "(" + MEDIATYPES_ID
+            + " tinyint NOT null, " + MEDIATYPES_NAME
+            + " varchar(16) default null, " + MEDIATYPES_DRIVES
+            + " smallint default null PRIMARY KEY  (" + MEDIATYPES_ID + ")) ";
 
     /**
      * Structure of the table queues. The columns were sorted in order to have
      * the primary key at first, followed by the more volatile columns. TODO
      * validate the precision of the DB columns with Java types.
      */
-    public static final String STRUCTURE_TABLE_QUEUES = "("
-            + "`id` int(11) NOT null auto_increment, "
-            + "`nb_done` int(11) default 0, " + "`nb_jobs` int(11) default 0, "
-            + "`owner` char(20) default null, "
-            + "`byte_size` bigint(20) default 0, "
-            + "`nb_failed` int(11) default 0, "
-            + "`status` tinyint(1) default null, "
-            + "`activation_time` datetime default null, "
-            + "`end_time` datetime default null, "
-            + "`master_queue` int(11) default null, "
-            + "`name` char(12) default null, "
-            + "`creation_time` datetime default null, " + "PRIMARY KEY (`id`)"
-            + ") ";
+    public static final String STRUCTURE_TABLE_QUEUES = "(" + QUEUES_ID
+            + " int NOT null auto_increment, " + QUEUES_NB_REQS_DONE
+            + " int default 0, " + QUEUES_NB_REQS + " int default 0, "
+            + QUEUES_OWNER + " varchar(32) default null, " + QUEUES_BYTE_SIZE
+            + " bigint default 0, " + QUEUES_NB_REQS_FAILED
+            + " int default 0, " + QUEUES_STATUS + " tinyint default null, "
+            + QUEUES_ACTIVATION_TIME + " datetime default null, "
+            + QUEUES_END_TIME + " datetime default null, "
+            + QUEUES_MEDIATYPE_ID + " tinyint default null, " + QUEUES_NAME
+            + " char(12) default null, " + QUEUES_CREATION_TIME
+            + " datetime default null, PRIMARY KEY (" + QUEUES_ID + ")) ";
 
     /**
-     * Structure of the table allocation.
+     * Structure of the table requests. The columns were sorted in order to have
+     * the primary at first, followed by the more volatile columns. TODO
+     * validate the precision of the DB columns with Java types.
      */
-    public static final String STRUCTURE_TABLE_ALLOCATION = "("
-            + "`id` int(11) default null, "
-            + "`user` varchar(32) default null, "
-            + "`share` decimal(5,2) default null, "
-            + "`depth` int(11) default null, "
-            + "`grp` varchar(10) default null, "
-            + "`expr` varchar(10) default null, "
-            + "`org` varchar(10) default null" + ")";
-
-    /**
-     * Structure of the table media type.
-     */
-    public static final String STRUCTURE_TABLE_MEDIATYPE = "("
-            + "`id` int(11) NOT null, " + "`name` char(20) default null, "
-            + "`drives` int(11) default null, " + "`lock_time` mediumtext, "
-            + "`volume_pattern` char(20) default null, "
-            + "PRIMARY KEY  (`id`)" + ") ";
+    public static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
+            + " int NOT null auto_increment, " + REQUESTS_STATUS
+            + " tinyint default 0, " + REQUESTS_MESSAGE
+            + " varchar(254) default null, " + REQUESTS_ERRORCODE
+            + " smallint default '0'," + REQUESTS_QUEUED_TIME
+            + " datetime default null, " + REQUESTS_END_TIME
+            + " datetime default null, " + REQUESTS_SUBMISSION_TIME
+            + " datetime default null, " + REQUESTS_TRIES
+            + " tinyint default '0', " + REQUESTS_QUEUE_ID
+            + " int default null, " + REQUESTS_CARTRIDGE
+            + " char(8) default '', " + REQUESTS_POSITION
+            + " int default '-1', " + REQUESTS_LEVEL
+            + " tinyint default '-1', " + REQUESTS_SIZE
+            + " bigint  default '0', " + REQUESTS_FILE
+            + " varchar(1024) NOT null, " + REQUESTS_CREATION_TIME
+            + " datetime default null, " + REQUESTS_USER
+            + " varchar(32) NOT null, " + REQUESTS_CLIENT + " varchar(32), "
+            + REQUESTS_VERSION + " varchar(16), " + REQUESTS_EMAIL
+            + " varchar(64) default null, " + "PRIMARY KEY  (" + REQUESTS_ID
+            + "))";
 
     /**
      * Default constructor hidden.
