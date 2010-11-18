@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,9 +34,10 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
 
 /**
- * Exception on connection to database.
+ * Exception on connection to MySQL database.
  */
 public class OpenMySQLException extends MySQLException {
 
@@ -47,7 +46,13 @@ public class OpenMySQLException extends MySQLException {
      */
     private static final long serialVersionUID = 4734251355039228712L;
 
-    public OpenMySQLException(Exception e) {
+    /**
+     * Wraps an exception thrown when connecting to the database.
+     *
+     * @param e
+     *            Wrapped exception.
+     */
+    public OpenMySQLException(final Exception e) {
         super(e);
     }
-};
+}

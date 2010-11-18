@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,13 +34,15 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
 
 import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
 
 /**
- * Basic Persistance exception.
- * 
- * @author gomez
+ * Basic persistence exception for MySQL.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
 public abstract class MySQLException extends PersistanceException {
 
@@ -51,15 +51,20 @@ public abstract class MySQLException extends PersistanceException {
      */
     private static final long serialVersionUID = 7637653660807465428L;
 
-    public MySQLException() {
+    /**
+     * Default constructor. The exception should have a descriptive name.
+     */
+    protected MySQLException() {
         super();
     }
 
-    public MySQLException(Exception e) {
+    /**
+     * Wraps a thrown exception.
+     *
+     * @param e
+     *            Wrapped exception.
+     */
+    protected MySQLException(final Exception e) {
         super(e);
     }
-
-    public MySQLException(String message) {
-        super(message);
-    }
-};
+}
