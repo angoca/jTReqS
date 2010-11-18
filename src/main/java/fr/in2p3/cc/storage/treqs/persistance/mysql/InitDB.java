@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
 
 /**
  * Initializes the database if the tables are not created. This only works if
