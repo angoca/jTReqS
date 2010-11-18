@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,47 +34,62 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
-// The strange values are put here to conform to the old statuses.
-// The client still understand the old statuses.
-
-public enum FileStatus {
+/**
+ * The strange values are put here to conform to the old statuses. The client
+ * still understand the old statuses. TODO v1.0 rename this to RequestStatus
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
+ */
+public enum FileRequestStatus {
     /**
-     * A brand new file request
+     * A brand new file request.
      */
-    FS_CREATED((byte) 10),
+    FS_CREATED((byte) 100),
     /**
-     * File reading failed
+     * File reading failed.
      */
-    FS_FAILED((byte) 16),
+    FS_FAILED((byte) 160),
     /**
      * File could not be processed by TReqS. There are not enough parameters to
      * process the requests.
      */
-    FS_INVALID((byte) 18),
+    FS_INVALID((byte) 180),
     /**
-     * File is submitted to HPSS for staging
+     * File is submitted to HPSS for staging.
      */
-    FS_QUEUED((byte) 12),
+    FS_QUEUED((byte) 120),
     /**
-     * File is staged on HPSS disks
+     * File is staged on HPSS disks.
      */
-    FS_STAGED((byte) 14),
+    FS_STAGED((byte) 140),
     /**
-     * File is registered in a queue
+     * File is registered in a queue.
      */
-    FS_SUBMITTED((byte) 11),
+    FS_SUBMITTED((byte) 110),
     /**
      * The file is already on disk.
      */
-    FS_ON_DISK((byte) 15);
+    FS_ON_DISK((byte) 150);
 
+    /**
+     *
+     */
     private byte id;
 
-    private FileStatus(byte id) {
-        this.id = id;
+    /**
+     * @param statusId
+     *            If of the status.
+     */
+    private FileRequestStatus(final byte statusId) {
+        this.id = statusId;
     }
 
+    /**
+     * @return The unique id of the status.
+     */
     public int getId() {
         return this.id;
     }
