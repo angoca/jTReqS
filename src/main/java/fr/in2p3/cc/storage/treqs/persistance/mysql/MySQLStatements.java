@@ -266,7 +266,7 @@ public final class MySQLStatements {
      * SQL statement to update a queue, putting the current time as end time.
      * This is used when a queue has been completely processed.
      * <p>
-     * Queues 5.
+     * Queues 4.
      */
     public static final String SQL_QUEUES_UPDATE_QUEUE_ENDED = "UPDATE "
             + QUEUES + " SET " + QUEUES_END_TIME + " = FROM_UNIXTIME(?), "
@@ -274,19 +274,6 @@ public final class MySQLStatements {
             + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
             + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
             + QUEUES_ID + " = ?";
-
-    /**
-     * SQL statement to update a queue, putting the activation time, and end
-     * time to null. This is used when a queue is unsuspended.
-     * <p>
-     * Queues 4.
-     */
-    public static final String SQL_QUEUES_UPDATE_QUEUE_UNSUSPENDED = "UPDATE "
-            + QUEUES + " SET " + QUEUES_ACTIVATION_TIME + " = null, "
-            + QUEUES_END_TIME + " = null, " + QUEUES_STATUS + " = ?, "
-            + QUEUES_NB_REQS + " = ?, " + QUEUES_NB_REQS_DONE + " = ?, "
-            + QUEUES_NB_REQS_FAILED + " = ?, " + QUEUES_OWNER + " = ?, "
-            + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID + " = ?";
 
     /**
      * SQL statement to change the state of the pending queues at startup time.
