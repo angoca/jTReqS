@@ -52,6 +52,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLStatements;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.NoGeneratedIdMySQLException;
 
 /**
  * Manage the Queues object insert and updates to MySQL database.
@@ -135,7 +136,7 @@ public class MySQLQueueDAO implements QueueDAO {
                 result.close();
             } else {
                 result.close();
-                throw new ExecuteMySQLException();
+                throw new NoGeneratedIdMySQLException();
             }
         } catch (SQLException e) {
             throw new ExecuteMySQLException(e);
