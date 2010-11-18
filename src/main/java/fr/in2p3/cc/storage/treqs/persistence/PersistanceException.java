@@ -32,14 +32,48 @@
  *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
- *
  */
+package fr.in2p3.cc.storage.treqs.persistence;
+
+import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+
 /**
- * These objects help to carry data from the persistence to the business
- * objects. They are temporal, and their life-cycle in very short.
+ * Basic Persistence exception.
  *
- * @author Andres Gomez
+ * @author Andrés Gómez
  * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.persistance.helper;
+public abstract class PersistanceException extends TReqSException {
 
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -7397853011740242653L;
+
+    /**
+     * Constructor without parameters.
+     */
+    public PersistanceException() {
+        super();
+    }
+
+    /**
+     * Wrapping an exception.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    public PersistanceException(final Exception exception) {
+        super(exception);
+    }
+
+    /**
+     * Exception with an explicit message.
+     *
+     * @param message
+     *            Descriptive message of the problem.
+     */
+    public PersistanceException(final String message) {
+        super(message);
+    }
+}

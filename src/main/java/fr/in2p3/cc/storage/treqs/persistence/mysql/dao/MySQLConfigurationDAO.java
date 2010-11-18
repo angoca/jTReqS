@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.dao;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -53,10 +53,10 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.helper.PersistanceHelperResourceAllocation;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLStatements;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistanceHelperResourceAllocation;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
 
 /**
  * Managing the MySQL implementation of the configuration that is stored in the

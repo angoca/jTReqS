@@ -35,10 +35,12 @@
  *
  */
 /**
- * Exceptions when using MySQL.
+ * Implementation of the DAO Objects for the data source MySQL. These are the
+ * components that interacts between the java objects and the data from the
+ * database.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.dao;
 

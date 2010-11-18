@@ -34,65 +34,30 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLQueueDAO;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLReadingDAO;
+import java.sql.SQLException;
 
 /**
- * DAO factory. This is the implementation of the Factory method for the MySQL
- * data source access.
+ * Exception on close database.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class MySQLDAOFactory extends DAOFactory {
+public class CloseMySQLException extends MySQLException {
 
     /**
-     * Logger.
+     * Generated ID.
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLDAOFactory.class);
+    private static final long serialVersionUID = 1150382072401169495L;
 
-    /*
-     * (non-Javadoc)
-     * @see
-     * fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getConfigurationDAO()
+    /**
+     * Wraps an exception generated when the database was closing.
+     *
+     * @param ex
+     *            Wrapped exception.
      */
-    @Override
-    public ConfigurationDAO getConfigurationDAO() {
-        LOGGER.trace(">< getConfigurationDAO");
-
-        return new MySQLConfigurationDAO();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getQueueDAO()
-     */
-    @Override
-    public QueueDAO getQueueDAO() {
-        LOGGER.trace(">< getQueueDAO");
-
-        return new MySQLQueueDAO();
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getReadingDAO()
-     */
-    @Override
-    public ReadingDAO getReadingDAO() {
-        LOGGER.trace(">< getReadingDAO");
-
-        return new MySQLReadingDAO();
+    public CloseMySQLException(final SQLException ex) {
+        super(ex);
     }
 }

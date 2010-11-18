@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.dao;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,10 +49,10 @@ import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLStatements;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.NoGeneratedIdMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.NoGeneratedIdMySQLException;
 
 /**
  * Manage the Queues object insert and updates to MySQL database.

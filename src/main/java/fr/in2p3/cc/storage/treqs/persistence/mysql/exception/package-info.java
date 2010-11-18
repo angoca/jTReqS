@@ -35,10 +35,10 @@
  *
  */
 /**
- * Implementation of the DAO Factory for the data source MySQL.
+ * Exceptions when using MySQL.
  *
- * @author Jonathan Schaeffer
- * @since 1.0
+ * @author Andres Gomez
+ * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 

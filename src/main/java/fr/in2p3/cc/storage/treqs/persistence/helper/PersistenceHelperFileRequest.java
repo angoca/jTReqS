@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.helper;
+package fr.in2p3.cc.storage.treqs.persistence.helper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

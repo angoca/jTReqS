@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;

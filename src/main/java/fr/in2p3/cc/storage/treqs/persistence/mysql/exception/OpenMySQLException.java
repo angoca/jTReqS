@@ -34,13 +34,25 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-/**
- * Implementation of the DAO Objects for the data source MySQL. These are the
- * components that interacts between the java objects and the data from the
- * database.
- *
- * @author Andres Gomez
- * @since 1.5
- */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.dao;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
+/**
+ * Exception on connection to MySQL database.
+ */
+public class OpenMySQLException extends MySQLException {
+
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 4734251355039228712L;
+
+    /**
+     * Wraps an exception thrown when connecting to the database.
+     *
+     * @param e
+     *            Wrapped exception.
+     */
+    public OpenMySQLException(final Exception e) {
+        super(e);
+    }
+}

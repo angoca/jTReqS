@@ -34,71 +34,12 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.helper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.in2p3.cc.storage.treqs.model.User;
-
 /**
- * It transports the data from the persistence about the quantity of resource
- * allocation per user.
+ * Contains the objects to implement the DAO pattern. Each subdirectory contains
+ * an implementation of the persistence.
  *
- * @author Jonathan Schaeffer
- * @since 1.0
+ * @author Andres Gomez
+ * @since 1.5
  */
-public class PersistanceHelperResourceAllocation {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(PersistanceHelperResourceAllocation.class);
-    /**
-     * Quantity of allocation per user.
-     */
-    private float allocation;
-    /**
-     * Defined user in the persistence.
-     */
-    private User user;
+package fr.in2p3.cc.storage.treqs.persistence;
 
-    /**
-     * Creates the helper with a user and its quantity of resources.
-     *
-     * @param userAlloc
-     *            User.
-     * @param qtyAllocation
-     *            Quantity of allocated resources.
-     */
-    public PersistanceHelperResourceAllocation(final User userAlloc,
-            final float qtyAllocation) {
-        LOGGER.trace("> create instance");
-
-        assert userAlloc != null;
-        assert qtyAllocation >= 0;
-
-        this.user = userAlloc;
-        this.allocation = qtyAllocation;
-
-        LOGGER.trace("< create instance");
-    }
-
-    /**
-     * @return Quantity of resource allocation.
-     */
-    public final float getAllocation() {
-        LOGGER.trace(">< getAllocation");
-
-        return this.allocation;
-    }
-
-    /**
-     * @return User of the resource allocation.
-     */
-    public final User getUser() {
-        LOGGER.trace(">< getUser");
-
-        return this.user;
-    }
-}

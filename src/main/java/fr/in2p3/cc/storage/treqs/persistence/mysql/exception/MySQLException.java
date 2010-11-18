@@ -34,9 +34,9 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.PersistanceException;
 
 /**
  * Basic persistence exception for MySQL.

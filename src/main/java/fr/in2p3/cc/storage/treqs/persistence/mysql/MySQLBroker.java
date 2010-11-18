@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -48,9 +48,9 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.OpenMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.CloseMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.OpenMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**

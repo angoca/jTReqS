@@ -34,28 +34,25 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
 /**
- * Shows that there is a problem while creating the factory.
+ * Exception while retrieving the automatic id.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public class PersistenceFactoryException extends PersistanceException {
+public class NoGeneratedIdMySQLException extends ExecuteMySQLException {
 
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = 7140514095169835449L;
+    private static final long serialVersionUID = 5195970374062753963L;
 
     /**
-     * Wraps an exception.
-     *
-     * @param exception
-     *            Wrapped exception.
+     * Default constructor.
      */
-    public PersistenceFactoryException(final Exception exception) {
-        super(exception);
+    public NoGeneratedIdMySQLException() {
+        super();
     }
 }

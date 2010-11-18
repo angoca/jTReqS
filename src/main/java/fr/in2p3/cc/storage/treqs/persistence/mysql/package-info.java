@@ -34,37 +34,11 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
-
-import java.sql.SQLException;
-
 /**
- * Exception while executing a query.
+ * Implementation of the DAO Factory for the data source MySQL.
  *
- * @author Andrés Gómez
- * @since 1.5
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class ExecuteMySQLException extends MySQLException {
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -2824525900625129436L;
-
-    /**
-     * Constructor wrapping an exception generated in execution.
-     *
-     * @param ex
-     *            Wrapped exception.
-     */
-    public ExecuteMySQLException(final SQLException ex) {
-        super(ex);
-    }
-
-    /**
-     * Default constructor for extended exceptions.
-     */
-    protected ExecuteMySQLException() {
-        super();
-    }
-}

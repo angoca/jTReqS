@@ -34,30 +34,12 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.exception;
-
-import java.sql.SQLException;
-
 /**
- * Exception on close database.
+ * These objects help to carry data from the persistence to the business
+ * objects. They are temporal, and their life-cycle in very short.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-public class CloseMySQLException extends MySQLException {
+package fr.in2p3.cc.storage.treqs.persistence.helper;
 
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 1150382072401169495L;
-
-    /**
-     * Wraps an exception generated when the database was closing.
-     *
-     * @param ex
-     *            Wrapped exception.
-     */
-    public CloseMySQLException(final SQLException ex) {
-        super(ex);
-    }
-}

@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistance.mysql.dao;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -50,10 +50,10 @@ import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.helper.PersistenceHelperFileRequest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLStatements;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
 
 /**
  * Manage the Reading object inserts and updates to MySQL database.
