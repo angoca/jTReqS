@@ -142,7 +142,7 @@ public final class MySQLStatements {
     /**
      * Requests table: Name of the tape where the file is currently stored.
      */
-    public static final String REQUESTS_CARTRIDGE = "cartridge";
+    public static final String REQUESTS_TAPE = "tape";
     /**
      * Requests table: Name or IP of the client that is demanding the file. It's
      * only used by the client.
@@ -219,6 +219,10 @@ public final class MySQLStatements {
      * Requests table: Name of the user demanding the request.
      */
     public static final String REQUESTS_USER = "user";
+    /**
+     * Word limit to limit the quantity of queries.
+     */
+    public static final String SQL_LIMIT = " LIMIT ";
     /**
      * Requests table: Version of the client who inserts the request. It's only
      * used by the client.
@@ -338,7 +342,7 @@ public final class MySQLStatements {
      */
     public static final String SQL_REQUESTS_UPDATE_REQUEST_ENDED = "UPDATE "
             + REQUESTS + " SET " + REQUESTS_END_TIME + " = FROM_UNIXTIME(?), "
-            + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_CARTRIDGE + " = ?, "
+            + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE + " = ?, "
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
@@ -353,7 +357,7 @@ public final class MySQLStatements {
     public static final String SQL_REQUESTS_UPDATE_REQUEST_QUEUED = "UPDATE "
             + REQUESTS + " SET " + REQUESTS_QUEUED_TIME
             + " = FROM_UNIXTIME(?), " + REQUESTS_QUEUE_ID + " = ?, "
-            + REQUESTS_CARTRIDGE + " = ?, " + REQUESTS_POSITION + " = ?, "
+            + REQUESTS_TAPE + " = ?, " + REQUESTS_POSITION + " = ?, "
             + REQUESTS_ERRORCODE + " = ?, " + REQUESTS_TRIES + " = ?, "
             + REQUESTS_STATUS + " = ?, " + REQUESTS_MESSAGE + " = ? WHERE "
             + REQUESTS_FILE + " = ? AND " + REQUESTS_END_TIME + " IS null";
@@ -366,7 +370,7 @@ public final class MySQLStatements {
      */
     public static final String SQL_REQUESTS_UPDATE_RESUBMITTED = "UPDATE "
             + REQUESTS + " SET " + REQUESTS_QUEUED_TIME + " = null, "
-            + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_CARTRIDGE + " = ?, "
+            + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE + " = ?, "
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
@@ -379,11 +383,11 @@ public final class MySQLStatements {
      * Requests 5.
      */
     public static final String SQL_REQUESTS_UPDATE_REQUEST_RETRY = "UPDATE "
-            + REQUESTS + " SET " + REQUESTS_QUEUE_ID + " = ?, "
-            + REQUESTS_CARTRIDGE + " = ?, " + REQUESTS_POSITION + " = ?, "
-            + REQUESTS_ERRORCODE + " = ?, " + REQUESTS_TRIES + " = ?, "
-            + REQUESTS_STATUS + " = ?, " + REQUESTS_MESSAGE + " = ? WHERE "
-            + REQUESTS_FILE + " = ? AND " + REQUESTS_END_TIME + " IS null";
+            + REQUESTS + " SET " + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE
+            + " = ?, " + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE
+            + " = ?, " + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
+            + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
+            + REQUESTS_END_TIME + " IS null";
 
     /**
      * SQL statement to update a file request and indicate that the request has
@@ -394,7 +398,7 @@ public final class MySQLStatements {
     public static final String SQL_REQUESTS_UPDATE_SUBMITTED = "UPDATE "
             + REQUESTS + " SET " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ?, " + REQUESTS_QUEUE_ID + " = ?, "
-            + REQUESTS_CARTRIDGE + " = ?, " + REQUESTS_POSITION + " = ?, "
+            + REQUESTS_TAPE + " = ?, " + REQUESTS_POSITION + " = ?, "
             + REQUESTS_LEVEL + " = ?, " + REQUESTS_SIZE + " = ?, "
             + REQUESTS_ERRORCODE + " = 0, " + REQUESTS_SUBMISSION_TIME
             + " = FROM_UNIXTIME(?) WHERE " + REQUESTS_FILE + " = ? AND "
