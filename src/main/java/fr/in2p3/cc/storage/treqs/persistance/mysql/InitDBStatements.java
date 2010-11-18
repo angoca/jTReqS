@@ -148,7 +148,7 @@ public final class InitDBStatements {
     /**
      * Requests table: Name of the tape where the file is currently stored.
      */
-    private static final String REQUESTS_CARTRIDGE = MySQLStatements.REQUESTS_CARTRIDGE;
+    private static final String REQUESTS_TAPE = MySQLStatements.REQUESTS_TAPE;
     /**
      * Requests table: Name or IP of the client that is demanding the file. It's
      * only used by the client.
@@ -280,9 +280,8 @@ public final class InitDBStatements {
             + " datetime default null, " + REQUESTS_SUBMISSION_TIME
             + " datetime default null, " + REQUESTS_TRIES
             + " tinyint default '0', " + REQUESTS_QUEUE_ID
-            + " int default null, " + REQUESTS_CARTRIDGE
-            + " char(8) default '', " + REQUESTS_POSITION
-            + " int default '-1', " + REQUESTS_LEVEL
+            + " int default null, " + REQUESTS_TAPE + " char(8) default '', "
+            + REQUESTS_POSITION + " int default '-1', " + REQUESTS_LEVEL
             + " tinyint default '-1', " + REQUESTS_SIZE
             + " bigint  default '0', " + REQUESTS_FILE
             + " varchar(1024) NOT null, " + REQUESTS_CREATION_TIME
