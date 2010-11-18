@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql.dao;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql.dao;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistance.mysql.dao;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,98 +46,84 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.Queue;
+import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
+import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistance.helper.PersistenceHelperFileRequest;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLStatements;
 import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
 
 /**
- * Managing Reading object updates to database
+ * Manage the Reading object inserts and updates to MySQL database.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
 public class MySQLReadingDAO implements ReadingDAO {
-    /**
-     * Singleton initialization
-     */
-    private static ReadingDAO _instance = null;
+
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLReadingDAO.class);
 
-    /**
-     * Destroys the only instance. ONLY for testing purposes.
+    /*
+     * (non-Javadoc)
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#firstUpdate(fr.in2p3.cc
+     * .storage.treqs.model.Reading, java.lang.String)
      */
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
-
-        _instance = null;
-
-        LOGGER.trace("< destroyInstance");
-    }
-
-    public static ReadingDAO getInstance() {
-        LOGGER.trace("> getInstance");
-
-        if (_instance == null) {
-            LOGGER.debug("Creating singleton");
-            _instance = new MySQLReadingDAO();
-        }
-
-        LOGGER.trace("< getInstance");
-
-        return _instance;
-    }
-
-    // @Override
-    public void firstUpdate(FilePositionOnTape fpot, FileStatus status,
-            String message, Queue queue) throws ExecuteMySQLException {
+    @Override
+    public final void firstUpdate(final Reading reading, final String message)
+            throws TReqSException {
         LOGGER.trace("> firstUpdate");
 
-        assert fpot != null;
-        assert status != null;
+        assert reading != null;
         assert message != null;
         assert !message.equals("");
-        assert queue != null;
+
+        final int statusId = reading.getFileRequestStatus().getId();
+        final int queueId = reading.getQueue().getId();
+        final String tapename = reading.getMetaData().getTape().getName();
+        final int position = reading.getMetaData().getPosition();
+        final long size = reading.getMetaData().getFile().getSize();
+        final long millis = System.currentTimeMillis();
+        final String filename = reading.getMetaData().getFile().getName();
 
         PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(
-                        MySQLStatements.SQL_UPDATE_REQUEST_SUBMITTED);
+                        MySQLStatements.SQL_REQUESTS_UPDATE_SUBMITTED);
         int index = 1;
         try {
             // Insert file Status
-            statement.setInt(index++, status.getId());
+            statement.setInt(index++, statusId);
             // Insert the message
             statement.setString(index++, message);
             // insert id
-            statement.setLong(index++, queue.getId());
-            // Insert cartridge
-            statement.setString(index++, fpot.getTape().getName());
+            statement.setLong(index++, queueId);
+            // Insert tape name
+            statement.setString(index++, tapename);
             // Insert position
-            statement.setInt(index++, fpot.getPosition());
-            // Insert cos
+            statement.setInt(index++, position);
+            // Insert level
             statement.setInt(index++, 0);
             // Insert size
-            statement.setLong(index++, fpot.getFile().getSize());
+            statement.setLong(index++, size);
             // Insert submission time
-            statement.setLong(index++, System.currentTimeMillis());
+            statement.setLong(index++, millis);
             // Insert file name
-            statement.setString(index++, fpot.getFile().getName());
+            statement.setString(index++, filename);
 
             statement.execute();
 
             int count = statement.getUpdateCount();
             if (count <= 0) {
-                LOGGER.error("Nothing updated");
+                LOGGER.warn("Nothing updated");
             }
         } catch (SQLException e) {
-            LOGGER.error("Error updating request {}", queue.getId());
+            LOGGER.error("Error updating request " + queueId);
             throw new ExecuteMySQLException(e);
         }
 
@@ -147,50 +132,34 @@ public class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
-     * 
      * @see fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#getNewJobs(int)
      */
-    public List<PersistenceHelperFileRequest> getNewJobs(int limit)
-            throws PersistanceException {
-        LOGGER.trace("> getNewJobs");
+    @Override
+    public final List<PersistenceHelperFileRequest> getNewRequests(
+            final int limit) throws TReqSException {
+        LOGGER.trace("> getNewRequests");
 
         assert limit > 0;
 
-        List<PersistenceHelperFileRequest> newjobs = new ArrayList<PersistenceHelperFileRequest>();
+        List<PersistenceHelperFileRequest> newRequests = new ArrayList<PersistenceHelperFileRequest>();
 
-        String query = MySQLStatements.SQL_GETNEWJOBS;
+        String query = MySQLStatements.SQL_REQUESTS_GET_NEW;
         if (limit > 0) {
-            query += " LIMIT " + limit;
+            query += MySQLStatements.SQL_LIMIT + limit;
         }
 
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         try {
             while (result.next()) {
-                short id = result.getShort(1);
-                if (result.wasNull()) {
-                    LOGGER.error("There is no Id for this request.");
-                } else {
-                    String user = result.getString(2);
-                    boolean userNull = result.wasNull();
-                    String fileName = result.getString(3);
-                    boolean filenameNull = result.wasNull();
-                    byte tries = result.getByte(4);
-                    boolean triesNull = result.wasNull();
-                    if (userNull || filenameNull || triesNull) {
-                        LOGGER
-                                .error("A statement has missing mandatory parameters");
-                        // This should always be the case ...
-                        // We are able to mark this request as a fatal error to
-                        // the client
-                        setRequestStatusById(id, FileStatus.FS_INVALID, 0,
-                                "Missing mandatory parameter");
-                    } else {
-                        PersistenceHelperFileRequest filereq = new PersistenceHelperFileRequest(
-                                id, fileName, tries, user);
-                        newjobs.add(filereq);
-                    }
-                }
+                int index = 1;
+                short id = result.getShort(index++);
+                String user = result.getString(index++);
+                String fileName = result.getString(index++);
+                byte tries = result.getByte(index++);
+                PersistenceHelperFileRequest fileRequest = new PersistenceHelperFileRequest(
+                        id, fileName, tries, user);
+                newRequests.add(fileRequest);
             }
         } catch (SQLException e) {
             throw new ExecuteMySQLException(e);
@@ -198,15 +167,24 @@ public class MySQLReadingDAO implements ReadingDAO {
             MySQLBroker.getInstance().terminateExecution(objects);
         }
 
-        LOGGER.trace("< getNewJobs");
+        assert newRequests != null;
 
-        return newjobs;
+        LOGGER.trace("< getNewRequests");
+
+        return newRequests;
     }
 
-    // @Override
-    public void setRequestStatusById(int id, FileStatus status, int code,
-            String message) throws PersistanceException {
-        LOGGER.trace("> setRequestStatusById-code");
+    /*
+     * (non-Javadoc)
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#setRequestStatusById(int,
+     * fr.in2p3.cc.storage.treqs.model.FileRequestStatus, int, java.lang.String)
+     */
+    @Override
+    public final void setRequestStatusById(final int id,
+            final FileRequestStatus status, final int code, final String message)
+            throws TReqSException {
+        LOGGER.trace("> setRequestStatusById");
 
         assert id >= 0;
         assert status != null;
@@ -216,9 +194,8 @@ public class MySQLReadingDAO implements ReadingDAO {
 
         PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(
-                        MySQLStatements.SQL_UPDATE_FINAL_REQUEST_ID);
+                        MySQLStatements.SQL_REQUESTS_UPDATE_FINAL_REQUEST_ID);
         int index = 1;
-
         try {
             // set status
             statement.setInt(index++, status.getId());
@@ -233,44 +210,6 @@ public class MySQLReadingDAO implements ReadingDAO {
 
             statement.execute();
         } catch (SQLException e) {
-            LOGGER.error("Error updating request {}", id);
-            throw new ExecuteMySQLException(e);
-        }
-        LOGGER.trace("< setRequestStatusById-code");
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#setRequestStatusById(int,
-     * fr.in2p3.cc.storage.treqs.model.FileStatus, java.lang.String)
-     */
-    // @Override
-    public void setRequestStatusById(int id, FileStatus status, String message)
-            throws PersistanceException {
-        LOGGER.trace("> setRequestStatusById");
-
-        assert id >= 0;
-        assert status != null;
-        assert message != null;
-        assert !message.equals("");
-
-        LOGGER.info("Cleaning unfinished requests");
-
-        PreparedStatement statement = MySQLBroker.getInstance()
-                .getPreparedStatement(MySQLStatements.SQL_UPDATE_REQUEST_ID);
-        int index = 1;
-        try {
-            // Insert file Status
-            statement.setInt(index++, status.getId());
-            // Insert the message
-            statement.setString(index++, message);
-            // insert id
-            statement.setInt(index++, id);
-
-            statement.execute();
-        } catch (SQLException e) {
             LOGGER.error("Error updating request " + id);
             throw new ExecuteMySQLException(e);
         }
@@ -280,94 +219,154 @@ public class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#update(fr.in2p3.cc.storage
-     * .treqs.model.FilePositionOnTape,
-     * fr.in2p3.cc.storage.treqs.model.FileStatus, java.util.Calendar, byte,
-     * java.lang.String, short, fr.in2p3.cc.storage.treqs.model.Queue)
+     * .treqs.model.Reading, fr.in2p3.cc.storage.treqs.model.FileRequestStatus,
+     * java.util.Calendar)
      */
-    // @Override
-    public void update(FilePositionOnTape fpot, FileStatus status,
-            Calendar time, byte nbTries, String errorMessage, short errorCode,
-            Queue queue) throws TReqSException {
+    @Override
+    public final void update(final Reading reading,
+            final FileRequestStatus status, final Calendar time)
+            throws TReqSException {
         LOGGER.trace("> update");
 
-        assert fpot != null;
+        assert reading != null;
         assert status != null;
         assert time != null;
-        assert nbTries >= 0;
-        assert errorMessage != null;
-        assert errorCode >= 0;
-        assert queue != null;
 
-        String sql;
         PreparedStatement statement = null;
         int index = 1;
         try {
             switch (status) {
-            case FS_SUBMITTED:
-                LOGGER.error("Logging requeue of a file");
-                sql = MySQLStatements.SQL_UPDATE_REQUEST_RESUBMITTED;
-                statement = MySQLBroker.getInstance().getPreparedStatement(sql);
-                break;
-            case FS_QUEUED:
-                LOGGER.debug("Logging a submission to HPSS for staging");
-                sql = MySQLStatements.SQL_UPDATE_REQUEST_QUEUED;
-                statement = MySQLBroker.getInstance().getPreparedStatement(sql);
-                // Insert queue_time time stamp
-                statement.setLong(index++, time.getTimeInMillis());
-                break;
-            case FS_CREATED: // FS_CREATED corresponds to a retry
-                sql = MySQLStatements.SQL_UPDATE_REQUEST_RETRY;
-                statement = MySQLBroker.getInstance().getPreparedStatement(sql);
-                break;
-            default: // Final sates
-                sql = MySQLStatements.SQL_UPDATE_REQUEST_ENDED;
-                statement = MySQLBroker.getInstance().getPreparedStatement(sql);
-                // Insert end_time time stamp
-                statement.setLong(index++, time.getTimeInMillis());
-                LOGGER.debug("Logging a file final state with timestamp {}",
-                        time.toString());
+                // The request has been sent to the HSM.
+                case FS_QUEUED:
+                    LOGGER.debug("Logging an activation for staging");
+                    statement = MySQLBroker.getInstance().getPreparedStatement(
+                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_QUEUED);
+                    // Insert queue_time time stamp
+                    statement.setLong(index++, time.getTimeInMillis());
+                    break;
+                // The request has been successfully staged.
+                case FS_STAGED:
+                    statement = MySQLBroker.getInstance().getPreparedStatement(
+                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
+                    // Insert end_time time stamp
+                    statement.setLong(index++, time.getTimeInMillis());
+                    LOGGER.debug(
+                            "Logging a file final state with timestamp {}",
+                            time.toString());
+                    break;
+                // The requests has been resubmitted due to a problem in space.
+                case FS_SUBMITTED:
+                    LOGGER.warn("Logging requeue of a file");
+                    statement = MySQLBroker.getInstance().getPreparedStatement(
+                            MySQLStatements.SQL_REQUESTS_UPDATE_RESUBMITTED);
+                    break;
+                // The request had a problem. Retrying.
+                case FS_CREATED: // FS_CREATED corresponds to a retry
+                    statement = MySQLBroker.getInstance().getPreparedStatement(
+                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_RETRY);
+                    break;
+                // The request has been failed due a problem calling the
+                // staging.
+                case FS_FAILED:
+                    statement = MySQLBroker.getInstance().getPreparedStatement(
+                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
+                    // Insert end_time time stamp
+                    statement.setLong(index++, time.getTimeInMillis());
+                    LOGGER.debug(
+                            "Logging a file final state with timestamp {}",
+                            time.toString());
+                    break;
+                default:
+                    LOGGER.error("This state is invalid.");
+                    assert false;
+                    break;
             }
+        } catch (SQLException e) {
+            throw new ExecuteMySQLException(e);
+        }
+        processUpdate(reading, status, statement, index);
+
+        LOGGER.trace("< update");
+    }
+
+    /**
+     * Fills the statement and execute it.
+     *
+     * @param reading
+     *            File request to update.
+     * @param status
+     *            Status of the reading.
+     * @param statement
+     *            Statement to fill and execute.
+     * @param i
+     *            Index of the statement.
+     * @throws ExecuteMySQLException
+     *             If there is a problem executing the query.
+     */
+    private void processUpdate(final Reading reading,
+            final FileRequestStatus status, final PreparedStatement statement,
+            final int i) throws ExecuteMySQLException {
+        LOGGER.trace("> processUpdate");
+
+        assert reading != null;
+        assert status != null;
+        assert statement != null;
+        assert i > 0;
+
+        try {
+            final int statusId = status.getId();
+            final int queueId = reading.getQueue().getId();
+            final String tapename = reading.getMetaData().getTape().getName();
+            final int position = reading.getMetaData().getPosition();
+            final String filename = reading.getMetaData().getFile().getName();
+            final byte nbTries = reading.getNumberOfTries();
+            final String errorMessage = reading.getErrorMessage();
+            final short errorCode = reading.getErrorCode();
+
+            int index = i;
+
             // Insert queue id
-            statement.setInt(index++, queue.getId());
+            statement.setInt(index++, queueId);
             // Insert cartridge
-            statement.setString(index++, fpot.getTape().getName());
+            statement.setString(index++, tapename);
             // Insert position.
-            statement.setInt(index++, fpot.getPosition());
+            statement.setInt(index++, position);
             // Insert Error code
             statement.setShort(index++, errorCode);
             // Insert number of tries
             statement.setByte(index++, nbTries);
-            // Insert File Status
-            statement.setInt(index++, status.getId());
+            // Insert File request Status
+            statement.setInt(index++, statusId);
             // Insert message
             statement.setString(index++, errorMessage);
             // Insert file name
-            statement.setString(index++, fpot.getFile().getName());
+            statement.setString(index++, filename);
 
             statement.execute();
         } catch (SQLException e1) {
             throw new ExecuteMySQLException(e1);
         }
 
-        LOGGER.trace("< update");
+        LOGGER.trace("< processUpdate");
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#updateUnfinishedRequests()
      */
-    public int updateUnfinishedRequests() throws PersistanceException {
+    @Override
+    public final int updateUnfinishedRequests() throws TReqSException {
         LOGGER.trace("> updateUnfinishedRequests");
 
         LOGGER.info("Cleaning unfinished requests");
 
         int ret = MySQLBroker.getInstance().executeModification(
-                MySQLStatements.SQL_NEW_REQUESTS);
+                MySQLStatements.SQL_REQUESTS_UPDATE_UNPROCESSED);
+
+        assert ret >= 0;
 
         LOGGER.trace("< updateUnfinishedRequests");
 
