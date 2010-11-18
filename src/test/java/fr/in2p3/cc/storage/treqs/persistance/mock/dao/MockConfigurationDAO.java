@@ -1,7 +1,6 @@
 package fr.in2p3.cc.storage.treqs.persistance.mock.dao;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.commons.collections.MultiMap;
@@ -49,6 +48,8 @@ public class MockConfigurationDAO implements ConfigurationDAO {
      */
     // @Override
     public List<Resource> getMediaAllocations() throws TReqSException {
+        LOGGER.trace("> getMediaAllocations");
+
         if (this.exception != null) {
             PersistanceException toThrow = this.exception;
             this.exception = null;
@@ -58,11 +59,14 @@ public class MockConfigurationDAO implements ConfigurationDAO {
         byte id = 1;
         String name = "T10K-A";
         MediaType media = MediaTypesController.getInstance().add(name, id);
-        drives.add(new Resource(media, new GregorianCalendar(), (byte) 5));
+        drives.add(new Resource(media, (byte) 5));
         id = 2;
         name = "T10K-B";
         media = MediaTypesController.getInstance().add(name, id);
-        drives.add(new Resource(media, new GregorianCalendar(), (byte) 8));
+        drives.add(new Resource(media, (byte) 8));
+
+        LOGGER.trace("< getMediaAllocations");
+
         return drives;
     }
 
@@ -80,6 +84,8 @@ public class MockConfigurationDAO implements ConfigurationDAO {
      */
     // @Override
     public MultiMap getResourceAllocation() throws PersistanceException {
+        LOGGER.trace("> getResourceAllocation");
+
         if (this.exception != null) {
             PersistanceException toThrow = this.exception;
             this.exception = null;
@@ -131,6 +137,8 @@ public class MockConfigurationDAO implements ConfigurationDAO {
                 user6, 1));
         values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
                 user7, 2));
+
+        LOGGER.trace("< getResourceAllocation");
 
         return values;
     }
