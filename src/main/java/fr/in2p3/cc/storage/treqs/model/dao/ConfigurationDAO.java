@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model.dao;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model.dao;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model.dao;
 
 import java.util.List;
 
@@ -43,25 +42,32 @@ import org.apache.commons.collections.MultiMap;
 
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.DAO;
 
 /**
  * Manages the configuration that is stored in the database.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
-public interface ConfigurationDAO extends DAO {
+public interface ConfigurationDAO {
+
     /**
-     * Get the list of resources, refreshing the list of mediaType.
-     * 
+     * Get the list of resources, refreshing the list of media types.
+     *
      * @return list of resources, each one associated to a media type.
+     * @throws TReqSException
+     *             Reports any kind of problem.
      */
     List<Resource> getMediaAllocations() throws TReqSException;
 
     /**
-     * Collects the resource settings in the configuration table
-     * 
+     * Collects the resource settings in the configuration table. It retrieves a
+     * mapping of quantity of drives per user per drive type.
+     *
      * @return a map containing the resource share for each user and each
-     *         element is a pair with values : pvrid => ( user, share )
+     *         element is a pair with values: mediatype => ( user, share )
+     * @throws TReqSException
+     *             Reports any kind of problem.
      */
     MultiMap getResourceAllocation() throws TReqSException;
-
 }

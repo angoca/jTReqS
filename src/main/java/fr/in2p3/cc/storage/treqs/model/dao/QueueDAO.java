@@ -1,19 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model.dao;
-
-import java.util.Calendar;
-
-import fr.in2p3.cc.storage.treqs.model.QueueStatus;
-import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.persistance.DAO;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-
 /*
- * File: QueueDAO.cpp
- *
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -46,79 +34,69 @@ import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLExcepti
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model.dao;
+
+import java.util.Calendar;
+
+import fr.in2p3.cc.storage.treqs.model.Queue;
+import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
- * Managing Queues object updates to database
+ * Managing Queues object insert/updates to database.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
-public interface QueueDAO extends DAO {
+public interface QueueDAO {
 
     /**
-     * Called on startup. All the queues from a previous run should be aborted
-     * When TReqS starts, she cleans the queues table in the database. Previous
-     * queues should be set as QS_ABORTED
+     * Called on startup. All the queues from a previous execution should be
+     * aborted when the application starts. It cleans the queues table in the
+     * database. Previous queues are set as QS_ABORTED.
+     *
+     * @return The quantity of pending queues.
+     * @throws TReqSException
+     *             If there is a problem accessing the persistence.
      */
-    int abortPendingQueues() throws PersistanceException;
+    int abortPendingQueues() throws TReqSException;
 
     /**
-     * insert a queue entry in the table
-     * 
-     * @param qs
-     *            the status of the queue
-     * @param tape
-     *            Tape of the queue.
-     * @param nbjobs
-     *            the number of jobs registered in the queue
-     * @param pvrid
-     *            the id of the PVR
-     * @param size
-     *            the total size of the queue
-     * @param creation_time
-     *            the time when the queue was created
-     * @return the unique ID of the new queue
-     * @throws ExecuteMySQLException
+     * Insert a queue entry in the table.
+     *
+     * @param queue
+     *            The queue to insert.
+     * @return the unique ID of the new queue.
+     * @throws TReqSException
+     *             If there is a problem executing the query.
      */
-    int insert(QueueStatus status, Tape tape, int size, long byteSize,
-            Calendar creationTime) throws ExecuteMySQLException;
+    int insert(Queue queue) throws TReqSException;
 
     /**
-     * Update a queue entry to log the new number of jobs. Usualy called after a
-     * new file registration
-     * 
-     * @param nbjobs
-     *            the number of jobs registered in the queue
-     * @param owner
-     *            the owner of the queue
-     * @param jobsSize
-     *            the total size of the queue
-     * @param id
-     *            the unique ID of the queue
-     * @throws ExecuteMySQLException
+     * Update a queue entry to log the new number of requests. Usually called
+     * after a new file registration.
+     *
+     * @param queue
+     *            The queue to update.
+     * @throws TReqSException
+     *             If there is a problem executing the query.
      */
-    void updateAddRequest(int jobsSize, String ownerName, long byteSize, int id)
-            throws ExecuteMySQLException;
+    void updateAddRequest(Queue queue) throws TReqSException;
 
     /**
-     * Update a queue entry in the queues table
-     * 
-     * @param t
-     *            a time for update. Can be activation or end time
-     * @param qs
-     *            the status of the queue
-     * @param nbjobs
-     *            the number of jobs registered in the queue
-     * @param nbdone
-     *            the number of jobs done
-     * @param nbfailed
-     *            the number of jobs failed
-     * @param owner
-     *            the owner of the queue
-     * @param size
-     *            the total size of the queue
-     * @param id
-     *            the unique ID of the queue
+     * Update a queue entry in the queues table.
+     *
+     * @param queue
+     *            The queue to update.
+     * @param time
+     *            A time for update. Can be activation or end time.
+     * @param nbDone
+     *            The number of requests done.
+     * @param nbFailed
+     *            The number of requests failed.
+     * @throws TReqSException
+     *             If there is a problem executing the query.
      */
-    void updateState(Calendar time, QueueStatus status, int size, short nbDone,
-            short nbFailed, String ownerName, long byteSize, int id)
-            throws ExecuteMySQLException;
+    void updateState(final Queue queue, Calendar time, short nbDone,
+            short nbFailed) throws TReqSException;
 
 }

@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model.dao;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,131 +34,95 @@ package fr.in2p3.cc.storage.treqs.model.dao;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model.dao;
+
 import java.util.Calendar;
 import java.util.List;
 
-import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.Queue;
+import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
+import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.DAO;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceHelperFileRequest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
 
 /**
- * Managing Reading object updates to database
- * 
- * @author gomez
+ * Managing Reading object updates to database.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
-public interface ReadingDAO extends DAO {
+public interface ReadingDAO {
 
     /**
-     * Updates the status of a set of file requests in the jobs table according
-     * to the filename This function is specifically used for inserting metadata
-     * also
-     * 
-     * @param n
-     *            the name of the file updated
-     * @param fs
-     *            the new status to update
-     * @param t
-     *            the time stamp of the state change
-     * @param m
-     *            the message to put
-     * @param qid
-     *            the identifier of the queue
-     * @param tape
-     *            the tape where the file is stored
-     * @param pos
-     *            the position on the tape
-     * @param cos
-     *            the Class of Service
-     * @param size
-     *            the file size in bytes
-     * @return true if one or more rows are updated
-     * @throws ExecuteMySQLException
+     * Updates the status of a set of file requests in the readings table
+     * according to the filename This function is specifically used for
+     * inserting metadata.
+     *
+     * @param reading
+     *            Reading to update. A reading is a reading try of a file
+     *            request.
+     * @param message
+     *            Message to put.
+     * @throws TReqSException
+     *             If there is a problem accessing the persistence.
      */
-    void firstUpdate(FilePositionOnTape fpot, FileStatus status,
-            String message, Queue queue) throws ExecuteMySQLException;
+    void firstUpdate(Reading reading, String message) throws TReqSException;
 
     /**
-     * Find new jobs in the requests table
-     * 
+     * Find new life requests in the requests table.
+     *
      * @param limit
-     *            the number of requests to fetch
-     * @return a vector of PersistenceFileRequest
+     *            Number of requests to fetch. If 0, it means that there are no
+     *            limit.
+     * @return List of PersistenceHelperFileRequest, each one representing a
+     *         file request.
+     * @throws TReqSException
+     *             If there is a problem accessing the persistence.
      */
-    List<PersistenceHelperFileRequest> getNewJobs(int limit)
-            throws PersistanceException;
+    List<PersistenceHelperFileRequest> getNewRequests(int limit)
+            throws TReqSException;
 
     /**
-     * Changes a file request status in the database
-     * 
-     * @param r
-     *            request identifier
-     * @param fs
-     *            the file status
-     * @param errcode
-     *            errorcode to report
-     * @param m
-     *            message
-     * @param t
-     *            time stamp to put as an end time
-     * @return
+     * Changes a file request status in the database.
+     *
+     * @param id
+     *            Request identifier.s
+     * @param status
+     *            New file request status.
+     * @param code
+     *            Errorcode to report.
+     * @param message
+     *            Descriptive message.
+     * @throws TReqSException
+     *             If there is a problem accessing the persistence.
      */
-    void setRequestStatusById(int id, FileStatus status, int code,
-            String message) throws PersistanceException;
+    void setRequestStatusById(int id, FileRequestStatus status, int code,
+            String message) throws TReqSException;
 
     /**
-     * Changes a file request status in the database
-     * 
-     * @param r
-     *            request identifier
-     * @param fs
-     *            the file status
-     * @param m
-     *            message
-     * @return
-     */
-    void setRequestStatusById(int id, FileStatus status, String message)
-            throws PersistanceException;
-
-    /**
-     * Updates the status of a set of file requests in the jobs table according
-     * to the filename
-     * 
-     * @param n
-     *            the name of the file updated
-     * @param fs
-     *            the new status to update
-     * @param t
-     *            the time stamp of the state change
-     * @param tries
-     *            the number of tries for this file
-     * @param m
-     *            the message to put. The errorMessage could be empty when there
-     *            is not a problem, just a state change.
-     * @param e
-     *            the error code. When it is 0 it means that there is not a
-     *            problem.
-     * @param qid
-     *            the queue id
-     * @param tape
-     *            the tape where the file is stored
-     * @param pos
-     *            the position on the tape
-     * @return true if one or more rows are updated
+     * Updates the status of a set of file requests in the readings table
+     * according to the filename.
+     *
+     * @param reading
+     *            Reading to update. A reading is a reading try of a file
+     *            request.
+     * @param status
+     *            New file request status.
+     * @param time
+     *            Timestamp of the state change.
      * @throws TReqSException
      *             If there is a problem with the configuration.
      */
-    void update(FilePositionOnTape fpot, FileStatus status, Calendar time,
-            byte nbTries, String errorMessage, short errorCode, Queue queue)
+    void update(Reading reading, FileRequestStatus status, Calendar time)
             throws TReqSException;
 
     /**
      * Called on startup. All requests in non-final states should be considered
-     * as new. Set the status of non-final requests to show them as new jobs
+     * as new. Set the status of non-final requests to show them as new file
+     * requests
+     *
+     * @return Quantity of unfinished file requests.
+     * @throws TReqSException
+     *             If there is a problem accessing the persistence.
      */
-    int updateUnfinishedRequests() throws PersistanceException;
+    int updateUnfinishedRequests() throws TReqSException;
 }
