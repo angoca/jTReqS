@@ -132,14 +132,14 @@ public class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#getNewJobs(int)
+     * @see fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#getNewRequests(int)
      */
     @Override
     public final List<PersistenceHelperFileRequest> getNewRequests(
             final int limit) throws TReqSException {
         LOGGER.trace("> getNewRequests");
 
-        assert limit > 0;
+        assert limit >= 0;
 
         List<PersistenceHelperFileRequest> newRequests = new ArrayList<PersistenceHelperFileRequest>();
 
