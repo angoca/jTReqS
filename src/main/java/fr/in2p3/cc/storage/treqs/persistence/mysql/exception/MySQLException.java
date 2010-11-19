@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.persistence.PersistanceException;
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * Basic persistence exception for MySQL.

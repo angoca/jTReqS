@@ -36,34 +36,46 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
+import java.sql.SQLException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
-
 /**
- * Exception on connection to MySQL database.
+ * Exception while executing a query.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
-public class OpenMySQLException extends MySQLException {
+public class MySQLExecuteException extends MySQLException {
 
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = 4734251355039228712L;
+    private static final long serialVersionUID = -2824525900625129436L;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(OpenMySQLException.class);
+            .getLogger(MySQLExecuteException.class);
 
     /**
-     * Wraps an exception thrown when connecting to the database.
+     * Constructor wrapping an exception generated in execution.
      *
-     * @param e
+     * @param ex
      *            Wrapped exception.
      */
-    public OpenMySQLException(final Exception e) {
-        super(e);
+    public MySQLExecuteException(final SQLException ex) {
+        super(ex);
+
+        LOGGER.trace(">< Instance creation wrapping exception");
+    }
+
+    /**
+     * Default constructor for extended exceptions.
+     */
+    protected MySQLExecuteException() {
+        super();
 
         LOGGER.trace(">< Instance creation");
     }

@@ -41,43 +41,32 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
-
 /**
- * Exception while executing a query.
+ * Exception on close database.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public class ExecuteMySQLException extends MySQLException {
+public class MySQLCloseException extends MySQLException {
 
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = -2824525900625129436L;
+    private static final long serialVersionUID = 1150382072401169495L;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ExecuteMySQLException.class);
+            .getLogger(MySQLCloseException.class);
 
     /**
-     * Constructor wrapping an exception generated in execution.
+     * Wraps an exception generated when the database was closing.
      *
      * @param ex
      *            Wrapped exception.
      */
-    public ExecuteMySQLException(final SQLException ex) {
+    public MySQLCloseException(final SQLException ex) {
         super(ex);
-
-        LOGGER.trace(">< Instance creation wrapping exception");
-    }
-
-    /**
-     * Default constructor for extended exceptions.
-     */
-    protected ExecuteMySQLException() {
-        super();
 
         LOGGER.trace(">< Instance creation");
     }

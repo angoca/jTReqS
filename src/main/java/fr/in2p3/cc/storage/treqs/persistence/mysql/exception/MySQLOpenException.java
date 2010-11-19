@@ -39,31 +39,29 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
-
 /**
- * Exception while retrieving the automatic id.
- *
- * @author Andrés Gómez
- * @since 1.5
+ * Exception on connection to MySQL database.
  */
-public class NoGeneratedIdMySQLException extends ExecuteMySQLException {
+public class MySQLOpenException extends MySQLException {
 
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = 5195970374062753963L;
+    private static final long serialVersionUID = 4734251355039228712L;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(NoGeneratedIdMySQLException.class);
+            .getLogger(MySQLOpenException.class);
 
     /**
-     * Default constructor.
+     * Wraps an exception thrown when connecting to the database.
+     *
+     * @param e
+     *            Wrapped exception.
      */
-    public NoGeneratedIdMySQLException() {
-        super();
+    public MySQLOpenException(final Exception e) {
+        super(e);
 
         LOGGER.trace(">< Instance creation");
     }
