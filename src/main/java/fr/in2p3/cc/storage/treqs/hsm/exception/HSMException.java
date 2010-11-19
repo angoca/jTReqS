@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,40 +34,114 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.exception;
 
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
+
+/**
+ * Models an exception raised at the HSM level.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
+ */
 public abstract class HSMException extends TReqSException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMException.class);
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = 7426851287153707330L;
 
-    private short hsmErrorcode;
+    /**
+     * Associated error code.
+     */
+    private final short hsmErrorcode;
 
-    public HSMException() {
+    /**
+     * Creates a default exception.
+     */
+    protected HSMException() {
         super();
+
+        LOGGER.trace("> Instance creation empty");
+
+        this.hsmErrorcode = 0;
+
+        LOGGER.trace("< Instance creation empty");
     }
 
-    public HSMException(Exception exception) {
+    /**
+     * Create an exception wrapping the problem.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    protected HSMException(final Exception exception) {
         super(exception);
+
+        LOGGER.trace("> Instance creation exception");
+
+        this.hsmErrorcode = 0;
+
+        LOGGER.trace("< Instance creation exception");
     }
 
-    HSMException(short hsmErrorcode) {
+    /**
+     * Creates the exception with an associated error code.
+     *
+     * @param hsmErrorcode
+     *            Descriptive error code.
+     */
+    protected HSMException(final short hsmErrorcode) {
         super();
+
+        LOGGER.trace("> Instance creation errorcode");
+
         this.hsmErrorcode = hsmErrorcode;
+
+        LOGGER.trace("< Instance creation errorcode");
     }
 
-    public HSMException(String message) {
+    /**
+     * Creates the exception with a descriptive message.
+     *
+     * @param message
+     *            Associated message.
+     */
+    protected HSMException(final String message) {
         super(message);
+        LOGGER.trace("> Instance creation message");
+
+        this.hsmErrorcode = 0;
+
+        LOGGER.trace("< Instance creation message");
     }
 
-    public short getHSMErrorCode() {
-        return this.hsmErrorcode;
-    }
-
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.TReqSException#getMessage()
+     */
     @Override
     public String getMessage() {
+        LOGGER.trace(">< getMessage");
+
         return "Code: " + this.hsmErrorcode + super.getMessage();
+    }
+
+    /**
+     * Retrieves the associated error code.
+     *
+     * @return The associated error code.
+     */
+    public short getErrorCode() {
+        LOGGER.trace(">< getHSMErrorCode");
+
+        return this.hsmErrorcode;
     }
 }

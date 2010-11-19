@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,32 +34,58 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * There is no file registered in the HSM with this name or other problem
- * 
- * @author gomez
+ * There is no file registered in the HSM with this name.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
 public class HSMStatException extends HSMException {
-
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMStatException.class);
     /**
      * Generated Id.
      */
     private static final long serialVersionUID = 8267968446883602498L;
 
+    /**
+     * Creates the exception with not parameters.
+     */
     public HSMStatException() {
         super();
+
+        LOGGER.trace(">< Instance creation");
     }
 
-    public HSMStatException(int val) {
-        super(val + "");
-    }
-
-    public HSMStatException(Exception exception) {
+    /**
+     * Creates the exception wrapping another exception.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    public HSMStatException(final Exception exception) {
         super(exception);
+
+        LOGGER.trace(">< Instance creation");
     }
 
-    public HSMStatException(String message) {
+    /**
+     * Creates the exception with a descriptive message.
+     *
+     * @param message
+     *            Message describing the problem.
+     */
+    public HSMStatException(final String message) {
         super(message);
+
+        LOGGER.trace(">< Instance creation");
     }
 }

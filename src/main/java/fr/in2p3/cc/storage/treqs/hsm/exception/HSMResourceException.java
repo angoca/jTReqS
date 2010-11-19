@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,23 +34,49 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Error on resources allocation. Raised when there is no more space left on the
- * HPSS disk to stage the file.
+ * HSM disk to stage the file.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
 public class HSMResourceException extends HSMOpenException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMResourceException.class);
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = 4271400589349753437L;
 
-    public HSMResourceException(short hsmErrorcode) {
+    /**
+     * Creates the exception with an associated error code.
+     *
+     * @param hsmErrorcode
+     *            Error code.
+     */
+    public HSMResourceException(final short hsmErrorcode) {
         super(hsmErrorcode);
+
+        LOGGER.trace(">< Instance creation");
     }
 
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.hsm.exception.HSMException#getMessage()
+     */
     @Override
     public String getMessage() {
+        LOGGER.trace(">< getMessage");
+
         return "No space available on disk." + super.getMessage();
     }
-};
+}

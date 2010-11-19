@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,20 +34,37 @@ package fr.in2p3.cc.storage.treqs.hsm.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Error when closing a file.
- * 
- * @author gomez
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
 public class HSMCloseException extends HSMException {
-
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMCloseException.class);
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = -2148838547663392690L;
 
-    public HSMCloseException(short hsmErrorcode) {
+    /**
+     * Creates the exception with an error code.
+     *
+     * @param hsmErrorcode
+     *            Error code that describes the problem.
+     */
+    public HSMCloseException(final short hsmErrorcode) {
         super(hsmErrorcode);
+
+        LOGGER.trace(">< Instance creation");
     }
-};
+}
