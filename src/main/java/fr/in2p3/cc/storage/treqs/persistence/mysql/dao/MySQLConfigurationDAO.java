@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistence.helper.PersistanceHelperResourceAllocation;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
@@ -142,7 +142,7 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
                 String userName = result.getString(index++);
                 float share = result.getFloat(index++);
                 User user = UsersController.getInstance().add(userName);
-                PersistanceHelperResourceAllocation helper = new PersistanceHelperResourceAllocation(
+                PersistenceHelperResourceAllocation helper = new PersistenceHelperResourceAllocation(
                         user, share);
                 allocations.put(new Byte(id), helper);
                 LOGGER.debug("Allocation on mediatype: '" + id + "', user: '"
