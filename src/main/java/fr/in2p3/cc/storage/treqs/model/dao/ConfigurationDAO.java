@@ -40,8 +40,8 @@ import java.util.List;
 
 import org.apache.commons.collections.MultiMap;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * Manages the configuration that is stored in the database.

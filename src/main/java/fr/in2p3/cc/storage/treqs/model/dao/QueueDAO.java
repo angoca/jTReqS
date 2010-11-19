@@ -38,8 +38,8 @@ package fr.in2p3.cc.storage.treqs.model.dao;
 
 import java.util.Calendar;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Queue;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * Managing Queues object insert/updates to database.

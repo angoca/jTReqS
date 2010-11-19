@@ -39,9 +39,9 @@ package fr.in2p3.cc.storage.treqs.model.dao;
 import java.util.Calendar;
 import java.util.List;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Reading;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
 
 /**
