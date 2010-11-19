@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm.mock;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.hsm.mock;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.mock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,15 +42,35 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
+import fr.in2p3.cc.storage.treqs.model.Constants;
 
 /**
  * This is a mock bridge. This does not returns real values, all are random.
+ *
+ * @author Andres Gomez
+ * @since 1.5
  */
-public class HSMMockBridge extends AbstractHSMBridge {
+public final class HSMMockBridge extends AbstractHSMBridge {
     /**
-     * Instance of the singleton
+     * Types of tapes.
      */
-    private static HSMMockBridge _instance = null;
+    private static final int TAPE_TYPES = 4;
+    /**
+     * Max file size.
+     */
+    private static final int FILE_SIZE = 10000;
+    /**
+     * Max file position in tape.
+     */
+    private static final int FILE_POSITION = 100;
+    /**
+     * Max tape number.
+     */
+    private static final int TAPE_NUMBER = 10;
+    /**
+     * Instance of the singleton.
+     */
+    private static HSMMockBridge instance = null;
     /**
      * Logger.
      */
@@ -64,89 +83,118 @@ public class HSMMockBridge extends AbstractHSMBridge {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        _instance = null;
+        instance = null;
 
         LOGGER.trace("< destroyInstance");
     }
 
     /**
      * Retrieves the unique instance.
-     * 
-     * @return
+     *
+     * @return The only instance of this object.
      */
     public static HSMMockBridge getInstance() {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new HSMMockBridge();
+            instance = new HSMMockBridge();
         }
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
+    /**
+     * File properties to return in the next call.
+     */
     private HSMHelperFileProperties fileProperties;
+    /**
+     * Exception to throw in the next call of get metadata.
+     */
     private HSMException filePropertiesException;
+    /**
+     * Exception to throw in the next call of stage.
+     */
     private HSMException stageException;
+    /**
+     * Time of the stage.
+     */
     private long stageMillis;
+    /**
+     * Object for synchronization.
+     */
     private Object notifyObject;
 
+    /**
+     * Constructor where the basic elements are defined.
+     */
     private HSMMockBridge() {
+        LOGGER.trace("> create instance");
+
         this.fileProperties = generateTape();
         this.filePropertiesException = null;
         this.stageException = null;
         this.stageMillis = 0;
         this.notifyObject = null;
+
+        LOGGER.trace("< create instance");
     }
 
     /**
-     * @return
+     * Returns a random tape.
+     *
+     * @return Properties generated randomly.
      */
     private HSMHelperFileProperties generateTape() {
-        HSMHelperFileProperties fileProperties;
-        // Generating a random tape
+        LOGGER.trace("> generateTape");
+
+        HSMHelperFileProperties properties;
+        // Generating a random tape.
         String tape = "";
-        int randomized = (int) (Math.random() * 4);
+        int randomized = (int) (Math.random() * TAPE_TYPES);
         switch (randomized) {
-        case 0:
-            tape += "IT";
-            break;
-        case 1:
-            tape += "JT";
-            break;
-        case 2:
-            tape += "IS";
-            break;
-        default:
-            tape += "JT";
+            case 0:
+                tape += "IT";
+                break;
+            case 1:
+                tape += "JT";
+                break;
+            case 2:
+                tape += "IS";
+                break;
+            default:
+                tape += "JT";
         }
         tape += "000";
-        tape += (int) (Math.random() * 10);
+        tape += (int) (Math.random() * TAPE_NUMBER);
 
-        int position = (int) (Math.random() * 100) + 1;
-        long size = (int) (Math.random() * 10000) + 1;
-        // TODO Random
-        byte storageLevel = 1;
+        int position = (int) (Math.random() * FILE_POSITION) + 1;
+        long size = (int) (Math.random() * FILE_SIZE) + 1;
 
-        fileProperties = new HSMHelperFileProperties(tape, position, size,
-                storageLevel);
-        return fileProperties;
+        properties = new HSMHelperFileProperties(tape, position, size);
+
+        assert properties != null;
+
+        LOGGER.trace("< generateTape");
+
+        return properties;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String)
      */
     @Override
-    public HSMHelperFileProperties getFileProperties(String name)
+    public HSMHelperFileProperties getFileProperties(final String name)
             throws HSMException {
         LOGGER.trace("> getFileProperties");
+
+        assert name != null && !name.equals("");
 
         // Takes the defined fileProperties that is going to be returned.
         HSMHelperFileProperties ret = this.fileProperties;
@@ -163,44 +211,69 @@ public class HSMMockBridge extends AbstractHSMBridge {
             throw toThrow;
         }
 
-        LOGGER
-                .info(
-                        "Faked file properties generated for '{}' (size {}, position {}, tape{})",
-                        new String[] { name, ret.getSize() + "",
-                                ret.getPosition() + "", ret.getStorageName() });
+        LOGGER.info(
+                "Faked file properties generated for '{}' "
+                        + "(size {}, position {}, tape{})",
+                new String[] { name, Long.toString(ret.getSize()),
+                        ret.getPosition() + "", ret.getTapeName() });
+
+        assert ret != null;
 
         LOGGER.trace("< getFileProperties");
 
         return ret;
     }
 
-    public void setFileProperties(HSMHelperFileProperties properties) {
+    /**
+     * Set the properties for the next call.
+     *
+     * @param properties
+     *            Properties for the next call.
+     */
+    public void setFileProperties(final HSMHelperFileProperties properties) {
         // Change the fileProperties for the given one. Normally, it is randomly
         // generated.
         this.fileProperties = properties;
     }
 
-    public void setFilePropertiesException(HSMException exception) {
+    /**
+     * Exception to throw in the next call.
+     *
+     * @param exception
+     *            Exception for get metadata.
+     */
+    public void setFilePropertiesException(final HSMException exception) {
         this.filePropertiesException = exception;
     }
 
-    public void setStageException(HSMException exception) {
+    /**
+     * Exception to throw in the next call.
+     *
+     * @param exception
+     *            Exception for the staging.
+     */
+    public void setStageException(final HSMException exception) {
         this.stageException = exception;
     }
 
-    public void setStageTime(long millis) {
+    /**
+     * Sets the time that will last the next staging.
+     *
+     * @param millis
+     *            Milliseconds of the mock staging.
+     */
+    public void setStageTime(final long millis) {
         this.stageMillis = millis;
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
      * long)
      */
     @Override
-    public void stage(String name, long size) throws HSMException {
+    public void stage(final String name, final long size) throws HSMException {
         LOGGER.trace("> stage");
 
         if (this.stageException != null) {
@@ -223,7 +296,7 @@ public class HSMMockBridge extends AbstractHSMBridge {
 
         long wait = 0;
         if (this.stageMillis == 0) {
-            wait = ((long) ((Math.random() * 7) + 2)) * 1000;
+            wait = ((long) ((Math.random() * 7) + 2)) * Constants.MILLISECONDS;
         } else {
             wait = this.stageMillis;
         }
@@ -231,13 +304,20 @@ public class HSMMockBridge extends AbstractHSMBridge {
         try {
             Thread.sleep(wait);
         } catch (InterruptedException e) {
+            // Nothing.
         }
         LOGGER.info("Fake staging done ;)");
 
         LOGGER.trace("< stage");
     }
 
-    public void waitStage(Object notifyObject) {
-        this.notifyObject = notifyObject;
+    /**
+     * Establishes the method to synchronized.
+     *
+     * @param notifier
+     *            Object to synchronize threads.
+     */
+    public void waitStage(final Object notifier) {
+        this.notifyObject = notifier;
     }
 }
