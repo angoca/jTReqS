@@ -39,35 +39,81 @@ package fr.in2p3.cc.storage.treqs.tools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
+
 /**
- * Exception when configuration item is not found.
+ * Error parsing configuration.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class ConfigNotFoundException extends ConfiguratorException {
+public abstract class ConfiguratorException extends TReqSException {
+
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ConfigNotFoundException.class);
+            .getLogger(ConfiguratorException.class);
     /**
-     * Generated ID.
+     * Generated Id.
      */
-    private static final long serialVersionUID = 6418191123079866188L;
+    private static final long serialVersionUID = -8984526634793772647L;
+    /**
+     * Name of the value.
+     */
+    private String key;
+    /**
+     * Section of the value.
+     */
+    private String section;
+    /**
+     * Name of the file.
+     */
+    private String filename;
 
     /**
-     * Constructor with the name of the key and its section.
+     * Constructor with the name of a file.
      *
-     * @param section
-     *            Section of the key.
-     * @param key
-     *            Requested key.
+     * @param file
+     *            File not found.
      */
-    public ConfigNotFoundException(final String section, final String key) {
-        super(section, key);
+    protected ConfiguratorException(final String file) {
+        LOGGER.trace("> Instance creation filename");
 
-        LOGGER.trace(">< Instance creation");
+        this.filename = file;
+
+        LOGGER.trace("< Instance creation filename");
     }
 
+    /**
+     * Constructor with a section and a name of a variable.
+     *
+     * @param sectionValue
+     *            Section
+     * @param keyValue
+     *            Key
+     */
+    protected ConfiguratorException(final String sectionValue,
+            final String keyValue) {
+        super();
+
+        LOGGER.trace("> Instance creation section/value");
+
+        this.section = sectionValue;
+        this.key = keyValue;
+
+        LOGGER.trace("< Instance creation section/value");
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.TReqSException#getMessage()
+     */
+    @Override
+    public final String getMessage() {
+        LOGGER.trace(">< getMessage");
+
+        return this.section + "::" + this.key
+                + ": Configuration item not found. - " + this.filename;
+    }
 }

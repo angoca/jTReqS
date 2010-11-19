@@ -40,33 +40,34 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exception thrown where there is a problem accessing the configuration file.
+ * Exception when configuration item is not found.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class ProblematicConfiguationFileException extends
-        ConfiguratorException {
-
+public class KeyNotFoundException extends ConfiguratorException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ProblematicConfiguationFileException.class);
+            .getLogger(KeyNotFoundException.class);
     /**
-     * Generated Id.
+     * Generated ID.
      */
-    private static final long serialVersionUID = 49803485989907385L;
+    private static final long serialVersionUID = 6418191123079866188L;
 
     /**
-     * Creates an exception giving the name of the file.
+     * Constructor with the name of the key and its section.
      *
-     * @param file
-     *            filename.
+     * @param section
+     *            Section of the key.
+     * @param key
+     *            Requested key.
      */
-    public ProblematicConfiguationFileException(final String file) {
-        super(file);
+    public KeyNotFoundException(final String section, final String key) {
+        super(section, key);
 
         LOGGER.trace(">< Instance creation");
     }
+
 }
