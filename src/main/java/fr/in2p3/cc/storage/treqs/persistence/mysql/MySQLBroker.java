@@ -48,9 +48,9 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.CloseMySQLException;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.OpenMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLCloseException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
@@ -79,7 +79,7 @@ public final class MySQLBroker {
         if (instance != null && instance.connected) {
             try {
                 instance.disconnect();
-            } catch (CloseMySQLException e) {
+            } catch (MySQLCloseException e) {
                 LOGGER.error(e.getMessage());
             }
         }
@@ -157,11 +157,11 @@ public final class MySQLBroker {
      *
      * @param stmt
      *            Statement to close.
-     * @throws CloseMySQLException
+     * @throws MySQLCloseException
      *             If there is a problem while closing the statement.
      */
     private void closeStatement(final Statement stmt)
-            throws CloseMySQLException {
+            throws MySQLCloseException {
         LOGGER.trace("> closeStatement");
 
         if (stmt != null) {
@@ -170,7 +170,7 @@ public final class MySQLBroker {
             } catch (SQLException sqlEx) {
                 handleSQLException(sqlEx);
                 // TODO
-                throw new CloseMySQLException(sqlEx);
+                throw new MySQLCloseException(sqlEx);
             }
         }
 
@@ -202,7 +202,7 @@ public final class MySQLBroker {
                 } catch (Exception e) {
                     LOGGER.error("Exception: {}", e.getMessage());
                     // TODO
-                    throw new OpenMySQLException(e);
+                    throw new MySQLOpenException(e);
                 }
                 try {
                     this.connection = (Connection) DriverManager.getConnection(
@@ -216,7 +216,7 @@ public final class MySQLBroker {
                         // Nothing
                     }
                     // TODO
-                    throw new OpenMySQLException(ex);
+                    throw new MySQLOpenException(ex);
                 }
             }
         }
@@ -227,10 +227,10 @@ public final class MySQLBroker {
     /**
      * Disconnects from the database.
      *
-     * @throws CloseMySQLException
+     * @throws MySQLCloseException
      *             If there is a problem closing the connection.
      */
-    public void disconnect() throws CloseMySQLException {
+    public void disconnect() throws MySQLCloseException {
         LOGGER.trace("> disconnect");
 
         synchronized (instance) {
@@ -240,7 +240,7 @@ public final class MySQLBroker {
                 } catch (SQLException ex) {
                     handleSQLException(ex);
                     // TODO
-                    throw new CloseMySQLException(ex);
+                    throw new MySQLCloseException(ex);
                 } finally {
                     this.connection = null;
                 }
@@ -278,13 +278,13 @@ public final class MySQLBroker {
             } catch (SQLException ex) {
                 handleSQLException(ex);
                 // TODO
-                throw new ExecuteMySQLException(ex);
+                throw new MySQLExecuteException(ex);
             } finally {
                 try {
                     statement.close();
                 } catch (SQLException e) {
                     // TODO
-                    throw new ExecuteMySQLException(e);
+                    throw new MySQLExecuteException(e);
                 }
             }
         }
@@ -326,7 +326,7 @@ public final class MySQLBroker {
                 handleSQLException(ex);
                 closeResultSet(rs);
                 // TODO
-                throw new ExecuteMySQLException(ex);
+                throw new MySQLExecuteException(ex);
             }
             ret = new Object[] { stmt, rs };
         }
@@ -366,7 +366,7 @@ public final class MySQLBroker {
                         java.sql.Statement.RETURN_GENERATED_KEYS);
             } catch (SQLException e) {
                 // TODO
-                throw new ExecuteMySQLException(e);
+                throw new MySQLExecuteException(e);
             }
         }
 
@@ -400,11 +400,11 @@ public final class MySQLBroker {
      *
      * @param objects
      *            Set of object to close [statement, resultSet].
-     * @throws CloseMySQLException
+     * @throws MySQLCloseException
      *             If there is a problem closing the object.
      */
     public void terminateExecution(final Object[] objects)
-            throws CloseMySQLException {
+            throws MySQLCloseException {
         LOGGER.trace("> terminateExecution");
 
         assert objects != null;
@@ -435,7 +435,7 @@ public final class MySQLBroker {
         } catch (SQLException e) {
             handleSQLException(e);
             // TODO
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         }
         if (!ret) {
             LOGGER.error("The connection has not been established. "

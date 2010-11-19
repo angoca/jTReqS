@@ -56,7 +56,7 @@ import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 /**
  * Managing the MySQL implementation of the configuration that is stored in the
@@ -101,7 +101,7 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
                 mediaTypeList.add(res);
             }
         } catch (SQLException exception) {
-            throw new ExecuteMySQLException(exception);
+            throw new MySQLExecuteException(exception);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);
         }
@@ -149,7 +149,7 @@ public class MySQLConfigurationDAO implements ConfigurationDAO {
                         + userName + "', share: " + share);
             }
         } catch (SQLException exception) {
-            throw new ExecuteMySQLException(exception);
+            throw new MySQLExecuteException(exception);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);
         }

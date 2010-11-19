@@ -51,8 +51,8 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.NoGeneratedIdMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLNoGeneratedIdException;
 
 /**
  * Manage the Queues object insert and updates to MySQL database.
@@ -136,10 +136,10 @@ public class MySQLQueueDAO implements QueueDAO {
                 result.close();
             } else {
                 result.close();
-                throw new NoGeneratedIdMySQLException();
+                throw new MySQLNoGeneratedIdException();
             }
         } catch (SQLException e) {
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         }
         LOGGER.info("New queue inserted with id " + id);
 
@@ -188,12 +188,12 @@ public class MySQLQueueDAO implements QueueDAO {
             statement.execute();
         } catch (SQLException e) {
             LOGGER.error("Error updating queue " + id);
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         } finally {
             try {
                 statement.close();
             } catch (SQLException e) {
-                throw new ExecuteMySQLException(e);
+                throw new MySQLExecuteException(e);
             }
         }
 
@@ -246,7 +246,7 @@ public class MySQLQueueDAO implements QueueDAO {
                     assert false;
             }
         } catch (SQLException e) {
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         }
 
         processUpdate(queue, nbDone, nbFailed, statement, index);
@@ -267,12 +267,12 @@ public class MySQLQueueDAO implements QueueDAO {
      *            Statement to fill and execute.
      * @param i
      *            Index in the statement.
-     * @throws ExecuteMySQLException
+     * @throws MySQLExecuteException
      *             If there is a problem executing the query.
      */
     private void processUpdate(final Queue queue, final short nbDone,
             final short nbFailed, final PreparedStatement statement, final int i)
-            throws ExecuteMySQLException {
+            throws MySQLExecuteException {
         LOGGER.trace("> processUpdate");
 
         assert queue != null;
@@ -310,12 +310,12 @@ public class MySQLQueueDAO implements QueueDAO {
             LOGGER.info("Updated queue " + id);
         } catch (SQLException e) {
             LOGGER.error("Error updating queue " + id);
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         } finally {
             try {
                 statement.close();
             } catch (SQLException e) {
-                throw new ExecuteMySQLException(e);
+                throw new MySQLExecuteException(e);
             }
         }
 

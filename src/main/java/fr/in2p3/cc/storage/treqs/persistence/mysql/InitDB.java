@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 /**
  * Initializes the database if the tables are not created. This only works if
@@ -109,7 +109,7 @@ public final class InitDB {
                 LOGGER.debug("Table found: {}", tablename);
             }
         } catch (SQLException e) {
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);
         }

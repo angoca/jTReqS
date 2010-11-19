@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 /**
  * Manage the Reading object inserts and updates to MySQL database.
@@ -124,7 +124,7 @@ public class MySQLReadingDAO implements ReadingDAO {
             }
         } catch (SQLException e) {
             LOGGER.error("Error updating request " + queueId);
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         }
 
         LOGGER.trace("< firstUpdate");
@@ -162,7 +162,7 @@ public class MySQLReadingDAO implements ReadingDAO {
                 newRequests.add(fileRequest);
             }
         } catch (SQLException e) {
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);
         }
@@ -211,7 +211,7 @@ public class MySQLReadingDAO implements ReadingDAO {
             statement.execute();
         } catch (SQLException e) {
             LOGGER.error("Error updating request " + id);
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         }
 
         LOGGER.trace("< setRequestStatusById");
@@ -284,7 +284,7 @@ public class MySQLReadingDAO implements ReadingDAO {
                     break;
             }
         } catch (SQLException e) {
-            throw new ExecuteMySQLException(e);
+            throw new MySQLExecuteException(e);
         }
         processUpdate(reading, status, statement, index);
 
@@ -302,12 +302,12 @@ public class MySQLReadingDAO implements ReadingDAO {
      *            Statement to fill and execute.
      * @param i
      *            Index of the statement.
-     * @throws ExecuteMySQLException
+     * @throws MySQLExecuteException
      *             If there is a problem executing the query.
      */
     private void processUpdate(final Reading reading,
             final FileRequestStatus status, final PreparedStatement statement,
-            final int i) throws ExecuteMySQLException {
+            final int i) throws MySQLExecuteException {
         LOGGER.trace("> processUpdate");
 
         assert reading != null;
@@ -346,7 +346,7 @@ public class MySQLReadingDAO implements ReadingDAO {
 
             statement.execute();
         } catch (SQLException e1) {
-            throw new ExecuteMySQLException(e1);
+            throw new MySQLExecuteException(e1);
         }
 
         LOGGER.trace("< processUpdate");
