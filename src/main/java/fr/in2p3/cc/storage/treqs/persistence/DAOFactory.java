@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.tools.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
@@ -105,7 +105,7 @@ public abstract class DAOFactory {
         try {
             daoName = Configurator.getInstance().getValue("MAIN",
                     Constants.PARAM_DAO_FACTORY);
-        } catch (ConfigNotFoundException e) {
+        } catch (KeyNotFoundException e) {
             LOGGER.debug("No setting for MAIN.DAO_FACTORY, default "
                     + "value will be used: {}", daoName);
         }
