@@ -61,7 +61,7 @@ public abstract class HSMException extends TReqSException {
     /**
      * Associated error code.
      */
-    private final short hsmErrorcode;
+    private final short errorcode;
 
     /**
      * Creates a default exception.
@@ -71,7 +71,7 @@ public abstract class HSMException extends TReqSException {
 
         LOGGER.trace("> Instance creation empty");
 
-        this.hsmErrorcode = 0;
+        this.errorcode = 0;
 
         LOGGER.trace("< Instance creation empty");
     }
@@ -87,7 +87,7 @@ public abstract class HSMException extends TReqSException {
 
         LOGGER.trace("> Instance creation exception");
 
-        this.hsmErrorcode = 0;
+        this.errorcode = 0;
 
         LOGGER.trace("< Instance creation exception");
     }
@@ -103,7 +103,7 @@ public abstract class HSMException extends TReqSException {
 
         LOGGER.trace("> Instance creation errorcode");
 
-        this.hsmErrorcode = hsmErrorcode;
+        this.errorcode = hsmErrorcode;
 
         LOGGER.trace("< Instance creation errorcode");
     }
@@ -118,7 +118,7 @@ public abstract class HSMException extends TReqSException {
         super(message);
         LOGGER.trace("> Instance creation message");
 
-        this.hsmErrorcode = 0;
+        this.errorcode = 0;
 
         LOGGER.trace("< Instance creation message");
     }
@@ -131,7 +131,7 @@ public abstract class HSMException extends TReqSException {
     public String getMessage() {
         LOGGER.trace(">< getMessage");
 
-        return "Code: " + this.hsmErrorcode + super.getMessage();
+        return "Code: " + this.errorcode + super.getMessage();
     }
 
     /**
@@ -139,9 +139,9 @@ public abstract class HSMException extends TReqSException {
      *
      * @return The associated error code.
      */
-    public short getErrorCode() {
+    public final short getErrorCode() {
         LOGGER.trace(">< getHSMErrorCode");
 
-        return this.hsmErrorcode;
+        return this.errorcode;
     }
 }

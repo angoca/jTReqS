@@ -34,49 +34,11 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
- * Error on resources allocation. Raised when there is no more space left on the
- * HSM disk to stage the file.
+ * Exceptions raised when interacting with the HSM.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-public class HSMResourceException extends HSMOpenException {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMResourceException.class);
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 4271400589349753437L;
+package fr.in2p3.cc.storage.treqs.hsm.exception;
 
-    /**
-     * Creates the exception with an associated error code.
-     *
-     * @param hsmErrorcode
-     *            Error code.
-     */
-    public HSMResourceException(final short hsmErrorcode) {
-        super(hsmErrorcode);
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.hsm.exception.HSMException#getMessage()
-     */
-    @Override
-    public final String getMessage() {
-        LOGGER.trace(">< getMessage");
-
-        return "No space available on disk." + super.getMessage();
-    }
-}
