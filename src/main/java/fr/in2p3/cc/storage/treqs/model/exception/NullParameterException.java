@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * The given parameter is null and it is not accepted.
