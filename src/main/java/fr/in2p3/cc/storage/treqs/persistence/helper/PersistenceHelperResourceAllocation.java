@@ -43,25 +43,29 @@ import fr.in2p3.cc.storage.treqs.model.User;
 
 /**
  * It transports the data from the persistence about the quantity of resource
- * allocation per user.
+ * allocation per user. This object could be interpreted as a Transfer object,
+ * because it permits to create the object, but then it cannot be modified.
+ * <p>
+ * Attributes are final because they cannot be modified. For this reason this
+ * object does not have setters, it only has getters.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class PersistanceHelperResourceAllocation {
+public class PersistenceHelperResourceAllocation {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(PersistanceHelperResourceAllocation.class);
+            .getLogger(PersistenceHelperResourceAllocation.class);
     /**
      * Quantity of allocation per user.
      */
-    private float allocation;
+    private final float allocation;
     /**
      * Defined user in the persistence.
      */
-    private User user;
+    private final User user;
 
     /**
      * Creates the helper with a user and its quantity of resources.
@@ -71,7 +75,7 @@ public class PersistanceHelperResourceAllocation {
      * @param qtyAllocation
      *            Quantity of allocated resources.
      */
-    public PersistanceHelperResourceAllocation(final User userAlloc,
+    public PersistenceHelperResourceAllocation(final User userAlloc,
             final float qtyAllocation) {
         LOGGER.trace("> create instance");
 

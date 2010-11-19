@@ -40,8 +40,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Defines a structure for communication between the persistence and TReqS. This
- * objects is only used between ReadingDAO and Dispatcher.
+ * Defines a structure for communication between the persistence and the
+ * application. This objects is only used between ReadingDAO and Dispatcher.
+ * This object could be interpreted as a Transfer object, because it permits to
+ * create the object, but then it cannot be modified.
+ * <p>
+ * Attributes are final because they cannot be modified. For this reason this
+ * object does not have setters, it only has getters.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -55,19 +60,19 @@ public class PersistenceHelperFileRequest {
     /**
      * Name of the file.
      */
-    private String fileName;
+    private final String fileName;
     /**
      * Id of the request.
      */
-    private short id;
+    private final short id;
     /**
      * Quantity of tries for this file have been done.
      */
-    private byte numberTries;
+    private final byte numberTries;
     /**
      * Owner of the file.
      */
-    private String ownerName;
+    private final String ownerName;
 
     /**
      * Creates a helper with the necessary information for the dispatcher.
@@ -85,10 +90,15 @@ public class PersistenceHelperFileRequest {
             final String file, final byte nbTries, final String owner) {
         LOGGER.trace("> create instance");
 
-        this.setId(requestId);
-        this.setFileName(file);
-        this.setNumberTries(nbTries);
-        this.setOwnerName(owner);
+        assert requestId > 0;
+        assert file != null && !file.equals("");
+        assert nbTries >= 0;
+        assert owner != null && !owner.equals("");
+
+        this.id = requestId;
+        this.fileName = file;
+        this.numberTries = nbTries;
+        this.ownerName = owner;
 
         LOGGER.trace("< create instance");
     }
@@ -135,72 +145,6 @@ public class PersistenceHelperFileRequest {
         LOGGER.trace(">< getOwnerName");
 
         return this.ownerName;
-    }
-
-    /**
-     * Setter of the name of the file.
-     *
-     * @param file
-     *            Name of the file.
-     */
-    private void setFileName(final String file) {
-        LOGGER.trace("> setFileName");
-
-        assert file != null;
-        assert !file.equals("");
-
-        this.fileName = file;
-
-        LOGGER.trace("< setFileName");
-    }
-
-    /**
-     * Setter of the id.
-     *
-     * @param requestId
-     *            Id of the request.
-     */
-    private void setId(final short requestId) {
-        LOGGER.trace("> setId");
-
-        assert requestId > 0;
-
-        this.id = requestId;
-
-        LOGGER.trace("< setId");
-    }
-
-    /**
-     * Setter of the number of tries.
-     *
-     * @param tries
-     *            quantity of tries.
-     */
-    private void setNumberTries(final byte tries) {
-        LOGGER.trace("> setNumberTries");
-
-        assert tries >= 0;
-
-        this.numberTries = tries;
-
-        LOGGER.trace("< setNumberTries");
-    }
-
-    /**
-     * Setter of the user that owns the file.
-     *
-     * @param owner
-     *            File owner.
-     */
-    private void setOwnerName(final String owner) {
-        LOGGER.trace("> setOwnerName");
-
-        assert owner != null;
-        assert !owner.equals("");
-
-        this.ownerName = owner;
-
-        LOGGER.trace("< setOwnerName");
     }
 
 }
