@@ -35,7 +35,7 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence;
 
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
  * Basic Persistence exception.

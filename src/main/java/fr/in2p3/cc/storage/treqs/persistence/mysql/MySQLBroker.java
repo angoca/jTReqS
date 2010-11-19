@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.CloseMySQLException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.ExecuteMySQLException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.OpenMySQLException;
