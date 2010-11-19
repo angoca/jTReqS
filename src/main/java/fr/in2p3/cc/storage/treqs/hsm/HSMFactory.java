@@ -1,11 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm;
-
 /*
- * File: HSMFactory.cpp
- *
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -38,15 +34,18 @@ package fr.in2p3.cc.storage.treqs.hsm;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
+import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * HSM factory. This is the implementation of the Factory method for the
@@ -55,9 +54,11 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * After retrieving the value from the Configuration file, it returns the
  * appropriated HSM bridge. If no-one is defined, it will return HPSS bridge as
  * default.
+ *
+ * @author Andres Gomez
+ * @since 1.5
  */
-public class HSMFactory {
-    private static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge";
+public final class HSMFactory {
     /**
      * Logger.
      */
@@ -68,25 +69,45 @@ public class HSMFactory {
      * Retrieves the corresponding HSM bridge. This method checks the value of
      * MAIN.HSM_BRIDGE in the configuration file. If no value was specify, it
      * will return HPSS bridge as default.
-     * 
-     * @return
+     *
+     * @return The configured HSM bridge.
      * @throws ProblematicConfiguationFileException
+     *             If there is a problem retrieving the configuration.
      */
     public static AbstractHSMBridge getHSMBridge()
             throws ProblematicConfiguationFileException {
         LOGGER.trace("> getHSMBridge");
 
-        String hsmBridgeClass = DEFAULT_HSM_BRIDGE;
+        String hsmBridgeClass = DefaultProperties.DEFAULT_HSM_BRIDGE;
         try {
             hsmBridgeClass = Configurator.getInstance().getValue("MAIN",
                     "HSM_BRIDGE");
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAIN.HSM_BRIDGE, default value will be used: "
-                            + hsmBridgeClass);
+        } catch (KeyNotFoundException e) {
+            LOGGER.info("No setting for MAIN.HSM_BRIDGE, default value will "
+                    + "be used: " + hsmBridgeClass);
         }
 
         LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
+        AbstractHSMBridge bridge = instanciateClass(hsmBridgeClass);
+
+        assert bridge != null;
+
+        LOGGER.trace("< getHSMBridge");
+
+        return bridge;
+    }
+
+    /**
+     * Instantiates the given class.
+     *
+     * @param hsmBridgeClass
+     *            Instantiates the given class calling the getInstance method.
+     * @return Singleton instance.
+     */
+    private static AbstractHSMBridge instanciateClass(
+            final String hsmBridgeClass) {
+        LOGGER.trace("> instanciateClass");
+
         AbstractHSMBridge bridge = null;
         Class<?> hsm = null;
         try {
@@ -117,8 +138,17 @@ public class HSMFactory {
             }
         }
 
-        LOGGER.trace("< getHSMBridge");
+        assert bridge != null;
+
+        LOGGER.trace("> instanciateClass");
+
         return bridge;
     }
 
+    /**
+     * Default constructor hidden.
+     */
+    private HSMFactory() {
+        // Nothing.
+    }
 }

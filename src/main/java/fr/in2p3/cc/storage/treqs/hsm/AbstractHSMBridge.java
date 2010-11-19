@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,67 +34,92 @@ package fr.in2p3.cc.storage.treqs.hsm;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 
 /**
  * Defines the structure for the interactions with the HSM. This is the
  * implementation of the Template pattern. There are several implementations of
- * Bridges, the most important one is using the HPSS Api, however there are
- * another two. One using hpss_cache command and it uses system calls. The other
- * one is just for tests, it retrieves random values for the requests.
+ * Bridges, the most important one uses the HPSS API, however there are another
+ * two. One using mini C programs that uses the HPSS API. The other one is just
+ * for tests, it retrieves random values for the requests. This is useful if the
+ * application will used in other environment, because it is flexible.
+ *
+ * @author Andres Gomez
+ * @since 1.5
  */
 public abstract class AbstractHSMBridge {
     /**
-     * The keytab path
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(AbstractHSMBridge.class);
+    /**
+     * The keytab path.
      */
     private String keytabPath;
 
     /**
-     * Gets file metadata from the HSM. Gets file metadata.
+     * Gets file metadata from the HSM.
      *
      * @param name
      *            the name of the file.
+     * @return Helper that contains the metadata of the file.
+     * @throws HSMException
+     *             If there is a problem accessing the HSM.
      */
-    public abstract HSMHelperFileProperties getFileProperties(String name)
+    public abstract HSMHelperFileProperties getFileProperties(final String name)
             throws HSMException;
 
     /**
-     * Getter for member.
+     * Gets the keytab to authenticate against the HSM.
      *
-     * @return
+     * @return keytab to access the HSM.
      */
-    protected String getKeytabPath() {
+    protected final String getKeytabPath() {
+        LOGGER.trace(">< getKeytabPath");
+
         return keytabPath;
     }
 
     /*
      * Find out if the tape is locked or unlocked. TODO Version 2 This feature
      * has not been implemented. Ask HPSS database (DB2) for the status of a
-     * tape
-     *
+     * tape or with an external module.
      * @param t the tape name
-     *
      * @return the tape status
      */
     // TapeStatus getTapeProperties(string t);
 
     /**
-     * Setter for member.
+     * Setter for the keytab path.
      *
-     * @param keytabPath
+     * @param keytab
+     *            Credentials to access the HSM.
      */
-    protected void setKeytabPath(String keytabPath) {
-        this.keytabPath = keytabPath;
+    protected final void setKeytabPath(final String keytab) {
+        LOGGER.trace("> setKeytabPath");
+
+        assert keytab != null && !keytab.equals("");
+        this.keytabPath = keytab;
+
+        LOGGER.trace("> setKeytabPath");
     }
 
     /**
-     * Do the staging of a file Stages a file to HSM's disks.
+     * Stages a given file to HSM's disks.
      *
      * @param name
-     *            the name of the file
+     *            Name of the file to stage.
      * @param size
-     *            the size of the file
+     *            Size of the file.
+     * @throws HSMException
+     *             If there is a problem accessing the HSM.
      */
-    public abstract void stage(String name, long size) throws HSMException;
+    public abstract void stage(final String name, final long size)
+            throws HSMException;
 }
