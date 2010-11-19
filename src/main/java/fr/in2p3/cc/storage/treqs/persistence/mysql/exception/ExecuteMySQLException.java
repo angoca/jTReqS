@@ -41,7 +41,7 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.tools.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * Exception while executing a query.
@@ -59,7 +59,7 @@ public class ExecuteMySQLException extends MySQLException {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ConfigNotFoundException.class);
+            .getLogger(ExecuteMySQLException.class);
 
     /**
      * Constructor wrapping an exception generated in execution.

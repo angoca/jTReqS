@@ -39,7 +39,7 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.tools.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * Exception while retrieving the automatic id.
@@ -57,7 +57,7 @@ public class NoGeneratedIdMySQLException extends ExecuteMySQLException {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ConfigNotFoundException.class);
+            .getLogger(NoGeneratedIdMySQLException.class);
 
     /**
      * Default constructor.

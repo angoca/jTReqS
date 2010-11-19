@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.persistence.PersistanceException;
-import fr.in2p3.cc.storage.treqs.tools.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * Basic persistence exception for MySQL.
@@ -58,7 +58,7 @@ public abstract class MySQLException extends PersistanceException {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ConfigNotFoundException.class);
+            .getLogger(MySQLException.class);
 
     /**
      * Default constructor. The exception should have a descriptive name.

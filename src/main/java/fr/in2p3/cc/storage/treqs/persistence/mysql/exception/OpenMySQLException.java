@@ -39,7 +39,7 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.tools.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * Exception on connection to MySQL database.
@@ -54,7 +54,7 @@ public class OpenMySQLException extends MySQLException {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ConfigNotFoundException.class);
+            .getLogger(OpenMySQLException.class);
 
     /**
      * Wraps an exception thrown when connecting to the database.
