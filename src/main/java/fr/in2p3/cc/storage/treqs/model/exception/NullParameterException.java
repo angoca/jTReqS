@@ -36,8 +36,12 @@
  */
 package fr.in2p3.cc.storage.treqs.model.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * The given parameter is null and it is not accepted.
@@ -50,7 +54,11 @@ public class NullParameterException extends TReqSException {
      * Generated ID.
      */
     private static final long serialVersionUID = 8292943378279524818L;
-
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(NullParameterException.class);
     /**
      * Creates the exception with an error code and a message.
      *
@@ -61,5 +69,7 @@ public class NullParameterException extends TReqSException {
      */
     public NullParameterException(final ErrorCode code, final String message) {
         super(code, message);
+
+        LOGGER.trace(">< Instance creation");
     }
 }

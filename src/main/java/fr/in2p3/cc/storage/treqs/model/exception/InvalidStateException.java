@@ -36,8 +36,12 @@
  */
 package fr.in2p3.cc.storage.treqs.model.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * The current state does not permit to execute the command.
@@ -50,7 +54,11 @@ public class InvalidStateException extends TReqSException {
      * Generated ID.
      */
     private static final long serialVersionUID = -6062480558866198913L;
-
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(InvalidStateException.class);
     /**
      * Creates the exception with a code and an explanatory message.
      *
@@ -61,5 +69,7 @@ public class InvalidStateException extends TReqSException {
      */
     public InvalidStateException(final ErrorCode code, final String message) {
         super(code, message);
+
+        LOGGER.trace(">< Instance creation");
     }
 }

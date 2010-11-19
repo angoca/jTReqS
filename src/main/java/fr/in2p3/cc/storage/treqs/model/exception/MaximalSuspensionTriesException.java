@@ -36,8 +36,12 @@
  */
 package fr.in2p3.cc.storage.treqs.model.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * The queue has been suspended too many times.
@@ -50,7 +54,11 @@ public class MaximalSuspensionTriesException extends TReqSException {
      * Generated ID.
      */
     private static final long serialVersionUID = -7873750096259668634L;
-
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MaximalSuspensionTriesException.class);
     /**
      * Creates an exception with the related code.
      *
@@ -59,5 +67,7 @@ public class MaximalSuspensionTriesException extends TReqSException {
      */
     public MaximalSuspensionTriesException(final ErrorCode code) {
         super(code);
+
+        LOGGER.trace(">< Instance creation");
     }
 }

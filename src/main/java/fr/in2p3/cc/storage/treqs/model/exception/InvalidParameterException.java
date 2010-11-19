@@ -36,8 +36,12 @@
  */
 package fr.in2p3.cc.storage.treqs.model.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * The parameter is invalid for the current state of the object.
@@ -50,7 +54,11 @@ public class InvalidParameterException extends TReqSException {
      * Generated ID.
      */
     private static final long serialVersionUID = -4795338754047868534L;
-
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(InvalidParameterException.class);
     /**
      * Creates the exception with an explanatory code and message.
      *
@@ -62,5 +70,7 @@ public class InvalidParameterException extends TReqSException {
     public InvalidParameterException(final ErrorCode code,
             final String message) {
         super(code, message);
+
+        LOGGER.trace(">< Instance creation");
     }
 }
