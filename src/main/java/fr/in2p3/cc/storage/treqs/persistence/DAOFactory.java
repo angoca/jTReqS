@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Constants;
+import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
@@ -101,7 +102,7 @@ public abstract class DAOFactory {
         LOGGER.trace("> createDAOFactory");
 
         // Name of the factory.
-        String daoName = Constants.DEFAULT_DAO_FACTORY;
+        String daoName = DefaultProperties.DEFAULT_DAO_FACTORY;
         try {
             daoName = Configurator.getInstance().getValue("MAIN",
                     Constants.PARAM_DAO_FACTORY);
