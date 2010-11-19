@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,14 +34,16 @@ package fr.in2p3.cc.storage.treqs.model.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model.exception;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
 
 /**
  * The parameter is invalid for the current state of the object.
- * 
- * @author gomez
- * @version 2010-03-09
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
 public class InvalidParameterException extends TReqSException {
     /**
@@ -52,14 +52,15 @@ public class InvalidParameterException extends TReqSException {
     private static final long serialVersionUID = -4795338754047868534L;
 
     /**
-     * Creates the exception with a explanatory name.
-     * 
-     * @param errCode
+     * Creates the exception with an explanatory code and message.
+     *
+     * @param code
      *            Error code.
-     * @param errMsg
+     * @param message
      *            Explanation.
      */
-    public InvalidParameterException(ErrorCode errCode, String errMsg) {
-        super(errCode, errMsg);
+    public InvalidParameterException(final ErrorCode code,
+            final String message) {
+        super(code, message);
     }
-};
+}

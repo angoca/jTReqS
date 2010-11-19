@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,16 +34,32 @@ package fr.in2p3.cc.storage.treqs.model.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model.exception;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.ErrorCode;
 
+/**
+ * The given parameter is null and it is not accepted.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
+ */
 public class NullParameterException extends TReqSException {
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = 8292943378279524818L;
 
-    public NullParameterException(ErrorCode errCode, String errMsg) {
-        super(errCode, errMsg);
+    /**
+     * Creates the exception with an error code and a message.
+     *
+     * @param code
+     *            Error code.
+     * @param message
+     *            Explanatory message.
+     */
+    public NullParameterException(final ErrorCode code, final String message) {
+        super(code, message);
     }
-};
+}
