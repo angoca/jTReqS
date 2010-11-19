@@ -36,7 +36,11 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.in2p3.cc.storage.treqs.persistence.PersistanceException;
+import fr.in2p3.cc.storage.treqs.tools.ConfigNotFoundException;
 
 /**
  * Basic persistence exception for MySQL.
@@ -50,12 +54,19 @@ public abstract class MySQLException extends PersistanceException {
      * Generated ID.
      */
     private static final long serialVersionUID = 7637653660807465428L;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ConfigNotFoundException.class);
 
     /**
      * Default constructor. The exception should have a descriptive name.
      */
     protected MySQLException() {
         super();
+
+        LOGGER.trace(">< Instance creation");
     }
 
     /**
@@ -66,5 +77,7 @@ public abstract class MySQLException extends PersistanceException {
      */
     protected MySQLException(final Exception e) {
         super(e);
+
+        LOGGER.trace(">< Instance creation wrapping exception");
     }
 }

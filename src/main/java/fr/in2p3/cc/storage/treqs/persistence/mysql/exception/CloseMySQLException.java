@@ -38,6 +38,11 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.in2p3.cc.storage.treqs.tools.ConfigNotFoundException;
+
 /**
  * Exception on close database.
  *
@@ -50,6 +55,11 @@ public class CloseMySQLException extends MySQLException {
      * Generated ID.
      */
     private static final long serialVersionUID = 1150382072401169495L;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ConfigNotFoundException.class);
 
     /**
      * Wraps an exception generated when the database was closing.
@@ -59,5 +69,7 @@ public class CloseMySQLException extends MySQLException {
      */
     public CloseMySQLException(final SQLException ex) {
         super(ex);
+
+        LOGGER.trace(">< Instance creation");
     }
 }
