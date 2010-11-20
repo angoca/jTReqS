@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,23 +34,27 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
 import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
 
 /**
  * Specialization of the Controller template to manage users.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class UsersController extends Controller {
+public final class UsersController extends Controller {
     /**
-     * Pointer to the singleton instance.
+     * Singleton instance.
      */
-    private static UsersController _instance = null;
+    private static UsersController instance = null;
 
     /**
      * Logger.
@@ -66,44 +68,54 @@ public class UsersController extends Controller {
     static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
-        _instance = null;
+        instance = null;
 
         LOGGER.debug("< destroyInstance");
     }
 
     /**
      * To get an instance to this singleton.
-     * 
-     * @return
+     *
+     * @return The singleton instance.
      */
     public static UsersController getInstance() {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new UsersController();
+            instance = new UsersController();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
-    }
-
-    private UsersController() {
-        super.objectMap = new HashMap<String, Object>();
+        return instance;
     }
 
     /**
-     * Add a user to the list. If the user does not exist, create it and return
-     * it. Else, return the already existing instance.
-     * 
-     * @param userName
-     *            the name of the user.
-     * @return a pointer to the user named after u.
-     * @throws ControllerInsertException
+     * Creates the instance initializing the map.
      */
-    public User add(String userName) throws ControllerInsertException {
+    private UsersController() {
+        LOGGER.trace("> create instance");
+
+        super.objectMap = new HashMap<String, Object>();
+
+        LOGGER.trace("< create instance");
+    }
+
+    /**
+     * Adds a user to the list. If the user does not exist, create it and return
+     * it. Else, return the already existing instance.
+     *
+     * @param userName
+     *            Name of the user.
+     * @return The user named after userName.
+     * @throws ControllerInsertException
+     *             If there is a problem adding the instance.
+     */
+    public User add(final String userName) throws ControllerInsertException {
         LOGGER.trace("> add");
 
         assert userName != null;
@@ -118,14 +130,23 @@ public class UsersController extends Controller {
         return user;
     }
 
-    User create(String userName) throws ControllerInsertException {
+    /**
+     * Creates a new instance of user.
+     *
+     * @param userName
+     *            Name of the user to add.
+     * @return The instance of that user.
+     * @throws ControllerInsertException
+     *             If there is problem creating the instance.
+     */
+    User create(final String userName) throws ControllerInsertException {
         LOGGER.trace("> create");
 
         assert userName != null;
 
         User user = new User(userName);
         super.add(userName, user);
-        // TODO AngocA Later the uid, group and gid will be user later
+        // TODO AngocA Later use the uid, group and gid will.
 
         LOGGER.trace("< create");
 
