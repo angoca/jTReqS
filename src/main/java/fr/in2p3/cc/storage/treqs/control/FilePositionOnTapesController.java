@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,78 +34,93 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
- * Class Controller for the FilePostionOnTape classes.
+ * Controller for the FilePostionOnTape classes.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class FilePositionOnTapesController extends Controller {
+public final class FilePositionOnTapesController extends Controller {
     /**
-     * Pointer to the singleton instance.
+     * Singleton instance.
      */
-    private static FilePositionOnTapesController _instance = null;
-
+    private static FilePositionOnTapesController instance = null;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FilePositionOnTapesController.class);
 
+    /**
+     * Destroys the instance. Only for testing purposes.
+     */
     public static void destroyInstance() {
-        LOGGER.debug(">< destroyInstance");
+        LOGGER.debug("> destroyInstance");
 
-        _instance = null;
+        instance = null;
+
+        LOGGER.debug("< destroyInstance");
     }
 
     /**
-     * Provides a pointer to the singleton instance.
-     * 
-     * @return
+     * Returns the unique instance of this class.
+     *
+     * @return Singleton.
      */
     public static FilePositionOnTapesController getInstance() {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new FilePositionOnTapesController();
+            instance = new FilePositionOnTapesController();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
+    /**
+     * Constructor where the map is initialized.
+     */
     private FilePositionOnTapesController() {
         super.objectMap = new HashMap<String, Object>();
+
+        LOGGER.trace(">< create instance");
     }
 
     /**
      * Adds (creates or updates) a FilePositionOnTape object. If the object does
      * not already exists, create a new one and return it. If the object exists,
      * update metadata and return it.
-     * 
+     *
      * @param file
-     *            the reference to the file.
+     *            Description of the file..
      * @param tape
-     *            the reference to the tape.
+     *            Tape where the file is stored.
      * @param position
-     *            the position.
-     * @return a pointer to the FilePostionOnTape object.
+     *            Position of the file in the tape.
+     * @return The FilePostionOnTape object.
      * @throws TReqSException
+     *             If there is a problem creating the instance.
      */
-    public FilePositionOnTape add(File file, Tape tape, int position)
-            throws TReqSException {
+    public FilePositionOnTape add(final File file, final Tape tape,
+            final int position) throws TReqSException {
         LOGGER.trace("> add");
 
         assert file != null;
@@ -121,6 +134,7 @@ public class FilePositionOnTapesController extends Controller {
             fpot = this.create(file, tape, position);
         } else {
             LOGGER.debug("Updating old fpot");
+            // TODO This should update the queue.
             fpot.setTape(tape);
             fpot.setPosition(position);
         }
@@ -132,28 +146,31 @@ public class FilePositionOnTapesController extends Controller {
 
     /**
      * Create a new FilePositionOnTape object. If the object does not already
-     * exists, create a new one. If the object exists, throw exception.
-     * 
+     * exist, creates a new one. If the object exists, throw an exception.
+     *
      * @param file
-     *            the reference to the file.
+     *            Description of the file.
      * @param tape
-     *            the reference to the tape.
+     *            Tape where the file is stored.
      * @param position
-     *            the position.
-     * @return a pointer to the FilePostionOnTape object.
+     *            Position of the file in the tape.
+     * @return The FilePostionOnTape object.
      * @throws TReqSException
+     *             If there is a problem creating the fpot or adding it to the
+     *             list.
      */
-    FilePositionOnTape create(File file, Tape tape, int position)
-            throws TReqSException {
+    FilePositionOnTape create(final File file, final Tape tape,
+            final int position) throws TReqSException {
         LOGGER.trace("> create");
 
         assert file != null;
         assert tape != null;
         assert position >= 0;
 
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape);
         super.add(file.getName(), fpot);
+
+        assert fpot != null;
 
         LOGGER.trace("< create");
 
