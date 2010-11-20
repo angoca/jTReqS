@@ -1,3 +1,39 @@
+/*
+ * Copyright      Jonathan Schaeffer 2009-2010,
+ *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
+ * Contributors   Andres Gomez,
+ *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
+ *
+ * This software is a computer program whose purpose is to schedule, sort
+ * and submit file requests to the hierarchical storage system HPSS.
+ *
+ * This software is governed by the CeCILL license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights, and the successive licensors have only limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ *
+ */
 package fr.in2p3.cc.storage.treqs.control;
 
 import java.util.HashMap;
@@ -5,10 +41,19 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
-public class MediaTypesController extends Controller {
+/**
+ * Controller for media types.
+ *
+ * @author Andres Gomez
+ * @since 1.5
+ */
+public final class MediaTypesController extends Controller {
+    /**
+     * Singleton instance.
+     */
     private static MediaTypesController instance;
 
     /**
@@ -18,10 +63,9 @@ public class MediaTypesController extends Controller {
             .getLogger(MediaTypesController.class);
 
     /**
-     * Destroys the only instance. ONLY for testing purposes. TODO change from
-     * public to default.
+     * Destroys the only instance. ONLY for testing purposes.
      */
-    public static void destroyInstance() {
+    static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
         instance = null;
@@ -29,6 +73,11 @@ public class MediaTypesController extends Controller {
         LOGGER.trace("< destroyInstance");
     }
 
+    /**
+     * Retrieves the singleton instance of this class.
+     *
+     * @return Unique instance.
+     */
     public static MediaTypesController getInstance() {
         LOGGER.trace("> getInstance");
 
@@ -36,20 +85,41 @@ public class MediaTypesController extends Controller {
             instance = new MediaTypesController();
         }
 
+        assert instance != null;
+
         LOGGER.trace("< getInstance");
 
         return instance;
     }
 
+    /**
+     * Builds the controller initializing the map.
+     */
     public MediaTypesController() {
+        LOGGER.trace("> create instance");
+
         super.objectMap = new HashMap<String, Object>();
+
+        LOGGER.trace("< create instance");
     }
 
-    public MediaType add(String name, byte id) throws TReqSException {
+    /**
+     * Creates an instance of media type and adds it to the controller.
+     *
+     * @param name
+     *            Name of the media type.
+     * @param id
+     *            Id of the media.
+     * @return Instance of the media type.
+     * @throws TReqSException
+     *             If there is a problem creating the instance or adding it to
+     *             the controller.
+     */
+    public MediaType add(final String name, final byte id)
+            throws TReqSException {
         LOGGER.trace("> add");
 
-        assert name != null;
-        assert !name.equals("");
+        assert name != null && !name.equals("");
         assert id >= 0;
 
         MediaType media = (MediaType) this.exists(name);
@@ -57,35 +127,74 @@ public class MediaTypesController extends Controller {
             media = create(name, id);
         }
 
+        assert media != null;
+
         LOGGER.trace("> add");
 
         return media;
     }
 
-    private MediaType create(String name, byte id) throws TReqSException {
+    /**
+     * Creates an instance of the media type.
+     *
+     * @param name
+     *            Name of the media type.
+     * @param id
+     *            Id of the media type.
+     * @return The instance of the media type.
+     * @throws TReqSException
+     *             If there is a problem while creating the instance.
+     */
+    private MediaType create(final String name, final byte id)
+            throws TReqSException {
         LOGGER.trace("> create");
 
-        assert name != null;
-        assert !name.equals("");
+        assert name != null && !name.equals("");
         assert id >= 0;
 
         MediaType media = new MediaType(id, name);
         super.add(name, media);
+
+        assert media != null;
 
         LOGGER.trace("< create");
 
         return media;
     }
 
-    public MediaType getLike(String storageName) {
+    /**
+     * Returns the type of media, comparing the given name with the pattern.
+     * <p>
+     * In version 1.0, this was done by a query using the 'like' operator.
+     *
+     * @param storageName
+     *            Storage name that will be queried.
+     * @return Returns the related media type that accords with the storage
+     *         name.
+     * @since 1.5
+     */
+    public MediaType getLike(final String storageName) {
+        LOGGER.trace("> getLike");
+
+        assert storageName != null && !storageName.equals("");
+
         MediaType ret = null;
         if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
             ret = (MediaType) this.objectMap.get("T10K-A");
         } else if (storageName.startsWith("JT")) {
             ret = (MediaType) this.objectMap.get("T10K-B");
+        } else {
+            LOGGER.error("Unknown media type");
+            assert false;
         }
-        // TODO with regular expressions
+
+        // TODO with regular expressions or call a new module. This has to be
+        // different.
+
+        assert ret != null;
+
+        LOGGER.trace("< getLike");
+
         return ret;
     }
-
 }
