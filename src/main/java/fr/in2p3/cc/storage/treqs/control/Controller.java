@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,16 +34,21 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
+import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
 
 /**
- * Controller template. Helps managing a collection of objects.
+ * Controller template. Helps managing a collection of objects. This object uses
+ * the Template pattern.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
 public abstract class Controller {
 
@@ -54,21 +57,24 @@ public abstract class Controller {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Controller.class);
-
     /**
      * Set of objects controlled by this class.
      */
     protected Map<String, Object> objectMap;
 
     /**
-     * Try to create a new object instance and insert it in the map. Return a
-     * new instance or throw an exception if already exists. Each specialization
-     * of the Controller template should ...
+     * Creates a new object instance and insert it in the map if the "same"
+     * object does not exist. Return a new instance or throw an exception if it
+     * already exists.
      *
      * @param key
-     *            the key of the object in the map.
+     *            The key of the object in the map.
+     * @param value
+     *            Object to add to the controller.
+     * @throws ControllerInsertException
+     *             If there is a problem querying or inserting the instance.
      */
-    protected final void add(String key, Object value)
+    protected final void add(final String key, final Object value)
             throws ControllerInsertException {
         LOGGER.trace("> add");
 
@@ -85,13 +91,15 @@ public abstract class Controller {
     }
 
     /**
-     * Find an object using the key and return a pointer to it.
+     * Find an object using the key and return the reference to it.
      *
+     * @param <E>
+     *            Any kind of object to be managed by the controller.
      * @param key
-     *            the key to search for.
-     * @return a pointer to the object if found. null otherwise.
+     *            The key that reference the object.
+     * @return REference to the object if found. null otherwise.
      */
-    public <E> Object exists(String key) {
+    public final <E> Object/* ? */exists(final String key) {
         LOGGER.trace("> exists");
 
         assert key != null;
@@ -109,7 +117,13 @@ public abstract class Controller {
         return ret;
     }
 
-    public void remove(String key) {
+    /**
+     * Deletes the reference to an object from the set of objects.
+     *
+     * @param key
+     *            Identifier of the object.
+     */
+    public final void remove(final String key) {
         LOGGER.trace("> remove");
 
         assert key != null;
