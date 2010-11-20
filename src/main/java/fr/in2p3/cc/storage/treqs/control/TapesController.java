@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,26 +34,28 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
 import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.model.TapeStatus;
-import fr.in2p3.cc.storage.treqs.model.exception.ControllerInsertException;
 
 /**
  * Provides interface to create new Tapes and access Tape Objects.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class TapesController extends Controller {
+public final class TapesController extends Controller {
     /**
      * The singleton instance.
      */
-    private static TapesController _instance = null;
-
+    private static TapesController instance = null;
     /**
      * Logger.
      */
@@ -68,46 +68,67 @@ public class TapesController extends Controller {
     public static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
-        _instance = null;
+        instance = null;
 
         LOGGER.debug("< destroyInstance");
     }
 
     /**
      * Access the singleton instance.
-     * 
-     * @return
+     *
+     * @return The singleton instance.
      */
     public static TapesController getInstance() {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new TapesController();
+            instance = new TapesController();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
+    /**
+     * Constructor where the map is initialized.
+     */
     private TapesController() {
+        LOGGER.trace("> create instance");
+
         super.objectMap = new HashMap<String, Object>();
+
+        LOGGER.trace("< create instance");
     }
 
-    public Tape add(String name, MediaType media, TapeStatus ts)
+    /**
+     * Adds a tape to the list.
+     *
+     * @param name
+     *            Name of the tape.
+     * @param media
+     *            Type of media.
+     * @return The instance that has been created or the existing one.
+     * @throws ControllerInsertException
+     *             If there is a problem retrieving the instance.
+     */
+    public Tape add(final String name, final MediaType media)
             throws ControllerInsertException {
         LOGGER.trace("> add");
 
-        assert name != null;
+        assert name != null && !name.equals("");
         assert media != null;
-        assert ts != null;
 
         Tape tape = (Tape) this.exists(name);
         if (tape == null) {
-            tape = create(name, media, ts);
+            tape = create(name, media);
         }
+
+        assert tape != null;
 
         LOGGER.trace("< add");
 
@@ -116,27 +137,26 @@ public class TapesController extends Controller {
 
     /**
      * Create a new tape. The following parameters are needed.
-     * 
+     *
      * @param name
      *            Name of the tape.
      * @param media
      *            Media type.
-     * @param ts
-     *            Tape status (locked or unlocked.)
-     * @return a pointer to a Tape.
+     * @return Instantiated Tape.
      * @throws ControllerInsertException
      *             If there is an object that already exists with the same name.
      */
-    Tape create(String name, MediaType media, TapeStatus ts)
+    Tape create(final String name, final MediaType media)
             throws ControllerInsertException {
         LOGGER.trace("> create");
 
-        assert name != null;
+        assert name != null && !name.equals("");
         assert media != null;
-        assert ts != null;
 
-        Tape tape = new Tape(name, media, ts);
+        Tape tape = new Tape(name, media);
         super.add(name, tape);
+
+        assert tape != null;
 
         LOGGER.trace("< create");
 
