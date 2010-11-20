@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,25 +34,29 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
 import java.util.HashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * Controller of the object File. This class permits to create and to manipulate
  * this kind of object.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class FilesController extends Controller {
+public final class FilesController extends Controller {
     /**
      * Instance of the singleton.
      */
-    private static FilesController _instance = null;
+    private static FilesController instance = null;
     /**
      * Logger.
      */
@@ -67,33 +69,56 @@ public class FilesController extends Controller {
     public static void destroyInstance() {
         LOGGER.debug(">< destroyInstance");
 
-        _instance = null;
+        instance = null;
     }
 
     /**
-     * Provides a pointer to the singleton instance.
-     * 
-     * @return
+     * Provides the singleton instance.
+     *
+     * @return The singleton instance.
      */
     public static FilesController getInstance() {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new FilesController();
+            instance = new FilesController();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
+    /**
+     * Builds the instance initializing the objects.
+     */
     private FilesController() {
+        LOGGER.trace("> FilesController");
+
         super.objectMap = new HashMap<String, Object>();
+
+        LOGGER.trace("< FilesController");
     }
 
-    public File add(String name, long size, User user) throws TReqSException {
+    /**
+     * Adds a file to the controller.
+     *
+     * @param name
+     *            Name of the file.
+     * @param size
+     *            Size of the file.
+     * @param user
+     *            User that owns the file.
+     * @return Instance of file.
+     * @throws TReqSException
+     *             If there is a problem creation or adding the instance.
+     */
+    public File add(final String name, final long size, final User user)
+            throws TReqSException {
         LOGGER.trace("> add");
 
         assert name != null;
@@ -113,17 +138,19 @@ public class FilesController extends Controller {
     /**
      * Creates a new file and populates the parameters. The created file is
      * stored in the Files map.
-     * 
+     *
      * @param name
-     *            the HPSS File Name.
+     *            File Name.
      * @param size
-     *            the size.
+     *            Size of the file.`
      * @param user
-     *            pointer to the owner of the file.
-     * @return a pointer to the created File.
+     *            Owner of the file.
+     * @return The created File.
      * @throws TReqSException
+     *             If there is a problem creating the file.
      */
-    File create(String name, long size, User user) throws TReqSException {
+    File create(final String name, final long size, final User user)
+            throws TReqSException {
         LOGGER.trace("> create");
 
         assert name != null;
@@ -133,9 +160,10 @@ public class FilesController extends Controller {
         File file = new File(name, user, size);
         super.add(name, file);
 
+        assert file != null;
+
         LOGGER.trace("< create");
 
         return file;
     }
-
 }
