@@ -1,8 +1,3 @@
-package fr.in2p3.cc.storage.treqs.control;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -39,77 +34,110 @@ import org.slf4j.LoggerFactory;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.in2p3.cc.storage.treqs.model.Constants;
+
+/**
+ * Defines a process that will be executed in an independent thread.
+ * <p>
+ * The possible values for the state are:
+ * <ul>
+ * <li>created</li>
+ * <li>starting</li>
+ * <li>started</li>
+ * <li>stopping</li>
+ * <li>stopped</li>
+ * </ul>
+ * <p>
+ * To change between the different status, a different set of methods have to be
+ * used in order to prevent bad status changes.
+ * <ul>
+ * <li><b>created</b>: Automatic, when the object is created.</li>
+ * <li><b>starting</b>: With kick start.</li>
+ * <li><b>started</b>: With setStatus.</li>
+ * <li><b>stopping</b>: With conclude.</li>
+ * <li><b>stopped</b>: With setStatus.</li>
+ * </ul>
+ * <p>
+ * The method waitToFinish is a special method to wait the thread to finish its
+ * operations. It can be called only when the Process is in Stopping state or
+ * Stopped state.
+ *
+ * @author Andres Gomez
+ * @since 1.5
+ */
 public abstract class Process extends Thread {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
     /**
-     *Current state of the thread.
-     * <p>
-     * The possible values are:
-     * <ul>
-     * <li>created</li>
-     * <li>starting</li>
-     * <li>started</li>
-     * <li>stopping</li>
-     * <li>stopped</li>
-     * </ul>
-     * <p>
-     * To change between the different status, a different set of methods have
-     * to be used in order to prevent bad status changes.
-     * <ul>
-     * <li><b>created</b>: Automatic, when the object is created.</li>
-     * <li><b>starting</b>: With kick start.</li>
-     * <li><b>started</b>: With setStatus.</li>
-     * <li><b>stopping</b>: With conclude.</li>
-     * <li><b>stopped</b>: With setStatus.</li>
-     * </ul>
-     * <p>
-     * The method waitToFinish is a special method to wait the thread to finish
-     * its operations. It can be called only when the Process is in Stopping
-     * state or Stopped state.
+     * Current state of the thread.
      */
+    private ProcessStatus status = null;
 
-    protected ProcessStatus status = null;
-
-    public Process(String name) {
+    /**
+     * Creates a process with a given name for the thread.
+     *
+     * @param name
+     *            Name for the thread.
+     */
+    public Process(final String name) {
         super(name);
 
-        LOGGER.trace("> Process");
+        LOGGER.trace("> creating Process");
 
-        this.setStatus(ProcessStatus.CREATED);
+        this.status = ProcessStatus.CREATED;
 
-        LOGGER.trace("< Process");
+        LOGGER.trace("< creating Process");
     }
 
-    public void conclude() {
+    /**
+     * Begins to finish the process.
+     * <p>
+     * It does not check the current status, because it is not thread safe.
+     */
+    public final void conclude() {
         LOGGER.trace("> conclude");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTED
-                || this.getProcessStatus() == ProcessStatus.STOPPED
-                || this.getProcessStatus() == ProcessStatus.STOPPING : "Invalid in state "
-                + this.getProcessStatus().name();
-
-        if (this.getProcessStatus() == ProcessStatus.STARTED) {
+        if (this.getProcessStatus() == ProcessStatus.CREATED) {
+            this.setStatus(ProcessStatus.STOPPED);
+        } else if (this.getProcessStatus() == ProcessStatus.STARTING) {
             this.setStatus(ProcessStatus.STOPPING);
+        } else if (this.getProcessStatus() == ProcessStatus.STARTED) {
+            this.setStatus(ProcessStatus.STOPPING);
+            // } else {
+            // The process is stopped or stopping, then do nothing.
         }
 
         LOGGER.trace("< conclude");
     }
 
-    public ProcessStatus getProcessStatus() {
-        LOGGER.trace(">< getStatus");
+    /**
+     * Retrieves the state of the process.
+     *
+     * @return Current state.
+     */
+    public final ProcessStatus getProcessStatus() {
+        LOGGER.trace(">< getProcessStatus");
 
         return this.status;
     }
 
-    protected boolean keepOn() {
+    /**
+     * Tests if the process can continue.
+     * <p>
+     * It does not check the current status, because it is not thread safe.
+     *
+     * @return true if the process is in a state that permits it to continue.
+     *         False, if the process has to stop.
+     */
+    protected final boolean keepOn() {
         LOGGER.trace("> keepOn");
-
-        assert this.getProcessStatus() == ProcessStatus.STARTED
-                || this.getProcessStatus() == ProcessStatus.STOPPING;
 
         boolean ret = false;
         if (this.getProcessStatus() == ProcessStatus.STARTED) {
@@ -121,7 +149,11 @@ public abstract class Process extends Thread {
         return ret;
     }
 
-    protected void kickStart() {
+    /**
+     * Change the status of the process to starting. It means that the process
+     * is ready to start.
+     */
+    protected final void kickStart() {
         LOGGER.trace("> kickStart");
 
         assert this.getProcessStatus() == ProcessStatus.CREATED;
@@ -137,53 +169,87 @@ public abstract class Process extends Thread {
      */
     public abstract void oneLoop();
 
+    /**
+     * This method will be called by the start method, but the process has to be
+     * in created state of starting state.
+     */
     @Override
     public final void run() {
         LOGGER.trace("> run");
 
-        this.changeStatus(ProcessStatus.STARTED);
+        assert this.getProcessStatus() == ProcessStatus.STARTING
+                || this.getProcessStatus() == ProcessStatus.CREATED;
+
+        this.setStatus(ProcessStatus.STARTED);
 
         this.toStart();
 
-        this.changeStatus(ProcessStatus.STOPPED);
+        this.setStatus(ProcessStatus.STOPPED);
 
         LOGGER.trace("< run");
     }
 
-    protected void changeStatus(ProcessStatus /* ! */status) {
-        LOGGER.trace("> changeStatus");
+    /**
+     * Changes the status of the process. This has to follow the next rules:
+     * <ul>
+     * <li>CREATED -> STARTING</li>
+     * <li>CREATED -> STARTED</li>
+     * <li>STARTING -> STARTED</li>
+     * <li>STARTED -> STOPPING</li>
+     * <li>CREATED -> STOPPED</li>
+     * <li>STARTED -> STOPPED</li>
+     * </ul>
+     *
+     * @param processStatus
+     *            The new status of the process.
+     */
+    protected final void setStatus(final ProcessStatus/* ! */processStatus) {
+        LOGGER.trace("> setStatus");
 
-        assert status != null;
-        assert (this.getProcessStatus() == ProcessStatus.STARTED)
-                || (this.getProcessStatus() == ProcessStatus.STOPPING && status == ProcessStatus.STOPPED)
-                || (this.getProcessStatus() == ProcessStatus.STARTING && status == ProcessStatus.STARTED);
+        assert processStatus != null;
 
-        this.setStatus(status);
+        synchronized (this.status) {
+            ProcessStatus currentStatus = this.getProcessStatus();
+            if ((currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTING)
+                    || (currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTED)
+                    || (currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STARTED)
+                    || (currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPING)
+                    || (currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STOPPED)
+                    || (currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPED)) {
+                this.status = processStatus;
+            } else {
+                LOGGER.error("Invalid transition to change the process "
+                        + "status from {} to {}", currentStatus.name(),
+                        processStatus.name());
+                assert false;
+            }
+        }
 
-        LOGGER.trace("< changeStatus");
+        LOGGER.trace("< setStatus");
     }
 
-    public synchronized void setStatus(ProcessStatus /* ! */status) {
-        LOGGER.trace("> changeStatus");
-
-        assert status != null;
-
-        this.status = status;
-        LOGGER.trace("< changeStatus");
-    }
-
+    /**
+     * Method to execute the body of the class. This is a "wrapper" of the run
+     * method.
+     */
     protected abstract void toStart();
 
-    public void waitToFinish() {
+    /**
+     * When the process are finishing, this method waits the threads to change
+     * to STOPPED status.
+     */
+    public final void waitToFinish() {
         LOGGER.trace("> waitToFinish");
 
         assert this.getProcessStatus() == ProcessStatus.STOPPING
                 || this.getProcessStatus() == ProcessStatus.STOPPED;
 
         while (this.getProcessStatus() != ProcessStatus.STOPPED) {
-            LOGGER.debug("Waiting {} to be stopped", this.getName());
+            int wait = Constants.MILLISECONDS;
+            LOGGER.info("Waiting {} to be stopped for {} millis.",
+                    this.getName(), wait);
             try {
-                Thread.sleep(500);
+                Thread.sleep(wait);
             } catch (InterruptedException e) {
                 // Nothing.
             }
