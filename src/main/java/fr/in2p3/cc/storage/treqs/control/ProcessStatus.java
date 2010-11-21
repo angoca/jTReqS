@@ -49,7 +49,7 @@ public enum ProcessStatus {
     CREATED,
     /**
      * The process is waiting to be started. It is between the method create and
-     * run.
+     * run. This state is more used in tests.
      */
     STARTING,
     /**
