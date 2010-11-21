@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,15 +34,22 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
+/**
+ * States for a process.
+ *
+ * @author Andres Gomez
+ * @since 1.5
+ */
 public enum ProcessStatus {
     /**
      * The process has just been created.
      */
     CREATED,
     /**
-     * The process is waiting to finish to be started. It is between the method
-     * create and run.
+     * The process is waiting to be started. It is between the method create and
+     * run.
      */
     STARTING,
     /**
