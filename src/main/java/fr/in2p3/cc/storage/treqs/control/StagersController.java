@@ -1,13 +1,8 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
- *
- * Copyright Jonathan Schaeffer 2010, CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
  * and submit file requests to the hierarchical storage system HPSS.
@@ -39,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -47,15 +43,22 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 
-public class StagersController {
+/**
+ * This is the controller of the stagers. It also manages the end of the created
+ * threads.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
+ */
+public final class StagersController {
     /**
      * Instance of the singleton.
      */
-    private static StagersController _instance = null;
-
+    private static StagersController instance = null;
     /**
      * Logger.
      */
@@ -68,28 +71,30 @@ public class StagersController {
     public static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
-        _instance = null;
+        instance = null;
 
         LOGGER.debug("< destroyInstance");
     }
 
     /**
      * Provides access to this singleton.
-     * 
-     * @return
+     *
+     * @return The singleton instance.
      */
     public static StagersController getInstance() {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug(" Creating instance");
 
-            _instance = new StagersController();
+            instance = new StagersController();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
     /**
@@ -97,6 +102,9 @@ public class StagersController {
      */
     private List<Stager> stagers;
 
+    /**
+     * Creates the instance instantiating the list of stagers.
+     */
     private StagersController() {
         LOGGER.trace("> create StagersController");
 
@@ -106,9 +114,9 @@ public class StagersController {
     }
 
     /**
-     * Cleans the stager that are not longer used.
-     * 
-     * @return the quantity of stagers unreferenced.
+     * Cleans the stagers that are not longer used.
+     *
+     * @return Quantity of stagers unreferenced.
      */
     public int cleanup() {
         LOGGER.trace("> cleanup");
@@ -135,11 +143,17 @@ public class StagersController {
             LOGGER.info("Cleaned {} stager instances.", count);
         }
 
+        assert count >= 0;
+
         LOGGER.trace("< cleanup");
 
         return count;
     }
 
+    /**
+     * Calls the method to finalize all stagers. It does not wait the end, that
+     * is asynchronous.
+     */
     public void conclude() {
         LOGGER.trace("> conclude");
 
@@ -154,14 +168,20 @@ public class StagersController {
 
     /**
      * Creates a new stager.
-     * 
-     * @return
+     *
+     * @param queue
+     *            Related queue of the stager.
+     * @return A stager associated to the queue.
      */
-    public Stager create(Queue queue) {
+    public Stager create(final Queue queue) {
         LOGGER.trace("> create");
+
+        assert queue != null;
 
         Stager stager = new Stager(this.stagers.size(), queue);
         this.stagers.add(stager);
+
+        assert stager != null;
 
         LOGGER.trace("< create");
 
@@ -170,19 +190,25 @@ public class StagersController {
 
     /**
      * Removes a stager.
-     * 
+     *
      * @param pos
+     *            Position of the stager in the list.
      */
-    private void remove(int pos) {
+    private void remove(final int pos) {
         LOGGER.trace("> remove");
+
+        assert pos >= 0;
 
         this.stagers.remove(pos);
 
         LOGGER.trace("< remove");
     }
 
+    /**
+     * Waits for all threads to finish.
+     */
     public void waitTofinish() {
-        LOGGER.trace("> conclude");
+        LOGGER.trace("> waitTofinish");
 
         boolean stopped = false;
         while (!stopped) {
@@ -194,8 +220,8 @@ public class StagersController {
                 if (status == ProcessStatus.STOPPED) {
                     iteration &= true;
                 } else {
-                    LOGGER.debug("Stager has not finished: {}", stager
-                            .getName());
+                    LOGGER.debug("Stager has not finished: {}",
+                            stager.getName());
                     iteration &= false;
                 }
             }
@@ -203,16 +229,17 @@ public class StagersController {
             if (iteration) {
                 stopped = true;
             } else {
-                LOGGER.debug("Sleeping {} milliseconds", 1000);
+                LOGGER.debug("Sleeping {} milliseconds.",
+                        Constants.MILLISECONDS);
                 // Waiting a while for the stagers to finish.
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(Constants.MILLISECONDS);
                 } catch (InterruptedException e) {
                     // Nothing
                 }
             }
         }
 
-        LOGGER.trace("< conclude");
+        LOGGER.trace("< waitTofinish");
     }
 }
