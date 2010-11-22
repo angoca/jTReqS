@@ -1,7 +1,7 @@
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -37,13 +37,38 @@
 package fr.in2p3.cc.storage.treqs.model;
 
 /**
+ * Defines the constants of the application. This permits to centralize all
+ * static values.
+ *
  * @author Andrés Gómez
  * @since 1.5
- *
  */
-public class Constants {
-    public static int MILLISECONDS = 1000;
+public final class Constants {
+    /**
+     * Name of the property for the keytab in the configuration file.
+     */
+    public static final String KEYTAB_FILE = "KEYTAB_FILE";
+    /**
+     * Name of the section in the configuration file for the main properties.
+     */
+    public static final String MAIN = "MAIN";
+    /**
+     * Quantity of milliseconds in a second.
+     */
+    public static final int MILLISECONDS = 1000;
+    /**
+     * String that represent the name of the owner when a queue does not have an
+     * owner.
+     */
+    public static final String NO_OWNER_NAME = "No-Owner";
+    /**
+     * Parameter to ask the DAO Factory.
+     */
+    public static final String PARAM_DAO_FACTORY = "DAO_FACTORY";
 
+    /**
+     * Invisible constructor.
+     */
     private Constants() {
         // Restrict instantiation.
     }
