@@ -108,7 +108,7 @@ public final class PersistenceHelperFileRequest {
      *
      * @return Name of the file.
      */
-    public final String getFileName() {
+    public String getFileName() {
         LOGGER.trace(">< getFileName");
 
         return this.fileName;
@@ -119,7 +119,7 @@ public final class PersistenceHelperFileRequest {
      *
      * @return Id of the request.
      */
-    public final int getId() {
+    public int getId() {
         LOGGER.trace(">< getId");
 
         return this.id;
@@ -130,7 +130,7 @@ public final class PersistenceHelperFileRequest {
      *
      * @return Quantity of tries.
      */
-    public final byte getNumberTries() {
+    public byte getNumberTries() {
         LOGGER.trace(">< getNumberTries");
 
         return this.numberTries;
@@ -141,7 +141,7 @@ public final class PersistenceHelperFileRequest {
      *
      * @return User who owns the file.
      */
-    public final String getOwnerName() {
+    public String getOwnerName() {
         LOGGER.trace(">< getOwnerName");
 
         return this.ownerName;
