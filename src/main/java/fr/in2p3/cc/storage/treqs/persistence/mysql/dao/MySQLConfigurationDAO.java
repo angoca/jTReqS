@@ -79,7 +79,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
      * ()
      */
     @Override
-    public final List<Resource> getMediaAllocations() throws TReqSException {
+    public List<Resource> getMediaAllocations() throws TReqSException {
         LOGGER.trace("> getMediaAllocations");
 
         List<Resource> mediaTypeList = new ArrayList<Resource>();
@@ -124,7 +124,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
      * ()
      */
     @Override
-    public final MultiMap getResourceAllocation() throws TReqSException {
+    public MultiMap getResourceAllocation() throws TReqSException {
         LOGGER.trace("> getResourceAllocation");
 
         // Allocations maps a media type to a pair (user,share)
