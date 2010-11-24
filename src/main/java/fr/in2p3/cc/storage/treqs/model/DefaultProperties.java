@@ -70,6 +70,10 @@ public final class DefaultProperties {
      * Quantity of retries if an error is detected.
      */
     public static final byte MAX_SUSPEND_RETRIES = 3;
+    /**
+     * Max metadata age in seconds.
+     */
+    public static final short MAX_METADATA_AGE = 3600;
 
     /**
      * Invisible constructor.
