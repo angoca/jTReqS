@@ -1,7 +1,7 @@
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -39,9 +39,9 @@ package fr.in2p3.cc.storage.treqs.model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
  * Reads files from a queue as a new thread. This is the responsible to demand
@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
+public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * Logger.
      */
@@ -99,10 +99,10 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
                 LOGGER.error("Error in Staging: {}", e.getMessage());
             }
             this.conclude();
-            LOGGER.debug("Staging completed.");
+            LOGGER.debug("Staging process finished.");
         } else {
             LOGGER.info("Cannot work on a non-activated queue or queue already"
-                    + " processed.");
+                    + " processed ({}).", queue.getStatus());
         }
 
         LOGGER.trace("< action");
@@ -116,11 +116,11 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     public final void oneLoop() {
         LOGGER.trace("> oneLoop");
 
-        this.changeStatus(ProcessStatus.STARTED);
+        this.setStatus(ProcessStatus.STARTED);
 
         action();
 
-        this.changeStatus(ProcessStatus.STOPPED);
+        this.setStatus(ProcessStatus.STOPPED);
 
         LOGGER.trace("< oneLoop");
     }
@@ -132,7 +132,8 @@ public class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      * For each Reading object to stage, it calls the Reading.stage() method and
      * catch exceptions.
      * <p>
-     * If the HPSSResourceError is caught, then the queue is suspended.
+     * If the HPSSResourceError is caught, then the queue is suspended, and the
+     * error code STGR02 with be logged.
      *
      * @throws TReqSException
      *             If there is a problem retrieving the next reading, or dealing
