@@ -95,7 +95,7 @@ public final class Tape {
      *
      * @return Returns the type of media.
      */
-    public final MediaType getMediaType() {
+    public MediaType getMediaType() {
         LOGGER.trace(">< getMediaType");
 
         return this.mediaType;
@@ -106,7 +106,7 @@ public final class Tape {
      *
      * @return Returns the name of the tape.
      */
-    public final String getName() {
+    public String getName() {
         LOGGER.trace(">< getName");
 
         return this.name;
@@ -117,7 +117,7 @@ public final class Tape {
      *
      * @return Returns the last time when the status was checked.
      */
-    final Calendar getStatusUpdateTime() {
+    Calendar getStatusUpdateTime() {
         LOGGER.trace(">< getStatusUpdateTime");
 
         return this.statusUpdateTime;
@@ -129,7 +129,7 @@ public final class Tape {
      * @param tapeMediaType
      *            Type of the media (T10KA, T10KB, LTO).
      */
-    final void setMediaType(final MediaType tapeMediaType) {
+    void setMediaType(final MediaType tapeMediaType) {
         LOGGER.trace("> setMediaType");
 
         assert tapeMediaType != null;
@@ -145,7 +145,7 @@ public final class Tape {
      * @param tapeName
      *            Name of the tape.
      */
-    final void setName(final String tapeName) {
+    void setName(final String tapeName) {
         LOGGER.trace("> setName");
 
         assert tapeName != null;
@@ -162,7 +162,7 @@ public final class Tape {
      * @param updateTime
      *            Time when the status was checked.
      */
-    final void setStatusUpdateTime(final Calendar updateTime) {
+    void setStatusUpdateTime(final Calendar updateTime) {
         LOGGER.trace("> setStatusUpdateTime");
 
         assert updateTime != null;
@@ -175,7 +175,7 @@ public final class Tape {
     /**
      * Establishes the status update time to now.
      */
-    final void setStatusUpdateTimeNow() {
+    void setStatusUpdateTimeNow() {
         LOGGER.trace("> setStatusUpdateTimeNow");
 
         setStatusUpdateTime(new GregorianCalendar());
@@ -188,7 +188,7 @@ public final class Tape {
      * @see java.lang.Object#toString()
      */
     @Override
-    public final String toString() {
+    public String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
