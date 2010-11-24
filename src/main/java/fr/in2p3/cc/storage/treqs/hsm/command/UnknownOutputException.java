@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class UnknownOutputException extends HSMException {
+public final class UnknownOutputException extends HSMException {
 
     /**
      * Generated ID.
