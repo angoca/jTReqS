@@ -114,7 +114,7 @@ public final class User {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public final boolean equals(final Object obj) {
+    public boolean equals(final Object obj) {
         LOGGER.trace("> equals");
 
         boolean ret = false;
@@ -135,7 +135,7 @@ public final class User {
      *
      * @return The gid, or id of the group.
      */
-    final short getGid() {
+    short getGid() {
         LOGGER.trace(">< getGid");
 
         return this.gid;
@@ -146,7 +146,7 @@ public final class User {
      *
      * @return Name of the group.
      */
-    final String getGroup() {
+    String getGroup() {
         LOGGER.trace(">< getGroup");
 
         return this.group;
@@ -157,7 +157,7 @@ public final class User {
      *
      * @return Name of the user.
      */
-    public final String getName() {
+    public String getName() {
         LOGGER.trace(">< getName");
 
         return this.name;
@@ -168,7 +168,7 @@ public final class User {
      *
      * @return Uid, or id of the user.
      */
-    final short getUid() {
+    short getUid() {
         LOGGER.trace(">< getUid");
 
         return this.uid;
@@ -179,7 +179,7 @@ public final class User {
      * @see java.lang.Object#hashCode()
      */
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         LOGGER.trace("> hashCode");
 
         int ret = this.name.hashCode();
@@ -198,7 +198,7 @@ public final class User {
      * @param groupid
      *            Group ID.
      */
-    public final void setGid(final short groupid) {
+    public void setGid(final short groupid) {
         LOGGER.trace("> setGid");
 
         assert groupid >= 0;
@@ -214,7 +214,7 @@ public final class User {
      * @param usergroup
      *            name of the group.
      */
-    public final void setGroup(final String usergroup) {
+    public void setGroup(final String usergroup) {
         LOGGER.trace("> setGroup");
 
         assert usergroup != null;
@@ -231,7 +231,7 @@ public final class User {
      * @param username
      *            name of the user.
      */
-    final void setName(final String username) {
+    void setName(final String username) {
         LOGGER.trace("> setName");
 
         assert username != null;
@@ -248,7 +248,7 @@ public final class User {
      * @param userid
      *            UID of the user.
      */
-    public final void setUid(final short userid) {
+    public void setUid(final short userid) {
         LOGGER.trace("> setUid");
 
         assert userid >= 0;
@@ -263,7 +263,7 @@ public final class User {
      * @see java.lang.Object#toString()
      */
     @Override
-    public final String toString() {
+    public String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
