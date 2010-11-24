@@ -76,7 +76,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * .storage.treqs.model.Reading, java.lang.String)
      */
     @Override
-    public final void firstUpdate(final Reading reading, final String message)
+    public void firstUpdate(final Reading reading, final String message)
             throws TReqSException {
         LOGGER.trace("> firstUpdate");
 
@@ -135,7 +135,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * @see fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#getNewRequests(int)
      */
     @Override
-    public final List<PersistenceHelperFileRequest> getNewRequests(
+    public List<PersistenceHelperFileRequest> getNewRequests(
             final int limit) throws TReqSException {
         LOGGER.trace("> getNewRequests");
 
@@ -181,7 +181,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * fr.in2p3.cc.storage.treqs.model.FileRequestStatus, int, java.lang.String)
      */
     @Override
-    public final void setRequestStatusById(final int id,
+    public void setRequestStatusById(final int id,
             final FileRequestStatus status, final int code, final String message)
             throws TReqSException {
         LOGGER.trace("> setRequestStatusById");
@@ -225,7 +225,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * java.util.Calendar)
      */
     @Override
-    public final void update(final Reading reading,
+    public void update(final Reading reading,
             final FileRequestStatus status, final Calendar time)
             throws TReqSException {
         LOGGER.trace("> update");
@@ -358,7 +358,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#updateUnfinishedRequests()
      */
     @Override
-    public final int updateUnfinishedRequests() throws TReqSException {
+    public int updateUnfinishedRequests() throws TReqSException {
         LOGGER.trace("> updateUnfinishedRequests");
 
         LOGGER.info("Cleaning unfinished requests");
