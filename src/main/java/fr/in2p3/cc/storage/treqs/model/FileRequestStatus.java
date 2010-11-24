@@ -53,8 +53,8 @@ public enum FileRequestStatus {
      */
     FS_FAILED((byte) 160),
     /**
-     * File could not be processed by TReqS. There are not enough parameters to
-     * process the requests.
+     * File could not be processed. There are not enough parameters to process
+     * the requests.
      */
     FS_INVALID((byte) 180),
     /**
