@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Andres Gomez
  * @since 1.5
  */
-public class HSMHelperFileProperties {
+public final class HSMHelperFileProperties {
     /**
      * Logger.
      */
@@ -98,7 +98,7 @@ public class HSMHelperFileProperties {
      *
      * @return Position of the file in the tape.
      */
-    public final int getPosition() {
+    public int getPosition() {
         LOGGER.trace(">< getPosition");
 
         return this.position;
@@ -109,7 +109,7 @@ public class HSMHelperFileProperties {
      *
      * @return Size of the file in the tape.
      */
-    public final long getSize() {
+    public long getSize() {
         LOGGER.trace(">< getSize");
 
         return this.size;
@@ -120,7 +120,7 @@ public class HSMHelperFileProperties {
      *
      * @return Name of the tape where the file is stored.
      */
-    public final String getTapeName() {
+    public String getTapeName() {
         LOGGER.trace(">< getTapeName");
 
         return this.tapeName;
