@@ -73,7 +73,7 @@ public final class MySQLQueueDAO implements QueueDAO {
      * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
      */
     @Override
-    public final int abortPendingQueues() throws TReqSException {
+    public int abortPendingQueues() throws TReqSException {
         LOGGER.trace("> abortPendingQueues");
 
         LOGGER.info("Cleaning unfinished queues");
@@ -95,7 +95,7 @@ public final class MySQLQueueDAO implements QueueDAO {
      * .treqs.model.Queue)
      */
     @Override
-    public final int insert(final Queue queue) throws TReqSException {
+    public int insert(final Queue queue) throws TReqSException {
         LOGGER.trace("> insert");
 
         assert queue != null;
@@ -157,7 +157,7 @@ public final class MySQLQueueDAO implements QueueDAO {
      * .cc.storage.treqs.model.Queue)
      */
     @Override
-    public final void updateAddRequest(final Queue queue) throws TReqSException {
+    public void updateAddRequest(final Queue queue) throws TReqSException {
         LOGGER.trace("> updateAddRequest");
 
         assert queue != null;
@@ -207,7 +207,7 @@ public final class MySQLQueueDAO implements QueueDAO {
      * storage.treqs.model.Queue, java.util.Calendar, short, short)
      */
     @Override
-    public final void updateState(final Queue queue, final Calendar time,
+    public void updateState(final Queue queue, final Calendar time,
             final short nbDone, final short nbFailed) throws TReqSException {
         LOGGER.trace("> updateState");
 
