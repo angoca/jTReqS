@@ -91,7 +91,7 @@ public final class PersistenceHelperResourceAllocation {
     /**
      * @return Quantity of resource allocation.
      */
-    public final float getAllocation() {
+    public float getAllocation() {
         LOGGER.trace(">< getAllocation");
 
         return this.allocation;
@@ -100,7 +100,7 @@ public final class PersistenceHelperResourceAllocation {
     /**
      * @return User of the resource allocation.
      */
-    public final User getUser() {
+    public User getUser() {
         LOGGER.trace(">< getUser");
 
         return this.user;
