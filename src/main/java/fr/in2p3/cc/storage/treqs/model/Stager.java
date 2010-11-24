@@ -113,7 +113,7 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      * @see fr.in2p3.cc.storage.treqs.control.Process#oneLoop()
      */
     @Override
-    public final void oneLoop() {
+    public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
         this.setStatus(ProcessStatus.STARTED);
@@ -169,7 +169,7 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      * @see fr.in2p3.cc.storage.treqs.control.Process#toStart()
      */
     @Override
-    public final void toStart() {
+    public void toStart() {
         LOGGER.trace("> toStart");
 
         // This is the only call, because the same method is used by oneLoop.
@@ -183,7 +183,7 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      * @see java.lang.Thread#toString()
      */
     @Override
-    public final String toString() {
+    public String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
