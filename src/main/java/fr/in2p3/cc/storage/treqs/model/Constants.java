@@ -65,6 +65,14 @@ public final class Constants {
      * Parameter to ask the DAO Factory.
      */
     public static final String PARAM_DAO_FACTORY = "DAO_FACTORY";
+    /**
+     * Maximal age for the metadata before considered as outdated.
+     */
+    public static final String MAX_METADATA_AGE = "MAX_METADATA_AGE";
+    /**
+     * Duration of a suspension.
+     */
+    public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
 
     /**
      * Invisible constructor.
