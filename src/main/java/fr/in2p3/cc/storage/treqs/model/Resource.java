@@ -109,7 +109,7 @@ public final class Resource {
      *
      * @return Quantity of free drives per type.
      */
-    public final byte countFreeResources() {
+    public byte countFreeResources() {
         LOGGER.trace("> countFreeResources");
 
         byte resourceLeft = this.totalAllocation;
@@ -130,7 +130,7 @@ public final class Resource {
      *
      * @return seconds since last data refresh
      */
-    public final int getAge() {
+    public int getAge() {
         LOGGER.trace("> getAge");
 
         Calendar now = new GregorianCalendar();
@@ -149,7 +149,7 @@ public final class Resource {
      *
      * @return The type of media.
      */
-    public final MediaType getMediaType() {
+    public MediaType getMediaType() {
         LOGGER.trace(">< getMediaType");
 
         return this.mediaType;
@@ -160,7 +160,7 @@ public final class Resource {
      *
      * @return Timestamp of the resource check.
      */
-    final Calendar getTimestamp() {
+    Calendar getTimestamp() {
         LOGGER.trace(">< getTimestamp");
 
         return this.timestamp;
@@ -171,7 +171,7 @@ public final class Resource {
      *
      * @return Total allocation.
      */
-    public final byte getTotalAllocation() {
+    public byte getTotalAllocation() {
         LOGGER.trace(">< getTotalAllocation");
 
         return this.totalAllocation;
@@ -183,7 +183,7 @@ public final class Resource {
      *
      * @return the number of used resources for all users.
      */
-    final Map<User, Byte> getUsedResources() {
+    Map<User, Byte> getUsedResources() {
         LOGGER.trace(">< getUsedResources");
 
         return this.usedResources;
@@ -197,7 +197,7 @@ public final class Resource {
      * @return Quantity of used resources for the given user, or -1 if the user
      *         is not defined in the resources.
      */
-    public final byte getUsedResources(final User userName) {
+    public byte getUsedResources(final User userName) {
         LOGGER.trace("> getUsedResources");
 
         assert userName != null;
@@ -220,7 +220,7 @@ public final class Resource {
      *
      * @return Map of user allocations.
      */
-    final Map<User, Float> getUserAllocation() {
+    Map<User, Float> getUserAllocation() {
         LOGGER.trace(">< getUserAllocation");
 
         return this.userAllocation;
@@ -233,7 +233,7 @@ public final class Resource {
      *            The user to be queried.
      * @return The allocation for that user, or 0 if none.
      */
-    public final float getUserAllocation(final User user) {
+    public float getUserAllocation(final User user) {
         LOGGER.trace("> getUserAllocation");
 
         assert user != null;
@@ -258,7 +258,7 @@ public final class Resource {
      *            the reference to the user.
      * @return The quantity of resources currently used for the given user.
      */
-    public final byte increaseUsedResources(final User user) {
+    public byte increaseUsedResources(final User user) {
         LOGGER.trace("> increaseUsedResources");
 
         assert user != null;
@@ -277,7 +277,7 @@ public final class Resource {
     /**
      * Sets timestamp to 'now'.
      */
-    final void resetTimestamp() {
+    void resetTimestamp() {
         LOGGER.trace("> resetTimestamp");
 
         this.timestamp = new GregorianCalendar();
@@ -288,7 +288,7 @@ public final class Resource {
     /**
      * Sets all used resources to 0.
      */
-    public final void resetUsedResources() {
+    public void resetUsedResources() {
         LOGGER.trace("> resetUsedResources");
 
         Set<User> keySet = this.usedResources.keySet();
@@ -306,7 +306,7 @@ public final class Resource {
      * @param media
      *            Media type.
      */
-    public final void setMediaType(final MediaType media) {
+    public void setMediaType(final MediaType media) {
         LOGGER.trace("> setMediaType");
 
         assert media != null;
@@ -322,7 +322,7 @@ public final class Resource {
      * @param time
      *            Timestamp of the last update.
      */
-    public final void setTimestamp(final Calendar time) {
+    public void setTimestamp(final Calendar time) {
         LOGGER.trace("> setTimestamp");
 
         assert time != null;
@@ -338,7 +338,7 @@ public final class Resource {
      * @param qty
      *            Total allocation for this media type.
      */
-    public final void setTotalAllocation(final byte qty) {
+    public void setTotalAllocation(final byte qty) {
         LOGGER.trace("> setTotalAllocation");
 
         assert qty > 0;
@@ -356,7 +356,7 @@ public final class Resource {
      * @param resource
      *            Quantity of reserved resources for this user.
      */
-    final void setUsedResources(final User user, final Byte resource) {
+    void setUsedResources(final User user, final Byte resource) {
         LOGGER.trace("> setUsedResources");
 
         assert user != null;
@@ -376,7 +376,7 @@ public final class Resource {
      * @param allocation
      *            Minimal quantity of reserved drives.
      */
-    public final void setUserAllocation(final User user, final float allocation) {
+    public void setUserAllocation(final User user, final float allocation) {
         LOGGER.trace("> setUserAllocation");
 
         assert user != null;
@@ -392,7 +392,7 @@ public final class Resource {
      * @see java.lang.Object#toString()
      */
     @Override
-    public final String toString() {
+    public String toString() {
         LOGGER.trace("> toString");
 
         String ret = "";
