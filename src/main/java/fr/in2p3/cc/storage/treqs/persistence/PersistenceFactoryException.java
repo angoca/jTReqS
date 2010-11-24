@@ -42,7 +42,7 @@ package fr.in2p3.cc.storage.treqs.persistence;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class PersistenceFactoryException extends PersistanceException {
+public final class PersistenceFactoryException extends PersistanceException {
 
     /**
      * Generated ID.
