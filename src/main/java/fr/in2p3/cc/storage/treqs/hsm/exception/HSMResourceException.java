@@ -74,7 +74,7 @@ public final class HSMResourceException extends HSMOpenException {
      * @see fr.in2p3.cc.storage.treqs.hsm.exception.HSMException#getMessage()
      */
     @Override
-    public final String getMessage() {
+    public String getMessage() {
         LOGGER.trace(">< getMessage");
 
         return "No space available on disk." + super.getMessage();
