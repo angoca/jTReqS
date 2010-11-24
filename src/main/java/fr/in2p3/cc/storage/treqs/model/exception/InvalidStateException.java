@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class InvalidStateException extends TReqSException {
+public final class InvalidStateException extends TReqSException {
     /**
      * Generated ID.
      */
@@ -58,6 +58,7 @@ public class InvalidStateException extends TReqSException {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(InvalidStateException.class);
+
     /**
      * Creates the exception with a code and an explanatory message.
      *

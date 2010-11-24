@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class InvalidParameterException extends TReqSException {
+public final class InvalidParameterException extends TReqSException {
     /**
      * Generated ID.
      */
@@ -58,6 +58,7 @@ public class InvalidParameterException extends TReqSException {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(InvalidParameterException.class);
+
     /**
      * Creates the exception with an explanatory code and message.
      *
@@ -66,8 +67,7 @@ public class InvalidParameterException extends TReqSException {
      * @param message
      *            Explanation.
      */
-    public InvalidParameterException(final ErrorCode code,
-            final String message) {
+    public InvalidParameterException(final ErrorCode code, final String message) {
         super(code, message);
 
         LOGGER.trace(">< Instance creation");

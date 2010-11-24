@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class MaximalSuspensionTriesException extends TReqSException {
+public final class MaximalSuspensionTriesException extends TReqSException {
     /**
      * Generated ID.
      */
@@ -58,6 +58,7 @@ public class MaximalSuspensionTriesException extends TReqSException {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MaximalSuspensionTriesException.class);
+
     /**
      * Creates an exception with the related code.
      *

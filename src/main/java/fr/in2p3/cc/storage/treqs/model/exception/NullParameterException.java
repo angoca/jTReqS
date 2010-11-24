@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.model.ErrorCode;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class NullParameterException extends TReqSException {
+public final class NullParameterException extends TReqSException {
     /**
      * Generated ID.
      */
@@ -58,6 +58,7 @@ public class NullParameterException extends TReqSException {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(NullParameterException.class);
+
     /**
      * Creates the exception with an error code and a message.
      *
