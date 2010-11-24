@@ -1,7 +1,7 @@
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -56,7 +56,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class Resource {
+public final class Resource {
     /**
      * Logger.
      */
@@ -88,17 +88,14 @@ public class Resource {
      *
      * @param media
      *            Type of media.
-     * @param resourceTimestamp
-     *            Time when the data was obtained.
      * @param totalDriveAllocation
      *            Total quantity of drive allocation for a user.
      */
-    public Resource(final MediaType media, final Calendar resourceTimestamp,
-            final byte totalDriveAllocation) {
+    public Resource(final MediaType media, final byte totalDriveAllocation) {
         LOGGER.trace("> Creating Resource");
 
         this.setMediaType(media);
-        this.setTimestamp(resourceTimestamp);
+        this.setTimestamp(new GregorianCalendar());
         this.setTotalAllocation(totalAllocation);
 
         this.userAllocation = new HashMap<User, Float>();
@@ -400,13 +397,12 @@ public class Resource {
 
         String ret = "";
         ret += "User";
-        ret += "{ age : " + this.getAge();
-        ret += ", media type : " + this.getMediaType().getName();
-        ret += ", timestamp : " + this.getTimestamp().getTimeInMillis();
-        ret += ", total allocation : " + this.getTotalAllocation();
-        ret += ", used resources : " + this.getUsedResources();
-        ret += ", used allocation : " + this.getUserAllocation();
-        ret += ",  ";
+        ret += "{ age: " + this.getAge();
+        ret += ", media type: " + this.getMediaType().getName();
+        ret += ", timestamp: " + this.getTimestamp().getTimeInMillis();
+        ret += ", total allocation: " + this.getTotalAllocation();
+        ret += ", used resources: " + this.getUsedResources();
+        ret += ", used allocation: " + this.getUserAllocation();
         ret += "}";
 
         LOGGER.trace("< toString");
