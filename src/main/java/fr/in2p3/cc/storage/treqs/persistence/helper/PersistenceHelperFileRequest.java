@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class PersistenceHelperFileRequest {
+public final class PersistenceHelperFileRequest {
     /**
      * Logger.
      */

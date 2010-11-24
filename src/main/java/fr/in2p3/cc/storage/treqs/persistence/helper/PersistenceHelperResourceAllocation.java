@@ -52,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.model.User;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class PersistenceHelperResourceAllocation {
+public final class PersistenceHelperResourceAllocation {
     /**
      * Logger.
      */
