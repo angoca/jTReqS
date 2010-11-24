@@ -61,7 +61,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class MySQLReadingDAO implements ReadingDAO {
+public final class MySQLReadingDAO implements ReadingDAO {
 
     /**
      * Logger.

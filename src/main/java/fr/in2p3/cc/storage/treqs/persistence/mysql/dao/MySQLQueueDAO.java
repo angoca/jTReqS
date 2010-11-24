@@ -60,7 +60,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLNoGeneratedIdE
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class MySQLQueueDAO implements QueueDAO {
+public final class MySQLQueueDAO implements QueueDAO {
 
     /**
      * Logger.

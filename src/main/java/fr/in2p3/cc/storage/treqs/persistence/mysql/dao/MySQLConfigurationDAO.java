@@ -65,7 +65,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class MySQLConfigurationDAO implements ConfigurationDAO {
+public final class MySQLConfigurationDAO implements ConfigurationDAO {
     /**
      * Logger.
      */
