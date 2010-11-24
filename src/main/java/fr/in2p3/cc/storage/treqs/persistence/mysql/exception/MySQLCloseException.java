@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class MySQLCloseException extends MySQLException {
+public final class MySQLCloseException extends MySQLException {
 
     /**
      * Generated ID.

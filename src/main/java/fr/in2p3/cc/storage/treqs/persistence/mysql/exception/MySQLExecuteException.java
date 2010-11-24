@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exception while executing a query.
+ * Exception while executing a query. TODO To make it abstract
  *
  * @author Andrés Gómez
  * @since 1.5

@@ -41,8 +41,11 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exception on connection to MySQL database.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
-public class MySQLOpenException extends MySQLException {
+public final class MySQLOpenException extends MySQLException {
 
     /**
      * Generated ID.
