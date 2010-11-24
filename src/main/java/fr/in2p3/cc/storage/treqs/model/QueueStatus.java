@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,32 +34,82 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * These are the possibles states of a queue, that have a corresponding behavior
+ * in the HSM.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
+ */
 public enum QueueStatus {
     /**
-     *
+     * The corresponding tape is "used". The Queue is activated, it means that
+     * the queue is being processed, and the corresponding tape should be
+     * mounted in a drive and being read, or the tape is in transit.
+     * <p>
+     * If there are many jobs in the HSM, probably the tape is queued, however,
+     * at the application side, it is being processed.
      */
-    QS_ACTIVATED((byte) 21),
+    QS_ACTIVATED((byte) 210),
     /**
-    *
-    */
-    QS_CREATED((byte) 20),
-    /**
-     *
+     * There is a queue that make reference to an existing tape in the HSM. The
+     * tape exists in the application but it has not being processed, so the
+     * corresponding tape could not be used in the HSM.
      */
-    QS_ENDED((byte) 23),
+    QS_CREATED((byte) 200),
     /**
-     *
+     * The requests associated to this queue have been finished, so the Queue is
+     * ended. Once the requests for file stored in a given tape in a period of
+     * time have been processed, the corresponding queue is considered ended.
      */
-    QS_TEMPORARILY_SUSPENDED((byte) 22);
+    QS_ENDED((byte) 230),
+    /**
+     * The corresponding tape is currently unavailable. The tape could be locked
+     * due to physical problems.
+     */
+    QS_TEMPORARILY_SUSPENDED((byte) 220),
+    /**
+     * The queue has changed to aborted at initialization time. This is done
+     * only in the database level. The object in memory will not contain this
+     * code.
+     */
+    QS_ABORTED((byte) 240);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(QueueStatus.class);
 
-    private byte id;
+    /**
+     * Id of the status. This is useful when storing the state in the database.
+     */
+    private final byte id;
 
-    private QueueStatus(byte id) {
-        this.id = id;
+    /**
+     * Constructor with the id of the status.
+     *
+     * @param queueStatusId
+     *            Id of the status.
+     */
+    private QueueStatus(final byte queueStatusId) {
+        assert queueStatusId > 0;
+
+        this.id = queueStatusId;
     }
 
+    /**
+     * Retrieves the id of the status.
+     *
+     * @return Queue status.
+     */
     public int getId() {
+        LOGGER.trace(">< getId");
+
         return this.id;
     }
 }
