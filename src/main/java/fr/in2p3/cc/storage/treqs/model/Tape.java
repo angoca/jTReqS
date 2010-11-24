@@ -1,7 +1,7 @@
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public class Tape {
+public final class Tape {
     /**
      * Logger.
      */
@@ -62,10 +62,6 @@ public class Tape {
      * The name of this tape.
      */
     private String name;
-    /**
-     * The tape status (Locked/Unlocked).
-     */
-    private TapeStatus status;
     /**
      * The time Status got updated.
      */
@@ -81,18 +77,14 @@ public class Tape {
      *            Name of the tape.
      * @param tapeMediaType
      *            Type of media (T10KA, T10KB, LTO).
-     * @param tapeStatus
-     *            Status that indicates if the tape is locked or not.
      */
-    public Tape(final String tapeName, final MediaType tapeMediaType,
-            final TapeStatus tapeStatus) {
+    public Tape(final String tapeName, final MediaType tapeMediaType) {
         LOGGER.trace("> Creating tape");
 
         // The asserts are done in the setters.
 
         this.setMediaType(tapeMediaType);
         this.setName(tapeName);
-        this.setStatus(tapeStatus);
         this.setStatusUpdateTimeNow();
 
         LOGGER.trace("< Creating tape");
@@ -118,17 +110,6 @@ public class Tape {
         LOGGER.trace(">< getName");
 
         return this.name;
-    }
-
-    /**
-     * Getter for status member.
-     *
-     * @return Returns if the tape is locked or not.
-     */
-    final TapeStatus getStatus() {
-        LOGGER.trace(">< getStatus");
-
-        return this.status;
     }
 
     /**
@@ -176,22 +157,6 @@ public class Tape {
     }
 
     /**
-     * Setter for status member.
-     *
-     * @param tapeStatus
-     *            Status of the tape. Locked or unlocked (available to be read).
-     */
-    final void setStatus(final TapeStatus tapeStatus) {
-        LOGGER.trace("> setStatus");
-
-        assert status != null;
-
-        this.status = tapeStatus;
-
-        LOGGER.trace("< setStatus");
-    }
-
-    /**
      * Setter for update time member.
      *
      * @param updateTime
@@ -230,7 +195,6 @@ public class Tape {
         ret += "Tape";
         ret += "{ media type: " + this.getMediaType().getName();
         ret += ", name: " + this.getName();
-        ret += ", status: " + this.getStatus();
         ret += "}";
 
         LOGGER.trace("< toString");
