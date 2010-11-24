@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class HSMInitException extends HSMException {
+public final class HSMInitException extends HSMException {
     /**
      * Logger.
      */

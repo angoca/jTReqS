@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Error when opening a file.
+ * Error when opening a file. TODO abstract
  *
  * @author Andrés Gómez
  * @since 1.5
