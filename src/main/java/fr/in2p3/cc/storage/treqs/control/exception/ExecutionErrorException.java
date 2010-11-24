@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class ExecutionErrorException extends TReqSException {
+public final class ExecutionErrorException extends TReqSException {
     /**
      * Logger.
      */
@@ -64,7 +64,7 @@ public class ExecutionErrorException extends TReqSException {
      * @param exception
      *            Wrapped exception.
      */
-    public ExecutionErrorException(Exception exception) {
+    public ExecutionErrorException(final Exception exception) {
         super(exception);
 
         LOGGER.trace(">< Instance creation");
