@@ -81,9 +81,4 @@ public enum ErrorCode {
      * Invalid change of file request status.
      */
     READ02,
-    // Stager (code 17xx)
-    /**
-     * No space left of device. Suspending the queue.
-     */
-    STGR02,
 }
