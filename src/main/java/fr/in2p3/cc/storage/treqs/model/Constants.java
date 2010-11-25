@@ -45,6 +45,14 @@ package fr.in2p3.cc.storage.treqs.model;
  */
 public final class Constants {
     /**
+     * Type of authentication agains the HSM.
+     */
+    public static final String AUTHENTICATION_TYPE = "AUTHENTICATION_TYPE";
+    /**
+     * User to access to the HSM.
+     */
+    public static final String HSM_USER = "HSM_USER";
+    /**
      * Name of the property for the keytab in the configuration file.
      */
     public static final String KEYTAB_FILE = "KEYTAB_FILE";
@@ -52,6 +60,10 @@ public final class Constants {
      * Name of the section in the configuration file for the main properties.
      */
     public static final String MAIN = "MAIN";
+    /**
+     * Maximal age for the metadata before considered as outdated.
+     */
+    public static final String MAX_METADATA_AGE = "MAX_METADATA_AGE";
     /**
      * Quantity of milliseconds in a second.
      */
@@ -65,10 +77,6 @@ public final class Constants {
      * Parameter to ask the DAO Factory.
      */
     public static final String PARAM_DAO_FACTORY = "DAO_FACTORY";
-    /**
-     * Maximal age for the metadata before considered as outdated.
-     */
-    public static final String MAX_METADATA_AGE = "MAX_METADATA_AGE";
     /**
      * Duration of a suspension.
      */
