@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 
@@ -53,7 +54,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
+public final class Stager extends AbstractProcess {
     /**
      * Logger.
      */
@@ -61,7 +62,7 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     /**
      * Associated queue.
      */
-    private Queue queue;
+    private final Queue queue;
 
     /**
      * Constructor with the id of the stager and the associated queue.
@@ -73,9 +74,15 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      */
     public Stager(final int id, final Queue stagerQueue) {
         // This concatenation permits to have a unique name id for the thread.
-        super("tape" + stagerQueue.getTape().getName() + "-"
-                + System.currentTimeMillis() + "-" + id);
+        super("tape-" + System.currentTimeMillis() + '-' + id);
+
         LOGGER.trace("> Creating stager.");
+
+        assert id >= 0;
+        assert stagerQueue != null;
+
+        super.setName("tape-" + System.currentTimeMillis() + '-' + id + '-'
+                + stagerQueue.getTape().getName());
 
         this.queue = stagerQueue;
 
@@ -91,18 +98,18 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     private void action() {
         LOGGER.trace("> action");
 
-        if (queue.getStatus() == QueueStatus.QS_ACTIVATED) {
+        if (this.queue.getStatus() == QueueStatus.QS_ACTIVATED) {
             LOGGER.info("Stager {}: starting.", this.getName());
             try {
                 this.stage();
             } catch (TReqSException e) {
-                LOGGER.error("Error in Staging: {}", e.getMessage());
+                LOGGER.error("Error in Staging.", e);
             }
             this.conclude();
             LOGGER.debug("Staging process finished.");
         } else {
-            LOGGER.info("Cannot work on a non-activated queue or queue already"
-                    + " processed ({}).", queue.getStatus());
+            LOGGER.info("Cannot work on a non-activated queue or queue "
+                    + "already processed ({}).", queue.getStatus());
         }
 
         LOGGER.trace("< action");
@@ -110,15 +117,15 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
 
     /*
      * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.control.Process#oneLoop()
+     * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#oneLoop()
      */
     @Override
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
-        this.setStatus(ProcessStatus.STARTED);
+        // The stager is already in started state thanks to the kickstart.
 
-        action();
+        this.action();
 
         this.setStatus(ProcessStatus.STOPPED);
 
@@ -132,8 +139,7 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      * For each Reading object to stage, it calls the Reading.stage() method and
      * catch exceptions.
      * <p>
-     * If the HPSSResourceError is caught, then the queue is suspended, and the
-     * error code STGR02 with be logged.
+     * If the HSMResourceException is caught, then the queue is suspended.
      *
      * @throws TReqSException
      *             If there is a problem retrieving the next reading, or dealing
@@ -142,20 +148,20 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
     private void stage() throws TReqSException {
         LOGGER.trace("> stage");
 
-        Reading readObject = this.queue.getNextReading();
-        while (readObject != null && this.keepOn()) {
+        Reading nextReading = this.queue.getNextReading();
+        while (nextReading != null && this.keepOn()) {
             try {
-                readObject.stage();
+                nextReading.stage();
                 LOGGER.debug("Thread {}: getting next file", this.getName());
-                readObject = this.queue.getNextReading();
+                nextReading = this.queue.getNextReading();
             } catch (HSMResourceException e) {
                 // For instance, no space left on device should suspend
                 // the staging queue.
-                LOGGER.warn(
-                        "{}: No space left on device, suspending the queue.",
-                        ErrorCode.STGR02);
+                LOGGER.warn("No space left on device, suspending the queue.");
+                // Suspends the current queue.
                 this.queue.suspend();
-                readObject = null;
+                // Exists from the loop.
+                nextReading = null;
             }
         }
 
@@ -166,7 +172,7 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
      * This method asks the queue for the next file to stage, until the queue is
      * completely browsed.
      *
-     * @see fr.in2p3.cc.storage.treqs.control.Process#toStart()
+     * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#toStart()
      */
     @Override
     public void toStart() {
@@ -193,6 +199,8 @@ public final class Stager extends fr.in2p3.cc.storage.treqs.control.Process {
         ret += ", tape: " + this.queue.getTape().getName();
         ret += ", state: " + this.getProcessStatus().name();
         ret += "}";
+
+        assert ret != null;
 
         LOGGER.trace("< toString");
 
