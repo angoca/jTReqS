@@ -49,11 +49,13 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.Constants;
+import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.ConfiguratorException;
+import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 
 /**
  * This implementation uses batch scripts to interact with the HSM. This does
@@ -124,10 +126,10 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * Retrieves the unique instance.
      *
      * @return The unique instance of this class.
-     * @throws ConfiguratorException
+     * @throws AbstractConfiguratorException
      *             If there is a problem reading the configuration.
      */
-    public static HSMCommandBridge getInstance() throws ConfiguratorException {
+    public static HSMCommandBridge getInstance() throws AbstractConfiguratorException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -146,10 +148,10 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     /**
      * Constructor of the HSM Command.
      *
-     * @throws ConfiguratorException
+     * @throws AbstractConfiguratorException
      *             If there is a problem reading the configuration.
      */
-    private HSMCommandBridge() throws ConfiguratorException {
+    private HSMCommandBridge() throws AbstractConfiguratorException {
         LOGGER.trace("> create instance.");
 
         this.setKeytabPath(Configurator.getInstance().getValue(Constants.MAIN,
@@ -166,7 +168,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      */
     @Override
     public HSMHelperFileProperties getFileProperties(final String name)
-            throws HSMException {
+            throws AbstractHSMException {
         LOGGER.trace("> getFileProperties");
 
         assert name != null && !name.equals("");
@@ -196,7 +198,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.debug(current);
         HSMHelperFileProperties ret = null;
         if (current != null) {
-            // Process the output.
+            // AbstractProcess the output.
             ret = processGetPropertiesOutput(current);
         } else {
             throw new HSMStatException();
@@ -210,7 +212,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Process the output of a stream.
+     * Processes the output of a stream.
      *
      * @param bfStream
      *            Buffer where is the stream.
@@ -265,7 +267,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Process the output of the get properties command.
+     * Processes the output of the get properties command.
      *
      * @param output
      *            Output of the script.
@@ -300,17 +302,16 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     /*
      * (non-Javadoc)
      * @see
-     * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
-     * long)
+     * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(fr.in2p3.cc.storage
+     * .treqs.model.File)
      */
     @Override
-    public void stage(final String name, final long size) throws HSMException {
+    public void stage(final File file) throws AbstractHSMException {
         LOGGER.trace("> stage");
 
-        assert name != null && !name.equals("");
-        assert size > 0;
+        assert file != null;
 
-        String command = buildCommandStage(name);
+        String command = buildCommandStage(file.getName());
 
         LOGGER.debug(command);
         Process process = null;
@@ -423,7 +424,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.warn("Getting properties");
         HSMCommandBridge.getInstance().getFileProperties(args[1]);
         LOGGER.warn("Staging file");
-        HSMCommandBridge.getInstance().stage(args[1], 1);
+        HSMCommandBridge.getInstance().stage(
+                new File(args[1], new User("username"), 1));
         LOGGER.warn(";)");
 
         LOGGER.trace("< main");
