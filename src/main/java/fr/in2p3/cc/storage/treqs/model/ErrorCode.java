@@ -46,11 +46,6 @@ package fr.in2p3.cc.storage.treqs.model;
  * @since 1.0
  */
 public enum ErrorCode {
-    // FileRequest (code 16xx)
-    /**
-     * The file request has an invalid structure.
-     */
-    FREQ01,
     // Queue (code 10xx)
     /**
      * The new position cannot be before the current position.
