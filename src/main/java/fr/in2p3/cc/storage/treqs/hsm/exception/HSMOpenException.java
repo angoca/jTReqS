@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class HSMOpenException extends HSMException {
+public class HSMOpenException extends AbstractHSMException {
     /**
      * Logger.
      */

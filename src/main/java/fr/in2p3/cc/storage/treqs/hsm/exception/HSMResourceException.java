@@ -71,7 +71,7 @@ public final class HSMResourceException extends HSMOpenException {
 
     /*
      * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.hsm.exception.HSMException#getMessage()
+     * @see fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
      */
     @Override
     public String getMessage() {
