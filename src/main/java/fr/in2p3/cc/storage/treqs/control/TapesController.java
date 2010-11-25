@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.Tape;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class TapesController extends Controller {
+public final class TapesController extends AbstractController {
     /**
      * The singleton instance.
      */

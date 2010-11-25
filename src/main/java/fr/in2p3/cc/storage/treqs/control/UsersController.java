@@ -45,12 +45,12 @@ import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
 import fr.in2p3.cc.storage.treqs.model.User;
 
 /**
- * Specialization of the Controller template to manage users.
+ * Specialization of the AbstractController template to manage users.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class UsersController extends Controller {
+public final class UsersController extends AbstractController {
     /**
      * Singleton instance.
      */
