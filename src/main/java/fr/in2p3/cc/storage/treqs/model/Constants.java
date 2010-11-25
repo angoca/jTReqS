@@ -61,7 +61,8 @@ public final class Constants {
      */
     public static final String MAIN = "MAIN";
     /**
-     * Maximal age for the metadata before considered as outdated.
+     * Maximal age for the metadata before considered as outdated. This value is
+     * in seconds.
      */
     public static final String MAX_METADATA_AGE = "MAX_METADATA_AGE";
     /**
