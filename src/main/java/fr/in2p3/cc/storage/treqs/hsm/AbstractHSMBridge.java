@@ -39,7 +39,8 @@ package fr.in2p3.cc.storage.treqs.hsm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.model.File;
 
 /**
  * Defines the structure for the interactions with the HSM. This is the
@@ -69,11 +70,11 @@ public abstract class AbstractHSMBridge {
      * @param name
      *            the name of the file.
      * @return Helper that contains the metadata of the file.
-     * @throws HSMException
+     * @throws AbstractHSMException
      *             If there is a problem accessing the HSM.
      */
     public abstract HSMHelperFileProperties getFileProperties(final String name)
-            throws HSMException;
+            throws AbstractHSMException;
 
     /**
      * Gets the keytab to authenticate against the HSM.
@@ -113,13 +114,10 @@ public abstract class AbstractHSMBridge {
     /**
      * Stages a given file to HSM's disks.
      *
-     * @param name
-     *            Name of the file to stage.
-     * @param size
-     *            Size of the file.
-     * @throws HSMException
+     * @param file
+     *            File to stage.
+     * @throws AbstractHSMException
      *             If there is a problem accessing the HSM.
      */
-    public abstract void stage(final String name, final long size)
-            throws HSMException;
+    public abstract void stage(final File file) throws AbstractHSMException;
 }
