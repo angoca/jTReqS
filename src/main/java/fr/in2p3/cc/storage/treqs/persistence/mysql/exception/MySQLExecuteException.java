@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class MySQLExecuteException extends MySQLException {
+public class MySQLExecuteException extends AbstractMySQLException {
 
     /**
      * Generated ID.
