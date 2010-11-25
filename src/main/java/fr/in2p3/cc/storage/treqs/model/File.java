@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,10 +44,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents a File as a readable object.
- * 
- * @author jschaff
+ * <p>
+ * This object does not take in account if the file is modified and its size is
+ * changed, or if the file is renamed.
+ * <p>
+ * TODO Take the id (ns_object) of the file instead of the name, because the
+ * file could be renamed.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class File {
+public final class File {
     /**
      * Logger.
      */
@@ -59,11 +65,11 @@ public class File {
      */
     private List<FileRequest> fileRequests;
     /**
-     * The name in HPSS namespace.
+     * The name of the file.
      */
-    private String name;
+    private final String name;
     /**
-     * The user owning the file in HPSS.
+     * The user owning the file.
      */
     private User owner;
     /**
@@ -74,44 +80,49 @@ public class File {
     /**
      * Constructor with all parameters. This constructor initializes the object
      * with all the attributes, and it has a valid internal state.
-     * 
-     * @param name
+     * <p>
+     * The name of the file cannot be modified.
+     *
+     * @param filename
      *            Name of the file.
-     * @param owner
+     * @param fileOwner
      *            Owner of the file.
-     * @param size
+     * @param fileSize
      *            Size of the file.
      */
-    public File(String name, User owner, long size) {
-        LOGGER.trace("> Creating file with all parameters.");
+    public File(final String filename, final User fileOwner, final long fileSize) {
+        LOGGER.trace("> Creating file.");
+
+        assert filename != null;
+
+        this.name = filename;
+        this.setOwner(fileOwner);
+        this.setSize(fileSize);
 
         this.fileRequests = new ArrayList<FileRequest>();
-        this.setName(name);
-        this.setOwner(owner);
-        this.setSize(size);
 
-        LOGGER.trace("< Creating file with all parameters.");
+        LOGGER.trace("< Creating file.");
     }
 
     /**
      * Associates a file request with this file.
-     * 
+     *
      * @param freq
      *            File request associated with this file.
      */
-    void addFileRequest(FileRequest freq) {
-        LOGGER.trace("> removeFileRequest");
+    void addFileRequest(final FileRequest freq) {
+        LOGGER.trace("> addFileRequest");
 
         assert freq != null;
 
         this.fileRequests.add(freq);
 
-        LOGGER.trace("< removeFileRequest");
+        LOGGER.trace("< addFileRequest");
     }
 
     /**
      * Getter for the file requests member.
-     * 
+     *
      * @return List of file requests associated to this file.
      */
     List<FileRequest> getFileRequests() {
@@ -122,7 +133,7 @@ public class File {
 
     /**
      * Getter for the name member.
-     * 
+     *
      * @return The name of the file.
      */
     public String getName() {
@@ -132,8 +143,8 @@ public class File {
     }
 
     /**
-     * Getter for the owner member
-     * 
+     * Getter for the owner member.
+     *
      * @return The owner of the file.
      */
     User getOwner() {
@@ -143,8 +154,8 @@ public class File {
     }
 
     /**
-     * Getter for the size member
-     * 
+     * Getter for the size member.
+     *
      * @return The size of the file.
      */
     public long getSize() {
@@ -154,80 +165,39 @@ public class File {
     }
 
     /**
-     * Remove the FileRequest having its identifier (fs_id) from the list.
-     * 
-     * @param fileRequestId
-     *            The id of the request to remove.
-     */
-    void removeFileRequest(long fileRequestId) {
-        LOGGER.trace("> removeFileRequest");
-
-        assert fileRequestId > 0;
-
-        boolean deleted = false;
-        for (int i = 0; i < this.fileRequests.size() && !deleted; i++) {
-            FileRequest fr = this.fileRequests.get(i);
-            if (fr.getId() == fileRequestId) {
-                this.fileRequests.remove(i);
-                deleted = true;
-            }
-
-        }
-
-        LOGGER.trace("< removeFileRequest");
-    }
-
-    /**
-     * Setter for the name member.
-     * 
-     * @param name
-     *            The new name of the file.
-     */
-    void setName(String name) {
-        LOGGER.trace("> setName");
-
-        assert name != null;
-
-        this.name = name;
-
-        LOGGER.trace("< setName");
-    }
-
-    /**
      * Setter for the owner member.
-     * 
-     * @param owner
+     *
+     * @param fileOwner
      *            The new owner.
      */
-    void setOwner(User owner) {
+    void setOwner(final User fileOwner) {
         LOGGER.trace("> setOwner");
 
-        assert owner != null;
+        assert fileOwner != null;
 
-        this.owner = owner;
+        this.owner = fileOwner;
 
         LOGGER.trace("< setOwner");
     }
 
     /**
      * Setter for the size member.
-     * 
-     * @param size
+     *
+     * @param fileSize
      *            The new size of the file.
      */
-    public void setSize(long size) {
+    public void setSize(final long fileSize) {
         LOGGER.trace("> setSize");
 
-        assert size >= 0;
+        assert fileSize >= 0;
 
-        this.size = size;
+        this.size = fileSize;
 
         LOGGER.trace("< setSize");
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -241,6 +211,8 @@ public class File {
         ret += ", size: " + this.getSize();
         ret += ", file requests size: " + this.getFileRequests().size();
         ret += "}";
+
+        assert ret != null;
 
         LOGGER.trace("< toString");
 
