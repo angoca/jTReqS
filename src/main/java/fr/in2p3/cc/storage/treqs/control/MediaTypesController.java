@@ -50,7 +50,7 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
  * @author Andres Gomez
  * @since 1.5
  */
-public final class MediaTypesController extends Controller {
+public final class MediaTypesController extends AbstractController {
     /**
      * Singleton instance.
      */
