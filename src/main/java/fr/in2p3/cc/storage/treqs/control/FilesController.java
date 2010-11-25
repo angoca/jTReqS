@@ -52,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.model.User;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class FilesController extends Controller {
+public final class FilesController extends AbstractController {
     /**
      * Instance of the singleton.
      */

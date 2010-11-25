@@ -47,12 +47,12 @@ import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 
 /**
- * Controller for the FilePostionOnTape classes.
+ * AbstractController for the FilePostionOnTape classes.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class FilePositionOnTapesController extends Controller {
+public final class FilePositionOnTapesController extends AbstractController {
     /**
      * Singleton instance.
      */
