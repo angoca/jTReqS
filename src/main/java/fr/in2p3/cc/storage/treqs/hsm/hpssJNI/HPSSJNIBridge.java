@@ -47,7 +47,6 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
 import fr.in2p3.cc.storage.treqs.model.Constants;
-import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
@@ -80,7 +79,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     static {
         try {
             LOGGER.info("Loading the HPSS JNI Bridge.");
-            System.loadLibrary(DefaultProperties.HPSS_JNI_BRIDGE_LIBRARY);
+            System.loadLibrary(HPSSJNIBridge.HPSS_JNI_BRIDGE_LIBRARY);
             LOGGER.debug("Load succesfully.");
         } catch (java.lang.UnsatisfiedLinkError e) {
             LOGGER.error("Error loading library.", e);
@@ -158,6 +157,10 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
      * User used to interact with HPSS.
      */
     private String user;
+    /**
+     * Name of the library to load the HPSS JNI bridge.
+     */
+    private static final String HPSS_JNI_BRIDGE_LIBRARY = "HPSSJNIBridge";
 
     /**
      * Creates the java part of the JNI bridge with HPSS.
@@ -300,7 +303,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         LOGGER.trace("> initUser");
 
         final String hpssUser = Configurator.getInstance().getValue(
-                Constants.MAIN, Constants.HPSS_USER);
+                Constants.MAIN, Constants.HSM_USER);
         this.user = hpssUser;
 
         LOGGER.trace("< initUser");
