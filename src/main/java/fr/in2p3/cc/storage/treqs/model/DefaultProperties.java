@@ -74,7 +74,10 @@ public final class DefaultProperties {
      * Max metadata age in seconds.
      */
     public static final short MAX_METADATA_AGE = 3600;
-
+    /**
+     * Time of the loop to check if everything is working good.
+     */
+    public static final long TIME_BETWEEN_CHECK = 1000;
     /**
      * Invisible constructor.
      */
