@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +44,14 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 /**
  * Represents a file request. One file can be requested several times, so each
  * request is modeled here.
- * 
- * @author jschaff
+ * <p>
+ * This object is a representation of the request registered in the persistence.
+ * This object does not reflect a reading try.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class FileRequest {
+public final class FileRequest {
     /**
      * Logger.
      */
@@ -57,16 +60,15 @@ public class FileRequest {
     /**
      * Client requesting the file.
      */
-    private User client;
+    private final User client;
     /**
      * Unique Id of the request.
      */
-    private int id;
+    private final int id;
     /**
-     * Name of the requested file. This attribute can be set just once. If it is
-     * tried to redefine an exception will be raised.
+     * Name of the requested file.
      */
-    private String name = null;
+    private final String name;
     /**
      * Number of retries.
      */
@@ -74,33 +76,39 @@ public class FileRequest {
 
     /**
      * Constructor with all parameters.
-     * 
-     * @param id
+     *
+     * @param fileRequestId
      *            Id of the request.
-     * @param name
+     * @param requestedFilename
      *            Name of the requested file.
-     * @param client
+     * @param requesterClient
      *            Client requesting the file.
-     * @param nb
+     * @param tries
      *            Number of retries.
      * @throws InvalidParameterException
      *             When redefining the name.
      */
-    public FileRequest(int id, String name, User client, byte nb)
+    public FileRequest(final int fileRequestId, final String requestedFilename,
+            final User requesterClient, final byte tries)
             throws InvalidParameterException {
-        LOGGER.trace("> Creating file requests with all parameters.");
+        LOGGER.trace("> Creating instance.");
 
-        this.setId(id);
-        this.setName(name);
-        this.setClient(client);
-        this.setNumberTries(nb);
+        assert fileRequestId > 0;
+        assert requestedFilename != null && !requestedFilename.equals("");
+        assert requesterClient != null;
 
-        LOGGER.trace("< Creating file requests with all parameters.");
+        this.id = fileRequestId;
+        this.name = requestedFilename;
+        this.client = requesterClient;
+
+        this.setNumberTries(tries);
+
+        LOGGER.trace("< Creating instance.");
     }
 
     /**
      * Getter for client member.
-     * 
+     *
      * @return The requester user.
      */
     public User getClient() {
@@ -111,7 +119,7 @@ public class FileRequest {
 
     /**
      * Getter for id member.
-     * 
+     *
      * @return The id of the request.
      */
     public int getId() {
@@ -122,8 +130,8 @@ public class FileRequest {
 
     /**
      * Getter for name member.
-     * 
-     * @return Name of the file.<
+     *
+     * @return Name of the file.
      */
     String getName() {
         LOGGER.trace(">< getName");
@@ -133,7 +141,7 @@ public class FileRequest {
 
     /**
      * Getter for number of retries member.
-     * 
+     *
      * @return Number of retries to read the file.
      */
     public byte getNumberTries() {
@@ -143,80 +151,23 @@ public class FileRequest {
     }
 
     /**
-     * Setter for client member.
-     * 
-     * @param client
-     *            User that request the file.
-     */
-    void setClient(User client) {
-        LOGGER.trace("> setClient");
-
-        assert client != null;
-
-        this.client = client;
-
-        LOGGER.trace("< setClient");
-    }
-
-    /**
-     * Setter for id member.
-     * 
-     * @param id
-     *            The Id of the request.
-     */
-    void setId(int id) {
-        LOGGER.trace("> setId");
-
-        assert id > 0;
-
-        this.id = id;
-
-        LOGGER.trace("< setId");
-    }
-
-    /**
-     * Setter for name member. It can be called just once.
-     * 
-     * @param name
-     *            The name of the file.
-     * @throws InvalidParameterException
-     *             When redefining the file name.
-     */
-    void setName(String name) throws InvalidParameterException {
-        LOGGER.trace("> setName");
-
-        assert name != null;
-        assert !name.equals("");
-
-        if (this.name != null) {
-            throw new InvalidParameterException(ErrorCode.FREQ01,
-                    "The name has been already established.");
-        }
-
-        this.name = name;
-
-        LOGGER.trace("< setName");
-    }
-
-    /**
      * Setter for number of retries member.
-     * 
-     * @param numberTries
+     *
+     * @param tries
      *            Number of retries to read the file.
      */
-    void setNumberTries(byte numberTries) {
-        LOGGER.trace("> setNbTries");
+    void setNumberTries(final byte tries) {
+        LOGGER.trace("> setNumberTries");
 
-        assert numberTries >= 0;
+        assert tries >= 0;
 
-        this.numberTries = numberTries;
+        this.numberTries = tries;
 
-        LOGGER.trace("< setNbTries");
+        LOGGER.trace("< setNumberTries");
     }
 
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -229,6 +180,8 @@ public class FileRequest {
         ret += ", client: " + this.getClient().getName();
         ret += ", number of tries: " + this.getNumberTries();
         ret += "}";
+
+        assert ret != null;
 
         LOGGER.trace("< toString");
 
