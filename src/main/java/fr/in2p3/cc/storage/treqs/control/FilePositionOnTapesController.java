@@ -135,8 +135,7 @@ public final class FilePositionOnTapesController extends AbstractController {
         } else {
             LOGGER.debug("Updating old fpot");
             // TODO This should update the queue.
-            fpot.setTape(tape);
-            fpot.setPosition(position);
+            fpot.updateMetadata(tape, position);
         }
 
         LOGGER.trace("< add");
