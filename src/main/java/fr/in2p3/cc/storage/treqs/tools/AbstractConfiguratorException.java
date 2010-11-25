@@ -47,13 +47,13 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public abstract class ConfiguratorException extends TReqSException {
+public abstract class AbstractConfiguratorException extends TReqSException {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(ConfiguratorException.class);
+            .getLogger(AbstractConfiguratorException.class);
     /**
      * Generated Id.
      */
@@ -77,7 +77,7 @@ public abstract class ConfiguratorException extends TReqSException {
      * @param file
      *            File not found.
      */
-    protected ConfiguratorException(final String file) {
+    protected AbstractConfiguratorException(final String file) {
         LOGGER.trace("> Instance creation filename");
 
         this.filename = file;
@@ -93,7 +93,7 @@ public abstract class ConfiguratorException extends TReqSException {
      * @param keyValue
      *            Key
      */
-    protected ConfiguratorException(final String sectionValue,
+    protected AbstractConfiguratorException(final String sectionValue,
             final String keyValue) {
         super();
 
