@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public final class ProblematicConfiguationFileException extends
-        ConfiguratorException {
+        AbstractConfiguratorException {
 
     /**
      * Logger.

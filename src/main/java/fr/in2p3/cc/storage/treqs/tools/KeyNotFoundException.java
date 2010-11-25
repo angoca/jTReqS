@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class KeyNotFoundException extends ConfiguratorException {
+public final class KeyNotFoundException extends AbstractConfiguratorException {
     /**
      * Logger.
      */
