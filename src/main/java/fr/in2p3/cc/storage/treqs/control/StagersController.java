@@ -39,6 +39,7 @@ package fr.in2p3.cc.storage.treqs.control;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,45 +123,48 @@ public final class StagersController {
         LOGGER.trace("> cleanup");
 
         int iter = 0;
-        int count = 0;
-        for (int i = 0; i < this.stagers.size(); i++) {
-            Stager stager = this.stagers.get(i);
+        int cleanedStager = 0;
+        ListIterator<Stager> list = this.stagers.listIterator();
+        while (list.hasNext()) {
+            Stager stager = list.next();
             iter++;
-            LOGGER.debug("Scanning stagers {}", iter);
-            // TODO this method has to be changed. Stagers have several states,
-            // not only 2.
+            LOGGER.debug("Scanning stager {}", iter);
             if (stager.getProcessStatus() == ProcessStatus.STOPPED) {
-                LOGGER.debug("Cleaning stagers {}", iter);
-                this.remove(i);
-                i--;
-                count++;
+                LOGGER.debug("Cleaning stager {} - {}", iter, stager.getName());
+                list.remove();
+                cleanedStager++;
             } else {
-                LOGGER.debug("Stager {} is still running", iter);
+                LOGGER.debug("Stager {} is still running - {}", iter,
+                        stager.getName());
             }
         }
 
-        if (count > 0) {
-            LOGGER.info("Cleaned {} stager instances.", count);
+        if (cleanedStager > 0) {
+            LOGGER.info("Cleaned {} stager instances.", cleanedStager);
         }
 
-        assert count >= 0;
+        assert cleanedStager >= 0;
 
         LOGGER.trace("< cleanup");
 
-        return count;
+        return cleanedStager;
     }
 
     /**
-     * Calls the method to finalize all stagers. It does not wait the end, that
-     * is asynchronous.
+     * Calls the method to finalize all stagers. It does not wait the end of the
+     * stager, because this is a asynchronous process.
      */
     public void conclude() {
         LOGGER.trace("> conclude");
 
-        for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
-                .hasNext();) {
+        Iterator<Stager> iterator = this.stagers.iterator();
+        while (iterator.hasNext()) {
             Stager stager = iterator.next();
-            stager.conclude();
+            if (stager.getProcessStatus() == ProcessStatus.CREATED
+                    || stager.getProcessStatus() == ProcessStatus.STARTED
+                    || stager.getProcessStatus() == ProcessStatus.STARTING) {
+                stager.conclude();
+            }
         }
 
         LOGGER.trace("< conclude");
@@ -189,32 +193,16 @@ public final class StagersController {
     }
 
     /**
-     * Removes a stager.
-     *
-     * @param pos
-     *            Position of the stager in the list.
-     */
-    private void remove(final int pos) {
-        LOGGER.trace("> remove");
-
-        assert pos >= 0;
-
-        this.stagers.remove(pos);
-
-        LOGGER.trace("< remove");
-    }
-
-    /**
      * Waits for all threads to finish.
      */
-    public void waitTofinish() {
-        LOGGER.trace("> waitTofinish");
+    public void waitToFinish() {
+        LOGGER.trace("> waitToFinish");
 
         boolean stopped = false;
         while (!stopped) {
             boolean iteration = true;
-            for (Iterator<Stager> iterator = this.stagers.iterator(); iterator
-                    .hasNext();) {
+            Iterator<Stager> iterator = this.stagers.iterator();
+            while (iterator.hasNext()) {
                 Stager stager = iterator.next();
                 ProcessStatus status = stager.getProcessStatus();
                 if (status == ProcessStatus.STOPPED) {
@@ -240,6 +228,6 @@ public final class StagersController {
             }
         }
 
-        LOGGER.trace("< waitTofinish");
+        LOGGER.trace("< waitToFinish");
     }
 }
