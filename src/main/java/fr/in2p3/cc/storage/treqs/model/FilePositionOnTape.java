@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,20 +34,24 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Defines a relation between a file and a tape. This object only contains part
  * of the metadata of the file that is related to the tape. A file can be moved
- * to another tape, and that information is reflected here.
+ * to another tape, and that information is reflected here. This information is
+ * kept for a time before considered as outdated, that is the object of Max
+ * Metadada Age.
  * <p>
  * The metadata of the file, such as its name, size and owner are stored in the
  * File object.
@@ -57,23 +59,22 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * The metadata attribute indicates when the information about a file in a tape
  * is considered obsolete. And when it is considered as obsolete, the
  * information has to be updated.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class FilePositionOnTape {
+public final class FilePositionOnTape {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FilePositionOnTape.class);
     /**
-     * Max metadata age in seconds.
-     */
-    public static final short MAX_METADATA_AGE = 3600;
-    /**
      * References a file.
      */
-    private File file;
+    private final File file;
     /**
-     * Maximal metadata age.
+     * Maximal metadata age in seconds.
      */
     private short maxMetadataAge;
     /**
@@ -91,38 +92,44 @@ public class FilePositionOnTape {
 
     /**
      * Constructor with all parameters.
-     * 
-     * @param file
-     * @param metadataTimestamp
+     *
+     * @param associatedFile
+     *            Associated file.
+     * @param positionInTape
+     *            Position of the tape in the tape.
+     * @param associatedTape
+     *            Tape where is located the associated file.
      * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     *             If there is a problem obtaining a value.
      */
-    public FilePositionOnTape(File file, Calendar metadataTimestamp,
-            int position, Tape tape)
+    public FilePositionOnTape(final File associatedFile,
+            final int positionInTape, final Tape associatedTape)
             throws ProblematicConfiguationFileException {
-        LOGGER.trace("> Creating with parameters.");
+        LOGGER.trace("> Creating instance");
 
-        this.setFile(file);
-        this.setMetadataTimestamp(metadataTimestamp);
-        this.setPosition(position);
-        this.setTape(tape);
+        assert associatedFile != null;
 
-        this.maxMetadataAge = MAX_METADATA_AGE;
+        this.file = associatedFile;
+        this.setMetadataTimestamp(new GregorianCalendar());
+        this.setPosition(positionInTape);
+        this.setTape(associatedTape);
+
+        this.maxMetadataAge = DefaultProperties.MAX_METADATA_AGE;
         try {
             this.maxMetadataAge = Short.parseShort(Configurator.getInstance()
-                    .getValue("MAIN", "MAX_METADATA_AGE"));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAX_METADATA_AGE, default value will be used: "
-                            + this.maxMetadataAge);
+                    .getValue(Constants.MAIN, Constants.MAX_METADATA_AGE));
+        } catch (KeyNotFoundException e) {
+            LOGGER.info("No setting for {}.{}, default value "
+                    + "will be used: {}", new Object[] { Constants.MAIN,
+                    Constants.MAX_METADATA_AGE, this.maxMetadataAge });
         }
 
-        LOGGER.trace("< Creating with parameters.");
+        LOGGER.trace("< Creating instance");
     }
 
     /**
      * Getter for file member.
-     * 
+     *
      * @return File to stage.
      */
     public File getFile() {
@@ -133,7 +140,7 @@ public class FilePositionOnTape {
 
     /**
      * Getter for metadataTimestamp member.
-     * 
+     *
      * @return Timestamp when the properties were read.
      */
     Calendar getMetadataTimestamp() {
@@ -144,9 +151,10 @@ public class FilePositionOnTape {
 
     /**
      * Getter for position member. The information retrieved could eventually be
-     * outdated. It's a good practice to call this method after a
-     * isMetadataOutdated.
-     * 
+     * outdated. It is a good practice to call this method after a
+     * isMetadataOutdated call, in order to be sure that the metadata is still
+     * considered updated.
+     *
      * @return Position of the file in the tape.
      */
     public int getPosition() {
@@ -158,8 +166,8 @@ public class FilePositionOnTape {
     /**
      * Getter for tape member. The information retrieved could eventually be
      * outdated. It's a good practice to call this method after a
-     * isMetadataOutdated.
-     * 
+     * isMetadataOutdated. TODO check it the metadata is verified before.
+     *
      * @return Tape where the file is stored.
      */
     public Tape getTape() {
@@ -170,15 +178,15 @@ public class FilePositionOnTape {
 
     /**
      * Tests if metadata is fresh enough.
-     * 
-     * @returnn true if the metadata is still considered valid.
+     *
+     * @return true if the metadata is still considered valid.
      */
     public boolean isMetadataOutdated() {
         LOGGER.trace("> isMetadataOutdated");
 
         boolean outdated = true;
         long max = this.metadataTimestamp.getTimeInMillis()
-                + this.maxMetadataAge * 1000;
+                + this.maxMetadataAge * Constants.MILLISECONDS;
         long current = new GregorianCalendar().getTimeInMillis();
         if (max > current) {
             outdated = false;
@@ -190,28 +198,12 @@ public class FilePositionOnTape {
     }
 
     /**
-     * Setter for file member.
-     * 
-     * @param file
-     *            File to stage.
-     */
-    void setFile(File file) {
-        LOGGER.trace("> setFile");
-
-        assert file != null;
-
-        this.file = file;
-
-        LOGGER.trace("< setFile");
-    }
-
-    /**
      * Setter for metadataTimestamp member.
-     * 
+     *
      * @param timestamp
      *            Metadata timestamp.
      */
-    public void setMetadataTimestamp(Calendar timestamp) {
+    private void setMetadataTimestamp(final Calendar timestamp) {
         LOGGER.trace("> setMetadataTimestamp");
 
         assert timestamp != null;
@@ -223,39 +215,60 @@ public class FilePositionOnTape {
 
     /**
      * Setter for position member.
-     * 
-     * @param position
+     *
+     * @param positionInTape
      *            Position of the file in the tape.
      */
-    public void setPosition(int position) {
+    private void setPosition(final int positionInTape) {
         LOGGER.trace("> setPosition");
 
-        assert position >= 0;
+        assert positionInTape >= 0;
 
-        this.position = position;
+        this.position = positionInTape;
 
         LOGGER.trace("< setPosition");
     }
 
     /**
      * Setter for tape member.
-     * 
-     * @param tape
+     *
+     * @param associatedTape
      *            Associated tape.
      */
-    public void setTape(Tape tape) {
+    private void setTape(final Tape associatedTape) {
         LOGGER.trace("> setTape");
 
-        assert tape != null;
+        assert associatedTape != null;
 
-        this.tape = tape;
+        this.tape = associatedTape;
 
         LOGGER.trace("< setTape");
     }
 
+    /**
+     * Updates the metadata of the file.
+     *
+     * @param associatedTape
+     *            Associated tape.
+     * @param positionInTape
+     *            Position of the file in the tape.
+     */
+    public void updateMetadata(final Tape associatedTape,
+            final int positionInTape) {
+        LOGGER.trace("> updateMetadata");
+
+        assert associatedTape != null;
+        assert positionInTape >= 0;
+
+        this.setMetadataTimestamp(new GregorianCalendar());
+        this.setTape(associatedTape);
+        this.setPosition(positionInTape);
+
+        LOGGER.trace("< updateMetadata");
+    }
+
     /*
      * (non-Javadoc)
-     * 
      * @see java.lang.Object#toString()
      */
     @Override
@@ -264,13 +277,15 @@ public class FilePositionOnTape {
 
         String ret = "";
         ret += "FilePositionOnTape";
-        ret += "{ MAX_METADATA_AGE: " + this.maxMetadataAge;
+        ret += "{ " + Constants.MAX_METADATA_AGE + ": " + this.maxMetadataAge;
         ret += ", file: " + this.getFile().getName();
         ret += ", metadataAge: "
                 + this.getMetadataTimestamp().getTimeInMillis();
         ret += ", position: " + this.getPosition();
         ret += ", tape: " + this.getTape().getName();
         ret += "}";
+
+        assert ret != null;
 
         LOGGER.trace("< toString");
 
