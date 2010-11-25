@@ -1,11 +1,9 @@
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -38,43 +36,54 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-
-import java.io.File;
+package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMInitException;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
+import fr.in2p3.cc.storage.treqs.model.Constants;
+import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
- * Managing interactions with HPSS
+ * Managing interactions with HPSS via JNI.
+ * <p>
+ * Currently (20101130), there is a problem with this implementation because the
+ * HPSS client API cannot be loaded correctly. There is a problem when JNI loads
+ * the C library, because it cannot find the exported symbols when importing the
+ * authorization library via dlopen.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
  */
-public class HPSSJNIBridge extends AbstractHSMBridge {
+public final class HPSSJNIBridge extends AbstractHSMBridge {
 
     /**
-     * Instance of the singleton
+     * Instance of the singleton.
      */
-    private static HPSSJNIBridge _instance = null;
+    private static HPSSJNIBridge instance = null;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HPSSJNIBridge.class);
 
+    // Loads the dynamic library.
     static {
         try {
-            LOGGER.info("Loading the HPSS JNI Bridge");
-            System.loadLibrary("HPSSJNIBridge");
-            LOGGER.debug("Load succesfully");
+            LOGGER.info("Loading the HPSS JNI Bridge.");
+            System.loadLibrary(DefaultProperties.HPSS_JNI_BRIDGE_LIBRARY);
+            LOGGER.debug("Load succesfully.");
         } catch (java.lang.UnsatisfiedLinkError e) {
-            LOGGER.error("Error loading library: {}", e.getMessage());
+            LOGGER.error("Error loading library.", e);
             throw e;
         }
     }
@@ -86,50 +95,65 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
      *            Name of the file to query.
      * @param ret
      *            Object that contains the description of the file.
-     * @throws HSMException
+     * @throws AbstractHSMException
      *             If there is a problem retrieving the information.
      */
-    private static native void getFileProperties(String name,
-            HSMHelperFileProperties ret) throws HSMException;
+    private static native void getFileProperties(final String name,
+            final HSMHelperFileProperties ret) throws AbstractHSMException;
 
     /**
      * Retrieves the unique instance.
      *
+     * @return The singleton instance.
      * @throws TReqSException
      *             If there is a problem initializing the environment.
      */
     public static HPSSJNIBridge getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
-            _instance = new HPSSJNIBridge();
+            instance = new HPSSJNIBridge();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
     /**
      * Initializes credentials.
      *
      * @param authType
-     *            Type of authentication. unix, kerberos.
+     *            Type of authentication: unix, kerberos.
      * @param keyTab
      *            Complete path where the keytab could be found.
      * @param user
-     *            User to do used in the HPSS login.
-     * @throws HSMInitException
+     *            User to be used in the HPSS login.
+     * @throws AbstractHSMInitException
      *             If there is a problem initializing the environment.
      */
-    private static native void hpssInit(String authType, String keyTab,
-            String user) throws HSMInitException;
+    private static native void hpssInit(final String authType,
+            final String keyTab, final String user)
+            throws AbstractHSMInitException;
+
+    /**
+     * Stages the file with HPSS.
+     *
+     * @param name
+     *            Name of the file to stage.
+     * @param size
+     *            Size of the file.
+     */
+    private static native void stage(final String name, final long size);
 
     /**
      * The HSM authorization type.
      */
     private String authType;
+
     /**
      * User used to interact with HPSS.
      */
@@ -139,55 +163,27 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
      * Creates the java part of the JNI bridge with HPSS.
      *
      * @throws TReqSException
-     *             If there is a problem setting the configuration.
+     *             If there is a problem setting the configuration, or acceding
+     *             the keytab.
      */
     private HPSSJNIBridge() throws TReqSException {
-        LOGGER.trace("> HPSSBridge creating");
+        LOGGER.trace("> HPSSJNIBridge creating");
 
         // Retrieves the necessary values to initialize the HPSS environment.
-        this.setAuthType();
-        this.setKeytab();
-        this.setUser();
+        this.initAuthType();
+        this.initKeytab();
+        this.initUser();
 
         // Initializes the HPSS environment.
-        LOGGER.debug(
-                "Passing this params to init: {}, {}, {}",
-                new String[] { this.getAuthType(), this.getKeytabPath(),
-                        this.getUser() });
+        LOGGER.debug("Passing this params to init: {}, {}, {}", new String[] {
+                this.getAuthType(), this.getKeytabPath(), this.getUser() });
         HPSSJNIBridge.hpssInit(this.getAuthType(), this.getKeytabPath(),
                 this.getUser());
 
         // Tests if the keytab could be acceded from HPSS.
-        if (!this.testKeytab()) {
-            throw new HSMInitException();
-        }
+        this.testKeytab();
 
-        LOGGER.trace("< HPSSBridge created");
-    }
-
-    /**
-     * Sets the user that will be used to authenticate the communication with
-     * HPSS.
-     *
-     * @throws ConfigNotFoundException
-     *             If the option could not be found.
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem reading the configuration file.
-     */
-    private void setUser() throws ConfigNotFoundException,
-            ProblematicConfiguationFileException {
-        final String user = Configurator.getInstance().getValue("MAIN",
-                "HPSS_USER");
-        this.user = user;
-    }
-
-    /**
-     * Returns the user to be used for authentication purposes against HPSS.
-     *
-     * @return User to be used with HPSS.
-     */
-    private String /* ! */getUser() {
-        return this.user;
+        LOGGER.trace("< HPSSJNIBridge created");
     }
 
     /**
@@ -196,33 +192,55 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
      * @return Type of authentication for HPSS.
      */
     private String getAuthType() {
+        LOGGER.trace(">< getAuthType");
+
         return this.authType;
     }
 
     /*
      * (non-Javadoc)
-     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String)
      */
+    @SuppressWarnings("unused")
     @Override
-    public final HSMHelperFileProperties getFileProperties(String name)
-            throws HSMException {
+    public HSMHelperFileProperties getFileProperties(final String name)
+            throws AbstractHSMException {
         LOGGER.trace("> getFileProperties");
 
-        HSMHelperFileProperties ret = new HSMHelperFileProperties();
-        getFileProperties(name, ret);
+        assert name != null;
+
+        HSMHelperFileProperties ret = null;
+        HPSSJNIBridge.getFileProperties(name, ret);
         // Checks if there was a problem while querying the file to HPSS.
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.error("position {}", ret.getPosition());
-            LOGGER.error("storageName {}", ret.getStorageName());
-            LOGGER.error("size {}", ret.getSize());
+            if (ret == null) {
+                LOGGER.error("No properties from HPSS.");
+            } else {
+                // The ret variable is modified by getFileProperties.
+                LOGGER.error("position {}", ret.getPosition());
+                LOGGER.error("storageName {}", ret.getTapeName());
+                LOGGER.error("size {}", ret.getSize());
+            }
         }
+
+        assert ret != null;
 
         LOGGER.trace("< getFileProperties");
 
         return ret;
+    }
+
+    /**
+     * Returns the user to be used for authentication purposes against HPSS.
+     *
+     * @return User to be used with HPSS.
+     */
+    private String/* ! */getUser() {
+        LOGGER.trace(">< getUser");
+
+        return this.user;
     }
 
     /**
@@ -232,15 +250,21 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
      *             If there is a problem retrieving the value of the
      *             authentication type.
      */
-    private void setAuthType() throws ProblematicConfiguationFileException {
-        String authType = "unix";
+    private void initAuthType() throws ProblematicConfiguationFileException {
+        LOGGER.trace("> initAuthType");
+
+        String type = "unix";
         try {
-            authType = Configurator.getInstance().getValue("MAIN", "AUTH_TYPE");
-        } catch (ConfigNotFoundException e) {
-            LOGGER.info("No setting for MAIN.AUTH_TYPE, default value will be used: "
-                    + authType);
+            type = Configurator.getInstance().getValue(Constants.MAIN,
+                    Constants.AUTHENTICATION_TYPE);
+        } catch (KeyNotFoundException e) {
+            LOGGER.info("No setting for {}.{}, default value will be used: {}",
+                    new Object[] { Constants.MAIN,
+                            Constants.AUTHENTICATION_TYPE, type });
         }
-        this.authType = authType;
+        this.authType = type;
+
+        LOGGER.trace("< initAuthType");
     }
 
     /**
@@ -248,26 +272,53 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
      *
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving the property.
-     * @throws ConfigNotFoundException
+     * @throws KeyNotFoundException
      *             If the keytab parameter was not found.
      */
-    private void setKeytab() throws ProblematicConfiguationFileException,
-            ConfigNotFoundException {
-        final String keytab = Configurator.getInstance().getValue("MAIN",
-                "KEYTAB_FILE");
+    private void initKeytab() throws ProblematicConfiguationFileException,
+            KeyNotFoundException {
+        LOGGER.trace("> initKeytab");
+
+        final String keytab = Configurator.getInstance().getValue(
+                Constants.MAIN, Constants.KEYTAB_FILE);
         this.setKeytabPath(keytab);
+
+        LOGGER.trace("< initKeytab");
+    }
+
+    /**
+     * Sets the user that will be used to authenticate the communication with
+     * HPSS.
+     *
+     * @throws KeyNotFoundException
+     *             If the option could not be found.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem reading the configuration file.
+     */
+    private void initUser() throws KeyNotFoundException,
+            ProblematicConfiguationFileException {
+        LOGGER.trace("> initUser");
+
+        final String hpssUser = Configurator.getInstance().getValue(
+                Constants.MAIN, Constants.HPSS_USER);
+        this.user = hpssUser;
+
+        LOGGER.trace("< initUser");
     }
 
     /*
      * (non-Javadoc)
-     *
      * @see
-     * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
-     * long)
+     * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(fr.in2p3.cc.storage
+     * .treqs.model.File)
      */
     @Override
-    public void stage(String name, long size) throws HSMException {
+    public void stage(final File file) throws AbstractHSMException {
         LOGGER.trace("> stage");
+
+        assert file != null;
+
+        HPSSJNIBridge.stage(file.getName(), file.getSize());
 
         LOGGER.trace("< stage");
     }
@@ -275,29 +326,28 @@ public class HPSSJNIBridge extends AbstractHSMBridge {
     /**
      * Tests the readability of the keytab file.
      *
-     * @return true if keytab is readable, false otherwise.
+     * @throws AbstractHSMException
+     *             When the keytab cannot be read.
      */
-    private boolean testKeytab() {
+    private void testKeytab() throws AbstractHSMException {
         LOGGER.trace("> testKeytab");
 
         LOGGER.info("Testing keytab: {}", this.getKeytabPath());
 
-        File keytab = new File(this.getKeytabPath());
-        boolean ret = false;
+        java.io.File keytab = new java.io.File(this.getKeytabPath());
         if (keytab.exists()) {
             LOGGER.debug("Exists.");
             if (keytab.canRead()) {
                 LOGGER.debug("Can be read.");
-                ret = true;
             } else {
                 LOGGER.error("Cannot be read: {}", keytab.getAbsolutePath());
+                throw new CannotReadKeytabException();
             }
         } else {
             LOGGER.error("It does not exist: {}", keytab.getAbsolutePath());
+            throw new KeytabNotFoundException();
         }
 
         LOGGER.trace("< testKeytab");
-
-        return ret;
     }
 }
