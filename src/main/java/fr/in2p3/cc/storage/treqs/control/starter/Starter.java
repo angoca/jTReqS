@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control.starter;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.control.starter;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control.starter;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -47,73 +46,155 @@ import org.apache.commons.cli.PosixParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.StagersController;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
-import fr.in2p3.cc.storage.treqs.model.dao.DAO;
-import fr.in2p3.cc.storage.treqs.model.exception.ExecutionErrorException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.InitDB;
+import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
+import fr.in2p3.cc.storage.treqs.model.Constants;
+import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.persistence.DAOFactory;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.InitDB;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
-public class Starter {
+/**
+ * Starts the application, loading the threads in the order. TODO JMX to reload
+ * configuration. TODO JMX to stop the application
+ *
+ * @author Andrés Gómez
+ * @since 1.5
+ */
+public final class Starter {
 
-    // TODO JMX to reload configuration.
-    // TODO JMX to stop treqs
-    //
+    /**
+     * Description of the command option: Configuration file.
+     */
+    private static final String CONFIG_FILE_COMMAND_DESCRIPTION = "Configuration file.";
+    /**
+     * Long name for the command option: Configuration file.
+     */
+    private static final String CONFIG_FILE_LONG_COMMAND_OPTION = "config";
+    /**
+     * Short name for the command option: Configuration file.
+     */
+    private static final String CONFIG_FILE_SHORT_COMMAND_OPTION = "c";
+    /**
+     * Description of the command option: Help.
+     */
+    private static final String HELP_COMMAND_DESCRIPTION = "Print this message.";
+    /**
+     * Long name for the command option: Help.
+     */
+    private static final String HELP_LONG_COMMAND_OPTION = "help";
+    /**
+     * Short name for the command option: Help.
+     */
+    private static final String HELP_SHORT_COMMAND_OPTION = "h";
+    /**
+     * Argument for the command option: Requests file.
+     */
+    private static final String REQUESTS_FILE_COMMAND_ARGUMENT = "REQUESTS_FILE";
+    /**
+     * Description of the command option: Requests file.
+     */
+    private static final String REQUESTS_FILE_COMMAND_DESCRIPTION = "r";
+    /**
+     * Long name for the command option: Requests file.
+     */
+    private static final String REQUESTS_FILE_LONG_COMMAND_OPTION = "reqfile";
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
+    /**
+     * If the application has to continue.
+     */
     private boolean cont = true;
+    /**
+     * Set of options set from the command line.
+     */
     private Options options;
-    private long timeBetweenCheck = 1000;
 
-    @SuppressWarnings("static-access")
-    private CommandLine prepareCommandOptions(String[] arguments)
+    /**
+     * Prepares the options passed.
+     *
+     * @param arguments
+     *            List of options.
+     * @return Object that has parsed the options.
+     * @throws ParseException
+     *             If there is a problem parsing the options.
+     */
+    private CommandLine prepareCommandOptions(final String[] arguments)
             throws ParseException {
         LOGGER.trace("> prepareCommandOptions");
 
-        options = new Options();
-        options.addOption("h", "help", false, "print this message");
-        options.addOption("c", "config", false, "treqs configuration file");
-        options.addOption(OptionBuilder.withDescription("r").withLongOpt(
-                "reqfile").hasArg().withArgName("REQUESTS_FILE").create());
+        assert arguments != null;
+
+        this.options = new Options();
+        // Help
+        this.options.addOption(HELP_SHORT_COMMAND_OPTION,
+                HELP_LONG_COMMAND_OPTION, false, HELP_COMMAND_DESCRIPTION);
+        // Configuration file.
+        this.options.addOption(CONFIG_FILE_SHORT_COMMAND_OPTION,
+                CONFIG_FILE_LONG_COMMAND_OPTION, false,
+                CONFIG_FILE_COMMAND_DESCRIPTION);
+        // Requests file.
+        OptionBuilder.withDescription(REQUESTS_FILE_COMMAND_DESCRIPTION);
+        OptionBuilder.withLongOpt(REQUESTS_FILE_LONG_COMMAND_OPTION);
+        OptionBuilder.hasArg();
+        OptionBuilder.withArgName(REQUESTS_FILE_COMMAND_ARGUMENT);
+        options.addOption(OptionBuilder.create());
+
         CommandLineParser parser = new PosixParser();
 
         CommandLine cli = parser.parse(options, arguments);
 
         LOGGER.trace("< prepareCommandOptions");
 
+        assert cli != null;
+
         return cli;
     }
 
-    public void process(String[] arguments) throws Exception {
+    /**
+     * Process the start of the application. Reads the command arguments, then
+     * load the configuration, and finally starts the components.
+     *
+     * @param arguments
+     *            Command line arguments.
+     * @throws Exception
+     *             If there is a problem in any step.
+     */
+    public void process(final String[] arguments) throws Exception {
         LOGGER.trace("> process");
 
-        LOGGER.info("Starting Treqs Server");
+        assert arguments != null;
 
-        CommandLine cmd = prepareCommandOptions(arguments);
+        LOGGER.info("Starting Server");
 
-        if (cmd.hasOption("help")) {
+        CommandLine cli = prepareCommandOptions(arguments);
+
+        if (cli.hasOption(HELP_LONG_COMMAND_OPTION)) {
             showHelp();
         } else {
             LOGGER.info("Finding out the configuration file");
-            // TODO First try to figure out the configuration file : 1. from the
-            // command
-            // line 2. from the configuration file
-            String configurationFile = cmd.getOptionValue("config");
+            // First try to figure out the configuration file:
+            // 1. from the command line.
+            // 2. from the configuration file
+            String configurationFile = cli
+                    .getOptionValue(CONFIG_FILE_LONG_COMMAND_OPTION);
             if (configurationFile != null) {
                 try {
-                    Configurator.getInstance().setConfFilename(
-                            configurationFile);
+                    Configurator.getInstance().setFilename(configurationFile);
                 } catch (ProblematicConfiguationFileException e) {
-                    LOGGER.error("No configuration file found.");
+                    LOGGER.error("Problem reading the configuration file.");
+                    throw e;
                 }
             }
 
-            InitDB.initDB();
+            // Initialize the database if necessary.
+            InitDB.initializeDatabase();
 
             this.toStart();
         }
@@ -121,17 +202,23 @@ public class Starter {
         LOGGER.trace("< process");
     }
 
+    /**
+     * Shows the help of the application.
+     */
     private void showHelp() {
         LOGGER.trace("> showHelp");
 
         HelpFormatter help = new HelpFormatter();
-        help.printHelp("treqs", options);
+        help.printHelp("treqs", this.options);
 
         LOGGER.trace("< showHelp");
     }
 
     /**
+     * Starts the activator.
+     *
      * @throws TReqSException
+     *             If there is a problem retrieving the instance.
      */
     private void startActivator() throws TReqSException {
         LOGGER.trace("> startActivator");
@@ -143,7 +230,10 @@ public class Starter {
     }
 
     /**
+     * Starts the Dispatcher.
+     *
      * @throws TReqSException
+     *             If there is a problem retrieving the instance.
      */
     private void startDispatcher() throws TReqSException {
         LOGGER.trace("> startDispatcher");
@@ -154,55 +244,73 @@ public class Starter {
         LOGGER.trace("< startDispatcher");
     }
 
+    /**
+     * Creates the components of the application and then it starts them.
+     *
+     * @throws TReqSException
+     *             If there is a problem in the components.
+     */
     void toStart() throws TReqSException {
-        LOGGER.trace("> start");
+        LOGGER.trace("> toStart");
 
-        DAO.getQueueDAO().abortPendingQueues();
-        DAO.getReadingDAO().updateUnfinishedRequests();
-        DAO.getConfigurationDAO().getMediaAllocations();
+        // TODO Check the PID of a same process to prevent two TReqS.
+
+        // Cleans the database.
+        int qty = DAOFactory.getDAOFactoryInstance().getQueueDAO()
+                .abortPendingQueues();
+        LOGGER.info("Aborted queues " + qty);
+        qty = DAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .updateUnfinishedRequests();
+        LOGGER.warn("Unfinished requests from previous execution " + qty);
 
         // Creates the Dispatcher
         Dispatcher.getInstance();
         // Creates and retrieve the activation time of the activator.
         // This time is half of the default activation time.
-        long sleep = Activator.getInstance().getSecondsBetweenLoops() * 1000 / 2;
+        long sleep = Activator.getInstance().getSecondsBetweenLoops()
+                * Constants.MILLISECONDS / 2;
 
-        startDispatcher();
-
-        LOGGER.info("Waiting {} milliseconds", sleep);
         try {
+            this.startDispatcher();
+
+            LOGGER.info("Waiting {} milliseconds", sleep);
             Thread.sleep(sleep);
 
-            startActivator();
+            this.startActivator();
 
             while (cont) {
-                Thread.sleep(timeBetweenCheck);
+                Thread.sleep(DefaultProperties.TIME_BETWEEN_CHECK);
                 // TODO Wathdog.
             }
         } catch (InterruptedException e) {
             throw new ExecutionErrorException(e);
         }
 
-        LOGGER.trace("< start");
+        LOGGER.trace("< toStart");
     }
 
+    /**
+     * Stops the application. It calls the components by starting the process of
+     * stop, then it waits for all components.
+     *
+     * @throws TReqSException
+     *             If there is a problem calling the components.
+     */
     void toStop() throws TReqSException {
-        LOGGER.trace("> stop");
+        LOGGER.trace("> toStop");
 
         this.cont = false;
 
+        // Starts the process of stopping.
         Activator.getInstance().conclude();
-
         Dispatcher.getInstance().conclude();
-
         StagersController.getInstance().conclude();
 
+        // Waits for the process to finish.
         Activator.getInstance().waitToFinish();
-
         Dispatcher.getInstance().waitToFinish();
-
         StagersController.getInstance().waitTofinish();
 
-        LOGGER.trace("< stop");
+        LOGGER.trace("< toStop");
     }
 }
