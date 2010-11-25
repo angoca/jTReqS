@@ -32,37 +32,48 @@
  *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
- *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+package fr.in2p3.cc.storage.treqs.persistence;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
- * Raised when there is a problem while initializing the HSM access.
+ * Basic Persistence exception.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class HSMInitException extends HSMException {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMInitException.class);
+public abstract class AbstractPersistanceException extends TReqSException {
+
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = -4400455423176802743L;
+    private static final long serialVersionUID = -7397853011740242653L;
 
     /**
-     * Creates the exception.
+     * Constructor without parameters.
      */
-    public HSMInitException() {
+    public AbstractPersistanceException() {
         super();
-
-        LOGGER.trace(">< Instance creation");
     }
 
+    /**
+     * Wrapping an exception.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    public AbstractPersistanceException(final Exception exception) {
+        super(exception);
+    }
+
+    /**
+     * Exception with an explicit message.
+     *
+     * @param message
+     *            Descriptive message of the problem.
+     */
+    public AbstractPersistanceException(final String message) {
+        super(message);
+    }
 }

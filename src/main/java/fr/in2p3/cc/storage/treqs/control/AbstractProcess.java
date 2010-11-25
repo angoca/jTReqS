@@ -64,17 +64,18 @@ import fr.in2p3.cc.storage.treqs.model.Constants;
  * </ul>
  * <p>
  * The method waitToFinish is a special method to wait the thread to finish its
- * operations. It can be called only when the Process is in Stopping state or
- * Stopped state.
+ * operations. It can be called only when the AbstractProcess is in Stopping
+ * state or Stopped state.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-public abstract class Process extends Thread {
+public abstract class AbstractProcess extends Thread {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Process.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(AbstractProcess.class);
     /**
      * Current state of the thread.
      */
@@ -86,14 +87,14 @@ public abstract class Process extends Thread {
      * @param name
      *            Name for the thread.
      */
-    public Process(final String name) {
+    public AbstractProcess(final String name) {
         super(name);
 
-        LOGGER.trace("> creating Process");
+        LOGGER.trace("> creating AbstractProcess");
 
         this.status = ProcessStatus.CREATED;
 
-        LOGGER.trace("< creating Process");
+        LOGGER.trace("< creating AbstractProcess");
     }
 
     /**

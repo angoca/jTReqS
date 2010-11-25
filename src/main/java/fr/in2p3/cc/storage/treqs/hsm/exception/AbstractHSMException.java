@@ -32,48 +32,116 @@
  *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
+ *
  */
-package fr.in2p3.cc.storage.treqs.persistence;
+package fr.in2p3.cc.storage.treqs.hsm.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
- * Basic Persistence exception.
+ * Models an exception raised at the HSM level.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public abstract class PersistanceException extends TReqSException {
-
+public abstract class AbstractHSMException extends TReqSException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(AbstractHSMException.class);
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = -7397853011740242653L;
+    private static final long serialVersionUID = 7426851287153707330L;
 
     /**
-     * Constructor without parameters.
+     * Associated error code.
      */
-    public PersistanceException() {
+    private final short errorcode;
+
+    /**
+     * Creates a default exception.
+     */
+    protected AbstractHSMException() {
         super();
+
+        LOGGER.trace("> Instance creation empty");
+
+        this.errorcode = 0;
+
+        LOGGER.trace("< Instance creation empty");
     }
 
     /**
-     * Wrapping an exception.
+     * Create an exception wrapping the problem.
      *
      * @param exception
      *            Wrapped exception.
      */
-    public PersistanceException(final Exception exception) {
+    protected AbstractHSMException(final Exception exception) {
         super(exception);
+
+        LOGGER.trace("> Instance creation exception");
+
+        this.errorcode = 0;
+
+        LOGGER.trace("< Instance creation exception");
     }
 
     /**
-     * Exception with an explicit message.
+     * Creates the exception with an associated error code.
+     *
+     * @param hsmErrorcode
+     *            Descriptive error code.
+     */
+    protected AbstractHSMException(final short hsmErrorcode) {
+        super();
+
+        LOGGER.trace("> Instance creation errorcode");
+
+        this.errorcode = hsmErrorcode;
+
+        LOGGER.trace("< Instance creation errorcode");
+    }
+
+    /**
+     * Creates the exception with a descriptive message.
      *
      * @param message
-     *            Descriptive message of the problem.
+     *            Associated message.
      */
-    public PersistanceException(final String message) {
+    protected AbstractHSMException(final String message) {
         super(message);
+        LOGGER.trace("> Instance creation message");
+
+        this.errorcode = 0;
+
+        LOGGER.trace("< Instance creation message");
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.TReqSException#getMessage()
+     */
+    @Override
+    public String getMessage() {
+        LOGGER.trace(">< getMessage");
+
+        return "Code: " + this.errorcode + super.getMessage();
+    }
+
+    /**
+     * Retrieves the associated error code.
+     *
+     * @return The associated error code.
+     */
+    public final short getErrorCode() {
+        LOGGER.trace(">< getHSMErrorCode");
+
+        return this.errorcode;
     }
 }

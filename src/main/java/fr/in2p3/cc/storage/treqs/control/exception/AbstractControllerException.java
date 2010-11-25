@@ -34,49 +34,36 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
+package fr.in2p3.cc.storage.treqs.control.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.persistence.PersistanceException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
- * Basic persistence exception for MySQL.
+ * Exception generated with a controller.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public abstract class MySQLException extends PersistanceException {
-
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 7637653660807465428L;
+public abstract class AbstractControllerException extends TReqSException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLException.class);
+            .getLogger(AbstractControllerException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 7929653613270294850L;
 
     /**
-     * Default constructor. The exception should have a descriptive name.
+     * Default constructor with reduced visibility.
      */
-    protected MySQLException() {
+    protected AbstractControllerException() {
         super();
 
         LOGGER.trace(">< Instance creation");
-    }
-
-    /**
-     * Wraps a thrown exception.
-     *
-     * @param e
-     *            Wrapped exception.
-     */
-    protected MySQLException(final Exception e) {
-        super(e);
-
-        LOGGER.trace(">< Instance creation wrapping exception");
     }
 }

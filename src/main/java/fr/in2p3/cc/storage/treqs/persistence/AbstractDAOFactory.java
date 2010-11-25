@@ -58,17 +58,17 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * @author Andrés Gómez
  * @since 1.5
  */
-public abstract class DAOFactory {
+public abstract class AbstractDAOFactory {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(DAOFactory.class);
+            .getLogger(AbstractDAOFactory.class);
     /**
      * The singleton instance.
      */
-    private static DAOFactory instance = null;
+    private static AbstractDAOFactory instance = null;
 
     /**
      * Returns the DAO for the configuration.
@@ -136,7 +136,7 @@ public abstract class DAOFactory {
      *             If there is a problem while acceding the data source. If
      *             there is a problem reading the configuration file.
      */
-    public static DAOFactory getDAOFactoryInstance() throws TReqSException {
+    public static AbstractDAOFactory getDAOFactoryInstance() throws TReqSException {
         LOGGER.trace("> getDAOFactoryInstance");
 
         if (instance == null) {
@@ -159,7 +159,7 @@ public abstract class DAOFactory {
      * @throws PersistenceFactoryException
      *             If there is a problem while instantiating the class.
      */
-    private static DAOFactory getDataSourceAccess(final String daoFactoryName)
+    private static AbstractDAOFactory getDataSourceAccess(final String daoFactoryName)
             throws PersistenceFactoryException {
         LOGGER.trace("> getDataSourceAccess");
 
@@ -182,9 +182,9 @@ public abstract class DAOFactory {
         }
 
         // Instantiates the class calling the constructor.
-        DAOFactory daoInst = null;
+        AbstractDAOFactory daoInst = null;
         try {
-            daoInst = (DAOFactory) constructor.newInstance();
+            daoInst = (AbstractDAOFactory) constructor.newInstance();
         } catch (IllegalArgumentException e) {
             throw new PersistenceFactoryException(e);
         } catch (IllegalAccessException e) {
