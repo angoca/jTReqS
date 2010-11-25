@@ -309,7 +309,7 @@ public final class Starter {
         // Waits for the process to finish.
         Activator.getInstance().waitToFinish();
         Dispatcher.getInstance().waitToFinish();
-        StagersController.getInstance().waitTofinish();
+        StagersController.getInstance().waitToFinish();
 
         LOGGER.trace("< toStop");
     }
