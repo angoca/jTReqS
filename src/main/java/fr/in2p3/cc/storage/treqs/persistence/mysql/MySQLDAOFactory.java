@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistence.DAOFactory;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
@@ -54,7 +54,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class MySQLDAOFactory extends DAOFactory {
+public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /**
      * Logger.
