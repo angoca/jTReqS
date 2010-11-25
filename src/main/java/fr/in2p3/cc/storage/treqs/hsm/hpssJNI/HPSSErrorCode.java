@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,14 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
+
+/**
+ * Definition of the HPSS Error codes.
+ *
+ * @author Andrés Gómez
+ * @since 1.5
+ */
 public enum HPSSErrorCode {
     /**
      * Initialization OK.
@@ -46,7 +52,7 @@ public enum HPSSErrorCode {
      * <ul>
      * <li>Search permission is denied on a component of the path prefix.</li>
      * <li>The file exists and the permissions specified by Oflag are denied.</li>
-     * <li>The file doesn't exist and write permission is denied for the parent
+     * <li>The file does not exist and write permission is denied for the parent
      * directory of the file to be created.</li>
      * <li>O_TRUNC is specified and write permission is denied.</li>
      * </ul>
@@ -56,39 +62,48 @@ public enum HPSSErrorCode {
      */
     HPSS_EACCES((byte) -13),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EAGAIN((byte) -11),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EBADF((byte) -9),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EBADMSG((byte) -77),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EBUSY((byte) -16),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ECHILD((byte) -10),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ECONN((byte) -50),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EDEADLK((byte) -45),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EDOM((byte) -33),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EDQUOT((byte) -88),
     /**
@@ -96,29 +111,31 @@ public enum HPSSErrorCode {
      */
     HPSS_EEXIST((byte) -17),
     /**
-     * (hpss_Open) The Path parameter is a NULL pointer.
+     * (hpss_Open) The Path parameter is NULL.
      * <p>
-     * (hpss_FileGetXAttributes) The Path or AttrOut parameter is a NULL
-     * pointer.
+     * (hpss_FileGetXAttributes) The Path or AttrOut parameter is NULL.
      */
     HPSS_EFAULT((byte) -14),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EFBIG((byte) -27),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EINTR((byte) -4),
     /**
      * (hpss_Open) Oflag is not valid, or one or more values input in the
      * HintsIn parameter is invalid.
      * <p>
-     * (hpss_FileGetXAttributes) BitfileID is a NULL pointer.
+     * (hpss_FileGetXAttributes) BitfileID is NULL.
      */
     HPSS_EINVAL((byte) -22),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EIO((byte) -5),
     /**
@@ -131,11 +148,13 @@ public enum HPSSErrorCode {
      */
     HPSS_EMFILE((byte) -24),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EMLINK((byte) -31),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EMSGSIZE((byte) -59),
     /**
@@ -152,7 +171,8 @@ public enum HPSSErrorCode {
      */
     HPSS_ENFILE((byte) -23),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ENODEV((byte) -19),
     /**
@@ -164,11 +184,13 @@ public enum HPSSErrorCode {
      */
     HPSS_ENOENT((byte) -2),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ENOLCK((byte) -46),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ENOLINK((byte) -67),
     /**
@@ -176,11 +198,13 @@ public enum HPSSErrorCode {
      */
     HPSS_ENOMEM((byte) -12),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ENOSPACE((byte) -28),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ENOSR((byte) -63),
     /**
@@ -191,52 +215,76 @@ public enum HPSSErrorCode {
      */
     HPSS_ENOTDIR((byte) -20),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ENOTEMPTY((byte) -87),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ENXIO((byte) -6),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EOPNOTSUPP((byte) -64),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EPERM((byte) -1),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EPIPE((byte) -32),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ERANGE((byte) -34),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ESTALE((byte) -52),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_ETIMEDOUT((byte) -78),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EWRPROTECT((byte) -47),
     /**
-     * ????.
+     * ????. This error is unknown when using the application, and probably it
+     * never occurs.
      */
     HPSS_EXDEV((byte) -18);
 
+    /**
+     * Id of the error code.
+     */
     private byte code = 0;
 
-    private HPSSErrorCode(byte code) {
-        this.code = code;
+    /**
+     * Constructor with the id of the error.
+     *
+     * @param errorCode
+     *            Error code.
+     */
+    private HPSSErrorCode(final byte errorCode) {
+        this.code = errorCode;
     }
 
+    /**
+     * Retrieves the same number of the HPSS's error code.
+     *
+     * @return The id of the error code.
+     */
     public byte getCode() {
         return this.code;
     }
