@@ -39,7 +39,7 @@ package fr.in2p3.cc.storage.treqs.hsm.command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 
 /**
  * Thrown when mapping an invalid number.
@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class UnknownOutputException extends HSMException {
+public final class UnknownOutputException extends AbstractHSMException {
 
     /**
      * Generated ID.
