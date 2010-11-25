@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
-import fr.in2p3.cc.storage.treqs.persistence.DAOFactory;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.InitDB;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
@@ -158,7 +158,7 @@ public final class Starter {
     }
 
     /**
-     * Process the start of the application. Reads the command arguments, then
+     * Processes the start of the application. Reads the command arguments, then
      * load the configuration, and finally starts the components.
      *
      * @param arguments
@@ -256,10 +256,10 @@ public final class Starter {
         // TODO Check the PID of a same process to prevent two TReqS.
 
         // Cleans the database.
-        int qty = DAOFactory.getDAOFactoryInstance().getQueueDAO()
+        int qty = AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
                 .abortPendingQueues();
         LOGGER.info("Aborted queues " + qty);
-        qty = DAOFactory.getDAOFactoryInstance().getReadingDAO()
+        qty = AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
                 .updateUnfinishedRequests();
         LOGGER.warn("Unfinished requests from previous execution " + qty);
 
