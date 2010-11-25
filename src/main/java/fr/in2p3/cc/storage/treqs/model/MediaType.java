@@ -1,12 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -39,44 +34,60 @@ import org.slf4j.LoggerFactory;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Represents the type of media. A type of media could be T10K-A.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class MediaType {
+public final class MediaType {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MediaType.class);
-
     /**
      * Id of the media type.
      */
-    private byte id;
-
+    private final byte id;
     /**
      * Name of the media type.
      */
-    private String name;
+    private final String name;
 
     /**
      * Constructor that relates the name of the media type.
-     * 
-     * @param name
+     *
+     * @param mediaId
+     *            If of the media type.
+     * @param mediaName
+     *            Name of the media type.
      */
-    public MediaType(byte id, String name) {
+    public MediaType(final byte mediaId, final String mediaName) {
         LOGGER.trace("> Creating media type");
 
-        assert name != null;
+        assert mediaId >= 0;
+        assert mediaName != null && !mediaName.equals("");
 
-        this.setId(id);
-        this.setName(name);
+        this.id = mediaId;
+        this.name = mediaName;
 
         LOGGER.trace("< Creating media type");
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
+        LOGGER.trace("> equals");
+
         boolean ret = false;
         if (obj instanceof MediaType) {
             MediaType media = (MediaType) obj;
@@ -85,13 +96,27 @@ public class MediaType {
                 ret = true;
             }
         }
+
+        LOGGER.trace("< equals");
+
         return ret;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        LOGGER.trace(">< hashCode");
+
+        return id * name.hashCode();
     }
 
     /**
      * Getter of the id.
-     * 
-     * @return
+     *
+     * @return Retrieves the unique ID of the media type.
      */
     public byte getId() {
         LOGGER.trace(">< getId");
@@ -101,8 +126,8 @@ public class MediaType {
 
     /**
      * Getter of the name.
-     * 
-     * @return
+     *
+     * @return Retrieves the name of the media.
      */
     public String getName() {
         LOGGER.trace(">< getName");
@@ -110,35 +135,23 @@ public class MediaType {
         return this.name;
     }
 
-    private void setId(byte id) {
-        LOGGER.trace("> setId");
-
-        assert id >= 0;
-
-        this.id = id;
-
-        LOGGER.trace("< setId");
-    }
-
-    /**
-     * setter of the name.
-     * 
-     * @param name
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
-    public void setName(String name) {
-        LOGGER.trace("> setName");
-
-        this.name = name;
-
-        LOGGER.trace("< setName");
-    }
-
     @Override
     public String toString() {
+        LOGGER.trace("> toString");
+
         String ret = "";
-        ret += "{ id : " + this.getId();
-        ret += ", name : " + this.getName();
+        ret += "{ id: " + this.getId();
+        ret += ", name: " + this.getName();
         ret += "}";
+
+        assert ret != null;
+
+        LOGGER.trace("> toString");
+
         return ret;
     }
 }
