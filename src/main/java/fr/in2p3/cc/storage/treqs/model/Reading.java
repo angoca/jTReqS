@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -35,6 +33,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -42,30 +41,30 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMCloseException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
-import fr.in2p3.cc.storage.treqs.model.dao.DAO;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
-import fr.in2p3.cc.storage.treqs.model.exception.NullParameterException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
-public class Reading {
+/**
+ * This models one reading of a file. A file request could have several reading
+ * due to several tries, when there are errors while acceding the tape.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
+ */
+public final class Reading {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Reading.class);
-    /**
-     * Maximal quantity of read retries.
-     */
-    public static final byte MAX_READ_RETRIES = 3;
-
     /**
      * Error code of the last reading attempt.
      */
@@ -75,81 +74,86 @@ public class Reading {
      */
     private String errorMessage;
     /**
-     * Status of the last reading operation
+     * Status of the last reading operation.
      */
-    private FileStatus fileState;
+    private FileRequestStatus fileRequestStatus;
     /**
      * Max number of retries.
      */
-    private byte maxTries;
+    private final byte maxTries;
     /**
      * Reference to the file metadata.
      */
-    private FilePositionOnTape metaData;
+    private final FilePositionOnTape metaData;
     /**
      * Number of reading tries.
      */
-    private byte nbTries;
+    private byte tries;
     /**
-     * The associated queue..
+     * The associated queue.
      */
-    private Queue queue;
+    private final Queue queue;
     /**
      * When the file started to be staged.
      */
     private Calendar startTime;
 
     /**
-     * This constructor sets all the initial parameters and updates the DAO. The
-     * file status is always FS_SUBMITTED.
-     * 
+     * Sets all the initial parameters and updates the DAO. The file status is
+     * always FS_SUBMITTED.
+     *
      * @param fpot
-     *            reference to a FilePositionOnTape instance. This will be the
-     *            metadata.
-     * @param nbTries
-     *            the number of tries already attempted.
-     * @param qid
-     *            the id of the queue I belong to.
+     *            Reference to a FilePositionOnTape instance. This contains the
+     *            metadata of the request.
+     * @param triesNumber
+     *            Number of tries already attempted.
+     * @param associatedQueue
+     *            Id of the queue it belongs to.
+     * @throws TReqSException
+     *             if a parameter is null. A message with READ01 error code will
+     *             be logged. If there is an invalid parameter, or when getting
+     *             a value or while using the DAO.
      */
-    Reading(FilePositionOnTape fp, byte nbTries, Queue queue)
-            throws TReqSException {
+    Reading(final FilePositionOnTape fpot, final byte triesNumber,
+            final Queue associatedQueue) throws TReqSException {
         LOGGER.trace("> Creating reading with parameters.");
 
-        if (fp == null) {
-            String message = "The metadata (FilePositionOnTape) reference "
-                    + "cannot be null.";
-            ErrorCode code = ErrorCode.READ01;
-            LOGGER.error("{}: {}", code, message);
-            throw new NullParameterException(code, message);
-        }
-        this.errorCode = (short) 0;
+        assert fpot != null;
+        assert triesNumber >= 0;
+        assert associatedQueue != null;
+
         this.errorMessage = "";
-        this.fileState = FileStatus.FS_SUBMITTED;
+        this.fileRequestStatus = FileRequestStatus.FS_SUBMITTED;
+        this.metaData = fpot;
+        this.queue = associatedQueue;
 
-        this.setMaxTries(MAX_READ_RETRIES);
+        this.setNumberOfTries(triesNumber);
+        this.setErrorCode((short) 0);
+
+        byte max = DefaultProperties.MAX_READ_RETRIES;
         try {
-            this.setMaxTries(Byte.parseByte(Configurator.getInstance()
-                    .getValue("MAIN", "MAX_READ_RETRIES")));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info(
-                            "No setting for MAX_READ_RETRIES, default value will be used: {}",
-                            this.maxTries);
+            max = Byte.parseByte(Configurator.getInstance().getValue(
+                    Constants.MAIN, Constants.MAX_READ_RETRIES));
+        } catch (KeyNotFoundException e) {
+            LOGGER.info("No setting for {}.{}, default value will "
+                    + "be used: {}", new Object[] { Constants.MAIN,
+                    Constants.MAX_READ_RETRIES, this.maxTries });
         }
-        this.setMetaData(fp);
-        this.setNbTries(nbTries);
-        this.queue = queue;
+        this.maxTries = max;
 
-        DAO.getReadingDAO().firstUpdate(this.metaData, this.fileState,
-                "Registered to Queue", this.queue);
+        // Registers this reading in the database.
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .firstUpdate(this, "Registered to Queue");
 
         LOGGER.trace("< Creating reading with parameters.");
     }
 
     /**
      * Getter for error code member.
+     *
+     * @return Error code of the last retry.
      */
-    short getErrorCode() {
+    public short getErrorCode() {
         LOGGER.trace(">< getErrorCode");
 
         return this.errorCode;
@@ -157,28 +161,30 @@ public class Reading {
 
     /**
      * Getter for error message member.
-     * 
-     * @return
+     *
+     * @return Message of the last retry.
      */
-    String getErrorMessage() {
+    public String getErrorMessage() {
         LOGGER.trace(">< getErrorMessage");
 
         return this.errorMessage;
     }
 
     /**
-     * Getter for file state member.
-     * 
-     * @return
+     * Getter for file request status member.
+     *
+     * @return Status of the associated file.
      */
-    FileStatus getFileState() {
-        LOGGER.trace(">< getFileState");
+    public FileRequestStatus getFileRequestStatus() {
+        LOGGER.trace(">< getFileRequestStatus");
 
-        return this.fileState;
+        return this.fileRequestStatus;
     }
 
     /**
      * Getter for max tries member.
+     *
+     * @return Maximal possible quantity of retries for this reading.
      */
     short getMaxTries() {
         LOGGER.trace(">< getMaxTries");
@@ -188,10 +194,10 @@ public class Reading {
 
     /**
      * Getter for metadata member.
-     * 
-     * @return
+     *
+     * @return The metadata of the associated file request.
      */
-    FilePositionOnTape getMetaData() {
+    public FilePositionOnTape getMetaData() {
         LOGGER.trace(">< getMetaData");
 
         return this.metaData;
@@ -199,16 +205,19 @@ public class Reading {
 
     /**
      * Getter for number of tries member.
-     * 
-     * @return
+     *
+     * @return Quantity of retries already done.
      */
-    byte getNbTries() {
-        LOGGER.trace(">< getNbTries");
+    public byte getNumberOfTries() {
+        LOGGER.trace(">< getNumberOfTries");
 
-        return this.nbTries;
+        return this.tries;
     }
 
-    Queue getQueue() {
+    /**
+     * @return Retrieves the associated queue.
+     */
+    public Queue getQueue() {
         LOGGER.trace(">< getQueue");
 
         return this.queue;
@@ -216,8 +225,8 @@ public class Reading {
 
     /**
      * Getter for start time member.
-     * 
-     * @return
+     *
+     * @return Retrieves when the reading was started.
      */
     Calendar getStartTime() {
         LOGGER.trace(">< getStartTime");
@@ -226,9 +235,10 @@ public class Reading {
     }
 
     /**
-     * Performs the real stage.
-     * 
+     * Performs the real stage. This method calls the stage command in the HSM.
+     *
      * @throws TReqSException
+     *             If there is a problem acceding the HSM or the database.
      */
     private void realStage() throws TReqSException {
         LOGGER.trace("> realStage");
@@ -237,111 +247,118 @@ public class Reading {
         // When the staging is not successful, this reading instance's status
         // has to reflect it but in case of retry, the DAO should be notified
         // that the status is back to FS_CREATED.
-        FileStatus toDAOState = this.fileState;
 
-        this.fileState = FileStatus.FS_QUEUED;
-        this.nbTries++;
+        this.fileRequestStatus = FileRequestStatus.FS_QUEUED;
+        this.tries++;
         this.startTime = new GregorianCalendar();
-        DAO.getReadingDAO().update(this.metaData, this.fileState,
-                this.startTime, this.getNbTries(), this.errorMessage,
-                this.errorCode, this.queue);
+        final String filename = this.getMetaData().getFile().getName();
+
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .update(this, this.getFileRequestStatus(), this.startTime);
         LOGGER.info("File {} in tape {} at, position {}: Started.",
-                new String[] { this.metaData.getFile().getName(),
-                        this.metaData.getTape().getName(),
-                        this.metaData.getPosition() + "" });
+                new String[] { filename, this.metaData.getTape().getName(),
+                        Integer.toString(this.metaData.getPosition()) });
 
         try {
-            HSMFactory.getHSMBridge().stage(
-                    this.getMetaData().getFile().getName(),
-                    this.getMetaData().getFile().getSize());
-            this.setFileState(FileStatus.FS_STAGED);
-            toDAOState = FileStatus.FS_STAGED;
-            LOGGER.info("File {} successfully staged.", this.getMetaData()
-                    .getFile().getName());
-        } catch (HSMException e) {
-            LOGGER.warn("Error processing this file: {} {}", this.getMetaData()
-                    .getFile().getName(), e.getMessage());
+            HSMFactory.getHSMBridge().stage(this.getMetaData().getFile());
+            this.setFileRequestStatus(FileRequestStatus.FS_STAGED);
+            LOGGER.info("File {} successfully staged.", filename);
+        } catch (AbstractHSMException e) {
+            LOGGER.warn("Error processing this file: {} {}", filename,
+                    e.getMessage());
             if (e instanceof HSMResourceException) {
                 LOGGER.error("No space in disk. Special action will be taken");
                 // Set the file as submitted in a queue. It will be handled
                 // later with an incremented nbTries
-                this.setFileState(FileStatus.FS_SUBMITTED);
+                this.setFileRequestStatus(FileRequestStatus.FS_SUBMITTED);
                 // The file state is changed to submitted.
-                toDAOState = FileStatus.FS_SUBMITTED;
-                DAO.getReadingDAO().update(this.metaData, toDAOState,
-                        new GregorianCalendar(), this.getNbTries(),
-                        this.errorMessage, this.errorCode, this.queue);
+                AbstractDAOFactory
+                        .getDAOFactoryInstance()
+                        .getReadingDAO()
+                        .update(this, FileRequestStatus.FS_SUBMITTED,
+                                new GregorianCalendar());
                 // We report this problem to the caller.
                 throw e;
             } else if (e instanceof HSMOpenException) {
-                LOGGER.warn("Error opening. Retrying.");
-                toDAOState = retryFile(e);
+                logsException("Error opening. Retrying " + filename, e,
+                        FileRequestStatus.FS_CREATED);
             } else if (e instanceof HSMStageException) {
-                LOGGER.warn("Error staging. Retrying.");
-                toDAOState = retryFile(e);
+                logsException("Error staging. Retrying " + filename, e,
+                        FileRequestStatus.FS_CREATED);
             } else if (e instanceof HSMCloseException) {
-                LOGGER.warn("Error closing. Retrying.");
-                toDAOState = retryFile(e);
+                logsException("Error closing. Retrying " + filename, e,
+                        FileRequestStatus.FS_CREATED);
             }
         } catch (Exception e) {
-            LOGGER.warn("Unexpected error while staging {}: {}", this
-                    .getMetaData().getFile().getName(), e.getMessage());
-            this.setErrorMessage("Unexpected error while staging "
-                    + this.getMetaData().getFile().getName());
-            this.setFileState(FileStatus.FS_FAILED);
-            toDAOState = FileStatus.FS_FAILED;
+            String mess = "Unexpected error while staging " + filename + ":"
+                    + e.getMessage();
+            logsException(mess, e, FileRequestStatus.FS_FAILED);
         }
-
-        DAO.getReadingDAO().update(this.metaData, toDAOState,
-                new GregorianCalendar(), this.getNbTries(), this.errorMessage,
-                this.errorCode, this.queue);
 
         LOGGER.trace("< realStage");
     }
 
     /**
-     * Logs the exception and changes the file status.
-     * 
-     * @param e
-     * @return
-     * @throws InvalidParameterException
+     * Logs the exception, updates the data source and changes the file status.
+     *
+     * @param message
+     *            Message to log.
+     * @param exception
+     *            Exception to process.
+     * @param daoState
+     *            State to register in the database.
+     * @throws TReqSException
+     *             If there is a problem registering the error in the database.
      */
-    private FileStatus retryFile(HSMException e)
-            throws InvalidParameterException {
-        LOGGER.trace("> retryFile");
+    private void logsException(final String message, final Exception exception,
+            final FileRequestStatus daoState) throws TReqSException {
+        LOGGER.trace("> logsException");
 
-        assert e != null;
+        assert message != null && !message.equals("");
+        assert exception != null;
+        assert daoState != null;
 
-        FileStatus toDAOState;
-        this.setErrorCode(e.getHSMErrorCode());
-        this.setErrorMessage(e.getMessage());
-        this.setFileState(FileStatus.FS_FAILED);
+        LOGGER.warn(message);
+
+        if (exception instanceof AbstractHSMException) {
+            this.setErrorCode(((AbstractHSMException) exception).getErrorCode());
+        }
+        this.setErrorMessage(exception.getMessage());
+
+        this.setFileRequestStatus(FileRequestStatus.FS_FAILED);
         // Put the request status as CREATED so that the dispatcher will
         // reconsider it
-        toDAOState = FileStatus.FS_CREATED;
 
-        LOGGER.trace("< retryFile");
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .update(this, daoState, new GregorianCalendar());
 
-        return toDAOState;
+        LOGGER.trace("< logsException");
+
     }
 
     /**
      * Setter for error code member.
+     *
+     * @param code
+     *            Returned error code from the HSM.
      */
-    void setErrorCode(short errorCode) {
-        LOGGER.trace(">< setErrorCode");
+    void setErrorCode(final short code) {
+        LOGGER.trace("> setErrorCode");
 
-        assert errorCode >= 0;
+        assert code >= 0;
 
-        this.errorCode = errorCode;
+        this.errorCode = code;
+
+        LOGGER.trace("< setErrorCode");
     }
 
     /**
      * Setter for error message member.
-     * 
+     *
      * @param message
+     *            Returned error message from the HSM.
      */
-    void setErrorMessage(String message) {
+    void setErrorMessage(final String message) {
         LOGGER.trace("> setErrorMessage");
 
         assert message != null && !message.equals("");
@@ -353,39 +370,41 @@ public class Reading {
 
     /**
      * Sets the status of the last reading operation. This method will not call
-     * for the DAO method
-     * 
-     * @param fileState
+     * for the DAO method.
+     *
+     * @param status
      *            the new status.
-     * @throws InvalidParameterException
+     * @throws InvalidStatusTransitionException
      *             If the new status is an invalid change from the current
      *             status.
      */
-    void setFileState(FileStatus fs) throws InvalidParameterException {
-        LOGGER.trace("> setFileState");
+    void setFileRequestStatus(final FileRequestStatus status)
+            throws InvalidStatusTransitionException {
+        LOGGER.trace("> setFileRequestStatus");
+
+        assert status != null;
 
         if (
-        // Currently created and new submitted. Not possible.
-        ((this.fileState == FileStatus.FS_CREATED) && (fs == FileStatus.FS_SUBMITTED))
-                // Currently created and new staged (on cache disk.) Not
-                // possible.
-                || ((this.fileState == FileStatus.FS_CREATED) && (fs == FileStatus.FS_STAGED))
-                // Currently submitted.
-                || ((this.fileState == FileStatus.FS_SUBMITTED) && (fs == FileStatus.FS_QUEUED))
+        // Currently created and new submitted.
+        ((this.fileRequestStatus == FileRequestStatus.FS_CREATED) && (status == FileRequestStatus.FS_SUBMITTED))
+                // Currently created and new staged (on cache disk.)
+                || ((this.fileRequestStatus == FileRequestStatus.FS_CREATED) && (status == FileRequestStatus.FS_ON_DISK))
+                // Currently submitted and new queued.
+                || ((this.fileRequestStatus == FileRequestStatus.FS_SUBMITTED) && (status == FileRequestStatus.FS_QUEUED))
                 // Currently queued and new staged.
-                || ((this.fileState == FileStatus.FS_QUEUED) && (fs == FileStatus.FS_STAGED))
-                // Currently queued and new FileStatus.
-                || ((this.fileState == FileStatus.FS_QUEUED) && (fs == FileStatus.FS_SUBMITTED))
+                || ((this.fileRequestStatus == FileRequestStatus.FS_QUEUED) && (status == FileRequestStatus.FS_STAGED))
+                // Currently queued and new submitted (suspended.)
+                || ((this.fileRequestStatus == FileRequestStatus.FS_QUEUED) && (status == FileRequestStatus.FS_SUBMITTED))
                 // Currently queued and new failed.
-                || ((this.fileState == FileStatus.FS_QUEUED) && (fs == FileStatus.FS_FAILED))) {
-            this.fileState = fs;
+                || ((this.fileRequestStatus == FileRequestStatus.FS_QUEUED) && (status == FileRequestStatus.FS_FAILED))) {
+            this.fileRequestStatus = status;
         } else {
-            String message = "Invalid change of file request status.";
-            ErrorCode code = ErrorCode.READ02;
-            LOGGER.error("{}: {} (from {} to {}) for file {}", new String[] {
-                    code + "", message, this.fileState.name(), fs.name(),
+            LOGGER.error("Invalid change of file request status. "
+                    + "(from {} to {}) for file {}", new String[] {
+                    this.fileRequestStatus.name(), status.name(),
                     this.getMetaData().getFile().getName() });
-            throw new InvalidParameterException(code, message);
+            throw new InvalidStatusTransitionException(this.fileRequestStatus,
+                    status);
         }
 
         /*
@@ -397,67 +416,40 @@ public class Reading {
          * this.getMetaData().getFileRef().updateFileRequests(f);
          */
 
-        LOGGER.trace("< setFileState");
-    }
-
-    /**
-     * Setter for max tries member.
-     */
-    void setMaxTries(byte maxTries) {
-        LOGGER.trace("> setMaxTries");
-
-        assert maxTries > 0;
-
-        this.maxTries = maxTries;
-
-        LOGGER.trace("< setMaxTries");
-    }
-
-    /**
-     * Setter for metadata member.
-     * 
-     * @param metaData
-     */
-    void setMetaData(FilePositionOnTape metaData) {
-        LOGGER.trace("> setMetaData");
-
-        assert metaData != null;
-
-        this.metaData = metaData;
-
-        LOGGER.trace("< setMetaData");
+        LOGGER.trace("< setFileRequestStatus");
     }
 
     /**
      * Setter for number tries member.
-     * 
-     * @param nbTries
+     *
+     * @param numberTries
+     *            Number of tries.
      */
-    void setNbTries(byte nbTries) {
-        LOGGER.trace("> setNbTries");
+    void setNumberOfTries(final byte numberTries) {
+        LOGGER.trace("> setNumberOfTries");
 
-        assert nbTries >= 0;
+        assert numberTries >= 0;
 
-        this.nbTries = nbTries;
+        this.tries = numberTries;
 
-        LOGGER.trace("< setNbTries");
+        LOGGER.trace("< setNumberOfTries");
     }
 
     /**
-     * Effectively do the staging. This method do the following checks :
+     * Effectively do the staging. This method do the following checks:
      * <ul>
      * <li>If the status is FS_QUEUED, it passes because there is already a
      * stager calling this method.</li>
-     * <li>If this method has been tried too much times, set as Failed.</li>
+     * <li>If this method has been tried too much times, set as FS_FAILED.</li>
      * <li>If this Reading has already been done, pass.</li>
      * <li>If the file has marked as unreadable, pass.</li>
      * <li>If this Reading does not belong to a queue, pass.</li>
      * </ul>
-     * Then it really calls for staging. If the method traps exception,
-     * following actions are taken:
+     * Then it really calls for staging. The status should be FS_SUBMITTED. If
+     * the method traps exception, following actions are taken:
      * <ul>
-     * <li>HPSSResourceError: Reset the file as FS_SUBMITTED both in real state
-     * and on the database. Throw the exception to the caller.</li>
+     * <li>HSMResourceException: Reset the file as FS_SUBMITTED both in real
+     * state and on the database. Throws the exception to the caller.</li>
      * <li>Other exceptions: Set the Reading status as failed, and set the
      * database status as FS_CREATED so it can be re-dispatched.</li>
      * <li>Consider Unknown errors as Fatal.</li>
@@ -466,40 +458,44 @@ public class Reading {
      * related state with the current reading. At the same time, there is a
      * global state related with the file request, and that state is store in
      * the database.
-     * 
+     *
      * @throws TReqSException
+     *             If there is a problem using the database or calling the
+     *             stage.
      */
     void stage() throws TReqSException {
         LOGGER.trace("> stage");
 
-        if (this.fileState == FileStatus.FS_QUEUED) {
-            LOGGER.info("{} already submitted to HPSS.", this.getMetaData()
-                    .getFile().getName());
-        } else if (this.getNbTries() >= this.getMaxTries()) {
+        String filename = this.getMetaData().getFile().getName();
+
+        if (this.fileRequestStatus == FileRequestStatus.FS_QUEUED) {
+            LOGGER.info("{} already submitted to the HSM.", filename);
+        } else if (this.getNumberOfTries() >= this.getMaxTries()) {
             // If this file has been tried too much times...
-            LOGGER.error("{} failed {} times. Giving up.", this.getMetaData()
-                    .getFile().getName(), this.getNbTries());
-            this.fileState = FileStatus.FS_FAILED;
+            LOGGER.error("{} failed {} times. Giving up.", filename,
+                    this.getNumberOfTries());
+            this.fileRequestStatus = FileRequestStatus.FS_FAILED;
 
             // Send update to the DAO.
-            DAO.getReadingDAO().update(this.metaData, this.fileState,
-                    new GregorianCalendar(), this.getNbTries(),
-                    this.errorMessage, this.errorCode, this.queue);
-        } else if (this.fileState == FileStatus.FS_STAGED) {
+            AbstractDAOFactory
+                    .getDAOFactoryInstance()
+                    .getReadingDAO()
+                    .update(this, this.fileRequestStatus,
+                            new GregorianCalendar());
+        } else if (this.fileRequestStatus == FileRequestStatus.FS_STAGED) {
             // If this file has already been done.
-            LOGGER.info("{} already staged.", this.getMetaData().getFile()
-                    .getName());
-        } else if (this.fileState == FileStatus.FS_FAILED) {
+            LOGGER.info("{} already staged.", filename);
+        } else if (this.fileRequestStatus == FileRequestStatus.FS_FAILED) {
             // If this file marked as unreadable.
-            LOGGER.warn("{} maked as unreadable.", this.getMetaData().getFile()
-                    .getName());
-        } else if (this.fileState == FileStatus.FS_CREATED) {
+            LOGGER.warn("{} maked as unreadable.", filename);
+        } else if (this.fileRequestStatus == FileRequestStatus.FS_CREATED) {
             // If this file does not belong to a queue.
             // Later This is an impossible state from a Reading.
-            LOGGER.warn("{} does not belong to a queue.", this.getMetaData()
-                    .getFile().getName());
+            LOGGER.error("{} does not belong to a queue.", filename);
             assert false;
         } else {
+            assert this.fileRequestStatus == FileRequestStatus.FS_SUBMITTED;
+
             // Performs really the stage.
             realStage();
         }
@@ -507,8 +503,9 @@ public class Reading {
         LOGGER.trace("< stage");
     }
 
-    /**
-     * Representation in a String.
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
@@ -519,13 +516,15 @@ public class Reading {
         ret += "{ Starttime: " + this.getStartTime();
         ret += ", Error code: " + this.getErrorCode();
         ret += ", Error message: " + this.getErrorMessage();
-        ret += ", File state: " + this.getFileState();
+        ret += ", File state: " + this.getFileRequestStatus();
         ret += ", Max retries: " + this.getMaxTries();
-        ret += ", Number of tries: " + this.getNbTries();
+        ret += ", Number of tries: " + this.getNumberOfTries();
         ret += ", Queue id: " + this.queue.getId();
         ret += ", File: " + this.getMetaData().getFile().getName();
         ret += ", Tape: " + this.getMetaData().getTape().getName();
         ret += "}";
+
+        assert ret != null;
 
         LOGGER.trace("< toString");
 
