@@ -82,6 +82,10 @@ public final class Constants {
      * Duration of a suspension.
      */
     public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
+    /**
+     * Maximal quantity of retries for a file.
+     */
+    public static final String MAX_READ_RETRIES = "MAX_READ_RETRIES";
 
     /**
      * Invisible constructor.
