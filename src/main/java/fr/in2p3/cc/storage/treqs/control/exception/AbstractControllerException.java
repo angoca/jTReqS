@@ -36,9 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.control.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
@@ -49,11 +46,6 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  */
 public abstract class AbstractControllerException extends TReqSException {
     /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(AbstractControllerException.class);
-    /**
      * Generated ID.
      */
     private static final long serialVersionUID = 7929653613270294850L;
@@ -63,7 +55,5 @@ public abstract class AbstractControllerException extends TReqSException {
      */
     protected AbstractControllerException() {
         super();
-
-        LOGGER.trace(">< Instance creation");
     }
 }

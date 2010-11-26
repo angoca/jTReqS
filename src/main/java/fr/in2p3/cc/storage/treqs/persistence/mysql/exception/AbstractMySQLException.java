@@ -36,9 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 
 /**
@@ -47,25 +44,19 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public abstract class AbstractMySQLException extends AbstractPersistanceException {
+public abstract class AbstractMySQLException extends
+        AbstractPersistanceException {
 
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = 7637653660807465428L;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(AbstractMySQLException.class);
 
     /**
      * Default constructor. The exception should have a descriptive name.
      */
     protected AbstractMySQLException() {
         super();
-
-        LOGGER.trace(">< Instance creation");
     }
 
     /**
@@ -76,7 +67,5 @@ public abstract class AbstractMySQLException extends AbstractPersistanceExceptio
      */
     protected AbstractMySQLException(final Exception e) {
         super(e);
-
-        LOGGER.trace(">< Instance creation wrapping exception");
     }
 }

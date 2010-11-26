@@ -69,11 +69,7 @@ public abstract class AbstractHSMException extends TReqSException {
     protected AbstractHSMException() {
         super();
 
-        LOGGER.trace("> Instance creation empty");
-
         this.errorcode = 0;
-
-        LOGGER.trace("< Instance creation empty");
     }
 
     /**
@@ -85,11 +81,7 @@ public abstract class AbstractHSMException extends TReqSException {
     protected AbstractHSMException(final Exception exception) {
         super(exception);
 
-        LOGGER.trace("> Instance creation exception");
-
         this.errorcode = 0;
-
-        LOGGER.trace("< Instance creation exception");
     }
 
     /**
@@ -101,11 +93,7 @@ public abstract class AbstractHSMException extends TReqSException {
     protected AbstractHSMException(final short hsmErrorcode) {
         super();
 
-        LOGGER.trace("> Instance creation errorcode");
-
         this.errorcode = hsmErrorcode;
-
-        LOGGER.trace("< Instance creation errorcode");
     }
 
     /**
@@ -116,11 +104,8 @@ public abstract class AbstractHSMException extends TReqSException {
      */
     protected AbstractHSMException(final String message) {
         super(message);
-        LOGGER.trace("> Instance creation message");
 
         this.errorcode = 0;
-
-        LOGGER.trace("< Instance creation message");
     }
 
     /*

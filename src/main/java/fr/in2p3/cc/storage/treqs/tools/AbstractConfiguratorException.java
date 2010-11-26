@@ -78,11 +78,9 @@ public abstract class AbstractConfiguratorException extends TReqSException {
      *            File not found.
      */
     protected AbstractConfiguratorException(final String file) {
-        LOGGER.trace("> Instance creation filename");
+        super();
 
         this.filename = file;
-
-        LOGGER.trace("< Instance creation filename");
     }
 
     /**
@@ -97,12 +95,8 @@ public abstract class AbstractConfiguratorException extends TReqSException {
             final String keyValue) {
         super();
 
-        LOGGER.trace("> Instance creation section/value");
-
         this.section = sectionValue;
         this.key = keyValue;
-
-        LOGGER.trace("< Instance creation section/value");
     }
 
     /*

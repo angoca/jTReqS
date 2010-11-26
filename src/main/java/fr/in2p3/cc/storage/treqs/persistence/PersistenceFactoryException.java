@@ -36,14 +36,23 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Shows that there is a problem while creating the factory.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class PersistenceFactoryException extends AbstractPersistanceException {
+public final class PersistenceFactoryException extends
+        AbstractPersistanceException {
 
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(PersistenceFactoryException.class);
     /**
      * Generated ID.
      */
@@ -57,5 +66,7 @@ public final class PersistenceFactoryException extends AbstractPersistanceExcept
      */
     public PersistenceFactoryException(final Exception exception) {
         super(exception);
+
+        LOGGER.trace(">< Instance creation");
     }
 }
