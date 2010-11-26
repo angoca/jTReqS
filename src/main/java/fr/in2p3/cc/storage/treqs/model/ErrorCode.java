@@ -71,14 +71,4 @@ public enum ErrorCode {
      * Maximal retries suspension.
      */
     QUEU15,
-    // Reading (code 18xx)
-    /**
-     * The metadata (FilePositionOnTape) reference cannot be null.
-     */
-    READ01,
-
-    /**
-     * Invalid change of file request status.
-     */
-    READ02,
 }
