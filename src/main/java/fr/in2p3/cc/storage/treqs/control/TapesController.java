@@ -174,22 +174,27 @@ public final class TapesController extends AbstractController {
     public int cleanup() {
         LOGGER.trace("> cleanup");
 
-        // Checks the references without fpots.
-        Iterator<String> iter = this.objectMap.keySet().iterator();
+        int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        while (iter.hasNext()) {
-            String name = iter.next();
-            Tape tape = (Tape) this.objectMap.get(name);
-            boolean exist = FilePositionOnTapesController.getInstance().exists(
-                    tape);
-            if (!exist) {
-                toRemove.add(name);
+        synchronized (objectMap) {
+
+            // Checks the references without fpots.
+            Iterator<String> iter = this.objectMap.keySet().iterator();
+            while (iter.hasNext()) {
+                String name = iter.next();
+                Tape tape = (Tape) this.objectMap.get(name);
+                boolean exist = FilePositionOnTapesController.getInstance()
+                        .exists(tape);
+                if (!exist) {
+                    toRemove.add(name);
+                }
             }
-        }
-        // Delete the files.
-        int size = toRemove.size();
-        for (int i = 0; i < size; i++) {
-            this.objectMap.remove(toRemove.get(i));
+            // Delete the tapes.
+            size = toRemove.size();
+            for (int i = 0; i < size; i++) {
+                LOGGER.debug("Deleting {}", toRemove.get(i));
+                this.objectMap.remove(toRemove.get(i));
+            }
         }
 
         LOGGER.trace("< cleanup");
