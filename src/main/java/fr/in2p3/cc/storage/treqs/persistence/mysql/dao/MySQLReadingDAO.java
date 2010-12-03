@@ -84,7 +84,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         assert message != null;
         assert !message.equals("");
 
-        final int statusId = reading.getFileRequestStatus().getId();
+        final short statusId = reading.getFileRequestStatus().getId();
         final int queueId = reading.getQueue().getId();
         final String tapename = reading.getMetaData().getTape().getName();
         final int position = reading.getMetaData().getPosition();
@@ -135,8 +135,8 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * @see fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#getNewRequests(int)
      */
     @Override
-    public List<PersistenceHelperFileRequest> getNewRequests(
-            final int limit) throws TReqSException {
+    public List<PersistenceHelperFileRequest> getNewRequests(final int limit)
+            throws TReqSException {
         LOGGER.trace("> getNewRequests");
 
         assert limit >= 0;
@@ -192,19 +192,22 @@ public final class MySQLReadingDAO implements ReadingDAO {
         assert message != null;
         assert !message.equals("");
 
+        final short statusId = status.getId();
+        final long currentMillis = System.currentTimeMillis();
+
         PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(
                         MySQLStatements.SQL_REQUESTS_UPDATE_FINAL_REQUEST_ID);
         int index = 1;
         try {
             // set status
-            statement.setInt(index++, status.getId());
+            statement.setShort(index++, statusId);
             // set errorcode
             statement.setInt(index++, code);
             // set message
             statement.setString(index++, message);
             // set end time
-            statement.setLong(index++, System.currentTimeMillis());
+            statement.setLong(index++, currentMillis);
             // set ID
             statement.setInt(index++, id);
 
@@ -225,9 +228,8 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * java.util.Calendar)
      */
     @Override
-    public void update(final Reading reading,
-            final FileRequestStatus status, final Calendar time)
-            throws TReqSException {
+    public void update(final Reading reading, final FileRequestStatus status,
+            final Calendar time) throws TReqSException {
         LOGGER.trace("> update");
 
         assert reading != null;
@@ -235,6 +237,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         assert time != null;
 
         PreparedStatement statement = null;
+        final long currentMillis = time.getTimeInMillis();
         int index = 1;
         try {
             switch (status) {
@@ -244,14 +247,14 @@ public final class MySQLReadingDAO implements ReadingDAO {
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_QUEUED);
                     // Insert queue_time time stamp
-                    statement.setLong(index++, time.getTimeInMillis());
+                    statement.setLong(index++, currentMillis);
                     break;
                 // The request has been successfully staged.
                 case FS_STAGED:
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
                     // Insert end_time time stamp
-                    statement.setLong(index++, time.getTimeInMillis());
+                    statement.setLong(index++, currentMillis);
                     LOGGER.debug(
                             "Logging a file final state with timestamp {}",
                             time.toString());
@@ -273,7 +276,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
                     // Insert end_time time stamp
-                    statement.setLong(index++, time.getTimeInMillis());
+                    statement.setLong(index++, currentMillis);
                     LOGGER.debug(
                             "Logging a file final state with timestamp {}",
                             time.toString());
@@ -316,7 +319,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         assert i > 0;
 
         try {
-            final int statusId = status.getId();
+            final short statusId = status.getId();
             final int queueId = reading.getQueue().getId();
             final String tapename = reading.getMetaData().getTape().getName();
             final int position = reading.getMetaData().getPosition();
