@@ -48,6 +48,7 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLCloseException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException;
@@ -188,11 +189,14 @@ public final class MySQLBroker {
     public void connect() throws TReqSException {
         LOGGER.trace("> connect");
 
-        String url = Configurator.getInstance().getValue("JOBSDB", "URL");
-        String driver = Configurator.getInstance().getValue("JOBSDB", "DRIVER");
-        String user = Configurator.getInstance().getValue("JOBSDB", "USERNAME");
-        String password = Configurator.getInstance().getValue("JOBSDB",
-                "PASSWORD");
+        String url = Configurator.getInstance().getStringValue(
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL);
+        String driver = Configurator.getInstance().getStringValue(
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER);
+        String user = Configurator.getInstance().getStringValue(
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
+        String password = Configurator.getInstance().getStringValue(
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_PASSWORD);
 
         // There can be only a connection per instance.
         synchronized (instance) {
@@ -274,6 +278,7 @@ public final class MySQLBroker {
             validConnection();
             try {
                 statement = (Statement) connection.createStatement();
+                LOGGER.debug("Query: '{}'", query);
                 rows = statement.executeUpdate(query);
             } catch (SQLException ex) {
                 handleSQLException(ex);
@@ -438,7 +443,7 @@ public final class MySQLBroker {
             throw new MySQLExecuteException(e);
         }
         if (!ret) {
-            LOGGER.error("The connection has not been established. "
+            LOGGER.warn("The connection has not been established. "
                     + "Reestablishing the connection.");
             this.connect();
         }
