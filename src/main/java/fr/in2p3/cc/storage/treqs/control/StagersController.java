@@ -124,6 +124,8 @@ public final class StagersController {
 
         int iter = 0;
         int cleanedStager = 0;
+        // This method is not synchronized because the stagers are not used by
+        // any other object that the thread.
         ListIterator<Stager> list = this.stagers.listIterator();
         while (list.hasNext()) {
             Stager stager = list.next();
