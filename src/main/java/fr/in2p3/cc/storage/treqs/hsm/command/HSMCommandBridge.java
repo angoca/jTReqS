@@ -129,7 +129,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * @throws AbstractConfiguratorException
      *             If there is a problem reading the configuration.
      */
-    public static HSMCommandBridge getInstance() throws AbstractConfiguratorException {
+    public static HSMCommandBridge getInstance()
+            throws AbstractConfiguratorException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -154,8 +155,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     private HSMCommandBridge() throws AbstractConfiguratorException {
         LOGGER.trace("> create instance.");
 
-        this.setKeytabPath(Configurator.getInstance().getValue(Constants.MAIN,
-                Constants.KEYTAB_FILE));
+        this.setKeytabPath(Configurator.getInstance().getStringValue(
+                Constants.SECTION_KEYTAB, Constants.KEYTAB_FILE));
 
         LOGGER.trace("< create instance.");
     }
@@ -417,7 +418,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.info("Keytab: {}, File {}", args);
         // Processing the configuration file.
         if (!args[0].equals("-")) {
-            Configurator.getInstance().setValue(Constants.MAIN,
+            Configurator.getInstance().setValue(Constants.SECTION_KEYTAB,
                     Constants.KEYTAB_FILE, args[0]);
         }
 
