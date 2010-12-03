@@ -180,27 +180,56 @@ public final class FilesController extends AbstractController {
     public int cleanup() {
         LOGGER.trace("> cleanup");
 
-        // Checks the references without fpots.
-        Iterator<String> iter = this.objectMap.keySet().iterator();
+        int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        while (iter.hasNext()) {
-            String name = iter.next();
-            File file = (File) this.objectMap.get(name);
-            String filename = file.getName();
-            FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
-                    .getInstance().exists(filename);
-            if (fpot == null) {
-                toRemove.add(filename);
+        synchronized (objectMap) {
+            // Checks the references without fpots.
+            Iterator<String> iter = this.objectMap.keySet().iterator();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                File file = (File) this.objectMap.get(key);
+                String filename = file.getName();
+                FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+                        .getInstance().exists(filename);
+                if (fpot == null) {
+                    toRemove.add(filename);
+                }
             }
-        }
-        // Delete the files.
-        int size = toRemove.size();
-        for (int i = 0; i < size; i++) {
-            this.objectMap.remove(toRemove.get(i));
+            // Delete the files.
+            size = toRemove.size();
+            for (int i = 0; i < size; i++) {
+                LOGGER.debug("Deleting {}", toRemove.get(i));
+                this.objectMap.remove(toRemove.get(i));
+            }
         }
 
         LOGGER.trace("< cleanup");
 
         return size;
+    }
+
+    /**
+     * Checks if there is a file whose owner is the given user.
+     *
+     * @param user
+     *            User to search.
+     * @return true is there a file whose owner is the given user.
+     */
+    public boolean exists(final User user) {
+        LOGGER.trace("> exists");
+
+        boolean ret = false;
+        @SuppressWarnings("rawtypes")
+        Iterator files = this.objectMap.values().iterator();
+        while (files.hasNext()) {
+            File file = (File) files.next();
+            if (user.equals(file.getOwner())) {
+                ret = true;
+            }
+        }
+
+        LOGGER.trace("< exists");
+
+        return ret;
     }
 }
