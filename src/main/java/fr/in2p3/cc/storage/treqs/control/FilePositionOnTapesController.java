@@ -36,7 +36,10 @@
  */
 package fr.in2p3.cc.storage.treqs.control;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +48,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Tape;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * AbstractController for the FilePostionOnTape classes.
@@ -145,7 +149,8 @@ public final class FilePositionOnTapesController extends AbstractController {
 
     /**
      * Create a new FilePositionOnTape object. If the object does not already
-     * exist, creates a new one. If the object exists, throw an exception.
+     * exist, creates a new one. If the object exists, throw an exception. This
+     * method suposses that the HSM cannot store two files with the same name.
      *
      * @param file
      *            Description of the file.
@@ -174,5 +179,67 @@ public final class FilePositionOnTapesController extends AbstractController {
         LOGGER.trace("< create");
 
         return fpot;
+    }
+
+    /**
+     * Removes the instances of fpots whose queues are already deleted.
+     *
+     * @return Quantity of instances removed.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem checking the existence of the queue.
+     */
+    public int cleanup() throws ProblematicConfiguationFileException {
+        LOGGER.trace("> cleanup");
+
+        // Checks the references without queues.
+        Iterator<String> iter = this.objectMap.keySet().iterator();
+        List<String> toRemove = new ArrayList<String>();
+        while (iter.hasNext()) {
+            String name = iter.next();
+            FilePositionOnTape fpot = (FilePositionOnTape) this.objectMap
+                    .get(name);
+            String tapename = fpot.getTape().getName();
+            boolean exist = QueuesController.getInstance().exists(tapename);
+            if (!exist) {
+                toRemove.add(tapename);
+            }
+        }
+        // Delete the fpots.
+        int size = toRemove.size();
+        for (int i = 0; i < size; i++) {
+            this.objectMap.remove(toRemove.get(i));
+        }
+
+        LOGGER.trace("< cleanup");
+
+        return size;
+    }
+
+    /**
+     * Checks if there are any fpot related to the given tape.
+     *
+     * @param tape
+     *            Tape to compare.
+     * @return true if there is at least one fpot related to that tape, false
+     *         otherwise.
+     */
+    public boolean exists(final Tape tape) {
+        LOGGER.trace("> exists");
+
+        assert tape != null;
+
+        tape.getName();
+        Iterator<Object> iter = super.objectMap.values().iterator();
+        boolean found = false;
+        while (iter.hasNext() && !found) {
+            Tape iterTape = (Tape) iter.next();
+            if (iterTape.equals(tape)) {
+                found = true;
+            }
+        }
+
+        LOGGER.trace("< exists");
+
+        return found;
     }
 }
