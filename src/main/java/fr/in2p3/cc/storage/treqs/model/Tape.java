@@ -90,6 +90,28 @@ public final class Tape {
         LOGGER.trace("< Creating tape");
     }
 
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        LOGGER.trace("> equals");
+
+        boolean ret = false;
+        if (obj instanceof Tape) {
+            Tape other = (Tape) obj;
+            if (this.name.equals(other.name)
+                    && this.mediaType.equals(other.mediaType)) {
+                ret = true;
+            }
+        }
+
+        LOGGER.trace("< equals");
+
+        return ret;
+    }
+
     /**
      * Getter for media type member.
      *
@@ -121,6 +143,17 @@ public final class Tape {
         LOGGER.trace(">< getStatusUpdateTime");
 
         return this.statusUpdateTime;
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        int ret = this.name.hashCode() - this.mediaType.getName().hashCode()
+                + this.statusUpdateTime.hashCode();
+        return ret;
     }
 
     /**
