@@ -55,30 +55,30 @@ public enum QueueStatus {
      * If there are many jobs in the HSM, probably the tape is queued, however,
      * at the application side, it is being processed.
      */
-    QS_ACTIVATED((byte) 210),
+    QS_ACTIVATED((short) 210),
     /**
      * There is a queue that make reference to an existing tape in the HSM. The
      * tape exists in the application but it has not being processed, so the
      * corresponding tape could not be used in the HSM.
      */
-    QS_CREATED((byte) 200),
+    QS_CREATED((short) 200),
     /**
      * The requests associated to this queue have been finished, so the Queue is
      * ended. Once the requests for file stored in a given tape in a period of
      * time have been processed, the corresponding queue is considered ended.
      */
-    QS_ENDED((byte) 230),
+    QS_ENDED((short) 230),
     /**
      * The corresponding tape is currently unavailable. The tape could be locked
      * due to physical problems.
      */
-    QS_TEMPORARILY_SUSPENDED((byte) 220),
+    QS_TEMPORARILY_SUSPENDED((short) 220),
     /**
      * The queue has changed to aborted at initialization time. This is done
      * only in the database level. The object in memory will not contain this
      * code.
      */
-    QS_ABORTED((byte) 240);
+    QS_ABORTED((short) 240);
     /**
      * Logger.
      */
@@ -88,7 +88,7 @@ public enum QueueStatus {
     /**
      * Id of the status. This is useful when storing the state in the database.
      */
-    private final byte id;
+    private final short id;
 
     /**
      * Constructor with the id of the status.
@@ -96,7 +96,7 @@ public enum QueueStatus {
      * @param queueStatusId
      *            Id of the status.
      */
-    private QueueStatus(final byte queueStatusId) {
+    private QueueStatus(final short queueStatusId) {
         assert queueStatusId > 0;
 
         this.id = queueStatusId;
@@ -107,7 +107,7 @@ public enum QueueStatus {
      *
      * @return Queue status.
      */
-    public int getId() {
+    public short getId() {
         LOGGER.trace(">< getId");
 
         return this.id;
