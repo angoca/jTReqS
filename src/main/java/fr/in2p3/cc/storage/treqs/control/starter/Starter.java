@@ -56,11 +56,11 @@ import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.InitDB;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Starts the application, loading the threads in the order. TODO JMX to reload
- * configuration. TODO JMX to stop the application
+ * configuration. TODO JMX to stop the application TODO JMX to reload the
+ * configuration.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -70,7 +70,8 @@ public final class Starter {
     /**
      * Description of the command option: Configuration file.
      */
-    private static final String CONFIG_FILE_COMMAND_DESCRIPTION = "Configuration file.";
+    private static final String CONFIG_FILE_COMMAND_DESCRIPTION = "Configu"
+            + "ration file.";
     /**
      * Long name for the command option: Configuration file.
      */
@@ -82,7 +83,8 @@ public final class Starter {
     /**
      * Description of the command option: Help.
      */
-    private static final String HELP_COMMAND_DESCRIPTION = "Print this message.";
+    private static final String HELP_COMMAND_DESCRIPTION = "Print this "
+            + "message.";
     /**
      * Long name for the command option: Help.
      */
@@ -94,7 +96,8 @@ public final class Starter {
     /**
      * Argument for the command option: Requests file.
      */
-    private static final String REQUESTS_FILE_COMMAND_ARGUMENT = "REQUESTS_FILE";
+    private static final String REQUESTS_FILE_COMMAND_ARGUMENT = "REQUESTS"
+            + "_FILE";
     /**
      * Description of the command option: Requests file.
      */
@@ -185,13 +188,15 @@ public final class Starter {
             String configurationFile = cli
                     .getOptionValue(CONFIG_FILE_LONG_COMMAND_OPTION);
             if (configurationFile != null) {
-                try {
-                    Configurator.getInstance().setFilename(configurationFile);
-                } catch (ProblematicConfiguationFileException e) {
-                    LOGGER.error("Problem reading the configuration file.");
-                    throw e;
-                }
+                System.setProperty(Constants.DEFAULT_CONFIGURATION_FILE,
+                        configurationFile);
+            } else {
+                System.setProperty(Constants.DEFAULT_CONFIGURATION_FILE,
+                        DefaultProperties.CONFIGURATION_PROPERTIES);
             }
+
+            // Starts the configurator.
+            Configurator.getInstance();
 
             // Initialize the database if necessary.
             InitDB.initializeDatabase();
@@ -279,8 +284,10 @@ public final class Starter {
             this.startActivator();
 
             while (cont) {
+                // TODO dynamic property from configuration file.
                 Thread.sleep(DefaultProperties.TIME_BETWEEN_CHECK);
                 // TODO Wathdog.
+                // TODO archiver
             }
         } catch (InterruptedException e) {
             throw new ExecutionErrorException(e);
