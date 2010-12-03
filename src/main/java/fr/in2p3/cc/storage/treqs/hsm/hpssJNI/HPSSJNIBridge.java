@@ -258,11 +258,11 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         String type = "unix";
         try {
-            type = Configurator.getInstance().getValue(Constants.MAIN,
-                    Constants.AUTHENTICATION_TYPE);
+            type = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_KEYTAB, Constants.AUTHENTICATION_TYPE);
         } catch (KeyNotFoundException e) {
             LOGGER.info("No setting for {}.{}, default value will be used: {}",
-                    new Object[] { Constants.MAIN,
+                    new Object[] { Constants.SECTION_KEYTAB,
                             Constants.AUTHENTICATION_TYPE, type });
         }
         this.authType = type;
@@ -282,8 +282,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             KeyNotFoundException {
         LOGGER.trace("> initKeytab");
 
-        final String keytab = Configurator.getInstance().getValue(
-                Constants.MAIN, Constants.KEYTAB_FILE);
+        final String keytab = Configurator.getInstance().getStringValue(
+                Constants.SECTION_KEYTAB, Constants.KEYTAB_FILE);
         this.setKeytabPath(keytab);
 
         LOGGER.trace("< initKeytab");
@@ -302,8 +302,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             ProblematicConfiguationFileException {
         LOGGER.trace("> initUser");
 
-        final String hpssUser = Configurator.getInstance().getValue(
-                Constants.MAIN, Constants.HSM_USER);
+        final String hpssUser = Configurator.getInstance().getStringValue(
+                Constants.SECTION_KEYTAB, Constants.HSM_USER);
         this.user = hpssUser;
 
         LOGGER.trace("< initUser");
