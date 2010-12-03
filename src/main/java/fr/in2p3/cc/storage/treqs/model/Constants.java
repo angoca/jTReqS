@@ -45,11 +45,53 @@ package fr.in2p3.cc.storage.treqs.model;
  */
 public final class Constants {
     /**
-     * Type of authentication agains the HSM.
+     * Quantity of seconds between two executions of the activator.
+     */
+    public static final String ACTIVATOR_INTERVAL = "ACTIVATOR_INTERVAL";
+    /**
+     * Type of authentication against the HSM.
      */
     public static final String AUTHENTICATION_TYPE = "AUTHENTICATION_TYPE";
     /**
-     * User to access to the HSM.
+     * Name for the internal property for the default name for the configuration
+     * file.
+     */
+    public static final String DEFAULT_CONFIGURATION_FILE = "DEF_CONFIG_FILE";
+    /**
+     * Driver used to connect to the database.
+     */
+    public static final String DB_DRIVER = "DRIVER";
+    /**
+     * Password to connect to the database.
+     */
+    public static final String DB_PASSWORD = "PASSWORD";
+    /**
+     * Location of the database.
+     */
+    public static final String DB_URL = "URL";
+    /**
+     * User name to connect to the database.
+     */
+    public static final String DB_USER = "USERNAME";
+    /**
+     * Quantity of seconds between two executions of the dispatcher.
+     */
+    public static final String DISPATCHER_INTERVAL = "DISPATCHER_INTERVAL";
+    /**
+     * Quantity of new requests to ask to the database simultaneously.
+     */
+    public static final String FETCH_MAX = "FETCH_MAX";
+    /**
+     * Quantity of files to process before showing a log message.
+     */
+    public static final short FILES_BEFORE_MESSAGE = 100;
+    /**
+     * Name of the main class of the implementation of the HSM bridge. Component
+     * that will interact with the HSM.
+     */
+    public static final String HSM_BRIDGE = "HSM_BRIDGE";
+    /**
+     * Identity of the user to access to the HSM.
      */
     public static final String HSM_USER = "HSM_USER";
     /**
@@ -57,14 +99,18 @@ public final class Constants {
      */
     public static final String KEYTAB_FILE = "KEYTAB_FILE";
     /**
-     * Name of the section in the configuration file for the main properties.
-     */
-    public static final String MAIN = "MAIN";
-    /**
      * Maximal age for the metadata before considered as outdated. This value is
      * in seconds.
      */
     public static final String MAX_METADATA_AGE = "MAX_METADATA_AGE";
+    /**
+     * Maximal quantity of retries for a file.
+     */
+    public static final String MAX_READ_RETRIES = "MAX_READ_RETRIES";
+    /**
+     * Maximal quantity of retries for a tape before considered as problematic.
+     */
+    public static final String MAX_SUSPEND_RETRIES = "MAX_SUSPEND_RETRIES";
     /**
      * Quantity of milliseconds in a second.
      */
@@ -77,16 +123,54 @@ public final class Constants {
     /**
      * Parameter to ask the DAO Factory.
      */
-    public static final String PARAM_DAO_FACTORY = "DAO_FACTORY";
+    public static final String PESISTENCE_FACTORY = "DAO_FACTORY";
+    /**
+     * Section in the configuration file for the Activator.
+     */
+    public static final String SECTION_ACTIVATOR = "ACTIVATOR";
+    /**
+     * Section in the configuration file for the Dispatcher.
+     */
+    public static final String SECTION_DISPATCHER = "DISPATCHER";
+    /**
+     * Section in the configuration file for the File position on tape.
+     */
+    public static final String SECTION_FILE_POSITION_ON_TAPE = "FILE_POSITION"
+            + "_ON_TAPE";
+    /**
+     * Section in the configuration file for the HSM bridge.
+     */
+    public static final String SECTION_HSM_BRIDGE = "HSM_BRIDGE";
+    /**
+     * Section in the configuration file for the Keytab.
+     */
+    public static final String SECTION_KEYTAB = "KEYTAB";
+    /**
+     * Section in the configuration file for the Persistence.
+     */
+    public static final String SECTION_PERSISTENCE = "PERSISTENCE";
+    /**
+     * Specific section in the configuration file when using MySQL as data
+     * source.
+     */
+    public static final String SECTION_PERSISTENCE_MYSQL = "PERSISTENCE_MYSQL";
+    /**
+     * Section in the configuration file for the Queue.
+     */
+    public static final String SECTION_QUEUE = "QUEUE";
+    /**
+     * Section in the configuration file for the Reading.
+     */
+    public static final String SECTION_READING = "READING";
+    /**
+     * Quantity of simultaneous stagers asking for files of the same tap to
+     * HPSS.
+     */
+    public static final String STAGING_DEPTH = "STAGING_DEPTH";
     /**
      * Duration of a suspension.
      */
     public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
-    /**
-     * Maximal quantity of retries for a file.
-     */
-    public static final String MAX_READ_RETRIES = "MAX_READ_RETRIES";
-
     /**
      * Invisible constructor.
      */
