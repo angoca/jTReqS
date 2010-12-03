@@ -191,23 +191,28 @@ public final class FilePositionOnTapesController extends AbstractController {
     public int cleanup() throws ProblematicConfiguationFileException {
         LOGGER.trace("> cleanup");
 
-        // Checks the references without queues.
-        Iterator<String> iter = this.objectMap.keySet().iterator();
+        int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        while (iter.hasNext()) {
-            String name = iter.next();
-            FilePositionOnTape fpot = (FilePositionOnTape) this.objectMap
-                    .get(name);
-            String tapename = fpot.getTape().getName();
-            boolean exist = QueuesController.getInstance().exists(tapename);
-            if (!exist) {
-                toRemove.add(tapename);
+        synchronized (objectMap) {
+
+            // Checks the references without queues.
+            Iterator<String> iter = this.objectMap.keySet().iterator();
+            while (iter.hasNext()) {
+                String key = iter.next();
+                FilePositionOnTape fpot = (FilePositionOnTape) this.objectMap
+                        .get(key);
+                String tapename = fpot.getTape().getName();
+                boolean exist = QueuesController.getInstance().exists(tapename);
+                if (!exist) {
+                    toRemove.add(tapename);
+                }
             }
-        }
-        // Delete the fpots.
-        int size = toRemove.size();
-        for (int i = 0; i < size; i++) {
-            this.objectMap.remove(toRemove.get(i));
+            // Delete the fpots.
+            size = toRemove.size();
+            for (int i = 0; i < size; i++) {
+                LOGGER.debug("Deleting {}", toRemove.get(i));
+                this.objectMap.remove(toRemove.get(i));
+            }
         }
 
         LOGGER.trace("< cleanup");
@@ -232,7 +237,7 @@ public final class FilePositionOnTapesController extends AbstractController {
         Iterator<Object> iter = super.objectMap.values().iterator();
         boolean found = false;
         while (iter.hasNext() && !found) {
-            Tape iterTape = (Tape) iter.next();
+            Tape iterTape = ((FilePositionOnTape) iter.next()).getTape();
             if (iterTape.equals(tape)) {
                 found = true;
             }
