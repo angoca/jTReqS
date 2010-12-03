@@ -36,9 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.model;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,13 +59,14 @@ public final class Tape {
      * The name of this tape.
      */
     private String name;
+
     /**
      * The time Status got updated.
      */
     // TODO v2.0 AngocA This part has not been used, and the application should
     // check if the tape is still locked/unlocked once the state has been
     // obtained. It means, it has to check periodically if the state changes.
-    private Calendar statusUpdateTime;
+    // private Calendar statusUpdateTime;
 
     /**
      * Constructor with name, media type and status.
@@ -85,7 +83,7 @@ public final class Tape {
 
         this.setMediaType(tapeMediaType);
         this.setName(tapeName);
-        this.setStatusUpdateTimeNow();
+        // this.setStatusUpdateTimeNow();
 
         LOGGER.trace("< Creating tape");
     }
@@ -139,11 +137,11 @@ public final class Tape {
      *
      * @return Returns the last time when the status was checked.
      */
-    Calendar getStatusUpdateTime() {
-        LOGGER.trace(">< getStatusUpdateTime");
-
-        return this.statusUpdateTime;
-    }
+    // Calendar getStatusUpdateTime() {
+    // LOGGER.trace(">< getStatusUpdateTime");
+    //
+    // return this.statusUpdateTime;
+    // }
 
     /*
      * (non-Javadoc)
@@ -152,7 +150,7 @@ public final class Tape {
     @Override
     public int hashCode() {
         int ret = this.name.hashCode() - this.mediaType.getName().hashCode()
-                + this.statusUpdateTime.hashCode();
+        /* + this.statusUpdateTime.hashCode() */;
         return ret;
     }
 
@@ -195,26 +193,26 @@ public final class Tape {
      * @param updateTime
      *            Time when the status was checked.
      */
-    void setStatusUpdateTime(final Calendar updateTime) {
-        LOGGER.trace("> setStatusUpdateTime");
-
-        assert updateTime != null;
-
-        this.statusUpdateTime = updateTime;
-
-        LOGGER.trace("< setStatusUpdateTime");
-    }
+    // void setStatusUpdateTime(final Calendar updateTime) {
+    // LOGGER.trace("> setStatusUpdateTime");
+    //
+    // assert updateTime != null;
+    //
+    // this.statusUpdateTime = updateTime;
+    //
+    // LOGGER.trace("< setStatusUpdateTime");
+    // }
 
     /**
      * Establishes the status update time to now.
      */
-    void setStatusUpdateTimeNow() {
-        LOGGER.trace("> setStatusUpdateTimeNow");
-
-        setStatusUpdateTime(new GregorianCalendar());
-
-        LOGGER.trace("< setStatusUpdateTimeNow");
-    }
+    // void setStatusUpdateTimeNow() {
+    // LOGGER.trace("> setStatusUpdateTimeNow");
+    //
+    // setStatusUpdateTime(new GregorianCalendar());
+    //
+    // LOGGER.trace("< setStatusUpdateTimeNow");
+    // }
 
     /*
      * (non-Javadoc)
