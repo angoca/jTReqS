@@ -97,7 +97,7 @@ public abstract class AbstractController {
      *            Any kind of object to be managed by the controller.
      * @param key
      *            The key that reference the object.
-     * @return REference to the object if found. null otherwise.
+     * @return Reference to the object if found. null otherwise.
      */
     public final <E> Object/* ? */exists(final String key) {
         LOGGER.trace("> exists");
