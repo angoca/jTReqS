@@ -104,11 +104,14 @@ public abstract class AbstractDAOFactory {
         // Name of the factory.
         String daoName = DefaultProperties.DEFAULT_DAO_FACTORY;
         try {
-            daoName = Configurator.getInstance().getValue("MAIN",
-                    Constants.PARAM_DAO_FACTORY);
+            daoName = Configurator.getInstance()
+                    .getStringValue(Constants.SECTION_PERSISTENCE,
+                            Constants.PESISTENCE_FACTORY);
         } catch (KeyNotFoundException e) {
-            LOGGER.debug("No setting for MAIN.DAO_FACTORY, default "
-                    + "value will be used: {}", daoName);
+            LOGGER.debug("No setting for {}.{}, default "
+                    + "value will be used: {}", new Object[] {
+                    Constants.SECTION_PERSISTENCE,
+                    Constants.PESISTENCE_FACTORY, daoName });
         }
 
         instance = getDataSourceAccess(daoName);
@@ -136,7 +139,8 @@ public abstract class AbstractDAOFactory {
      *             If there is a problem while acceding the data source. If
      *             there is a problem reading the configuration file.
      */
-    public static AbstractDAOFactory getDAOFactoryInstance() throws TReqSException {
+    public static AbstractDAOFactory getDAOFactoryInstance()
+            throws TReqSException {
         LOGGER.trace("> getDAOFactoryInstance");
 
         if (instance == null) {
@@ -159,8 +163,8 @@ public abstract class AbstractDAOFactory {
      * @throws PersistenceFactoryException
      *             If there is a problem while instantiating the class.
      */
-    private static AbstractDAOFactory getDataSourceAccess(final String daoFactoryName)
-            throws PersistenceFactoryException {
+    private static AbstractDAOFactory getDataSourceAccess(
+            final String daoFactoryName) throws PersistenceFactoryException {
         LOGGER.trace("> getDataSourceAccess");
 
         // Retrieves the class.
