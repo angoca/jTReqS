@@ -36,7 +36,10 @@
  */
 package fr.in2p3.cc.storage.treqs.control;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,6 +131,46 @@ public final class UsersController extends AbstractController {
         LOGGER.trace("< add");
 
         return user;
+    }
+
+    /**
+     * Cleans up the references that are not longer used.
+     *
+     * @return Quantity of deleted references.
+     */
+    public int cleanup() {
+        LOGGER.trace("> cleanup");
+
+        int size = 0;
+        List<String> toRemove = new ArrayList<String>();
+        synchronized (objectMap) {
+
+            // Checks the references of users.
+            Iterator<String> iter = this.objectMap.keySet().iterator();
+            while (iter.hasNext()) {
+                String name = iter.next();
+                User user = (User) this.objectMap.get(name);
+                boolean exist = FilesController.getInstance().exists(user);
+                if (!exist) {
+                    exist = ResourcesController.getInstance().exist(user);
+                }
+                if (!exist) {
+                    toRemove.add(name);
+                }
+            }
+            // Delete the tapes.
+            size = toRemove.size();
+            for (int i = 0; i < size; i++) {
+                LOGGER.debug("Deleting {}", toRemove.get(i));
+                this.objectMap.remove(toRemove.get(i));
+            }
+        }
+
+        assert size >= 0;
+
+        LOGGER.trace("< cleanup");
+
+        return size;
     }
 
     /**
