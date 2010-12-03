@@ -54,30 +54,44 @@ public final class DefaultProperties {
     public static final String DEFAULT_DAO_FACTORY = "fr.in2p3.cc.storage."
             + "treqs.persistance.mysql.MySQLDAOFactory";
     /**
-     * Default HSM.
+     * Default HSM bridge.
      */
     public static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage."
-            + "treqs.hsm.mock.HSMMockBridge";
+            + "treqs.hsm.command.HSMCommandBridge";
     /**
      * Time to rest in temporary suspended state.
      */
     public static final short DEFAULT_SUSPEND_DURATION = 600;
     /**
+     * Max metadata age in seconds.
+     */
+    public static final short MAX_METADATA_AGE = 3600;
+    /**
      * Maximal quantity of read retries.
      */
     public static final byte MAX_READ_RETRIES = 3;
+    /**
+     * Maximal new requests by default to query from the database.
+     */
+    public static final short MAX_REQUESTS_DEFAULT = 500;
     /**
      * Quantity of retries if an error is detected.
      */
     public static final byte MAX_SUSPEND_RETRIES = 3;
     /**
-     * Max metadata age in seconds.
+     * Quantity of seconds between activations for the Activator and the
+     * Dispatcher.
      */
-    public static final short MAX_METADATA_AGE = 3600;
+    public static final short SECONDS_BETWEEN_LOOPS = 2;
+    /**
+     * Quantity of simultaneous stages by queue.
+     */
+    public static final byte STAGING_DEPTH = 3;
     /**
      * Time of the loop to check if everything is working good.
      */
     public static final long TIME_BETWEEN_CHECK = 1000;
+
     /**
      * Invisible constructor.
      */
