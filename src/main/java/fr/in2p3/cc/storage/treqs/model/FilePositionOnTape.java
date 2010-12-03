@@ -42,7 +42,6 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -114,15 +113,9 @@ public final class FilePositionOnTape {
         this.setPosition(positionInTape);
         this.setTape(associatedTape);
 
-        this.maxMetadataAge = DefaultProperties.MAX_METADATA_AGE;
-        try {
-            this.maxMetadataAge = Short.parseShort(Configurator.getInstance()
-                    .getValue(Constants.MAIN, Constants.MAX_METADATA_AGE));
-        } catch (KeyNotFoundException e) {
-            LOGGER.info("No setting for {}.{}, default value "
-                    + "will be used: {}", new Object[] { Constants.MAIN,
-                    Constants.MAX_METADATA_AGE, this.maxMetadataAge });
-        }
+        this.maxMetadataAge = Configurator.getInstance().getShortValue(
+                Constants.SECTION_FILE_POSITION_ON_TAPE,
+                Constants.MAX_METADATA_AGE, DefaultProperties.MAX_METADATA_AGE);
 
         LOGGER.trace("< Creating instance");
     }
