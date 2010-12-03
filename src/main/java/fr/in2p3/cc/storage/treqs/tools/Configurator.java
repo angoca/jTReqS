@@ -36,11 +36,10 @@
  */
 package fr.in2p3.cc.storage.treqs.tools;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
-
+import org.apache.commons.configuration.CompositeConfiguration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.configuration.HierarchicalINIConfiguration;
+import org.apache.commons.configuration.SystemConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,8 +79,11 @@ public final class Configurator {
      * Singleton access.
      *
      * @return the unique instance of the configurator.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem reading the configuration file.
      */
-    public static Configurator getInstance() {
+    public static Configurator getInstance()
+            throws ProblematicConfiguationFileException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -96,23 +98,29 @@ public final class Configurator {
     }
 
     /**
-     * Path to the configuration file.
+     * The container of the configuration.
      */
-    private String configFilename;
-
-    /**
-     * The map containing the configuration.
-     */
-    private Properties properties;
+    private CompositeConfiguration properties;
 
     /**
      * Constructor of the configurator where it defines the name of the
      * configuration file.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem reading the configuration file.
      */
-    private Configurator() {
+    private Configurator() throws ProblematicConfiguationFileException {
         LOGGER.trace("> Create instance");
 
-        this.configFilename = DefaultProperties.CONFIGURATION_PROPERTIES;
+        this.properties = new CompositeConfiguration();
+        this.properties.addConfiguration(new SystemConfiguration());
+        try {
+            this.properties.addConfiguration(new HierarchicalINIConfiguration(
+                    DefaultProperties.CONFIGURATION_PROPERTIES));
+        } catch (ConfigurationException e) {
+            throw new ProblematicConfiguationFileException(
+                    DefaultProperties.CONFIGURATION_PROPERTIES, e);
+        }
 
         LOGGER.trace("< Create instance");
     }
@@ -132,76 +140,14 @@ public final class Configurator {
         assert key != null && !key.equals("");
 
         if (this.properties != null) {
-            this.properties.remove(sec + "." + key);
+            this.properties.clearProperty(sec + "." + key);
         }
 
         LOGGER.trace("< deleteValue");
     }
 
     /**
-     * Reads the configuration file indicated in the configFilename attribute,
-     * and then put the configuration in the properties attribute.
-     * <p>
-     * This method was taken from Zemucansuka:FileReader.java.
-     *
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem reading the file.
-     */
-    private void findConfigPath() throws ProblematicConfiguationFileException {
-        LOGGER.trace("> findConfigPath");
-
-        assert this.configFilename != null;
-
-        InputStream inputStream = null;
-        final ClassLoader loader = ClassLoader.getSystemClassLoader();
-        if (loader != null) {
-            URL url = loader.getResource(this.configFilename);
-            if (url == null) {
-                url = loader.getResource("/" + this.configFilename);
-            }
-            if (url != null) {
-                try {
-                    // This file has the properties.
-                    inputStream = url.openStream();
-                    // Put the values in the properties.
-                    this.properties = new Properties();
-                    this.properties.load(inputStream);
-                } catch (final IOException e) {
-                    LOGGER.error(e.getMessage());
-                    throw new ProblematicConfiguationFileException(
-                            url.getFile());
-                } finally {
-                    try {
-                        if (inputStream != null) {
-                            inputStream.close();
-                        }
-                    } catch (final IOException e) {
-                        LOGGER.error(e.getMessage());
-                        throw new ProblematicConfiguationFileException(
-                                url.getFile());
-                    }
-                }
-            } else {
-                LOGGER.error("URL not found");
-            }
-        }
-
-        LOGGER.trace("< findConfigPath");
-    }
-
-    /**
-     * Retrieves the configuration file.
-     *
-     * @return The path to the configuration file name.
-     */
-    String getConfigFilename() {
-        LOGGER.trace(">< getConfigFilename");
-
-        return this.configFilename;
-    }
-
-    /**
-     * Find the value for a defined parameter. If not present, throws a
+     * Find the string value for a defined parameter. If not present, throws a
      * KeyNotFoundException.
      *
      * @param sec
@@ -214,50 +160,83 @@ public final class Configurator {
      * @throws ProblematicConfiguationFileException
      *             If there is a problem reading the file.
      */
-    public String getValue(final String sec, final String key)
+    public String getStringValue(final String sec, final String key)
             throws KeyNotFoundException, ProblematicConfiguationFileException {
-        LOGGER.trace("> getValue");
+        LOGGER.trace("> getStringValue");
 
         assert sec != null && !sec.equals("");
         assert key != null && !key.equals("");
 
-        if (this.properties == null) {
-            this.findConfigPath();
-        }
-
-        String value = this.properties.getProperty(sec + "." + key);
+        String value = this.properties.getString(sec + "." + key);
 
         if (value == null) {
-            LOGGER.debug("Nothing found for [" + sec + "]:" + key);
+            LOGGER.debug("Nothing found for String [" + sec + "]:" + key);
             throw new KeyNotFoundException(sec, key);
         }
 
         assert value != null;
 
-        LOGGER.trace("< getValue");
+        LOGGER.trace("< getStringValue");
 
         return value;
     }
 
     /**
-     * Setter for the configuration file name.
+     * Find the byte value for a defined parameter. If not present, it returns
+     * the given default one.
      *
-     * @param filename
-     *            Configuration file name.
+     * @param sec
+     *            Section of the property.
+     * @param key
+     *            Name of the property.
+     * @param defaultValue
+     *            Default value if nothing is found.
+     * @return The value.
      * @throws ProblematicConfiguationFileException
      *             If there is a problem reading the file.
      */
-    public void setFilename(final String filename)
+    public byte getByteValue(final String sec, final String key,
+            final byte defaultValue)
             throws ProblematicConfiguationFileException {
-        LOGGER.trace("> setFilename");
+        LOGGER.trace("> getByteValue");
 
-        assert filename != null && !filename.equals("");
+        assert sec != null && !sec.equals("");
+        assert key != null && !key.equals("");
 
-        this.configFilename = filename;
+        byte value = this.properties.getByte(sec + "." + key, defaultValue);
 
-        this.findConfigPath();
+        LOGGER.trace("< getByteValue");
 
-        LOGGER.trace("< setFilename");
+        return value;
+    }
+
+    /**
+     * Find the short value for a defined parameter. If not present, it returns
+     * the given default one.
+     *
+     * @param sec
+     *            Section of the property.
+     * @param key
+     *            Name of the property.
+     * @param defaultValue
+     *            Default value if nothing is found.
+     * @return The value.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem reading the file.
+     */
+    public short getShortValue(final String sec, final String key,
+            final short defaultValue)
+            throws ProblematicConfiguationFileException {
+        LOGGER.trace("> getByteValue");
+
+        assert sec != null && !sec.equals("");
+        assert key != null && !key.equals("");
+
+        short value = this.properties.getShort(sec + "." + key, defaultValue);
+
+        LOGGER.trace("< getByteValue");
+
+        return value;
     }
 
     /**
@@ -280,9 +259,6 @@ public final class Configurator {
         assert key != null && !key.equals("");
         assert value != null && !value.equals("");
 
-        if (this.properties == null) {
-            findConfigPath();
-        }
         this.properties.setProperty(section + "." + key, value);
 
         LOGGER.trace("< setValue");
