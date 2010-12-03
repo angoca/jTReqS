@@ -100,7 +100,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
         assert queue != null;
 
-        final int statusId = queue.getStatus().getId();
+        final short statusId = queue.getStatus().getId();
         final String tapeName = queue.getTape().getName();
         final int size = queue.getRequestsSize();
         final byte mediaTypeId = queue.getTape().getMediaType().getId();
@@ -282,7 +282,7 @@ public final class MySQLQueueDAO implements QueueDAO {
         assert i > 0;
 
         final int id = queue.getId();
-        final int statusId = queue.getStatus().getId();
+        final short statusId = queue.getStatus().getId();
         final String ownerName = queue.getOwner().getName();
         final int size = queue.getRequestsSize();
         final long byteSize = queue.getByteSize();
@@ -291,7 +291,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
         try {
             // Insert queue status.
-            statement.setInt(index++, statusId);
+            statement.setShort(index++, statusId);
             // Insert number of requests.
             statement.setInt(index++, size);
             // Insert number of requests done.
