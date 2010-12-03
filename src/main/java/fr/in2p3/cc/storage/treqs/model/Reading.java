@@ -51,7 +51,6 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStatusTransitionException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * This models one reading of a file. A file request could have several reading
@@ -131,15 +130,9 @@ public final class Reading {
         this.setNumberOfTries(triesNumber);
         this.setErrorCode((short) 0);
 
-        byte max = DefaultProperties.MAX_READ_RETRIES;
-        try {
-            max = Byte.parseByte(Configurator.getInstance().getValue(
-                    Constants.MAIN, Constants.MAX_READ_RETRIES));
-        } catch (KeyNotFoundException e) {
-            LOGGER.info("No setting for {}.{}, default value will "
-                    + "be used: {}", new Object[] { Constants.MAIN,
-                    Constants.MAX_READ_RETRIES, this.maxTries });
-        }
+        byte max = Configurator.getInstance().getByteValue(
+                Constants.SECTION_READING, Constants.MAX_READ_RETRIES,
+                DefaultProperties.MAX_READ_RETRIES);
         this.maxTries = max;
 
         // Registers this reading in the database.
