@@ -42,6 +42,7 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
@@ -80,11 +81,12 @@ public final class HSMFactory {
 
         String hsmBridgeClass = DefaultProperties.DEFAULT_HSM_BRIDGE;
         try {
-            hsmBridgeClass = Configurator.getInstance().getValue("MAIN",
-                    "HSM_BRIDGE");
+            hsmBridgeClass = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_HSM_BRIDGE, Constants.HSM_BRIDGE);
         } catch (KeyNotFoundException e) {
-            LOGGER.info("No setting for MAIN.HSM_BRIDGE, default value will "
-                    + "be used: " + hsmBridgeClass);
+            LOGGER.info("No setting for {}.{}, default value will be used: {}",
+                    new Object[] { Constants.SECTION_HSM_BRIDGE,
+                            Constants.HSM_BRIDGE, hsmBridgeClass });
         }
 
         LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
