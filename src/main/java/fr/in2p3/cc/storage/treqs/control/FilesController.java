@@ -36,13 +36,17 @@
  */
 package fr.in2p3.cc.storage.treqs.control;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.User;
 
 /**
@@ -165,5 +169,38 @@ public final class FilesController extends AbstractController {
         LOGGER.trace("< create");
 
         return file;
+    }
+
+    /**
+     * Removes the references of files that do not have any file position on
+     * tape associated.
+     *
+     * @return Quantity of references deleted.
+     */
+    public int cleanup() {
+        LOGGER.trace("> cleanup");
+
+        // Checks the references without fpots.
+        Iterator<String> iter = this.objectMap.keySet().iterator();
+        List<String> toRemove = new ArrayList<String>();
+        while (iter.hasNext()) {
+            String name = iter.next();
+            File file = (File) this.objectMap.get(name);
+            String filename = file.getName();
+            FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+                    .getInstance().exists(filename);
+            if (fpot == null) {
+                toRemove.add(filename);
+            }
+        }
+        // Delete the files.
+        int size = toRemove.size();
+        for (int i = 0; i < size; i++) {
+            this.objectMap.remove(toRemove.get(i));
+        }
+
+        LOGGER.trace("< cleanup");
+
+        return size;
     }
 }
