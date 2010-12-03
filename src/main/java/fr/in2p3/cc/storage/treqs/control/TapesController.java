@@ -36,7 +36,10 @@
  */
 package fr.in2p3.cc.storage.treqs.control;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -161,5 +164,36 @@ public final class TapesController extends AbstractController {
         LOGGER.trace("< create");
 
         return tape;
+    }
+
+    /**
+     * Removes the tapes that are not associated to any fpot.
+     *
+     * @return Quantity of tapes were removed.
+     */
+    public int cleanup() {
+        LOGGER.trace("> cleanup");
+
+        // Checks the references without fpots.
+        Iterator<String> iter = this.objectMap.keySet().iterator();
+        List<String> toRemove = new ArrayList<String>();
+        while (iter.hasNext()) {
+            String name = iter.next();
+            Tape tape = (Tape) this.objectMap.get(name);
+            boolean exist = FilePositionOnTapesController.getInstance().exists(
+                    tape);
+            if (!exist) {
+                toRemove.add(name);
+            }
+        }
+        // Delete the files.
+        int size = toRemove.size();
+        for (int i = 0; i < size; i++) {
+            this.objectMap.remove(toRemove.get(i));
+        }
+
+        LOGGER.trace("< cleanup");
+
+        return size;
     }
 }
