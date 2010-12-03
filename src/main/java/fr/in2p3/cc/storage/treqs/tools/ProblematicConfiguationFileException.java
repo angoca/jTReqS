@@ -63,9 +63,12 @@ public final class ProblematicConfiguationFileException extends
      *
      * @param file
      *            filename.
+     * @param exception
+     *            Reason of the exception.
      */
-    public ProblematicConfiguationFileException(final String file) {
-        super(file);
+    public ProblematicConfiguationFileException(final String file,
+            final Exception exception) {
+        super(file, exception);
 
         LOGGER.trace(">< Instance creation");
     }

@@ -76,9 +76,12 @@ public abstract class AbstractConfiguratorException extends TReqSException {
      *
      * @param file
      *            File not found.
+     * @param exception
+     *            Reason of the exception.
      */
-    protected AbstractConfiguratorException(final String file) {
-        super();
+    protected AbstractConfiguratorException(final String file,
+            final Exception exception) {
+        super(exception);
 
         this.filename = file;
     }
