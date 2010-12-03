@@ -147,7 +147,7 @@ public final class File {
      *
      * @return The owner of the file.
      */
-    User getOwner() {
+    public User getOwner() {
         LOGGER.trace(">< getOwner");
 
         return this.owner;
