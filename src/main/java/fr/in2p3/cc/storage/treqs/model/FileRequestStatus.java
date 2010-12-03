@@ -47,50 +47,50 @@ public enum FileRequestStatus {
     /**
      * A brand new file request.
      */
-    FS_CREATED((byte) 100),
+    FS_CREATED((short) 100),
     /**
      * File reading failed.
      */
-    FS_FAILED((byte) 160),
+    FS_FAILED((short) 160),
     /**
      * File could not be processed. There are not enough parameters to process
      * the requests.
      */
-    FS_INVALID((byte) 180),
+    FS_INVALID((short) 180),
     /**
      * File is submitted to HPSS for staging.
      */
-    FS_QUEUED((byte) 120),
+    FS_QUEUED((short) 120),
     /**
      * File is staged on HPSS disks.
      */
-    FS_STAGED((byte) 140),
+    FS_STAGED((short) 140),
     /**
      * File is registered in a queue.
      */
-    FS_SUBMITTED((byte) 110),
+    FS_SUBMITTED((short) 110),
     /**
      * The file is already on disk.
      */
-    FS_ON_DISK((byte) 150);
+    FS_ON_DISK((short) 150);
 
     /**
      *
      */
-    private byte id;
+    private short id;
 
     /**
      * @param statusId
      *            If of the status.
      */
-    private FileRequestStatus(final byte statusId) {
+    private FileRequestStatus(final short statusId) {
         this.id = statusId;
     }
 
     /**
      * @return The unique id of the status.
      */
-    public int getId() {
+    public short getId() {
         return this.id;
     }
 }
