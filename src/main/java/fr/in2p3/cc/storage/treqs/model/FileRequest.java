@@ -60,7 +60,7 @@ public final class FileRequest {
     /**
      * Client requesting the file.
      */
-    private final User client;
+    private final User user;
     /**
      * Unique Id of the request.
      */
@@ -81,25 +81,25 @@ public final class FileRequest {
      *            Id of the request.
      * @param requestedFilename
      *            Name of the requested file.
-     * @param requesterClient
-     *            Client requesting the file.
+     * @param requesterUser
+     *            User requesting the file.
      * @param tries
      *            Number of retries.
      * @throws InvalidParameterException
      *             When redefining the name.
      */
     public FileRequest(final int fileRequestId, final String requestedFilename,
-            final User requesterClient, final byte tries)
+            final User requesterUser, final byte tries)
             throws InvalidParameterException {
         LOGGER.trace("> Creating instance.");
 
         assert fileRequestId > 0;
         assert requestedFilename != null && !requestedFilename.equals("");
-        assert requesterClient != null;
+        assert requesterUser != null;
 
         this.id = fileRequestId;
         this.name = requestedFilename;
-        this.client = requesterClient;
+        this.user = requesterUser;
 
         this.setNumberTries(tries);
 
@@ -107,14 +107,14 @@ public final class FileRequest {
     }
 
     /**
-     * Getter for client member.
+     * Getter for user member.
      *
      * @return The requester user.
      */
-    public User getClient() {
-        LOGGER.trace(">< getClient");
+    public User getUser() {
+        LOGGER.trace(">< getUser");
 
-        return this.client;
+        return this.user;
     }
 
     /**
@@ -177,7 +177,7 @@ public final class FileRequest {
         String ret = "FileRequest";
         ret += "{ id: " + this.getId();
         ret += ", filename: " + this.getName();
-        ret += ", client: " + this.getClient().getName();
+        ret += ", client: " + this.getUser().getName();
         ret += ", number of tries: " + this.getNumberTries();
         ret += "}";
 
