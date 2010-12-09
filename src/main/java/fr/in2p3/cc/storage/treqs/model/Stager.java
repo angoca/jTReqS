@@ -50,6 +50,12 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
  * HSM and process the error code returned. There are multiple stagers asking
  * for files simultaneously for the same tape, this behavior is to prevent the
  * tape be dismounted.
+ * <p>
+ * If there are several file requests demanding the same File, then, when
+ * executing several Stagers simultaneously, at a given moment many of them (if
+ * not all of them) could be asking for the same file. Thus, the parallelism
+ * will not force to stage files sequentially. Then, when passing to the next
+ * file, there could be an incoherence when staging sequentially.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
