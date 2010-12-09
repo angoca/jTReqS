@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.ErrorCode;
+import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 
 /**
  * The current state does not permit to execute the command.
@@ -60,16 +60,64 @@ public final class InvalidStateException extends TReqSException {
             .getLogger(InvalidStateException.class);
 
     /**
-     * Creates the exception with a code and an explanatory message.
+     * Reasons to create an InvalidStateException.
      *
-     * @param code
-     *            Error code.
-     * @param message
-     *            Message that describes the problem.
+     * @author Andrés Gómez
+     * @since 1.5
      */
-    public InvalidStateException(final ErrorCode code, final String message) {
-        super(code, message);
-
-        LOGGER.trace(">< Instance creation");
+    public enum InvalidStateReasons {
+        /**
+         * The queue cannot be activated in this state.
+         */
+        ACTIVATE,
+        /**
+         * It is impossible to register new file requests in this state.
+         */
+        REGISTER
     }
+
+    /**
+     * Creates the exception when the queue cannot be activated.
+     *
+     * @param reason
+     *            Reason of the exception.
+     */
+    public InvalidStateException(final InvalidStateReasons reason) {
+        super("Queue is not in QS_CREATED state and it cannot be "
+                + "activated.");
+
+        LOGGER.trace("> Instance creation");
+
+        assert reason != null && reason == InvalidStateReasons.ACTIVATE;
+
+        LOGGER.trace("< Instance creation");
+    }
+
+    /**
+     * Creates the exception when a file cannot be registered.
+     *
+     * @param reason
+     *            Reason of the exception.
+     * @param filename
+     *            Name of the file.
+     * @param tapename
+     *            Name of the tape.
+     * @param status
+     *            Current status of the queue.
+     */
+    public InvalidStateException(final InvalidStateReasons reason,
+            final String filename, final String tapename,
+            final QueueStatus status) {
+        super("Unable to register file " + filename + " in Queue '" + tapename
+                + "' with status: " + status);
+
+        LOGGER.trace("> Instance creation");
+
+        assert reason != null && reason == InvalidStateReasons.REGISTER;
+        assert filename != null && !filename.equals("");
+        assert tapename != null && !tapename.equals("");
+
+        LOGGER.trace("< Instance creation");
+    }
+
 }

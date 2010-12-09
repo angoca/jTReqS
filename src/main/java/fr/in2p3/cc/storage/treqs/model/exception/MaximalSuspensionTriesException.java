@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.ErrorCode;
 
 /**
  * The queue has been suspended too many times.
@@ -61,13 +60,8 @@ public final class MaximalSuspensionTriesException extends TReqSException {
 
     /**
      * Creates an exception with the related code.
-     *
-     * @param code
-     *            Error code of the problem.
      */
-    public MaximalSuspensionTriesException(final ErrorCode code) {
-        super(code);
-
+    public MaximalSuspensionTriesException() {
         LOGGER.trace(">< Instance creation");
     }
 }
