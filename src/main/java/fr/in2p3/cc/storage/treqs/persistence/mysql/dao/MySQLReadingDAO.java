@@ -242,7 +242,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         try {
             switch (status) {
                 // The request has been sent to the HSM.
-                case FS_QUEUED:
+                case QUEUED:
                     LOGGER.debug("Logging an activation for staging");
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_QUEUED);
@@ -250,7 +250,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
                     statement.setLong(index++, currentMillis);
                     break;
                 // The request has been successfully staged.
-                case FS_STAGED:
+                case STAGED:
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
                     // Insert end_time time stamp
@@ -260,19 +260,19 @@ public final class MySQLReadingDAO implements ReadingDAO {
                             time.toString());
                     break;
                 // The requests has been resubmitted due to a problem in space.
-                case FS_SUBMITTED:
+                case SUBMITTED:
                     LOGGER.warn("Logging requeue of a file");
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_RESUBMITTED);
                     break;
                 // The request had a problem. Retrying.
-                case FS_CREATED: // FS_CREATED corresponds to a retry
+                case CREATED: // CREATED corresponds to a retry
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_RETRY);
                     break;
                 // The request has been failed due a problem calling the
                 // staging.
-                case FS_FAILED:
+                case FAILED:
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
                     // Insert end_time time stamp
