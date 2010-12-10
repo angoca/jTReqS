@@ -169,8 +169,8 @@ public final class Reading {
      *
      * @return Status of the associated file.
      */
-    public RequestStatus getFileRequestStatus() {
-        LOGGER.trace(">< getFileRequestStatus");
+    public RequestStatus getRequestStatus() {
+        LOGGER.trace(">< getRequestStatus");
 
         return this.requestStatus;
     }
@@ -248,7 +248,7 @@ public final class Reading {
         final String filename = this.getMetaData().getFile().getName();
 
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .update(this, this.getFileRequestStatus(), this.startTime);
+                .update(this, this.getRequestStatus(), this.startTime);
         LOGGER.info("File {} in tape {} at, position {}: Started.",
                 new String[] { filename, this.metaData.getTape().getName(),
                         Integer.toString(this.metaData.getPosition()) });
@@ -510,7 +510,7 @@ public final class Reading {
         ret += "{ Starttime: " + this.getStartTime();
         ret += ", Error code: " + this.getErrorCode();
         ret += ", Error message: " + this.getErrorMessage();
-        ret += ", File state: " + this.getFileRequestStatus();
+        ret += ", File state: " + this.getRequestStatus();
         ret += ", Max retries: " + this.getMaxTries();
         ret += ", Number of tries: " + this.getNumberOfTries();
         ret += ", Queue id: " + this.queue.getId();

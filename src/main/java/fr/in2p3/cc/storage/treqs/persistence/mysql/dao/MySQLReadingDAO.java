@@ -84,7 +84,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         assert message != null;
         assert !message.equals("");
 
-        final short statusId = reading.getFileRequestStatus().getId();
+        final short statusId = reading.getRequestStatus().getId();
         final int queueId = reading.getQueue().getId();
         final String tapename = reading.getMetaData().getTape().getName();
         final int position = reading.getMetaData().getPosition();
