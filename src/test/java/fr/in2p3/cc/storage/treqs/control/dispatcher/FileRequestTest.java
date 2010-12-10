@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.model;
+package fr.in2p3.cc.storage.treqs.control.dispatcher;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -42,20 +42,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.control.dispatcher.FileRequest;
+import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
- * FileRequestTest.java
- * 
+ * FileRequestTest.java.
+ *
  * @version 2010-03-09
  * @author gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class FileRequestTest {
+public final class FileRequestTest {
 
     /**
      * Tests a constructor with a negative id.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never
      */
@@ -65,29 +67,8 @@ public class FileRequestTest {
     }
 
     /**
-     * Tests to re-establish the name
-     * 
-     * @throws InvalidParameterException
-     *             Never
-     */
-    @Test
-    public void test01setName() throws InvalidParameterException {
-        FileRequest freq = new FileRequest(10, "filename",
-                new User("username"), (byte) 10);
-
-        try {
-            freq.setName("OtherName");
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
      * Tests the toString method.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never.
      */
@@ -111,7 +92,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never
      */
@@ -122,7 +103,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never
      */
@@ -133,7 +114,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never
      */
@@ -144,7 +125,7 @@ public class FileRequestTest {
 
     /**
      * Tests a constructor with null client.
-     * 
+     *
      * @throws InvalidParameterException
      *             Never
      */
