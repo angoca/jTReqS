@@ -52,12 +52,18 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * kept for a time before considered as outdated, that is the object of Max
  * Metadada Age.
  * <p>
- * The metadata of the file, such as its name, size and owner are stored in the
- * File object.
+ * The metadata of the file, such as its name and size are stored in the File
+ * object.
  * <p>
  * The metadata attribute indicates when the information about a file in a tape
  * is considered obsolete. And when it is considered as obsolete, the
  * information has to be updated.
+ * <p>
+ * Several requests for the same file could be done from many users, but only
+ * the first one will be taken in account, and the user that asked (for the
+ * first time) will be considered as the requester.
+ * <p>
+ * There is just one File Position On Tape per File.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -81,6 +87,11 @@ public final class FilePositionOnTape {
      */
     private Calendar metadataTimestamp;
     /**
+     * The user that asks for the file. If several at the same time, this will
+     * contain the first one.
+     */
+    private User requesterUser;
+    /**
      * The position of this file on the tape.
      */
     private int position;
@@ -98,18 +109,21 @@ public final class FilePositionOnTape {
      *            Position of the tape in the tape.
      * @param associatedTape
      *            Tape where is located the associated file.
+     * @param requester
+     *            User that owns the requests (that asks for the file).
      * @throws ProblematicConfiguationFileException
      *             If there is a problem obtaining a value.
      */
     public FilePositionOnTape(final File associatedFile,
-            final int positionInTape, final Tape associatedTape)
-            throws ProblematicConfiguationFileException {
+            final int positionInTape, final Tape associatedTape,
+            final User requester) throws ProblematicConfiguationFileException {
         LOGGER.trace("> Creating instance");
 
         assert associatedFile != null;
 
         this.file = associatedFile;
         this.setMetadataTimestamp(new GregorianCalendar());
+        this.setRequester(requester);
         this.setPosition(positionInTape);
         this.setTape(associatedTape);
 
@@ -140,6 +154,17 @@ public final class FilePositionOnTape {
         LOGGER.trace(">< getMetadataTimestamp");
 
         return this.metadataTimestamp;
+    }
+
+    /**
+     * Retrieves the user that is asking for the file.
+     *
+     * @return The user that requests the file.
+     */
+    public User getRequester() {
+        LOGGER.trace(">< getRequester");
+
+        return this.requesterUser;
     }
 
     /**
@@ -204,6 +229,22 @@ public final class FilePositionOnTape {
         this.metadataTimestamp = timestamp;
 
         LOGGER.trace("< setMetadataTimestamp");
+    }
+
+    /**
+     * Sets the user that is asking for the file.
+     *
+     * @param requester
+     *            The new requester.
+     */
+    void setRequester(final User requester) {
+        LOGGER.trace("> setRequester");
+
+        assert requester != null;
+
+        this.requesterUser = requester;
+
+        LOGGER.trace("< setRequester");
     }
 
     /**
@@ -275,6 +316,7 @@ public final class FilePositionOnTape {
         ret += ", metadataAge: "
                 + this.getMetadataTimestamp().getTimeInMillis();
         ret += ", position: " + this.getPosition();
+        ret += ", requester: " + this.getRequester().getName();
         ret += ", tape: " + this.getTape().getName();
         ret += "}";
 
