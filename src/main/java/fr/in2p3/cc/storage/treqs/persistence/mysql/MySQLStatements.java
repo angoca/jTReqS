@@ -302,7 +302,7 @@ public final class MySQLStatements {
     public static final String SQL_REQUESTS_GET_NEW = "SELECT " + REQUESTS_ID
             + ", " + REQUESTS_USER + ", " + REQUESTS_FILE + ", "
             + REQUESTS_TRIES + " FROM " + REQUESTS + " WHERE "
-            + REQUESTS_STATUS + " = " + FileRequestStatus.FS_CREATED.getId()
+            + REQUESTS_STATUS + " = " + FileRequestStatus.CREATED.getId()
             + " ORDER BY " + REQUESTS_ID;
 
     /**
@@ -316,10 +316,10 @@ public final class MySQLStatements {
      */
     public static final String SQL_REQUESTS_UPDATE_UNPROCESSED = "UPDATE "
             + REQUESTS + " SET " + REQUESTS_STATUS + " = "
-            + FileRequestStatus.FS_CREATED.getId() + " WHERE "
+            + FileRequestStatus.CREATED.getId() + " WHERE "
             + REQUESTS_STATUS + " BETWEEN "
-            + FileRequestStatus.FS_SUBMITTED.getId() + " AND "
-            + FileRequestStatus.FS_QUEUED.getId();
+            + FileRequestStatus.SUBMITTED.getId() + " AND "
+            + FileRequestStatus.QUEUED.getId();
 
     /**
      * SQL statement to update as processed a request. This changes the end
