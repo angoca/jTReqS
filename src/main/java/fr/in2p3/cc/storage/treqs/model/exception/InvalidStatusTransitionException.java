@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 
 /**
  * The transition between the current status and the new status is not
@@ -59,11 +59,11 @@ public final class InvalidStatusTransitionException extends TReqSException {
     /**
      * Old status.
      */
-    private FileRequestStatus oldStatus;
+    private RequestStatus oldStatus;
     /**
      * New status.
      */
-    private FileRequestStatus newStatus;
+    private RequestStatus newStatus;
 
     /**
      * Creates an exception with the old status and the new invalid status.
@@ -74,8 +74,8 @@ public final class InvalidStatusTransitionException extends TReqSException {
      *            New status.
      */
     public InvalidStatusTransitionException(
-            final FileRequestStatus newFRStatus,
-            final FileRequestStatus oldFRStatus) {
+            final RequestStatus newFRStatus,
+            final RequestStatus oldFRStatus) {
 
         super();
 
