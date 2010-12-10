@@ -40,7 +40,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
 
@@ -95,7 +95,7 @@ public interface ReadingDAO {
      * @throws TReqSException
      *             If there is a problem accessing the persistence.
      */
-    void setRequestStatusById(int id, FileRequestStatus status, int code,
+    void setRequestStatusById(int id, RequestStatus status, int code,
             String message) throws TReqSException;
 
     /**
@@ -112,7 +112,7 @@ public interface ReadingDAO {
      * @throws TReqSException
      *             If there is a problem with the configuration.
      */
-    void update(Reading reading, FileRequestStatus status, Calendar time)
+    void update(Reading reading, RequestStatus status, Calendar time)
             throws TReqSException;
 
     /**
