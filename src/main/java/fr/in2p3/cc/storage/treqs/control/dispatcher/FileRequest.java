@@ -34,11 +34,12 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.model;
+package fr.in2p3.cc.storage.treqs.control.dispatcher;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
@@ -55,9 +56,6 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
  * There could be many FileRequests from different users to the same file, but
  * the first user that asked for the file will be considered as the file
  * requester and this information is on the file position on tape.
- * <p>
- * TODO mover al paquete del dispatcher, ya que alla es el unico lado donde se
- * usa.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
