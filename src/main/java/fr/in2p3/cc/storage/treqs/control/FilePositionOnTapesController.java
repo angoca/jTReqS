@@ -48,6 +48,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Tape;
+import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
@@ -119,23 +120,28 @@ public final class FilePositionOnTapesController extends AbstractController {
      *            Tape where the file is stored.
      * @param position
      *            Position of the file in the tape.
+     * @param user
+     *            User that request the file.
+     *            <p>
+     *            Many users could ask the same file, thus, this is an error.
      * @return The FilePostionOnTape object.
      * @throws TReqSException
      *             If there is a problem creating the instance.
      */
     public FilePositionOnTape add(final File file, final Tape tape,
-            final int position) throws TReqSException {
+            final int position, final User user) throws TReqSException {
         LOGGER.trace("> add");
 
         assert file != null;
         assert tape != null;
         assert position >= 0;
+        assert user != null;
 
         FilePositionOnTape fpot = (FilePositionOnTape) this.exists(file
                 .getName());
         if (fpot == null) {
             LOGGER.debug("Creating a new fpot");
-            fpot = this.create(file, tape, position);
+            fpot = this.create(file, tape, position, user);
         } else {
             LOGGER.debug("Updating old fpot");
             // TODO This should update the queue.
@@ -150,7 +156,7 @@ public final class FilePositionOnTapesController extends AbstractController {
     /**
      * Create a new FilePositionOnTape object. If the object does not already
      * exist, creates a new one. If the object exists, throw an exception. This
-     * method suposses that the HSM cannot store two files with the same name.
+     * method supposes that the HSM cannot store two files with the same name.
      *
      * @param file
      *            Description of the file.
@@ -158,20 +164,24 @@ public final class FilePositionOnTapesController extends AbstractController {
      *            Tape where the file is stored.
      * @param position
      *            Position of the file in the tape.
+     * @param user
+     *            Owner of the file.
      * @return The FilePostionOnTape object.
      * @throws TReqSException
      *             If there is a problem creating the fpot or adding it to the
      *             list.
      */
     FilePositionOnTape create(final File file, final Tape tape,
-            final int position) throws TReqSException {
+            final int position, final User user) throws TReqSException {
         LOGGER.trace("> create");
 
         assert file != null;
         assert tape != null;
         assert position >= 0;
+        assert user != null;
 
-        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                user);
         super.add(file.getName(), fpot);
 
         assert fpot != null;
@@ -246,5 +256,30 @@ public final class FilePositionOnTapesController extends AbstractController {
         LOGGER.trace("< exists");
 
         return found;
+    }
+
+    /**
+     * Checks if there is an fpot whose requester is the given user.
+     *
+     * @param user
+     *            User to search.
+     * @return true is there an fpot whose owner is the given user.
+     */
+    public boolean exists(final User user) {
+        LOGGER.trace("> exists");
+
+        boolean ret = false;
+        @SuppressWarnings("rawtypes")
+        Iterator files = this.objectMap.values().iterator();
+        while (files.hasNext()) {
+            FilePositionOnTape fpot = (FilePositionOnTape) files.next();
+            if (user.equals(fpot.getRequester())) {
+                ret = true;
+            }
+        }
+
+        LOGGER.trace("< exists");
+
+        return ret;
     }
 }
