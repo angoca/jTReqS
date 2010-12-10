@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.FileRequestStatus;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
@@ -178,11 +178,11 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * (non-Javadoc)
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#setRequestStatusById(int,
-     * fr.in2p3.cc.storage.treqs.model.FileRequestStatus, int, java.lang.String)
+     * fr.in2p3.cc.storage.treqs.model.RequestStatus, int, java.lang.String)
      */
     @Override
     public void setRequestStatusById(final int id,
-            final FileRequestStatus status, final int code, final String message)
+            final RequestStatus status, final int code, final String message)
             throws TReqSException {
         LOGGER.trace("> setRequestStatusById");
 
@@ -224,11 +224,11 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * (non-Javadoc)
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#update(fr.in2p3.cc.storage
-     * .treqs.model.Reading, fr.in2p3.cc.storage.treqs.model.FileRequestStatus,
+     * .treqs.model.Reading, fr.in2p3.cc.storage.treqs.model.RequestStatus,
      * java.util.Calendar)
      */
     @Override
-    public void update(final Reading reading, final FileRequestStatus status,
+    public void update(final Reading reading, final RequestStatus status,
             final Calendar time) throws TReqSException {
         LOGGER.trace("> update");
 
@@ -309,7 +309,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
      *             If there is a problem executing the query.
      */
     private void processUpdate(final Reading reading,
-            final FileRequestStatus status, final PreparedStatement statement,
+            final RequestStatus status, final PreparedStatement statement,
             final int i) throws MySQLExecuteException {
         LOGGER.trace("> processUpdate");
 
