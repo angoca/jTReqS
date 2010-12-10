@@ -44,7 +44,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public enum FileRequestStatus {
+public enum RequestStatus {
     /**
      * A brand new file request.
      */
@@ -84,7 +84,7 @@ public enum FileRequestStatus {
      * @param statusId
      *            If of the status.
      */
-    private FileRequestStatus(final short statusId) {
+    private RequestStatus(final short statusId) {
         this.id = statusId;
     }
 
