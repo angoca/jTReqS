@@ -47,6 +47,17 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
  * <p>
  * This object is a representation of the request registered in the persistence.
  * This object does not reflect a reading try.
+ * <p>
+ * This object does not have any relation with a File. A File is build based on
+ * the information of this object, but there are not associations between them.
+ * This object is only used to create the Files and FilePositionOnTapes.
+ * <p>
+ * There could be many FileRequests from different users to the same file, but
+ * the first user that asked for the file will be considered as the file
+ * requester and this information is on the file position on tape.
+ * <p>
+ * TODO mover al paquete del dispatcher, ya que alla es el unico lado donde se
+ * usa.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -58,7 +69,7 @@ public final class FileRequest {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FileRequest.class);
     /**
-     * Client requesting the file.
+     * User requesting the file.
      */
     private final User user;
     /**
@@ -109,7 +120,7 @@ public final class FileRequest {
     /**
      * Getter for user member.
      *
-     * @return The requester user.
+     * @return The user that requests the file.
      */
     public User getUser() {
         LOGGER.trace(">< getUser");
