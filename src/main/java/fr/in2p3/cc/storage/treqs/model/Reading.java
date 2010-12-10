@@ -76,7 +76,7 @@ public final class Reading {
     /**
      * Status of the last reading operation.
      */
-    private FileRequestStatus fileRequestStatus;
+    private RequestStatus requestStatus;
     /**
      * Max number of retries.
      */
@@ -123,7 +123,7 @@ public final class Reading {
         assert associatedQueue != null;
 
         this.errorMessage = "";
-        this.fileRequestStatus = FileRequestStatus.SUBMITTED;
+        this.requestStatus = RequestStatus.SUBMITTED;
         this.metaData = fpot;
         this.queue = associatedQueue;
 
@@ -169,10 +169,10 @@ public final class Reading {
      *
      * @return Status of the associated file.
      */
-    public FileRequestStatus getFileRequestStatus() {
+    public RequestStatus getFileRequestStatus() {
         LOGGER.trace(">< getFileRequestStatus");
 
-        return this.fileRequestStatus;
+        return this.requestStatus;
     }
 
     /**
@@ -242,7 +242,7 @@ public final class Reading {
         // has to reflect it but in case of retry, the DAO should be notified
         // that the status is back to CREATED.
 
-        this.fileRequestStatus = FileRequestStatus.QUEUED;
+        this.requestStatus = RequestStatus.QUEUED;
         this.tries++;
         this.startTime = new GregorianCalendar();
         final String filename = this.getMetaData().getFile().getName();
@@ -255,7 +255,7 @@ public final class Reading {
 
         try {
             HSMFactory.getHSMBridge().stage(this.getMetaData().getFile());
-            this.setFileRequestStatus(FileRequestStatus.STAGED);
+            this.setFileRequestStatus(RequestStatus.STAGED);
             LOGGER.info("File {} successfully staged.", filename);
         } catch (AbstractHSMException e) {
             LOGGER.warn("Error processing this file: {} {}", filename,
@@ -264,29 +264,29 @@ public final class Reading {
                 LOGGER.error("No space in disk. Special action will be taken");
                 // Set the file as submitted in a queue. It will be handled
                 // later with an incremented nbTries
-                this.setFileRequestStatus(FileRequestStatus.SUBMITTED);
+                this.setFileRequestStatus(RequestStatus.SUBMITTED);
                 // The file state is changed to submitted.
                 AbstractDAOFactory
                         .getDAOFactoryInstance()
                         .getReadingDAO()
-                        .update(this, FileRequestStatus.SUBMITTED,
+                        .update(this, RequestStatus.SUBMITTED,
                                 new GregorianCalendar());
                 // We report this problem to the caller.
                 throw e;
             } else if (e instanceof HSMOpenException) {
                 logsException("Error opening. Retrying " + filename, e,
-                        FileRequestStatus.CREATED);
+                        RequestStatus.CREATED);
             } else if (e instanceof HSMStageException) {
                 logsException("Error staging. Retrying " + filename, e,
-                        FileRequestStatus.CREATED);
+                        RequestStatus.CREATED);
             } else if (e instanceof HSMCloseException) {
                 logsException("Error closing. Retrying " + filename, e,
-                        FileRequestStatus.CREATED);
+                        RequestStatus.CREATED);
             }
         } catch (Exception e) {
             String mess = "Unexpected error while staging " + filename + ":"
                     + e.getMessage();
-            logsException(mess, e, FileRequestStatus.FAILED);
+            logsException(mess, e, RequestStatus.FAILED);
         }
 
         LOGGER.trace("< realStage");
@@ -305,7 +305,7 @@ public final class Reading {
      *             If there is a problem registering the error in the database.
      */
     private void logsException(final String message, final Exception exception,
-            final FileRequestStatus daoState) throws TReqSException {
+            final RequestStatus daoState) throws TReqSException {
         LOGGER.trace("> logsException");
 
         assert message != null && !message.equals("");
@@ -319,7 +319,7 @@ public final class Reading {
         }
         this.setErrorMessage(exception.getMessage());
 
-        this.setFileRequestStatus(FileRequestStatus.FAILED);
+        this.setFileRequestStatus(RequestStatus.FAILED);
         // Put the request status as CREATED so that the dispatcher will
         // reconsider it
 
@@ -372,7 +372,7 @@ public final class Reading {
      *             If the new status is an invalid change from the current
      *             status.
      */
-    void setFileRequestStatus(final FileRequestStatus status)
+    void setFileRequestStatus(final RequestStatus status)
             throws InvalidStatusTransitionException {
         LOGGER.trace("> setFileRequestStatus");
 
@@ -380,24 +380,24 @@ public final class Reading {
 
         if (
         // Currently created and new submitted.
-        ((this.fileRequestStatus == FileRequestStatus.CREATED) && (status == FileRequestStatus.SUBMITTED))
+        ((this.requestStatus == RequestStatus.CREATED) && (status == RequestStatus.SUBMITTED))
                 // Currently created and new staged (on cache disk.)
-                || ((this.fileRequestStatus == FileRequestStatus.CREATED) && (status == FileRequestStatus.ON_DISK))
+                || ((this.requestStatus == RequestStatus.CREATED) && (status == RequestStatus.ON_DISK))
                 // Currently submitted and new queued.
-                || ((this.fileRequestStatus == FileRequestStatus.SUBMITTED) && (status == FileRequestStatus.QUEUED))
+                || ((this.requestStatus == RequestStatus.SUBMITTED) && (status == RequestStatus.QUEUED))
                 // Currently queued and new staged.
-                || ((this.fileRequestStatus == FileRequestStatus.QUEUED) && (status == FileRequestStatus.STAGED))
+                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.STAGED))
                 // Currently queued and new submitted (suspended.)
-                || ((this.fileRequestStatus == FileRequestStatus.QUEUED) && (status == FileRequestStatus.SUBMITTED))
+                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.SUBMITTED))
                 // Currently queued and new failed.
-                || ((this.fileRequestStatus == FileRequestStatus.QUEUED) && (status == FileRequestStatus.FAILED))) {
-            this.fileRequestStatus = status;
+                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.FAILED))) {
+            this.requestStatus = status;
         } else {
             LOGGER.error("Invalid change of file request status. "
                     + "(from {} to {}) for file {}", new String[] {
-                    this.fileRequestStatus.name(), status.name(),
+                    this.requestStatus.name(), status.name(),
                     this.getMetaData().getFile().getName() });
-            throw new InvalidStatusTransitionException(this.fileRequestStatus,
+            throw new InvalidStatusTransitionException(this.requestStatus,
                     status);
         }
 
@@ -462,33 +462,33 @@ public final class Reading {
 
         String filename = this.getMetaData().getFile().getName();
 
-        if (this.fileRequestStatus == FileRequestStatus.QUEUED) {
+        if (this.requestStatus == RequestStatus.QUEUED) {
             LOGGER.info("{} already submitted to the HSM.", filename);
         } else if (this.getNumberOfTries() >= this.getMaxTries()) {
             // If this file has been tried too much times...
             LOGGER.error("{} failed {} times. Giving up.", filename,
                     this.getNumberOfTries());
-            this.fileRequestStatus = FileRequestStatus.FAILED;
+            this.requestStatus = RequestStatus.FAILED;
 
             // Send update to the DAO.
             AbstractDAOFactory
                     .getDAOFactoryInstance()
                     .getReadingDAO()
-                    .update(this, this.fileRequestStatus,
+                    .update(this, this.requestStatus,
                             new GregorianCalendar());
-        } else if (this.fileRequestStatus == FileRequestStatus.STAGED) {
+        } else if (this.requestStatus == RequestStatus.STAGED) {
             // If this file has already been done.
             LOGGER.info("{} already staged.", filename);
-        } else if (this.fileRequestStatus == FileRequestStatus.FAILED) {
+        } else if (this.requestStatus == RequestStatus.FAILED) {
             // If this file marked as unreadable.
             LOGGER.warn("{} maked as unreadable.", filename);
-        } else if (this.fileRequestStatus == FileRequestStatus.CREATED) {
+        } else if (this.requestStatus == RequestStatus.CREATED) {
             // If this file does not belong to a queue.
             // Later This is an impossible state from a Reading.
             LOGGER.error("{} does not belong to a queue.", filename);
             assert false;
         } else {
-            assert this.fileRequestStatus == FileRequestStatus.SUBMITTED;
+            assert this.requestStatus == RequestStatus.SUBMITTED;
 
             // Performs really the stage.
             realStage();
