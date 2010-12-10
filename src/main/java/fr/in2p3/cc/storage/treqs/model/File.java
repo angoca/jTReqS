@@ -36,9 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,17 +58,9 @@ public final class File {
     private static final Logger LOGGER = LoggerFactory.getLogger(File.class);
 
     /**
-     * The file requests asking for this file.
-     */
-    private List<FileRequest> fileRequests;
-    /**
      * The name of the file.
      */
     private final String name;
-    /**
-     * The user owning the file.
-     */
-    private User owner;
     /**
      * The size of the file.
      */
@@ -85,50 +74,18 @@ public final class File {
      *
      * @param filename
      *            Name of the file.
-     * @param fileOwner
-     *            Owner of the file.
      * @param fileSize
      *            Size of the file.
      */
-    public File(final String filename, final User fileOwner, final long fileSize) {
+    public File(final String filename, final long fileSize) {
         LOGGER.trace("> Creating file.");
 
         assert filename != null;
 
         this.name = filename;
-        this.setOwner(fileOwner);
         this.setSize(fileSize);
 
-        this.fileRequests = new ArrayList<FileRequest>();
-
         LOGGER.trace("< Creating file.");
-    }
-
-    /**
-     * Associates a file request with this file.
-     *
-     * @param freq
-     *            File request associated with this file.
-     */
-    void addFileRequest(final FileRequest freq) {
-        LOGGER.trace("> addFileRequest");
-
-        assert freq != null;
-
-        this.fileRequests.add(freq);
-
-        LOGGER.trace("< addFileRequest");
-    }
-
-    /**
-     * Getter for the file requests member.
-     *
-     * @return List of file requests associated to this file.
-     */
-    List<FileRequest> getFileRequests() {
-        LOGGER.trace(">< getFileRequests");
-
-        return this.fileRequests;
     }
 
     /**
@@ -143,17 +100,6 @@ public final class File {
     }
 
     /**
-     * Getter for the owner member.
-     *
-     * @return The owner of the file.
-     */
-    public User getOwner() {
-        LOGGER.trace(">< getOwner");
-
-        return this.owner;
-    }
-
-    /**
      * Getter for the size member.
      *
      * @return The size of the file.
@@ -162,22 +108,6 @@ public final class File {
         LOGGER.trace(">< getSize");
 
         return this.size;
-    }
-
-    /**
-     * Setter for the owner member.
-     *
-     * @param fileOwner
-     *            The new owner.
-     */
-    void setOwner(final User fileOwner) {
-        LOGGER.trace("> setOwner");
-
-        assert fileOwner != null;
-
-        this.owner = fileOwner;
-
-        LOGGER.trace("< setOwner");
     }
 
     /**
@@ -207,9 +137,8 @@ public final class File {
         String ret = "";
         ret += "File";
         ret += "{ name: " + this.getName();
-        ret += ", owner: " + this.getOwner().getName();
         ret += ", size: " + this.getSize();
-        ret += ", file requests size: " + this.getFileRequests().size();
+        //ret += ", file requests size: " + this.getFileRequests().size();
         ret += "}";
 
         assert ret != null;
