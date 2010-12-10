@@ -38,7 +38,8 @@ package fr.in2p3.cc.storage.treqs.model;
 
 /**
  * The strange values are put here to conform to the old statuses. The client
- * still understand the old statuses. TODO v1.0 rename this to RequestStatus
+ * still understand the old statuses. TODO v1.0 rename this to RequestStatus or
+ * ReadingStatus.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -47,32 +48,32 @@ public enum FileRequestStatus {
     /**
      * A brand new file request.
      */
-    FS_CREATED((short) 100),
+    CREATED((short) 100),
     /**
      * File reading failed.
      */
-    FS_FAILED((short) 160),
+    FAILED((short) 160),
     /**
      * File could not be processed. There are not enough parameters to process
      * the requests.
      */
-    FS_INVALID((short) 180),
+    INVALID((short) 180),
     /**
      * File is submitted to HPSS for staging.
      */
-    FS_QUEUED((short) 120),
+    QUEUED((short) 120),
     /**
      * File is staged on HPSS disks.
      */
-    FS_STAGED((short) 140),
+    STAGED((short) 140),
     /**
      * File is registered in a queue.
      */
-    FS_SUBMITTED((short) 110),
+    SUBMITTED((short) 110),
     /**
      * The file is already on disk.
      */
-    FS_ON_DISK((short) 150);
+    ON_DISK((short) 150);
 
     /**
      *
