@@ -52,7 +52,7 @@ public interface QueueDAO {
     /**
      * Called on startup. All the queues from a previous execution should be
      * aborted when the application starts. It cleans the queues table in the
-     * database. Previous queues are set as QS_ABORTED.
+     * database. Previous queues are set as ABORTED.
      *
      * @return The quantity of pending queues.
      * @throws TReqSException

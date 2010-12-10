@@ -223,20 +223,20 @@ public final class MySQLQueueDAO implements QueueDAO {
 
         try {
             switch (status) {
-                case QS_ACTIVATED:
+                case ACTIVATED:
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
                     // Insert activation time
                     statement.setLong(index++, time.getTimeInMillis());
                     break;
-                case QS_CREATED:
+                case CREATED:
                     // This call could be done when the queue is unsuspended.
                     LOGGER.error("This is an invalid state call.");
                     assert false;
                     break;
-                case QS_ENDED:
-                    // This should be QS_ENDED or QS_ABORTED or
-                    // QS_TEMPORALLY_SUSPENDED
+                case ENDED:
+                    // This should be ENDED or ABORTED or
+                    // TEMPORARILY_SUSPENDED
                     statement = MySQLBroker.getInstance().getPreparedStatement(
                             MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
                     // Insert end time.

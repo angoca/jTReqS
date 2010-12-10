@@ -288,9 +288,9 @@ public final class MySQLStatements {
      */
     public static final String SQL_QUEUES_UPDATE_ABORT_ON_STARTUP = "UPDATE "
             + QUEUES + " SET " + QUEUES_STATUS + " = "
-            + QueueStatus.QS_ENDED.getId() + ", " + QUEUES_END_TIME
+            + QueueStatus.ENDED.getId() + ", " + QUEUES_END_TIME
             + " = FROM_UNIXTIME(UNIX_TIMESTAMP()) WHERE " + QUEUES_STATUS
-            + " != " + QueueStatus.QS_ENDED.getId();
+            + " != " + QueueStatus.ENDED.getId();
 
     /**
      * SQL statement to retrieve the new requests registered in the database.
