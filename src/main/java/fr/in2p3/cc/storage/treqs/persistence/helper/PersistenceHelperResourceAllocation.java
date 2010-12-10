@@ -39,8 +39,6 @@ package fr.in2p3.cc.storage.treqs.persistence.helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.User;
-
 /**
  * It transports the data from the persistence about the quantity of resource
  * allocation per user. This object could be interpreted as a Transfer object,
@@ -65,24 +63,24 @@ public final class PersistenceHelperResourceAllocation {
     /**
      * Defined user in the persistence.
      */
-    private final User user;
+    private final String username;
 
     /**
      * Creates the helper with a user and its quantity of resources.
      *
-     * @param userAlloc
+     * @param user
      *            User.
      * @param qtyAllocation
      *            Quantity of allocated resources.
      */
-    public PersistenceHelperResourceAllocation(final User userAlloc,
+    public PersistenceHelperResourceAllocation(final String user,
             final float qtyAllocation) {
         LOGGER.trace("> create instance");
 
-        assert userAlloc != null;
+        assert user != null && !user.equals("");
         assert qtyAllocation >= 0;
 
-        this.user = userAlloc;
+        this.username = user;
         this.allocation = qtyAllocation;
 
         LOGGER.trace("< create instance");
@@ -98,11 +96,11 @@ public final class PersistenceHelperResourceAllocation {
     }
 
     /**
-     * @return User of the resource allocation.
+     * @return User name of the resource allocation.
      */
-    public User getUser() {
+    public String getUsername() {
         LOGGER.trace(">< getUser");
 
-        return this.user;
+        return this.username;
     }
 }

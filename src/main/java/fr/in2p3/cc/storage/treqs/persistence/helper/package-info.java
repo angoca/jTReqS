@@ -36,7 +36,9 @@
  */
 /**
  * These objects help to carry data from the persistence to the business
- * objects. They are temporal, and their life-cycle in very short.
+ * objects. They are temporal, and their life-cycle in very short. At the same
+ * time, the attributes should be primitive types or Strings, in order to return
+ * quickly.
  *
  * @author Andres Gomez
  * @since 1.5
