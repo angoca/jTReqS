@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.model;
+package fr.in2p3.cc.storage.treqs;
 
 /**
  * Defines the constants of the application. This permits to centralize all
