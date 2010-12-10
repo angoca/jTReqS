@@ -48,10 +48,8 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
-import fr.in2p3.cc.storage.treqs.control.UsersController;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
@@ -141,9 +139,8 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
                 byte id = result.getByte(index++);
                 String userName = result.getString(index++);
                 float share = result.getFloat(index++);
-                User user = UsersController.getInstance().add(userName);
                 PersistenceHelperResourceAllocation helper = new PersistenceHelperResourceAllocation(
-                        user, share);
+                        userName, share);
                 allocations.put(new Byte(id), helper);
                 LOGGER.debug("Allocation on mediatype: '" + id + "', user: '"
                         + userName + "', share: " + share);
