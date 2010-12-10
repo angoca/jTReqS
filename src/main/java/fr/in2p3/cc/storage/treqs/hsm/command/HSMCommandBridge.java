@@ -53,9 +53,8 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.model.File;
-import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * This implementation uses batch scripts to interact with the HSM. This does
@@ -425,8 +424,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.warn("Getting properties");
         HSMCommandBridge.getInstance().getFileProperties(args[1]);
         LOGGER.warn("Staging file");
-        HSMCommandBridge.getInstance().stage(
-                new File(args[1], new User("username"), 1));
+        HSMCommandBridge.getInstance().stage(new File(args[1], 1));
         LOGGER.warn(";)");
 
         LOGGER.trace("< main");
