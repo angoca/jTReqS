@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * These are the possibles states of a queue, that have a corresponding behavior
- * in the HSM.
+ * in the HSM. TODO borrar la parte QS_
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -55,30 +55,30 @@ public enum QueueStatus {
      * If there are many jobs in the HSM, probably the tape is queued, however,
      * at the application side, it is being processed.
      */
-    QS_ACTIVATED((short) 210),
+    ACTIVATED((short) 210),
     /**
      * There is a queue that make reference to an existing tape in the HSM. The
      * tape exists in the application but it has not being processed, so the
      * corresponding tape could not be used in the HSM.
      */
-    QS_CREATED((short) 200),
+    CREATED((short) 200),
     /**
      * The requests associated to this queue have been finished, so the Queue is
      * ended. Once the requests for file stored in a given tape in a period of
      * time have been processed, the corresponding queue is considered ended.
      */
-    QS_ENDED((short) 230),
+    ENDED((short) 230),
     /**
      * The corresponding tape is currently unavailable. The tape could be locked
      * due to physical problems.
      */
-    QS_TEMPORARILY_SUSPENDED((short) 220),
+    TEMPORARILY_SUSPENDED((short) 220),
     /**
      * The queue has changed to aborted at initialization time. This is done
      * only in the database level. The object in memory will not contain this
      * code.
      */
-    QS_ABORTED((short) 240);
+    ABORTED((short) 240);
     /**
      * Logger.
      */

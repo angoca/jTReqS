@@ -104,7 +104,7 @@ public final class Stager extends AbstractProcess {
     private void action() {
         LOGGER.trace("> action");
 
-        if (this.queue.getStatus() == QueueStatus.QS_ACTIVATED) {
+        if (this.queue.getStatus() == QueueStatus.ACTIVATED) {
             LOGGER.info("Stager {}: starting.", this.getName());
             try {
                 this.stage();
