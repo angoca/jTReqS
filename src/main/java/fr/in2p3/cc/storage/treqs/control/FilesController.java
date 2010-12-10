@@ -47,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
-import fr.in2p3.cc.storage.treqs.model.User;
 
 /**
  * Controller of the object File. This class permits to create and to manipulate
@@ -115,23 +114,20 @@ public final class FilesController extends AbstractController {
      *            Name of the file.
      * @param size
      *            Size of the file.
-     * @param user
-     *            User that owns the file.
      * @return Instance of file.
      * @throws TReqSException
      *             If there is a problem creation or adding the instance.
      */
-    public File add(final String name, final long size, final User user)
+    public File add(final String name, final long size)
             throws TReqSException {
         LOGGER.trace("> add");
 
-        assert name != null;
+        assert name != null && !name.equals("");
         assert size >= 0;
-        assert user != null;
 
         File file = (File) this.exists(name);
         if (file == null) {
-            file = create(name, size, user);
+            file = create(name, size);
         }
 
         LOGGER.trace("< add");
@@ -147,21 +143,18 @@ public final class FilesController extends AbstractController {
      *            File Name.
      * @param size
      *            Size of the file.`
-     * @param user
-     *            Owner of the file.
      * @return The created File.
      * @throws TReqSException
      *             If there is a problem creating the file.
      */
-    File create(final String name, final long size, final User user)
+    File create(final String name, final long size)
             throws TReqSException {
         LOGGER.trace("> create");
 
-        assert name != null;
+        assert name != null && !name.equals("");
         assert size >= 0;
-        assert user != null;
 
-        File file = new File(name, user, size);
+        File file = new File(name, size);
         super.add(name, file);
 
         assert file != null;
@@ -206,30 +199,5 @@ public final class FilesController extends AbstractController {
         LOGGER.trace("< cleanup");
 
         return size;
-    }
-
-    /**
-     * Checks if there is a file whose owner is the given user.
-     *
-     * @param user
-     *            User to search.
-     * @return true is there a file whose owner is the given user.
-     */
-    public boolean exists(final User user) {
-        LOGGER.trace("> exists");
-
-        boolean ret = false;
-        @SuppressWarnings("rawtypes")
-        Iterator files = this.objectMap.values().iterator();
-        while (files.hasNext()) {
-            File file = (File) files.next();
-            if (user.equals(file.getOwner())) {
-                ret = true;
-            }
-        }
-
-        LOGGER.trace("< exists");
-
-        return ret;
     }
 }
