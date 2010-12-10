@@ -128,9 +128,12 @@ public abstract class AbstractController {
 
         assert key != null;
 
-        this.exists(key);
+        synchronized (objectMap) {
+            this.exists(key);
 
-        this.objectMap.remove(key);
+            this.objectMap.remove(key);
+        }
+
         LOGGER.debug("Object {} removed", key);
 
         LOGGER.trace("< remove");
