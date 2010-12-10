@@ -156,7 +156,7 @@ public final class ResourcesController {
                 while (iterList.hasNext()) {
                     PersistenceHelperResourceAllocation helper = iterList
                             .next();
-                    if (user.equals(helper.getUser())) {
+                    if (user.equals(helper.getUsername())) {
                         found = true;
                     }
                 }
