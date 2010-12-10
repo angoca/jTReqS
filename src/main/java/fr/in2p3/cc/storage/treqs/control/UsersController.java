@@ -150,7 +150,8 @@ public final class UsersController extends AbstractController {
             while (iter.hasNext()) {
                 String name = iter.next();
                 User user = (User) this.objectMap.get(name);
-                boolean exist = FilesController.getInstance().exists(user);
+                boolean exist = FilePositionOnTapesController.getInstance()
+                        .exists(user);
                 if (!exist) {
                     exist = ResourcesController.getInstance().exist(user);
                 }
