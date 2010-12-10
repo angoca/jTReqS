@@ -49,6 +49,8 @@ import fr.in2p3.cc.storage.treqs.model.User;
 
 /**
  * Specialization of the AbstractController template to manage users.
+ * <p>
+ * The key is the user name.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

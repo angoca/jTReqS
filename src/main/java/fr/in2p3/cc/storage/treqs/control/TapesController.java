@@ -50,6 +50,8 @@ import fr.in2p3.cc.storage.treqs.model.Tape;
 
 /**
  * Provides interface to create new Tapes and access Tape Objects.
+ * <p>
+ * The key is the name of the tape.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

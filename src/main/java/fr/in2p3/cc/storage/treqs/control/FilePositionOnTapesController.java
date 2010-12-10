@@ -53,6 +53,8 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * AbstractController for the FilePostionOnTape classes.
+ * <p>
+ * The key is the name of the related file.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

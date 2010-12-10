@@ -51,6 +51,8 @@ import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 /**
  * Controller of the object File. This class permits to create and to manipulate
  * this kind of object.
+ * <p>
+ * The key is the name of the file.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -118,8 +120,7 @@ public final class FilesController extends AbstractController {
      * @throws TReqSException
      *             If there is a problem creation or adding the instance.
      */
-    public File add(final String name, final long size)
-            throws TReqSException {
+    public File add(final String name, final long size) throws TReqSException {
         LOGGER.trace("> add");
 
         assert name != null && !name.equals("");
@@ -147,8 +148,7 @@ public final class FilesController extends AbstractController {
      * @throws TReqSException
      *             If there is a problem creating the file.
      */
-    File create(final String name, final long size)
-            throws TReqSException {
+    File create(final String name, final long size) throws TReqSException {
         LOGGER.trace("> create");
 
         assert name != null && !name.equals("");

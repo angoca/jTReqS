@@ -46,6 +46,8 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 
 /**
  * Controller for media types.
+ * <p>
+ * The key is the name of the media type.
  *
  * @author Andres Gomez
  * @since 1.5
