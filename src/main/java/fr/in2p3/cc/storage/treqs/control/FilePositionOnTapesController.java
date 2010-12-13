@@ -240,7 +240,7 @@ public final class FilePositionOnTapesController extends AbstractController {
      * @return true if there is at least one fpot related to that tape, false
      *         otherwise.
      */
-    public boolean exists(final Tape tape) {
+    protected boolean exists(final Tape tape) {
         LOGGER.trace("> exists");
 
         assert tape != null;
@@ -267,7 +267,7 @@ public final class FilePositionOnTapesController extends AbstractController {
      *            User to search.
      * @return true is there an fpot whose owner is the given user.
      */
-    public boolean exists(final User user) {
+    protected boolean exists(final User user) {
         LOGGER.trace("> exists");
 
         boolean ret = false;
