@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.Statement;
 
+import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLCloseException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException;

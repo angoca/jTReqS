@@ -42,15 +42,15 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql;
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class InitDBStatements {
+final class InitDBStatements {
     /**
      * Command to show all tables.
      */
-    public static final String ALL_TABLES = "show tables";
+    static final String ALL_TABLES = "show tables";
     /**
      * User allocation table name.
      */
-    public static final String ALLOCATIONS = MySQLStatements.ALLOCATIONS;
+    static final String ALLOCATIONS = MySQLStatements.ALLOCATIONS;
     /**
      * Allocations table: Id of the allocation.
      */
@@ -66,12 +66,12 @@ public final class InitDBStatements {
     /**
      * Start of the command to create a table.
      */
-    public static final String CREATE_TABLE = "CREATE TABLE ";
+    static final String CREATE_TABLE = "CREATE TABLE ";
 
     /**
      * Media type table name.
      */
-    public static final String MEDIATYPES = MySQLStatements.MEDIATYPES;
+    static final String MEDIATYPES = MySQLStatements.MEDIATYPES;
     /**
      * Media types table: Quantity of drives for the media type.
      */
@@ -87,7 +87,7 @@ public final class InitDBStatements {
     /**
      * Queues table name.
      */
-    public static final String QUEUES = MySQLStatements.QUEUES;
+    static final String QUEUES = MySQLStatements.QUEUES;
     /**
      * Queues table: When the queue was activated.
      */
@@ -107,7 +107,7 @@ public final class InitDBStatements {
     /**
      * Queues history table name.
      */
-    public static final String QUEUES_HISTORY = MySQLStatements.QUEUES_HISTORY;
+    static final String QUEUES_HISTORY = MySQLStatements.QUEUES_HISTORY;
     /**
      * Queues table: Id of the queue.
      */
@@ -144,7 +144,7 @@ public final class InitDBStatements {
     /**
      * Requests table name.
      */
-    public static final String REQUESTS = MySQLStatements.REQUESTS;
+    static final String REQUESTS = MySQLStatements.REQUESTS;
     /**
      * Requests table: Name of the tape where the file is currently stored.
      */
@@ -179,7 +179,7 @@ public final class InitDBStatements {
     /**
      * Request history table name.
      */
-    public static final String REQUESTS_HISTORY = MySQLStatements.REQUESTS_HISTORY;
+    static final String REQUESTS_HISTORY = MySQLStatements.REQUESTS_HISTORY;
     /**
      * Requests table: Id of the request.
      */
@@ -236,8 +236,8 @@ public final class InitDBStatements {
     /**
      * Structure of the table allocations.
      */
-    public static final String STRUCTURE_TABLE_ALLOCATIONS = "("
-            + ALLOCATIONS_ID + " tinyint NOT null, " + ALLOCATIONS_USER
+    static final String STRUCTURE_TABLE_ALLOCATIONS = "(" + ALLOCATIONS_ID
+            + " tinyint NOT null, " + ALLOCATIONS_USER
             + " varchar(32) NOT null, " + ALLOCATIONS_SHARE
             + " decimal(5,2) NOT null, " + "PRIMARY KEY (" + ALLOCATIONS_ID
             + ", " + ALLOCATIONS_USER + "))";
@@ -245,7 +245,7 @@ public final class InitDBStatements {
     /**
      * Structure of the table media types.
      */
-    public static final String STRUCTURE_TABLE_MEDIATYPES = "(" + MEDIATYPES_ID
+    static final String STRUCTURE_TABLE_MEDIATYPES = "(" + MEDIATYPES_ID
             + " tinyint NOT null, " + MEDIATYPES_NAME
             + " varchar(16) NOT null, " + MEDIATYPES_DRIVES
             + " smallint default 0 NOT null, " + "PRIMARY KEY  ("
@@ -256,7 +256,7 @@ public final class InitDBStatements {
      * the primary key at first, followed by the more volatile columns. TODO
      * validate the precision of the DB columns with Java types.
      */
-    public static final String STRUCTURE_TABLE_QUEUES = "(" + QUEUES_ID
+    static final String STRUCTURE_TABLE_QUEUES = "(" + QUEUES_ID
             + " int NOT null auto_increment, " + QUEUES_NAME
             + " char(12) not null, " + QUEUES_CREATION_TIME
             + " datetime not null, " + QUEUES_MEDIATYPE_ID
@@ -274,7 +274,7 @@ public final class InitDBStatements {
      * the primary at first, followed by the more volatile columns. TODO
      * validate the precision of the DB columns with Java types.
      */
-    public static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
+    static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
             + " int NOT null auto_increment, " + REQUESTS_FILE
             + " varchar(1024) NOT null, " + REQUESTS_CREATION_TIME
             + " datetime NOT null, " + REQUESTS_USER

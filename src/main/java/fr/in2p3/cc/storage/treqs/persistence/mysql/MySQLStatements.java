@@ -49,176 +49,176 @@ public final class MySQLStatements {
     /**
      * User allocation table name.
      */
-    public static final String ALLOCATIONS = "allocations";
+    static final String ALLOCATIONS = "allocations";
     /**
      * Allocations table: Id of the allocation.
      */
-    public static final String ALLOCATIONS_ID = "id";
+    static final String ALLOCATIONS_ID = "id";
     /**
      * Allocations table: Allocation for a given user.
      */
-    public static final String ALLOCATIONS_USER = "user";
+    static final String ALLOCATIONS_USER = "user";
     /**
      * Allocations table: Quantity of allocation for a user.
      */
-    public static final String ALLOCATIONS_SHARE = "share";
+    static final String ALLOCATIONS_SHARE = "share";
     /**
      * Media type table name.
      */
-    public static final String MEDIATYPES = "mediatypes";
+    static final String MEDIATYPES = "mediatypes";
     /**
      * Media types table: Id of the media type.
      */
-    public static final String MEDIATYPES_ID = "id";
+    static final String MEDIATYPES_ID = "id";
     /**
      * Media types table: Name of the media type.
      */
-    public static final String MEDIATYPES_NAME = "name";
+    static final String MEDIATYPES_NAME = "name";
     /**
      * Media types table: Quantity of drives for the media type.
      */
-    public static final String MEDIATYPES_DRIVES = "drives";
+    static final String MEDIATYPES_DRIVES = "drives";
     /**
      * Queues table name.
      */
-    public static final String QUEUES = "queues";
+    static final String QUEUES = "queues";
     /**
      * Queues table: When the queue was activated.
      */
-    public static final String QUEUES_ACTIVATION_TIME = "activation_time";
+    static final String QUEUES_ACTIVATION_TIME = "activation_time";
     /**
      * Queues table: Quantity of bytes to stage with the queue.
      */
-    public static final String QUEUES_BYTE_SIZE = "byte_size";
+    static final String QUEUES_BYTE_SIZE = "byte_size";
     /**
      * Queues table: When the queue was created.
      */
-    public static final String QUEUES_CREATION_TIME = "creation_time";
+    static final String QUEUES_CREATION_TIME = "creation_time";
     /**
      * Queues table: When the queue has been completely processed.
      */
-    public static final String QUEUES_END_TIME = "end_time";
+    static final String QUEUES_END_TIME = "end_time";
     /**
      * Queues history table name.
      */
-    public static final String QUEUES_HISTORY = "queues_history";
+    static final String QUEUES_HISTORY = "queues_history";
     /**
      * Queues table: Id of the queue.
      */
-    public static final String QUEUES_ID = "id";
+    static final String QUEUES_ID = "id";
     /**
      * Queues table: Related type of media for the queue.
      */
-    public static final String QUEUES_MEDIATYPE_ID = "mediatype_id";
+    static final String QUEUES_MEDIATYPE_ID = "mediatype_id";
     /**
      * Queues table: Name of the queue. Normally it is the name of the
      * associated tape.
      */
-    public static final String QUEUES_NAME = "name";
+    static final String QUEUES_NAME = "name";
     /**
      * Queues table: Quantity of requests already done.
      */
-    public static final String QUEUES_NB_REQS_DONE = "nb_reqs_done";
+    static final String QUEUES_NB_REQS_DONE = "nb_reqs_done";
     /**
      * Queues table: Quantity of requests that have failed.
      */
-    public static final String QUEUES_NB_REQS_FAILED = "nb_reqs_failed";
+    static final String QUEUES_NB_REQS_FAILED = "nb_reqs_failed";
     /**
      * Queues table: Quantity of requests for the queue.
      */
-    public static final String QUEUES_NB_REQS = "nb_reqs";
+    static final String QUEUES_NB_REQS = "nb_reqs";
     /**
      * Queues table: User with more associated requests.
      */
-    public static final String QUEUES_OWNER = "owner";
+    static final String QUEUES_OWNER = "owner";
     /**
      * Queues table: Current status of the queue.
      */
-    public static final String QUEUES_STATUS = "status";
+    static final String QUEUES_STATUS = "status";
     /**
      * Requests table name.
      */
-    public static final String REQUESTS = "requests";
+    static final String REQUESTS = "requests";
     /**
      * Requests table: Name of the tape where the file is currently stored.
      */
-    public static final String REQUESTS_TAPE = "tape";
+    static final String REQUESTS_TAPE = "tape";
     /**
      * Requests table: Name or IP of the client that is demanding the file. It's
      * only used by the client.
      */
-    public static final String REQUESTS_CLIENT = "client";
+    static final String REQUESTS_CLIENT = "client";
     /**
      * Requests table: Level where the file can be found.
      */
-    public static final String REQUESTS_LEVEL = "level";
+    static final String REQUESTS_LEVEL = "level";
     /**
      * Requests table: When the request was created. It's only used by the
      * client.
      */
-    public static final String REQUESTS_CREATION_TIME = "creation_time";
+    static final String REQUESTS_CREATION_TIME = "creation_time";
     /**
      * Requests table: email of the person asking for the file. It's only used
      * by the client.
      */
-    public static final String REQUESTS_EMAIL = "email";
+    static final String REQUESTS_EMAIL = "email";
     /**
      * Requests table: When the request was processed (staged or failed).
      */
-    public static final String REQUESTS_END_TIME = "end_time";
+    static final String REQUESTS_END_TIME = "end_time";
     /**
      * Requests table: Last error code returned by the operations.
      */
-    public static final String REQUESTS_ERRORCODE = "errorcode";
+    static final String REQUESTS_ERRORCODE = "errorcode";
     /**
      * Requests table: Name of the file to stage.
      */
-    public static final String REQUESTS_FILE = "file";
+    static final String REQUESTS_FILE = "file";
     /**
      * Request history table name.
      */
-    public static final String REQUESTS_HISTORY = "requests_history";
+    static final String REQUESTS_HISTORY = "requests_history";
     /**
      * Requests table: Id of the request.
      */
-    public static final String REQUESTS_ID = "id";
+    static final String REQUESTS_ID = "id";
     /**
      * Requests table: Message of the last operation.
      */
-    public static final String REQUESTS_MESSAGE = "message";
+    static final String REQUESTS_MESSAGE = "message";
     /**
      * Requests table: Position of the file in the tape.
      */
-    public static final String REQUESTS_POSITION = "position";
+    static final String REQUESTS_POSITION = "position";
     /**
      * Requests table: Associated queue when the request has been submitted to a
      * queue.
      */
-    public static final String REQUESTS_QUEUE_ID = "queue_id";
+    static final String REQUESTS_QUEUE_ID = "queue_id";
     /**
      * Requests table: When the request was asked for stage.
      */
-    public static final String REQUESTS_QUEUED_TIME = "queued_time";
+    static final String REQUESTS_QUEUED_TIME = "queued_time";
     /**
      * Requests table: Size of the file requested.
      */
-    public static final String REQUESTS_SIZE = "size";
+    static final String REQUESTS_SIZE = "size";
     /**
      * Requests table: Status of the request.
      */
-    public static final String REQUESTS_STATUS = "status";
+    static final String REQUESTS_STATUS = "status";
     /**
      * Requests table: When the request was added to a queue.
      */
-    public static final String REQUESTS_SUBMISSION_TIME = "submission_time";
+    static final String REQUESTS_SUBMISSION_TIME = "submission_time";
     /**
      * Requests table: How many retries have been done for this request.
      */
-    public static final String REQUESTS_TRIES = "tries";
+    static final String REQUESTS_TRIES = "tries";
     /**
      * Requests table: Name of the user demanding the request.
      */
-    public static final String REQUESTS_USER = "user";
+    static final String REQUESTS_USER = "user";
     /**
      * Word limit to limit the quantity of queries.
      */
@@ -229,7 +229,7 @@ public final class MySQLStatements {
      *
      * @since 1.5
      */
-    public static final String REQUESTS_VERSION = "version";
+    static final String REQUESTS_VERSION = "version";
 
     /**
      * SQL statement to insert a new queue in the database.
