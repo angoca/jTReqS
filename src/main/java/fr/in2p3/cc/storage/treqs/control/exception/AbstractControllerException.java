@@ -44,7 +44,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public abstract class AbstractControllerException extends TReqSException {
+abstract class AbstractControllerException extends TReqSException {
     /**
      * Generated ID.
      */
