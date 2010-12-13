@@ -66,7 +66,7 @@ public final class ProblematicConfiguationFileException extends
      * @param exception
      *            Reason of the exception.
      */
-    public ProblematicConfiguationFileException(final String file,
+    ProblematicConfiguationFileException(final String file,
             final Exception exception) {
         super(file, exception);
 

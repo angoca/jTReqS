@@ -43,7 +43,7 @@ import org.apache.commons.configuration.SystemConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 
 /**
  * Reads the configuration from the properties file and then, keep that

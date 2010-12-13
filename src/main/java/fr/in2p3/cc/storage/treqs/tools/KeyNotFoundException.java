@@ -64,7 +64,7 @@ public final class KeyNotFoundException extends AbstractConfiguratorException {
      * @param key
      *            Requested key.
      */
-    public KeyNotFoundException(final String section, final String key) {
+    KeyNotFoundException(final String section, final String key) {
         super(section, key);
 
         LOGGER.trace(">< Instance creation");
