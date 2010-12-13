@@ -67,13 +67,4 @@ public abstract class AbstractPersistanceException extends TReqSException {
         super(exception);
     }
 
-    /**
-     * Exception with an explicit message.
-     *
-     * @param message
-     *            Descriptive message of the problem.
-     */
-    public AbstractPersistanceException(final String message) {
-        super(message);
-    }
 }
