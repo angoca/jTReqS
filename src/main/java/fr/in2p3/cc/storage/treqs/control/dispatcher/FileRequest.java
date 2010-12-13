@@ -60,7 +60,7 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class FileRequest {
+final class FileRequest {
     /**
      * Logger.
      */
@@ -142,7 +142,7 @@ public final class FileRequest {
      *
      * @return Name of the file.
      */
-    String getName() {
+    private String getName() {
         LOGGER.trace(">< getName");
 
         return this.name;
@@ -165,7 +165,7 @@ public final class FileRequest {
      * @param tries
      *            Number of retries to read the file.
      */
-    void setNumberTries(final byte tries) {
+    private void setNumberTries(final byte tries) {
         LOGGER.trace("> setNumberTries");
 
         assert tries >= 0;
