@@ -39,7 +39,7 @@ package fr.in2p3.cc.storage.treqs.control;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.Constants;
+import fr.in2p3.cc.storage.treqs.Constants;
 
 /**
  * Defines a process that will be executed in an independent thread.

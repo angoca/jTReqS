@@ -50,7 +50,7 @@ import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public abstract class AbstractController {
+abstract class AbstractController {
 
     /**
      * Logger log4cxx.
