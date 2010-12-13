@@ -42,8 +42,8 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.Constants;
-import fr.in2p3.cc.storage.treqs.model.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;

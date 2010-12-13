@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class KeytabNotFoundException extends AbstractHSMInitException {
+class KeytabNotFoundException extends AbstractHSMInitException {
     /**
      * Logger.
      */

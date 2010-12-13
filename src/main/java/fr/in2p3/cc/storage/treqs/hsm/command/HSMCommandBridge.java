@@ -46,12 +46,12 @@ import java.util.StringTokenizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
-import fr.in2p3.cc.storage.treqs.model.Constants;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
@@ -113,7 +113,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     /**
      * Destroys the only instance. ONLY for testing purposes.
      */
-    public static void destroyInstance() {
+    protected static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
         instance = null;
