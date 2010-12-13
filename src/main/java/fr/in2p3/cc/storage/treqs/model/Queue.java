@@ -49,6 +49,8 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.FilesController;
@@ -643,7 +645,7 @@ public final class Queue implements Comparable<Queue> {
      *             If the queue is in an invalid state. If the time is invalid.
      *             If the queue has been suspended too many times.
      */
-    void finalizeQueue() throws TReqSException {
+    private void finalizeQueue() throws TReqSException {
         LOGGER.trace("> finalizeQueue");
 
         this.countRequests();
@@ -718,7 +720,7 @@ public final class Queue implements Comparable<Queue> {
      *
      * @return End time of the queue.
      */
-    Calendar getEndTime() {
+    private Calendar getEndTime() {
         LOGGER.trace(">< getEndTime");
 
         return this.endTime;
@@ -860,7 +862,7 @@ public final class Queue implements Comparable<Queue> {
      *
      * @return Time when the queue was activated.
      */
-    Calendar getActivationTime() {
+    private Calendar getActivationTime() {
         LOGGER.trace(">< getActivationTime");
 
         return this.activationTime;
@@ -882,7 +884,7 @@ public final class Queue implements Comparable<Queue> {
      *
      * @return Time when the queue finish its suspension.
      */
-    Calendar getSuspensionTime() {
+    private Calendar getSuspensionTime() {
         LOGGER.trace(">< getSuspensionTime");
 
         return this.suspensionTime;

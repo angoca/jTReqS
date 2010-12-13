@@ -42,6 +42,8 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -150,7 +152,7 @@ public final class FilePositionOnTape {
      *
      * @return Timestamp when the properties were read.
      */
-    Calendar getMetadataTimestamp() {
+    private Calendar getMetadataTimestamp() {
         LOGGER.trace(">< getMetadataTimestamp");
 
         return this.metadataTimestamp;
@@ -237,7 +239,7 @@ public final class FilePositionOnTape {
      * @param requester
      *            The new requester.
      */
-    void setRequester(final User requester) {
+    private void setRequester(final User requester) {
         LOGGER.trace("> setRequester");
 
         assert requester != null;

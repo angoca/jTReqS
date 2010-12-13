@@ -160,7 +160,7 @@ public final class Tape {
      * @param tapeMediaType
      *            Type of the media (T10KA, T10KB, LTO).
      */
-    void setMediaType(final MediaType tapeMediaType) {
+    private void setMediaType(final MediaType tapeMediaType) {
         LOGGER.trace("> setMediaType");
 
         assert tapeMediaType != null;
@@ -176,7 +176,7 @@ public final class Tape {
      * @param tapeName
      *            Name of the tape.
      */
-    void setName(final String tapeName) {
+    private void setName(final String tapeName) {
         LOGGER.trace("> setName");
 
         assert tapeName != null;

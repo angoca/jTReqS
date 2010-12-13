@@ -46,6 +46,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+
 /**
  * Contains the resource allocation for a given media type (aka PVR).
  * <p>
@@ -160,7 +162,7 @@ public final class Resource {
      *
      * @return Timestamp of the resource check.
      */
-    Calendar getTimestamp() {
+    private Calendar getTimestamp() {
         LOGGER.trace(">< getTimestamp");
 
         return this.timestamp;
@@ -183,7 +185,7 @@ public final class Resource {
      *
      * @return the number of used resources for all users.
      */
-    Map<User, Byte> getUsedResources() {
+    private Map<User, Byte> getUsedResources() {
         LOGGER.trace(">< getUsedResources");
 
         return this.usedResources;
@@ -220,7 +222,7 @@ public final class Resource {
      *
      * @return Map of user allocations.
      */
-    Map<User, Float> getUserAllocation() {
+    private Map<User, Float> getUserAllocation() {
         LOGGER.trace(">< getUserAllocation");
 
         return this.userAllocation;

@@ -41,6 +41,8 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
@@ -180,7 +182,7 @@ public final class Reading {
      *
      * @return Maximal possible quantity of retries for this reading.
      */
-    short getMaxTries() {
+    private short getMaxTries() {
         LOGGER.trace(">< getMaxTries");
 
         return this.maxTries;
@@ -222,7 +224,7 @@ public final class Reading {
      *
      * @return Retrieves when the reading was started.
      */
-    Calendar getStartTime() {
+    private Calendar getStartTime() {
         LOGGER.trace(">< getStartTime");
 
         return this.startTime;
