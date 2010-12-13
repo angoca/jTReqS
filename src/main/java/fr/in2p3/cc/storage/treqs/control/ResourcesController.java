@@ -136,7 +136,7 @@ public final class ResourcesController {
      *            User to search.
      * @return true if the user is defined in the lists. false otherwise.
      */
-    public boolean exist(final User user) {
+    protected boolean exist(final User user) {
         boolean found = false;
         Iterator<Resource> iter = this.resources.iterator();
         while (iter.hasNext() && !found) {
