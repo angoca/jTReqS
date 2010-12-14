@@ -1346,7 +1346,7 @@ public final class Queue implements Comparable<Queue> {
 
     /**
      * Remove the suspended status from the queue. Puts the queue in CREATED
-     * state.
+     * state. TODO reactivar la queue desde el activator.
      *
      * @throws TReqSException
      *             If the queue has been suspended too many times.
