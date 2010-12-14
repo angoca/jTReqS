@@ -55,7 +55,7 @@ public enum RequestStatus {
     FAILED((short) 160),
     /**
      * File could not be processed. There are not enough parameters to process
-     * the requests.
+     * the requests. TODO revisar si se usa, ya que hay columnas not null.
      */
     INVALID((short) 180),
     /**
