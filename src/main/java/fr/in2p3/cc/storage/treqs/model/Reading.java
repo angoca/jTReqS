@@ -46,7 +46,6 @@ import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMCloseException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
@@ -281,9 +280,6 @@ public final class Reading {
             } else if (e instanceof HSMStageException) {
                 logsException("Error staging. Retrying " + filename, e,
                         RequestStatus.CREATED);
-            } else if (e instanceof HSMCloseException) {
-                logsException("Error closing. Retrying " + filename, e,
-                        RequestStatus.CREATED);
             }
         } catch (Exception e) {
             String mess = "Unexpected error while staging " + filename + ":"
@@ -493,7 +489,7 @@ public final class Reading {
             assert this.requestStatus == RequestStatus.SUBMITTED;
 
             // Performs really the stage.
-            realStage();
+            this.realStage();
         }
 
         LOGGER.trace("< stage");
