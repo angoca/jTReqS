@@ -51,6 +51,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
@@ -91,6 +92,48 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * @since 1.5
  */
 public final class HSMCommandBridge extends AbstractHSMBridge {
+
+    /**
+     * Errors from the Command bridge.
+     *
+     * @author Andrés Gómez
+     * @since 1.5
+     */
+    private enum ErrorCodes {
+        /**
+         * This error occurs when there is not space in the cache disk.
+         */
+        HSM_ENOSPACE((byte) -28);
+        /**
+         * Id of the code.
+         */
+        private byte errorCode;
+
+        /**
+         * Builds the error code with an id.
+         *
+         * @param code
+         *            Number of the error code.
+         */
+        private ErrorCodes(byte code) {
+            LOGGER.trace("> Instance creation");
+
+            this.errorCode = code;
+
+            LOGGER.trace("< Instance creation");
+        }
+
+        /**
+         * Retrieves the id of the code.
+         *
+         * @return Id of the code.
+         */
+        byte getId() {
+            LOGGER.trace(">< getId");
+
+            return this.errorCode;
+        }
+    }
 
     /**
      * Instance of the singleton.
@@ -336,6 +379,10 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
                 printStream(process.getInputStream());
                 LOGGER.error("Printin error stream");
                 printStream(process.getErrorStream());
+                if (process.exitValue() == ErrorCodes.HSM_ENOSPACE.getId()) {
+                    throw new HSMResourceException(
+                            ErrorCodes.HSM_ENOSPACE.getId());
+                }
             } catch (IOException e) {
                 throw new HSMStatException(e);
             }
