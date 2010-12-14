@@ -90,15 +90,15 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     /**
      * Queries HPSS for a given file.
      *
-     * @param name
+     * @param filename
      *            Name of the file to query.
-     * @param ret
+     * @param helper
      *            Object that contains the description of the file.
      * @throws AbstractHSMException
      *             If there is a problem retrieving the information.
      */
-    private static native void getFileProperties(final String name,
-            final HSMHelperFileProperties ret) throws AbstractHSMException;
+    private static native void getFileProperties(final String filename,
+            final HSMHelperFileProperties helper) throws AbstractHSMException;
 
     /**
      * Retrieves the unique instance.
