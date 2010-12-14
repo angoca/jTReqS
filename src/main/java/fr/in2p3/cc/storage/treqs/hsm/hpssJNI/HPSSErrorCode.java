@@ -198,8 +198,7 @@ public enum HPSSErrorCode {
      */
     HPSS_ENOMEM((byte) -12),
     /**
-     * ????. This error is unknown when using the application, and probably it
-     * never occurs.
+     * This error occurs when there is not space in the cache disk.
      */
     HPSS_ENOSPACE((byte) -28),
     /**
