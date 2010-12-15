@@ -37,7 +37,8 @@
 package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 /**
- * Definition of the HPSS Error codes.
+ * Definition of the HPSS Error codes. TODO poner los codigos en el brigde.
+ * Fusionar
  *
  * @author Andrés Gómez
  * @since 1.5
