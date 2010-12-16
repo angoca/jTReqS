@@ -36,16 +36,14 @@
  */
 package fr.in2p3.cc.storage.treqs.hsm;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.Instantiator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
@@ -90,59 +88,12 @@ public final class HSMFactory {
         }
 
         LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
-        AbstractHSMBridge bridge = instanciateClass(hsmBridgeClass);
+        AbstractHSMBridge bridge = Instantiator
+                .getInstanceClass(hsmBridgeClass);
 
         assert bridge != null;
 
         LOGGER.trace("< getHSMBridge");
-
-        return bridge;
-    }
-
-    /**
-     * Instantiates the given class.
-     *
-     * @param hsmBridgeClass
-     *            Instantiates the given class calling the getInstance method.
-     * @return Singleton instance.
-     */
-    private static AbstractHSMBridge instanciateClass(
-            final String hsmBridgeClass) {
-        LOGGER.trace("> instanciateClass");
-
-        AbstractHSMBridge bridge = null;
-        Class<?> hsm = null;
-        try {
-            hsm = Class.forName(hsmBridgeClass);
-
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        if (hsm != null) {
-            Method getInstance = null;
-            try {
-                getInstance = hsm.getMethod("getInstance");
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            }
-            if (getInstance != null) {
-                try {
-                    bridge = (AbstractHSMBridge) getInstance.invoke(null);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        assert bridge != null;
-
-        LOGGER.trace("> instanciateClass");
 
         return bridge;
     }
