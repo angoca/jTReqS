@@ -71,7 +71,7 @@ public final class InvalidStateException extends TReqSException {
          */
         ACTIVATE,
         /**
-         * It is impossible to register new file requests in this state.
+         * It is impossible to register new requests in this state.
          */
         REGISTER
     }
