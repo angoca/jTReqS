@@ -48,6 +48,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
+import fr.in2p3.cc.storage.treqs.tools.Instantiator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
@@ -168,12 +169,7 @@ public abstract class AbstractDAOFactory {
         LOGGER.trace("> getDataSourceAccess");
 
         // Retrieves the class.
-        Class<?> daoFactory = null;
-        try {
-            daoFactory = Class.forName(daoFactoryName);
-        } catch (ClassNotFoundException e) {
-            throw new PersistenceFactoryException(e);
-        }
+        Class<?> daoFactory = (Class<?>) Instantiator.getClass(daoFactoryName);
 
         // Retrieves the constructor.
         Constructor<?> constructor = null;
