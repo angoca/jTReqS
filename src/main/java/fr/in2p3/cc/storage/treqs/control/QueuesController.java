@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,50 +34,51 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.collections.MultiMap;
 import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.Instantiator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * The controller for Queue objects. The Queues Controller provides an interface
- * to create new queues, get the queues from a name, remove queues from a name,
- * test existence.
+ * to create new queues, retrieve the queues from a given name, remove queues
+ * from a given name, test existence.
  * <p>
  * The Queues are organized in a multimap, the key being the name of the queue
- * (typically the tape name).
+ * (the tape name).
  * <p>
  * It can eventually exists several Queues in Ended state, if the
  * cleanDoneQueues method is not call periodically.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-
-public class QueuesController {
+public final class QueuesController {
     /**
-     * Pointer to the singleton instance.
+     * Singleton instance.
      */
-    private static QueuesController _instance = null;
+    private static QueuesController instance = null;
     /**
      * Logger.
      */
@@ -92,64 +91,68 @@ public class QueuesController {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        _instance = null;
+        instance = null;
 
         LOGGER.trace("< destroyInstance");
     }
 
     /**
      * Provides access to the singleton.
-     * 
-     * @return a pointer to the QueuesController singleton.
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     *
+     * @return The QueuesController singleton.
+     * @throws AbstractConfiguratorException
+     *             If there is a problem reading the configuration.
      */
-    public static QueuesController getInstance() throws NumberFormatException,
-            ProblematicConfiguationFileException {
+    public static QueuesController getInstance()
+            throws AbstractConfiguratorException {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new QueuesController();
+            instance = new QueuesController();
         }
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
     /**
-     * The list of queues. ! Non-Unique key of the multimap is the Queue's name.
+     * The list of queues. Non-Unique key of the multimap is the Queue's name.
      */
     private MultiMap queuesMap;
 
     /**
-     * Time laps a queue is suspended when it has to.
+     * How much time a queue can be suspended.
      */
     private short suspendTimeForQueues;
+    /**
+     * Algorithm to select the queue to activate.
+     */
+    private Selector selector;
 
     /**
      * Constructor.
-     * 
+     *
      * @throws ProblematicConfiguationFileException
+     *             If there is a problem while reading the configuration file.
+     * @throws KeyNotFoundException
+     *             If a key was not found.
      */
-    QueuesController() throws NumberFormatException,
-            ProblematicConfiguationFileException {
+    private QueuesController() throws ProblematicConfiguationFileException,
+            KeyNotFoundException {
         LOGGER.trace("> create QueuesController");
 
         this.queuesMap = new MultiValueMap();
 
-        this.suspendTimeForQueues = Queue.DEFAULT_SUSPEND_DURATION;
-        try {
-            this.suspendTimeForQueues = Short.parseShort(Configurator
-                    .getInstance().getValue("MAIN", "SUSPEND_DURATION"));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info(
-                            "No setting for SUSPEND_DURATION, default value will be used: {}",
-                            this.suspendTimeForQueues);
-        }
+        this.suspendTimeForQueues = Configurator.getInstance().getShortValue(
+                Constants.SECTION_QUEUE, Constants.SUSPEND_DURATION,
+                DefaultProperties.DEFAULT_SUSPEND_DURATION);
+
+        this.selector = (Selector) Instantiator.getClass(Configurator
+                .getInstance().getStringValue(Constants.SECTION_QUEUE,
+                        Constants.SELECTOR));
 
         LOGGER.trace("< create QueuesController");
     }
@@ -157,19 +160,20 @@ public class QueuesController {
     // TODO (jschaeff) Also use a retry number to register to a queue
     /**
      * Adds a file in the correct queue. Based on the tape referenced by the
-     * file, the correct queue is found. Based on the file's position, insert
+     * fpot, the correct queue is found. Based on the file's position, insert
      * the file in the activated queue or in the created queue. We also ask the
      * FilePositionOnTapesController to register the returned instance.
-     * 
-     * @param file
-     *            the file to insert.
+     *
+     * @param fpot
+     *            Metadata of the file.
      * @param retry
      *            the retry number.
-     * @return a pointer to the queue which registered the file.
+     * @return The queue which registered the file.
      * @throws TReqSException
+     *             Never.
      */
-    public Queue addFilePositionOnTape(FilePositionOnTape fpot, byte retry)
-            throws TReqSException {
+    public Queue addFilePositionOnTape(final FilePositionOnTape fpot,
+            final byte retry) throws TReqSException {
         LOGGER.trace("> addFilePositionOnTape");
 
         assert fpot != null;
@@ -178,18 +182,18 @@ public class QueuesController {
         boolean foundQueue = false;
 
         // From the FilePositionOnTape object, create a Reading object and
-        // assign it
-        // to the suitable Queue
+        // assign it to the suitable Queue.
 
-        // First find all queues for the tape referenced by the file.
+        LOGGER.debug("We have to find the queue for tape {}", fpot.getTape()
+                .getName());
+        // First find all queues for the tape referenced by the fpot.
         // Three cases:
         // 1. There is an already activated queue or temporarily suspended.
         // 2. There is only one created queue.
         // 3. There is not any queue.
         // Find out if there is an activated queue.
-        Tape tape = fpot.getTape();
-        LOGGER.debug("We have to find the queue for tape {}", tape.getName());
-        Queue queue = this.exists(tape.getName(), QueueStatus.QS_ACTIVATED);
+        Queue queue = this.exists(fpot.getTape().getName(),
+                QueueStatus.ACTIVATED);
         if (queue != null) {
             LOGGER.debug("We have an activated queue.");
 
@@ -200,7 +204,7 @@ public class QueuesController {
             if (queue.getHeadPosition() <= fpot.getPosition()) {
                 LOGGER.debug("Adding file to an active queue.");
 
-                queue.registerFile(fpot, retry);
+                queue.registerFPOT(fpot, retry);
                 foundQueue = true;
             } else {
                 LOGGER.debug(
@@ -213,11 +217,11 @@ public class QueuesController {
             // There is no activated queue, or the current position is after
             // file position.
             // But maybe there is a TEMPORILY_SUSPENDED queue.
-            queue = this.exists(tape.getName(),
-                    QueueStatus.QS_TEMPORARILY_SUSPENDED);
+            queue = this.exists(fpot.getTape().getName(),
+                    QueueStatus.TEMPORARILY_SUSPENDED);
             if (queue != null) {
                 LOGGER.debug("We have a temporarily suspended queue.");
-                queue.registerFile(fpot, retry);
+                queue.registerFPOT(fpot, retry);
                 foundQueue = true;
             }
         }
@@ -229,8 +233,11 @@ public class QueuesController {
             // state.
             // Or there is one in activated state, but the head position is
             // after the file position.
-            queue = this.create(tape);
-            queue.registerFile(fpot, retry);
+            queue = this.create(fpot, retry);
+            // TODO create a special flag in the queue, indicating that there is
+            // an activated queue for the same tape, so this new queue has to be
+            // activated once the other has finished. This prevents to unmount
+            // an already mounted tape.
         }
 
         LOGGER.trace("< addFilePositionOnTape");
@@ -241,6 +248,8 @@ public class QueuesController {
     /**
      * Do house cleaning on done queues. Iterate on the queues map and clean the
      * done queues.
+     *
+     * @return Quantity of done queues were cleaned.
      */
     @SuppressWarnings("unchecked")
     public int cleanDoneQueues() {
@@ -248,33 +257,35 @@ public class QueuesController {
 
         int cleaned = 0;
         HashMap<String, Queue> toRemove = new HashMap<String, Queue>();
+        synchronized (this.queuesMap) {
+            @SuppressWarnings("rawtypes")
+            Iterator iterName = this.queuesMap.keySet().iterator();
+            // Checks the references to ended queues.
+            while (iterName.hasNext()) {
+                String key = (String) iterName.next();
+                @SuppressWarnings("rawtypes")
+                Iterator queues = ((Collection<Queue>) this.queuesMap.get(key))
+                        .iterator();
+                while (queues.hasNext()) {
+                    Queue queue = (Queue) queues.next();
 
-        Set<String> qit = this.queuesMap.keySet();
-        Object[] keys = qit.toArray();
-        for (int i = 0; i < keys.length; i++) {
-            String key = (String) keys[i];
-            LOGGER.debug("Looping.");
-
-            Object[] queues = ((Collection<Queue>) this.queuesMap.get(key))
-                    .toArray();
-            for (int j = 0; j < queues.length; j++) {
-                Queue queue = (Queue) queues[j];
-
-                if (queue.getStatus() == QueueStatus.QS_ENDED) {
-                    LOGGER.debug("Queue {} is ended. Cleanup starting.", key);
-                    toRemove.put(key, queue);
-                    cleaned++;
-                } else {
-                    LOGGER.debug("Queue {} is not ended.", key);
+                    if (queue.getStatus() == QueueStatus.ENDED) {
+                        LOGGER.debug("Queue {} is ended. Cleanup starting.",
+                                key);
+                        toRemove.put(key, queue);
+                        cleaned++;
+                    } else {
+                        LOGGER.debug("Queue {} is not ended.", key);
+                    }
                 }
             }
-        }
 
-        for (Iterator<String> iterator = toRemove.keySet().iterator(); iterator
-                .hasNext();) {
-            String key = iterator.next();
-            Queue queue = toRemove.get(key);
-            synchronized (this.queuesMap) {
+            // Removes ended queues.
+            iterName = toRemove.keySet().iterator();
+            while (iterName.hasNext()) {
+                String key = (String) iterName.next();
+                Queue queue = toRemove.get(key);
+                LOGGER.debug("Deleting {} {}", key, queue.toString());
                 this.queuesMap.remove(key, queue);
             }
         }
@@ -284,29 +295,34 @@ public class QueuesController {
         return cleaned;
     }
 
+    /**
+     * Counts the quantity of used drive resources per users.
+     *
+     * @param resources
+     *            List of resources that keep the quantity of used drives.
+     * @return Quantity of active queues.
+     */
     @SuppressWarnings("unchecked")
-    public short countUsedResources(List<Resource> resources) {
+    public short countUsedResources(final List<Resource> resources) {
         LOGGER.trace("> countUsedResources");
 
         assert resources != null;
 
         short active = 0;
         // Iterating through all queues.
-        Set<String> keys = this.queuesMap.keySet();
-        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-            String key = iterator.next();
-            Collection<Queue> queues = (Collection<Queue>) this.queuesMap
-                    .get(key);
-            for (Iterator<Queue> iterator2 = queues.iterator(); iterator2
-                    .hasNext();) {
+        Iterator<String> iterator1 = this.queuesMap.keySet().iterator();
+        while (iterator1.hasNext()) {
+            String key = iterator1.next();
+            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
+                    .get(key)).iterator();
+            while (iterator2.hasNext()) {
                 Queue queue = iterator2.next();
                 // Counting active queues.
-                if (queue.getStatus() == QueueStatus.QS_ACTIVATED) {
+                if (queue.getStatus() == QueueStatus.ACTIVATED) {
                     active++;
                     boolean found = false;
-                    for (Iterator<Resource> iterator3 = resources.iterator(); iterator3
-                            .hasNext()
-                            && !found;) {
+                    Iterator<Resource> iterator3 = resources.iterator();
+                    while (iterator3.hasNext() && !found) {
                         Resource resource = iterator3.next();
                         if (resource.getMediaType().equals(
                                 queue.getTape().getMediaType())) {
@@ -324,22 +340,29 @@ public class QueuesController {
         return active;
     }
 
+    /**
+     * Counts the quantity of queues that are waiting to be activated for a
+     * given type of media.
+     *
+     * @param media
+     *            Type of the media to analyze.
+     * @return Quantity of waiting queues.
+     */
     @SuppressWarnings("unchecked")
-    public short countWaitingQueues(MediaType media) {
+    public short countWaitingQueues(final MediaType media) {
         LOGGER.trace("> countWaitingQueues");
 
         assert media != null;
 
         short waiting = 0;
-        Set<String> keys = this.queuesMap.keySet();
-        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
+        Iterator<String> iterator = this.queuesMap.keySet().iterator();
+        while (iterator.hasNext()) {
             String key = iterator.next();
-            Collection<Queue> queues = (Collection<Queue>) this.queuesMap
-                    .get(key);
-            for (Iterator<Queue> iterator2 = queues.iterator(); iterator2
-                    .hasNext();) {
+            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
+                    .get(key)).iterator();
+            while (iterator2.hasNext()) {
                 Queue queue = iterator2.next();
-                if (queue.getStatus() == QueueStatus.QS_CREATED
+                if (queue.getStatus() == QueueStatus.CREATED
                         && queue.getTape().getMediaType().equals(media)) {
                     waiting++;
                 }
@@ -355,32 +378,39 @@ public class QueuesController {
     }
 
     /**
-     * Creates a new Queue Creates a new Queue and inserts the instance in the
-     * multimap.
-     * 
-     * @param name
-     *            the name of the queue (aka the name of the tape.)
-     * @return a pointer to the new queue (or the already existing queue.)
-     *         addFile(File*) does all the Job
+     * Queue Creates a new Queue and inserts it in the instance of the multimap.
+     * <p>
+     * The queue is created in CREATED state.
+     *
+     * @param fpot
+     *            Metadata of the file.
+     * @param retries
+     *            Quantity of retries for the requests.
+     * @return The new queue (or the already existing queue.) addFile(File*)
+     *         does all the Job
      * @throws TReqSException
      *             If there is a problem building the queue.
      */
-    Queue create(Tape tape) throws TReqSException {
+    Queue create(final FilePositionOnTape fpot, final byte retries)
+            throws TReqSException {
         LOGGER.trace("> create");
 
-        assert tape != null;
+        assert fpot != null;
+        assert retries < 0;
 
-        Queue retQueue = this.exists(tape.getName(), QueueStatus.QS_CREATED);
+        Queue retQueue = this.exists(fpot.getTape().getName(),
+                QueueStatus.CREATED);
         if (retQueue != null) {
-            LOGGER.info("A queue with status QS_CREATED already exists.");
+            LOGGER.info("A queue with status CREATED already exists.");
         } else {
-            retQueue = new Queue(tape);
-            LOGGER.debug("Creating new queue on tape {}", tape.getName());
+            retQueue = new Queue(fpot, retries);
+            LOGGER.debug("Creating new queue on tape {}", fpot.getTape()
+                    .getName());
             retQueue.setSuspendDuration(this.suspendTimeForQueues);
             synchronized (this.queuesMap) {
-                this.queuesMap.put(tape.getName(), retQueue);
+                this.queuesMap.put(fpot.getTape().getName(), retQueue);
             }
-            LOGGER.info("Queue created for tape {}", tape.getName());
+            LOGGER.info("Queue created for tape {}", fpot.getTape().getName());
         }
 
         LOGGER.trace("< create");
@@ -390,45 +420,47 @@ public class QueuesController {
 
     /**
      * Tests if there is a queue for this tape name.
-     * 
+     *
      * @param name
      *            the tape name.
      * @return true if at least one queue exists.
      */
-    boolean exists(String name) {
-        LOGGER.trace(">< exists");
+    boolean exists(final String name) {
+        LOGGER.trace("> exists");
 
-        assert name != null;
-        assert !name.equals("");
+        assert name != null && !name.equals("");
 
-        return this.queuesMap.containsKey(name);
+        boolean ret = this.queuesMap.containsKey(name);
+
+        LOGGER.trace("< exists");
+
+        return ret;
     }
 
     /**
      * Find the unique queue in a given state for a given tape.
-     * 
+     *
      * @param name
      *            the tape name.
-     * @param qs
+     * @param status
      *            the queue status.
-     * @return a pointer to the queue, NULL if no queue was found.
+     * @return The queue, NULL if no queue was found.
      */
-    @SuppressWarnings("unchecked")
-    Queue exists(String name, QueueStatus qs) {
+    public Queue exists(final String name, final QueueStatus status) {
         LOGGER.trace("> exists");
 
-        assert name != null;
-        assert !name.equals("");
-        assert qs != null;
+        assert name != null && !name.equals("");
+        assert status != null;
 
         Queue retQueue = null;
         boolean found = false;
+        @SuppressWarnings("unchecked")
         Collection<Queue> ret = (Collection<Queue>) this.queuesMap.get(name);
         if (ret != null) {
-            for (Iterator<Queue> iterator = ret.iterator(); iterator.hasNext()
-                    && !found;) {
+            Iterator<Queue> iterator = ret.iterator();
+            while (iterator.hasNext() && !found) {
                 Queue queue = iterator.next();
-                if (queue.getStatus() == qs) {
+                if (queue.getStatus() == status) {
                     retQueue = queue;
                     found = true;
                 }
@@ -441,227 +473,110 @@ public class QueuesController {
     }
 
     /**
+     * Retrieves the list of queues of the controller.
+     *
+     * @return Map of queues.
+     */
+    MultiMap getQueues() {
+        LOGGER.trace(">< getQueues");
+
+        return this.queuesMap;
+    }
+
+    /**
      * Gets all queues on a given tape.
-     * 
+     *
      * @param name
      *            the tape to search for.
-     * @return
      * @return the bounds of a range that includes all the queues on tape name.
      */
     @SuppressWarnings("unchecked")
-    Collection<Queue> getQueuesOnTape(String name) {
-        LOGGER.trace(">< getQueuesOnTape");
+    Collection<Queue> getQueuesOnTape(final String name) {
+        LOGGER.trace("> getQueuesOnTape");
 
-        assert name != null;
-        assert !name.equals("");
+        assert name != null && !name.equals("");
 
-        return (Collection<Queue>) this.queuesMap.get(name);
-    }
+        Collection<Queue> ret = (Collection<Queue>) this.queuesMap.get(name);
 
-    /**
-     * Choose the best queue candidate for activation for a given user
-     * <p>
-     * Also taking the opportunity to unsuspend the suspended queues
-     * 
-     * @param rit
-     *            iterator to the concerned resource
-     * @param user
-     *            the user candidate
-     * @return a pointer to the best queue
-     * @throws ProblematicConfiguationFileException
-     */
-    @SuppressWarnings("unchecked")
-    public Queue selectBestQueue(Resource resource, User user)
-            throws ProblematicConfiguationFileException {
-        LOGGER.trace("> selectBestQueue");
-
-        assert resource != null;
-        assert user != null;
-
-        Queue ret = null;
-        String queueName = "";
-        // First get the list of queues
-
-        List<String> keys = (List<String>) this
-                .convertSetToList((Collection<String>) this.queuesMap.keySet());
-        Collections.sort(keys);
-        int length = keys.size();
-        for (int j = 0; j < length; j++) {
-            String key = keys.get(j);
-            List<Queue> queues = (List<Queue>) this
-                    .convertSetToList((Collection<Queue>) this.queuesMap
-                            .get(key));
-            Collections.sort(queues);
-            int length2 = queues.size();
-            for (int i = 0; i < length2; i++) {
-                Queue queue = queues.get(i);
-                // The queue belong to this user and concerns the given resource
-                if (queue.getOwner().equals(user)
-                        && (queue.getTape().getMediaType().equals(resource
-                                .getMediaType()))) {
-                    // The queue waits for activation
-                    if (queue.getStatus() == QueueStatus.QS_CREATED) {
-                        // Check if the tape for this queue is not already used
-                        // by another active queue
-                        if (QueuesController.getInstance().exists(key,
-                                QueueStatus.QS_ACTIVATED) != null) {
-                            // There is another active queue for this tape. Just
-                            // pick another one
-                            LOGGER
-                                    .debug("Another queue on this tape is already active. Trying next queue");
-                            continue;
-                        }
-                        // Select the oldest queue
-                        if (ret == null) {
-                            ret = queue;
-                            queueName = key;
-                        } else if (ret.getCreationTime().getTimeInMillis() > queue
-                                .getCreationTime().getTimeInMillis()) {
-                            ret = queue;
-                            queueName = key;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (ret != null) {
-            LOGGER.info("Best queue for {}  is on tape {}", user.getName(),
-                    queueName);
-        } else {
-            LOGGER.info("No queue could be selected");
-        }
-
-        LOGGER.trace("< selectBestQueue");
+        LOGGER.trace("< getQueuesOnTape");
 
         return ret;
     }
 
     /**
-     * Choose the best user candidate for activation
-     * 
-     * @param iterator
-     *            iterator pointing the concerned resource
-     * @return the user
+     * Chooses a queue to be activated. It calls the specific algorithm, the
+     * given selector.
+     *
+     * @param resource
+     *            Type of queue to select.
+     * @return The best queue chosen by the selector.
+     * @throws AbstractConfiguratorException
+     *             If there is problem retrieving a configuration file.
      */
-    @SuppressWarnings("unchecked")
-    public synchronized User selectBestUser(Resource resource) {
-        LOGGER.trace("> selectBestUser");
+    public Queue/* ! */getBestQueue(Resource resource)
+            throws AbstractConfiguratorException {
+        LOGGER.trace("< getBestQueue");
 
-        assert resource != null;
+        Queue ret = this.selector.selectBestQueue(this.queuesMap, resource);
 
-        User bestUser = null;
-        float score;
-        Map<User, Float> userScore = new HashMap<User, Float>();
+        LOGGER.trace("< getBestQueue");
 
-        // For each waiting user, get its allocation and its used resources.
+        return ret;
 
-        // First get the list of queues
+    }
 
-        // Browse the list of queues and compute the users scores
-        LOGGER
-                .debug("Computing Score : (total allocation)*(user allocation)-(used resources)");
-        Set<String> keys = this.queuesMap.keySet();
-        for (Iterator<String> iterator = keys.iterator(); iterator.hasNext();) {
-            String key = iterator.next();
-            Collection<Queue> queues = (Collection<Queue>) this.queuesMap
-                    .get(key);
-            for (Iterator<Queue> iterator2 = queues.iterator(); iterator2
-                    .hasNext();) {
-                Queue queue = iterator2.next();
-                if (queue.getStatus() == QueueStatus.QS_CREATED) {
-                    // just setting a default best user
-                    bestUser = queue.getOwner();
-                    if (bestUser != null) {
-                        // TODO Cambiar el algoritmo
-                        score = (resource.getTotalAllocation() * resource
-                                .getUserAllocation(bestUser))
-                                - resource.getUsedResources(bestUser);
-                        userScore.put(bestUser, score);
-                        LOGGER.debug("{} score : {} = {} * {} - {}",
-                                new Object[] { bestUser.getName(), score,
-                                        resource.getTotalAllocation(),
-                                        resource.getUserAllocation(bestUser),
-                                        resource.getUsedResources(bestUser) });
-                    } else {
-                        LOGGER.info("The queue does not have an owner: {}",
-                                queue);
-                    }
+    /**
+     * Removes a queue which is in a specific status.
+     *
+     * @param name
+     *            Name of the queue to delete.
+     * @param status
+     *            Status of the queue.
+     */
+    public void remove(final String name, final QueueStatus status) {
+        LOGGER.trace("> remove");
 
+        assert name != null && !name.equals("");
+        assert status != null;
+
+        boolean found = false;
+        @SuppressWarnings("unchecked")
+        Collection<Queue> queuesSameTape = (Collection<Queue>) this.queuesMap
+                .get(name);
+        if (queuesSameTape != null) {
+            Iterator<Queue> iterator = queuesSameTape.iterator();
+            while (iterator.hasNext() && !found) {
+                Queue queue = iterator.next();
+                if (queue.getStatus() == status) {
+                    this.queuesMap.remove(name, queue);
+                    found = true;
                 }
             }
         }
 
-        // catch the best
-        Set<User> keysUser = userScore.keySet();
-        for (Iterator<User> iterator = keysUser.iterator(); iterator.hasNext();) {
-            User key = iterator.next();
-            boolean found = false;
-            if (resource.getUserAllocation(key) < 0) {
-                // The share for this user has been set to a negative value.
-                // This means that we have to skip this user
-                // TODO No, the queues cannot be hold, they have to be
-                // activated, even when the user has not been reserved
-                // resources.
-                LOGGER.warn(
-                        "User {} has a negative share. His queues are hold.",
-                        key.getName());
-                found = true;
-            }
-            if (bestUser != null && !found
-                    && userScore.get(key) > userScore.get(bestUser)) {
-                bestUser = key;
-            }
-        }
-        // We have to check that the best user has positive share
-        if (bestUser != null && resource.getUserAllocation(bestUser) < 0) {
-            // unset the best user.
-            LOGGER.warn(
-                    "User {} has a negative share. We should never get here. ",
-                    bestUser.getName());
-            // TODO it was commented to see what happened. It should be
-            // good.bestUser = null;
-        }
-
-        LOGGER.trace("< selectBestUser");
-
-        return bestUser;
-    }
-
-    @SuppressWarnings("unchecked")
-    private List<?> convertSetToList(Collection<?> queues) {
-        LOGGER.trace("> convertSetToList");
-
-        List<Object> ret = new ArrayList<Object>();
-        for (Iterator<Object> iterator = (Iterator<Object>) queues.iterator(); iterator
-                .hasNext();) {
-            ret.add(iterator.next());
-        }
-
-        LOGGER.trace("< convertSetToList");
-        return ret;
+        LOGGER.trace("< remove");
     }
 
     /**
      * Updates the SuspendTime of all the queues. Sets the localSuspendTime.
      * This value is in seconds.
-     * 
+     *
      * @param time
-     *            the time in second for queue suspension.
+     *            Time in seconds for queue suspension.
      */
     @SuppressWarnings("unchecked")
-    public void updateSuspendTime(short time) {
+    protected void updateSuspendTime(final short time) {
         LOGGER.trace("> updateSuspendTime");
 
         assert time > 0;
 
         this.suspendTimeForQueues = time;
-        Set<String> keysSet = queuesMap.keySet();
-        for (Iterator<String> iterator = keysSet.iterator(); iterator.hasNext();) {
+        Iterator<String> iterator = this.queuesMap.keySet().iterator();
+        while (iterator.hasNext()) {
             String key = iterator.next();
-            Collection<Queue> keys = (Collection<Queue>) queuesMap.get(key);
-            for (Iterator<Queue> iterator2 = keys.iterator(); iterator2
-                    .hasNext();) {
+            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
+                    .get(key)).iterator();
+            while (iterator2.hasNext()) {
                 Queue queue = iterator2.next();
                 queue.setSuspendDuration(time);
             }
