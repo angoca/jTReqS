@@ -53,9 +53,9 @@ import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest
 public interface ReadingDAO {
 
     /**
-     * Updates the status of a set of file requests in the readings table
-     * according to the filename This function is specifically used for
-     * inserting metadata.
+     * Updates the status of a set of requests in the readings table according
+     * to the filename This function is specifically used for inserting
+     * metadata.
      *
      * @param reading
      *            Reading to update. A reading is a reading try of a file
@@ -82,7 +82,7 @@ public interface ReadingDAO {
             throws TReqSException;
 
     /**
-     * Changes a file request status in the database.
+     * Changes a request status in the database.
      *
      * @param id
      *            Request identifier.s
@@ -103,10 +103,9 @@ public interface ReadingDAO {
      * according to the filename.
      *
      * @param reading
-     *            Reading to update. A reading is a reading try of a file
-     *            request.
+     *            Reading to update. A reading is a reading try of a request.
      * @param status
-     *            New file request status.
+     *            New request status.
      * @param time
      *            Timestamp of the state change.
      * @throws TReqSException
