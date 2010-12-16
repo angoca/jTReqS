@@ -73,8 +73,7 @@ public final class InvalidStatusTransitionException extends TReqSException {
      * @param oldFRStatus
      *            New status.
      */
-    public InvalidStatusTransitionException(
-            final RequestStatus newFRStatus,
+    public InvalidStatusTransitionException(final RequestStatus newFRStatus,
             final RequestStatus oldFRStatus) {
 
         super();
@@ -96,8 +95,8 @@ public final class InvalidStatusTransitionException extends TReqSException {
     public String toString() {
         LOGGER.trace("> toString");
 
-        String ret = "Invalid change of file request status. From "
-                + this.oldStatus + " to " + this.newStatus;
+        String ret = "Invalid change of request status. From " + this.oldStatus
+                + " to " + this.newStatus;
 
         assert ret != null;
 
