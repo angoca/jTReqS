@@ -71,6 +71,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#firstUpdate(fr.in2p3.cc
      * .storage.treqs.model.Reading, java.lang.String)
@@ -132,6 +133,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#getNewRequests(int)
      */
     @Override
@@ -176,14 +178,14 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#setRequestStatusById(int,
      * fr.in2p3.cc.storage.treqs.model.RequestStatus, int, java.lang.String)
      */
     @Override
-    public void setRequestStatusById(final int id,
-            final RequestStatus status, final int code, final String message)
-            throws TReqSException {
+    public void setRequestStatusById(final int id, final RequestStatus status,
+            final int code, final String message) throws TReqSException {
         LOGGER.trace("> setRequestStatusById");
 
         assert id >= 0;
@@ -222,6 +224,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#update(fr.in2p3.cc.storage
      * .treqs.model.Reading, fr.in2p3.cc.storage.treqs.model.RequestStatus,
@@ -241,50 +244,48 @@ public final class MySQLReadingDAO implements ReadingDAO {
         int index = 1;
         try {
             switch (status) {
-                // The request has been sent to the HSM.
-                case QUEUED:
-                    LOGGER.debug("Logging an activation for staging");
-                    statement = MySQLBroker.getInstance().getPreparedStatement(
-                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_QUEUED);
-                    // Insert queue_time time stamp
-                    statement.setLong(index++, currentMillis);
-                    break;
-                // The request has been successfully staged.
-                case STAGED:
-                    statement = MySQLBroker.getInstance().getPreparedStatement(
-                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
-                    // Insert end_time time stamp
-                    statement.setLong(index++, currentMillis);
-                    LOGGER.debug(
-                            "Logging a file final state with timestamp {}",
-                            time.toString());
-                    break;
-                // The requests has been resubmitted due to a problem in space.
-                case SUBMITTED:
-                    LOGGER.warn("Logging requeue of a file");
-                    statement = MySQLBroker.getInstance().getPreparedStatement(
-                            MySQLStatements.SQL_REQUESTS_UPDATE_RESUBMITTED);
-                    break;
-                // The request had a problem. Retrying.
-                case CREATED: // CREATED corresponds to a retry
-                    statement = MySQLBroker.getInstance().getPreparedStatement(
-                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_RETRY);
-                    break;
-                // The request has been failed due a problem calling the
-                // staging.
-                case FAILED:
-                    statement = MySQLBroker.getInstance().getPreparedStatement(
-                            MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
-                    // Insert end_time time stamp
-                    statement.setLong(index++, currentMillis);
-                    LOGGER.debug(
-                            "Logging a file final state with timestamp {}",
-                            time.toString());
-                    break;
-                default:
-                    LOGGER.error("This state is invalid.");
-                    assert false;
-                    break;
+            // The request has been sent to the HSM.
+            case QUEUED:
+                LOGGER.debug("Logging an activation for staging");
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_QUEUED);
+                // Insert queue_time time stamp
+                statement.setLong(index++, currentMillis);
+                break;
+            // The request has been successfully staged.
+            case STAGED:
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
+                // Insert end_time time stamp
+                statement.setLong(index++, currentMillis);
+                LOGGER.debug("Logging a file final state with timestamp {}",
+                        time.toString());
+                break;
+            // The requests has been resubmitted due to a problem in space.
+            case SUBMITTED:
+                LOGGER.warn("Logging requeue of a file");
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_REQUESTS_UPDATE_RESUBMITTED);
+                break;
+            // The request had a problem. Retrying.
+            case CREATED: // CREATED corresponds to a retry
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_RETRY);
+                break;
+            // The request has been failed due a problem calling the
+            // staging.
+            case FAILED:
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_REQUESTS_UPDATE_REQUEST_ENDED);
+                // Insert end_time time stamp
+                statement.setLong(index++, currentMillis);
+                LOGGER.debug("Logging a file final state with timestamp {}",
+                        time.toString());
+                break;
+            default:
+                LOGGER.error("This state is invalid.");
+                assert false;
+                break;
             }
         } catch (SQLException e) {
             throw new MySQLExecuteException(e);
@@ -298,7 +299,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
      * Fills the statement and execute it.
      *
      * @param reading
-     *            File request to update.
+     *            Request to update.
      * @param status
      *            Status of the reading.
      * @param statement
@@ -357,6 +358,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#updateUnfinishedRequests()
      */
