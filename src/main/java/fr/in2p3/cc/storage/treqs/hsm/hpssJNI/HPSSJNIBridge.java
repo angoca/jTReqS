@@ -1,7 +1,5 @@
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
- /*
- * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
  * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
@@ -202,6 +200,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String)
@@ -311,6 +310,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(fr.in2p3.cc.storage
      * .treqs.model.File)
