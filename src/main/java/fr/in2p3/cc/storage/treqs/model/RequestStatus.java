@@ -46,7 +46,7 @@ package fr.in2p3.cc.storage.treqs.model;
  */
 public enum RequestStatus {
     /**
-     * A brand new file request.
+     * A brand new request.
      */
     CREATED((short) 100),
     /**

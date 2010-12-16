@@ -166,7 +166,7 @@ public final class Reading {
     }
 
     /**
-     * Getter for file request status member.
+     * Getter for request status member.
      *
      * @return Status of the associated file.
      */
@@ -190,7 +190,7 @@ public final class Reading {
     /**
      * Getter for metadata member.
      *
-     * @return The metadata of the associated file request.
+     * @return The metadata of the associated request.
      */
     public FilePositionOnTape getMetaData() {
         LOGGER.trace(">< getMetaData");
@@ -391,7 +391,7 @@ public final class Reading {
                 || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.FAILED))) {
             this.requestStatus = status;
         } else {
-            LOGGER.error("Invalid change of file request status. "
+            LOGGER.error("Invalid change of request status. "
                     + "(from {} to {}) for file {}", new String[] {
                     this.requestStatus.name(), status.name(),
                     this.getMetaData().getFile().getName() });
@@ -430,18 +430,18 @@ public final class Reading {
     /**
      * Effectively do the staging. This method do the following checks:
      * <ul>
-     * <li>If the status is QUEUED, it passes because there is already a
-     * stager calling this method.</li>
+     * <li>If the status is QUEUED, it passes because there is already a stager
+     * calling this method.</li>
      * <li>If this method has been tried too much times, set as FAILED.</li>
      * <li>If this Reading has already been done, pass.</li>
      * <li>If the file has marked as unreadable, pass.</li>
      * <li>If this Reading does not belong to a queue, pass.</li>
      * </ul>
-     * Then it really calls for staging. The status should be SUBMITTED. If
-     * the method traps exception, following actions are taken:
+     * Then it really calls for staging. The status should be SUBMITTED. If the
+     * method traps exception, following actions are taken:
      * <ul>
-     * <li>HSMResourceException: Reset the file as SUBMITTED both in real
-     * state and on the database. Throws the exception to the caller.</li>
+     * <li>HSMResourceException: Reset the file as SUBMITTED both in real state
+     * and on the database. Throws the exception to the caller.</li>
      * <li>Other exceptions: Set the Reading status as failed, and set the
      * database status as CREATED so it can be re-dispatched.</li>
      * <li>Consider Unknown errors as Fatal.</li>
@@ -469,11 +469,8 @@ public final class Reading {
             this.requestStatus = RequestStatus.FAILED;
 
             // Send update to the DAO.
-            AbstractDAOFactory
-                    .getDAOFactoryInstance()
-                    .getReadingDAO()
-                    .update(this, this.requestStatus,
-                            new GregorianCalendar());
+            AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                    .update(this, this.requestStatus, new GregorianCalendar());
         } else if (this.requestStatus == RequestStatus.STAGED) {
             // If this file has already been done.
             LOGGER.info("{} already staged.", filename);
@@ -497,6 +494,7 @@ public final class Reading {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override

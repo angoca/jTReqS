@@ -138,7 +138,6 @@ public final class File {
         ret += "File";
         ret += "{ name: " + this.getName();
         ret += ", size: " + this.getSize();
-        //ret += ", file requests size: " + this.getFileRequests().size();
         ret += "}";
 
         assert ret != null;

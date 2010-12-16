@@ -82,6 +82,7 @@ public final class MediaType {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -104,6 +105,7 @@ public final class MediaType {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -137,6 +139,7 @@ public final class MediaType {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override

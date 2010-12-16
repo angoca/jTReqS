@@ -62,8 +62,8 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException.InvalidStateReasons;
 import fr.in2p3.cc.storage.treqs.model.exception.MaximalSuspensionTriesException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
+import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Queue of files to be read sequentially. A queue can be considered as a
@@ -528,10 +528,10 @@ public final class Queue implements Comparable<Queue> {
      * Removes of the references from the queue, in order to help the Garbage
      * collector and it helps to only hold in memory the currently used objects.
      *
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem calling a singleton.
+     * @throws AbstractConfiguratorException
+     *             If there is a problem getting a configuration.
      */
-    private void cleanReferences() throws ProblematicConfiguationFileException {
+    private void cleanReferences() throws AbstractConfiguratorException {
         LOGGER.trace("> cleanReferences");
 
         @SuppressWarnings("rawtypes")
@@ -563,6 +563,7 @@ public final class Queue implements Comparable<Queue> {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
     @Override
@@ -603,30 +604,29 @@ public final class Queue implements Comparable<Queue> {
         byte nbDone = 0;
         Iterator<Short> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
-            switch (this.readingList.get(iterator.next())
-                    .getRequestStatus()) {
-                case FAILED:
-                    nbFailed++;
-                    break;
-                case STAGED:
-                    nbDone++;
-                    break;
-                case QUEUED:
-                    // The file is being staged.
-                    break;
-                case SUBMITTED:
-                    // The file is waiting for being staged.
-                    break;
-                case ON_DISK:
-                    LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE.");
-                    nbDone++;
-                default:
-                    // Count jobs is called only when a Queue is in ACTIVATED
-                    // state and all its files must be in QUEUED state or a
-                    // final state.
-                    LOGGER.error("Invalid state for a file in an activate"
-                            + "queue {}.", this.getTape().getName());
-                    assert false;
+            switch (this.readingList.get(iterator.next()).getRequestStatus()) {
+            case FAILED:
+                nbFailed++;
+                break;
+            case STAGED:
+                nbDone++;
+                break;
+            case QUEUED:
+                // The file is being staged.
+                break;
+            case SUBMITTED:
+                // The file is waiting for being staged.
+                break;
+            case ON_DISK:
+                LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE.");
+                nbDone++;
+            default:
+                // Count jobs is called only when a Queue is in ACTIVATED
+                // state and all its files must be in QUEUED state or a
+                // final state.
+                LOGGER.error("Invalid state for a file in an activate"
+                        + "queue {}.", this.getTape().getName());
+                assert false;
             }
         }
         synchronized (this) {
@@ -1301,6 +1301,7 @@ public final class Queue implements Comparable<Queue> {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override
