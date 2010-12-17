@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * There is no file registered in the HSM with this name.
+ * There is not any file registered in the HSM with this name.
  *
  * @author Andrés Gómez
  * @since 1.5
