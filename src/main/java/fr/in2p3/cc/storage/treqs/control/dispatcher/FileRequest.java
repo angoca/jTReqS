@@ -142,7 +142,7 @@ final class FileRequest {
      *
      * @return Name of the file.
      */
-    private String getName() {
+    public String getName() {
         LOGGER.trace(">< getName");
 
         return this.name;
@@ -177,6 +177,7 @@ final class FileRequest {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override
