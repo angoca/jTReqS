@@ -58,7 +58,7 @@ public final class Main {
     public static void main(final String[] args) throws InterruptedException {
         System.out.println("jTReqS-Server started");
         try {
-            new Starter().process(args);
+            Starter.getInstance().process(args);
         } catch (Exception e) {
             e.printStackTrace();
         }
