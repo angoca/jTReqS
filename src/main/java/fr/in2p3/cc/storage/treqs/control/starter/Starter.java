@@ -56,6 +56,7 @@ import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.InitDB;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Starts the application, loading the threads in the order. TODO JMX to reload
@@ -111,6 +112,40 @@ public final class Starter {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
     /**
+     * The singleton instance.
+     */
+    private static Starter instance = null;
+
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
+
+    /**
+     * Returns the singleton instance.
+     *
+     */
+    public static Starter getInstance() {
+        LOGGER.trace("> getInstance");
+
+        if (instance == null) {
+            LOGGER.debug("Creating instance.");
+
+            instance = new Starter();
+        }
+
+        LOGGER.trace("< getInstance");
+
+        return instance;
+    }
+
+    /**
      * If the application has to continue.
      */
     private boolean cont = true;
@@ -118,6 +153,13 @@ public final class Starter {
      * Set of options set from the command line.
      */
     private Options options;
+
+    /**
+     * Private default constructor.
+     */
+    private Starter() {
+        // Nothing.
+    }
 
     /**
      * Prepares the options passed.
@@ -179,7 +221,7 @@ public final class Starter {
         CommandLine cli = prepareCommandOptions(arguments);
 
         if (cli.hasOption(HELP_LONG_COMMAND_OPTION)) {
-            showHelp();
+            this.showHelp();
         } else {
             LOGGER.info("Finding out the configuration file");
             // First try to figure out the configuration file:
@@ -283,7 +325,7 @@ public final class Starter {
 
             this.startActivator();
 
-            while (cont) {
+            while (this.cont) {
                 // TODO dynamic property from configuration file.
                 Thread.sleep(DefaultProperties.TIME_BETWEEN_CHECK);
                 // TODO Wathdog.
@@ -297,13 +339,12 @@ public final class Starter {
     }
 
     /**
-     * Stops the application. It calls the components by starting the process of
-     * stop, then it waits for all components.
+     * Stops the application calling the stop method of all main components.
      *
-     * @throws TReqSException
-     *             If there is a problem calling the components.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem calling the configuration.
      */
-    void toStop() throws TReqSException {
+    public void toStop() throws ProblematicConfiguationFileException {
         LOGGER.trace("> toStop");
 
         this.cont = false;
@@ -313,11 +354,26 @@ public final class Starter {
         Dispatcher.getInstance().conclude();
         StagersController.getInstance().conclude();
 
+        LOGGER.trace("< toStop");
+    }
+
+    /**
+     * Stops the application. It calls the components by starting the process of
+     * stop, then it waits for all components.
+     *
+     * @throws TReqSException
+     *             If there is a problem calling the components.
+     */
+    void toStopAndWait() throws TReqSException {
+        LOGGER.trace("> toStopAndWait");
+
+        this.toStop();
+
         // Waits for the process to finish.
         Activator.getInstance().waitToFinish();
         Dispatcher.getInstance().waitToFinish();
         StagersController.getInstance().waitToFinish();
 
-        LOGGER.trace("< toStop");
+        LOGGER.trace("< toStopAndWait");
     }
 }
