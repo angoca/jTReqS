@@ -163,6 +163,10 @@ public final class Constants {
      */
     public static final String SECTION_READING = "READING";
     /**
+     * Parameter to select the selector type.
+     */
+    public static final String SELECTOR = "SELECTOR";
+    /**
      * Quantity of simultaneous stagers asking for files of the same tap to
      * HPSS.
      */
