@@ -168,6 +168,9 @@ public final class MediaTypesController extends AbstractController {
      * Returns the type of media, comparing the given name with the pattern.
      * <p>
      * In version 1.0, this was done by a query using the 'like' operator.
+     * <p>
+     * TODO This should be an external component, such as the ACSLS. Or
+     * something with regular expressions.
      *
      * @param storageName
      *            Storage name that will be queried.
@@ -175,8 +178,8 @@ public final class MediaTypesController extends AbstractController {
      *         name.
      * @since 1.5
      */
-    public MediaType getLike(final String storageName) {
-        LOGGER.trace("> getLike");
+    public MediaType getMediaType(final String storageName) {
+        LOGGER.trace("> getMediaType");
 
         assert storageName != null && !storageName.equals("");
 
@@ -190,12 +193,9 @@ public final class MediaTypesController extends AbstractController {
             assert false;
         }
 
-        // TODO with regular expressions or call a new module. This has to be
-        // different.
-
         assert ret != null;
 
-        LOGGER.trace("< getLike");
+        LOGGER.trace("< getMediaType");
 
         return ret;
     }
