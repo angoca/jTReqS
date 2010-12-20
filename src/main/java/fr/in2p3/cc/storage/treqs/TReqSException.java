@@ -39,8 +39,6 @@ package fr.in2p3.cc.storage.treqs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.ErrorCode;
-
 /**
  * Basic exception. All other are derived from this class. TODO create specific
  * exceptions with punctual messages instead of passing the message as
@@ -59,14 +57,6 @@ public abstract class TReqSException extends Exception {
      * Generated ID.
      */
     private static final long serialVersionUID = 6917322061035496563L;
-    /**
-     * The error code.
-     */
-    private ErrorCode code;
-    /**
-     * The error message.
-     */
-    private String message = "No message";
 
     /**
      * Creates an exception without parameters.
@@ -78,38 +68,6 @@ public abstract class TReqSException extends Exception {
     }
 
     /**
-     * Constructor with an error code that determines the problem.
-     *
-     * @param errorCode
-     *            Error associated to the exception.
-     */
-    public TReqSException(final ErrorCode errorCode) {
-        super();
-
-        assert errorCode != null;
-
-        this.code = errorCode;
-    }
-
-    /**
-     * Constructor with an error code and a descriptive message.
-     *
-     * @param errorCode
-     *            Associated error code.
-     * @param mess
-     *            Message that describes the cause of the problem.
-     */
-    protected TReqSException(final ErrorCode errorCode, final String mess) {
-        super();
-
-        assert errorCode != null;
-        assert mess != null && !mess.equals("");
-
-        this.code = errorCode;
-        this.message = mess;
-    }
-
-    /**
      * Constructor wrapping another exception.
      *
      * @param exception
@@ -117,6 +75,11 @@ public abstract class TReqSException extends Exception {
      */
     public TReqSException(final Exception exception) {
         super(exception);
+        LOGGER.trace("> Instance creation");
+
+        assert exception != null;
+
+        LOGGER.trace("< Instance creation");
     }
 
     /**
@@ -126,37 +89,12 @@ public abstract class TReqSException extends Exception {
      *            Descriptive message.
      */
     public TReqSException(final String mess) {
-        super();
+        super(mess);
+
+        LOGGER.trace("> Instance creation");
 
         assert mess != null && !mess.equals("");
 
-        this.message = mess;
-    }
-
-    /**
-     * Returns the error code.
-     *
-     * @return the error code.
-     */
-    public final ErrorCode getCode() {
-        return code;
-    }
-
-    /*
-     * (non-Javadoc)
-     * @see java.lang.Throwable#getMessage()
-     */
-    @Override
-    public String getMessage() {
-        String ret = "";
-        ret += "{ Code: " + this.code;
-        ret += ", Message: " + this.message;
-        ret += super.getMessage();
-        ret += "}";
-        ret += super.getMessage();
-
-        assert ret != null;
-
-        return ret;
+        LOGGER.trace("< Instance creation");
     }
 }
