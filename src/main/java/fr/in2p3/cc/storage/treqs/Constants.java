@@ -82,6 +82,10 @@ public final class Constants {
      */
     public static final String FETCH_MAX = "FETCH_MAX";
     /**
+     * The file is on disk.
+     */
+    public static final String FILE_ON_DISK = "DISK";
+    /**
      * Quantity of files to process before showing a log message.
      */
     public static final short FILES_BEFORE_MESSAGE = 100;
@@ -175,6 +179,7 @@ public final class Constants {
      * Duration of a suspension.
      */
     public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
+
     /**
      * Invisible constructor.
      */
