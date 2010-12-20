@@ -44,6 +44,10 @@ package fr.in2p3.cc.storage.treqs;
  */
 public final class DefaultProperties {
     /**
+     * Metadata Allocation timeout.
+     */
+    public static final short ALLOCATIONS_TIMEOUT = 3600;
+    /**
      * Default properties file name.
      */
     public static final String CONFIGURATION_PROPERTIES = "treqs.conf."
@@ -75,6 +79,10 @@ public final class DefaultProperties {
      */
     public static final short MAX_REQUESTS_DEFAULT = 500;
     /**
+     * Maximal quantity of stagers.
+     */
+    public static final short MAX_STAGERS = 999;
+    /**
      * Quantity of retries if an error is detected.
      */
     public static final byte MAX_SUSPEND_RETRIES = 3;
@@ -91,6 +99,10 @@ public final class DefaultProperties {
      * Time of the loop to check if everything is working good.
      */
     public static final long TIME_BETWEEN_CHECK = 1000;
+    /**
+     * Wait time between two executions of stagers.
+     */
+    public static final byte TIME_BETWEEN_STAGERS = 0;
 
     /**
      * Invisible constructor.

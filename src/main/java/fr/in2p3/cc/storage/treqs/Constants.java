@@ -49,6 +49,10 @@ public final class Constants {
      */
     public static final String ACTIVATOR_INTERVAL = "ACTIVATOR_INTERVAL";
     /**
+     * Timeout for the metadata of allocations.
+     */
+    public static final String ALLOCATIONS_TIMEOUT = null;
+    /**
      * Type of authentication against the HSM.
      */
     public static final String AUTHENTICATION_TYPE = "AUTHENTICATION_TYPE";
@@ -111,6 +115,10 @@ public final class Constants {
      * Maximal quantity of retries for a file.
      */
     public static final String MAX_READ_RETRIES = "MAX_READ_RETRIES";
+    /**
+     * Maximal quantity of stagers.
+     */
+    public static final String MAX_STAGERS = "MAX_STAGERS";
     /**
      * Maximal quantity of retries for a tape before considered as problematic.
      */
@@ -179,6 +187,10 @@ public final class Constants {
      * Duration of a suspension.
      */
     public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
+    /**
+     * Wait time between two stagers.
+     */
+    public static final String TIME_BETWEEN_STAGERS = "TIME_BETWEEN_STAGERS";
 
     /**
      * Invisible constructor.
