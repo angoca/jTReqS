@@ -117,7 +117,8 @@ public final class Resource {
         byte resourceLeft = this.totalAllocation;
 
         Set<User> keySet = this.usedResources.keySet();
-        for (Iterator<User> iterator = keySet.iterator(); iterator.hasNext();) {
+        Iterator<User> iterator = keySet.iterator();
+        while (iterator.hasNext()) {
             User key = iterator.next();
             resourceLeft -= this.usedResources.get(key);
         }
@@ -293,8 +294,8 @@ public final class Resource {
     public void resetUsedResources() {
         LOGGER.trace("> resetUsedResources");
 
-        Set<User> keySet = this.usedResources.keySet();
-        for (Iterator<User> iterator = keySet.iterator(); iterator.hasNext();) {
+        Iterator<User> iterator = this.usedResources.keySet().iterator();
+        while (iterator.hasNext()) {
             User key = iterator.next();
             this.usedResources.put(key, (byte) 0);
         }
