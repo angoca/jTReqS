@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control.dispatcher;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.control.dispatcher;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control.dispatcher;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -46,6 +45,9 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.FilesController;
 import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
@@ -53,48 +55,54 @@ import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.control.UsersController;
+import fr.in2p3.cc.storage.treqs.control.starter.Starter;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
-import fr.in2p3.cc.storage.treqs.model.FileRequest;
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.dao.DAO;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.ExecutionErrorException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
- * This class scans new jobs and assign the requests to queues
+ * This class scans new requests from the data source and assign them to queues.
+ * <p>
+ * This object processes the requests but if there is a problem with on
+ * requests, it prints the problem, but the process continues. In a given
+ * situation, this could lead to problem such as files that are never treated at
+ * all, but this kind of problems appear when there is a problem with the
+ * database, so the application has to be restarted.
+ * <p>
+ * TODO this class has to use threads. La implementación sería así. Se leen
+ * todos los nuevos objetos de la base de datos y se ponen en una lista. Los
+ * objetos se deben pedir ordenados por propietario. Después se toman los datos
+ * de un propietario y se pasan a una segunda lista, y así hasta desocupa. Cada
+ * una se las segunda lista corresponde a las solicitudes de cada usuario. Por
+ * cada usuario se va a pedir la info con el algoritmo de escoger el mejor
+ * usuado.
  */
-public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
+public final class Dispatcher extends
+        fr.in2p3.cc.storage.treqs.control.AbstractProcess {
 
+    private static final String FILE_ON_DISK = "DISK";
     /**
      * The singleton instance.
      */
-    private static Dispatcher _instance = null;
+    private static Dispatcher instance = null;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Dispatcher.class);
-    /**
-     * TODO retrieve as a constant.
-     */
-    private static final short MAX_FILES_BEFORE_MESSAGE = 100;
-
-    private static final short MILLIS = 1000;
-    private static final short MAX_REQUESTS_DEFAULT = 500;
 
     /**
      * Destroys the only instance. ONLY for testing purposes.
@@ -102,102 +110,111 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        // _instance.conclude();
-        // _instance.waitToFinish();
+        instance.conclude();
+        instance.waitToFinish();
 
-        _instance = null;
+        instance = null;
 
         LOGGER.trace("< destroyInstance");
     }
 
     /**
-     * Access the singleton instance.
-     * 
-     * @throws TReqSException
+     * Returns the singleton instance.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem retrieving the configuration.
      */
-    public static Dispatcher getInstance() throws TReqSException {
+    public static Dispatcher getInstance()
+            throws ProblematicConfiguationFileException {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new Dispatcher();
+            instance = new Dispatcher();
         }
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
+    /**
+     * Quantity of requests to process before showing a log message.
+     */
     private short maxFilesBeforeMessage;
     /**
-     * The number of requests to fetch per run
+     * The number of requests to fetch per run.
      */
-    private short maxRequests = MAX_REQUESTS_DEFAULT;
+    private short maxRequests;
 
+    /**
+     * Quantity of millis between loops.
+     */
     private int millisBetweenLoops;
 
-    private Dispatcher() throws TReqSException {
+    /**
+     * Creates the dispatcher. Initializes the attributes.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem retrieving a configuration.
+     */
+    private Dispatcher() throws ProblematicConfiguationFileException {
         super("Dispatcher");
 
         LOGGER.trace("> create Dispatcher");
 
-        try {
-            short maxRequests = Short.parseShort(Configurator.getInstance()
-                    .getValue("MAIN", "DISPATCHER_FETCH_MAX"));
-            this.setMaxRequests(maxRequests);
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info("No setting for MAIN.DISPATCHER_FETCH_MAX, arbitrary default value set to "
-                            + MAX_REQUESTS_DEFAULT);
-        }
+        this.setMaxFilesBeforeMessage(Constants.FILES_BEFORE_MESSAGE);
 
-        this.setMaxFilesBeforeMessage(MAX_FILES_BEFORE_MESSAGE); // TODO
-        // retrieve from configuration.
+        short maxReqs = Configurator.getInstance().getShortValue(
+                Constants.SECTION_DISPATCHER, Constants.FETCH_MAX,
+                DefaultProperties.MAX_REQUESTS_DEFAULT);
+        this.setMaxRequests(maxReqs);
 
-        try {
-            byte interval = Byte.parseByte(Configurator.getInstance().getValue(
-                    "MAIN", "DISPATCHER_INTERVAL"));
-            this.setSecondsBetweenLoops(interval);
-        } catch (ConfigNotFoundException e) {
-            throw new ExecutionErrorException(e);
-        }
+        short interval = Configurator.getInstance().getShortValue(
+                Constants.SECTION_DISPATCHER, Constants.DISPATCHER_INTERVAL,
+                DefaultProperties.SECONDS_BETWEEN_LOOPS);
+        this.setSecondsBetweenLoops(interval);
 
         this.kickStart();
 
         LOGGER.trace("< create Dispatcher");
     }
 
-    private void action() {
+    /**
+     * Performs the process of the dispatcher.
+     *
+     * @throws TReqSException
+     */
+    private void action() throws TReqSException {
         LOGGER.trace("> action");
 
         try {
-            cleaningReferences();
+            this.cleaningReferences();
         } catch (Exception e2) {
-            LOGGER
-                    .error(
-                            "Problem while cleaning references: {}. Stopping Dispatcher.",
-                            e2.getMessage());
-            this.conclude();
+            LOGGER.error(
+                    "Problem while cleaning references: {}. Stopping Dispatcher.",
+                    e2.getMessage());
+            Starter.getInstance().toStop();
+            throw new DispatcherException(e2);
         }
 
         if (this.keepOn()) {
             try {
-                retrieveNewRequest();
+                this.retrieveNewRequests();
             } catch (Exception e1) {
                 if (e1 instanceof TReqSException) {
                     TReqSException e = (TReqSException) e1;
-                    LOGGER
-                            .error(
-                                    "Problem retrieving new requests: {} - {}. Stopping Dispatcher.",
-                                    e.getCode(), e.getMessage());
+                    LOGGER.error(
+                            "Problem retrieving new requests: {}. Stopping Dispatcher.",
+                            e.getMessage());
                 } else {
-                    LOGGER
-                            .error(
-                                    "Unknown problem while retrieving new requests: {}. Stopping.",
-                                    e1.getMessage());
+                    LOGGER.error(
+                            "Unknown problem while retrieving new requests: {}. Stopping.",
+                            e1.getMessage());
                 }
-                this.conclude();
+                Starter.getInstance().toStop();
+                throw new DispatcherException(e1);
             }
         }
 
@@ -205,57 +222,68 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     * Deletes the references to unused objects.
+     * <p>
+     * With the new mechanism to clean objects once the queue has finished, it
+     * is not necessary to exist this method.
+     *
+     * @throws AbstractConfiguratorException
+     *             If there is a problem getting the configuration.
      */
-    private void cleaningReferences() throws NumberFormatException,
-            ProblematicConfiguationFileException {
+    private void cleaningReferences() throws AbstractConfiguratorException {
         LOGGER.trace("> cleaningReferences");
 
-        // clean the finished queues
+        // Clean the finished queues.
         LOGGER.debug("Cleaning unreferenced instances");
-        int cleaned_instances = QueuesController.getInstance()
-                .cleanDoneQueues();
-        LOGGER.debug(cleaned_instances + " Queues cleaned");
-        // TODO cleaned_instances =
-        // FilePositionOnTapesController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " FilePositionOnTapes cleaned");
-        // TODO cleaned_instances = FilesController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " Files cleaned");
-        // TODO cleaned_instances = TapesController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " Tapes cleaned");
-        // TODO cleaned_instances = UsersController.getInstance().cleanup();
-        LOGGER.debug(cleaned_instances + " Users cleaned");
+        int cleanedinstances = QueuesController.getInstance().cleanDoneQueues();
+        LOGGER.debug(cleanedinstances + " Queues cleaned");
+        cleanedinstances = FilePositionOnTapesController.getInstance()
+                .cleanup();
+        LOGGER.debug(cleanedinstances + " FilePositionOnTapes cleaned");
+        cleanedinstances = FilesController.getInstance().cleanup();
+        LOGGER.debug(cleanedinstances + " Files cleaned");
+        cleanedinstances = TapesController.getInstance().cleanup();
+        LOGGER.debug(cleanedinstances + " Tapes cleaned");
+        cleanedinstances = UsersController.getInstance().cleanup();
+        // The users are not deleted
+        // The media types and their allocation are not deleted.
 
         LOGGER.trace("< cleaningReferences");
     }
 
     /**
-     * @param key
-     * @param fileReq
+     * Process the case when a file is already on disk.
+     *
+     * @param request
+     *            Request that asks for the file.
      * @throws ProblematicConfiguationFileException
      */
-    private void fileOnDisk(String key, FileRequest fileReq)
+    private void fileOnDisk(final FileRequest request)
             throws ProblematicConfiguationFileException {
         LOGGER.trace("> fileOnDisk");
 
-        assert key != null;
-        assert fileReq != null;
+        assert request != null;
 
-        LOGGER.info("File {} is on disk, set the request as done", key);
+        LOGGER.info("File {} is on disk, set the request as done",
+                request.getName());
         try {
-            DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
-                    FileStatus.FS_ON_DISK, 0, "File is already on disk");
+            AbstractDAOFactory
+                    .getDAOFactoryInstance()
+                    .getReadingDAO()
+                    .setRequestStatusById(request.getId(),
+                            RequestStatus.ON_DISK, 0, "File is already on disk");
         } catch (TReqSException e) {
-            LOGGER.error("Error {} trying to update file request status : {}",
-                    e.getCode(), e.getMessage());
+            LOGGER.error("Error trying to update request status: {}",
+                    e.getMessage());
         }
 
         LOGGER.trace("< fileOnDisk");
     }
 
     /**
-     * Getter
+     * Getter for max requests.
+     *
+     * @return Quantity of requests per loop.
      */
     short getMaxRequests() {
         LOGGER.trace(">< getMaxRequests");
@@ -264,44 +292,45 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
-     * Scans new requests via DAO Puts all new requests in the RequestsList
+     * Scans new requests via DAO. Puts all new requests in the RequestsList
      * container.
-     * 
-     * @return A map of all the new requests. The key is the filename
+     *
+     * @return A map of all the new requests. The key is the filename.
      * @throws TReqSException
+     *             If there is a problem in any component.
      */
     private MultiMap getNewRequests() throws TReqSException {
         LOGGER.trace("> getNewRequests");
 
         // newRequests will be returned at the end
         MultiMap newRequests = new MultiValueMap();
-        // This is the return type of MySQLBridge.getNewJobs()
         List<PersistenceHelperFileRequest> newJobs = null;
-        User owner;
 
-        LOGGER.info("Looking for new jobs");
+        LOGGER.info("Looking for new requests");
         // TODO This should be done several times till there are not more
         // requests in the database.
         try {
-            newJobs = DAO.getReadingDAO().getNewJobs(this.getMaxRequests());
-        } catch (PersistanceException e) {
+            newJobs = AbstractDAOFactory.getDAOFactoryInstance()
+                    .getReadingDAO().getNewRequests(this.getMaxRequests());
+        } catch (AbstractPersistanceException e) {
             LOGGER.error("Exception caught: {}", e.getMessage());
             throw e;
         }
 
         if (newJobs != null && newJobs.size() > 0) {
-            // loop through the list returned by getNewJobs()
-            for (Iterator<PersistenceHelperFileRequest> iterator = newJobs
-                    .iterator(); iterator.hasNext();) {
+            // Loop through the list returned by getNewJobs().
+            Iterator<PersistenceHelperFileRequest> iterator = newJobs
+                    .iterator();
+            while (iterator.hasNext()) {
                 PersistenceHelperFileRequest dbFileRequest = iterator.next();
-                LOGGER.info("New request [" + dbFileRequest.getId()
+                LOGGER.debug("New request [" + dbFileRequest.getId()
                         + "] for file '" + dbFileRequest.getFileName()
                         + "' from user: " + dbFileRequest.getOwnerName());
-                owner = UsersController.getInstance().add(
+                User owner = UsersController.getInstance().add(
                         dbFileRequest.getOwnerName());
                 FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
-                        dbFileRequest.getFileName(), owner, dbFileRequest
-                                .getNumberTries());
+                        dbFileRequest.getFileName(), owner,
+                        dbFileRequest.getNumberTries());
 
                 newRequests.put(dbFileRequest.getFileName(), newFileReq);
             }
@@ -312,15 +341,14 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
         return newRequests;
     }
 
-    /**
-     * Verify the permissions on a file against the user requesting it
-     * <p>
-     * TODO (jschaeff) implement checkFilePermission
-     * 
-     * @param file
-     *            A reference to the file object
-     * @param user
-     *            A reference to the user object
+    /*
+     * Verify the permissions on a file against the user requesting it <p> TODO
+     * (jschaeff) implement checkFilePermission
+     *
+     * @param file A reference to the file object
+     *
+     * @param user A reference to the user object
+     *
      * @return true if the permissions are OK, false otherwise
      */
     // private boolean checkFilePermission(File file, User user) {
@@ -329,55 +357,68 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     // return false;
     // }
 
-    public byte getSecondsBetweenLoops() {
-        LOGGER.trace(">< getSecondsBetweenLoops");
+    /**
+     * Retrieves the quantity of seconds between loops.
+     *
+     * @return Quantity of seconds between loops.
+     */
+    public short getSecondsBetweenLoops() {
+        LOGGER.trace("> getSecondsBetweenLoops");
 
-        return (byte) (this.millisBetweenLoops / MILLIS);
+        short ret = (short) (this.millisBetweenLoops / Constants.MILLISECONDS);
+
+        LOGGER.trace("< getSecondsBetweenLoops");
+
+        return ret;
     }
 
-    /**
-     * Makes a cycle of the dispatcher.
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#oneLoop()
      */
     @Override
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
-        this.changeStatus(ProcessStatus.STARTED);
+        this.setStatus(ProcessStatus.STARTED);
 
-        action();
+        try {
+            this.action();
+        } catch (TReqSException e) {
+            throw new RuntimeException(e);
+        }
 
-        this.changeStatus(ProcessStatus.STOPPED);
+        this.setStatus(ProcessStatus.STOPPED);
 
         LOGGER.trace("< oneLoop");
     }
 
     /**
+     * Processes the new requests and then put them in queues.
+     * <p>
      * TODO This should be multithreaded in order to ask several file properties
      * to the server simultaneously.
-     * 
+     *
      * @param newRequests
+     *            Map of new requests.
      * @throws TReqSException
+     *             If there is a problem while processing the requests.
      */
     @SuppressWarnings("unchecked")
-    private void process(MultiMap newRequests) throws TReqSException {
+    private void process(final MultiMap newRequests) throws TReqSException {
         LOGGER.trace("> process");
 
         assert newRequests != null;
 
         short counter = this.maxFilesBeforeMessage;
-        for (Iterator<String> iterator = newRequests.keySet().iterator(); iterator
-                .hasNext();) {
-            String key = iterator.next();
-            Collection<FileRequest> collection = (Collection<FileRequest>) newRequests
-                    .get(key);
-            for (Iterator<FileRequest> iterator2 = collection.iterator(); iterator2
-                    .hasNext();) {
+        Iterator<String> iterator = newRequests.keySet().iterator();
+        while (iterator.hasNext()) {
+            String filename = iterator.next();
+            Iterator<FileRequest> iterator2 = ((Collection<FileRequest>) newRequests
+                    .get(filename)).iterator();
+            while (iterator2.hasNext()) {
                 FileRequest fileRequest = iterator2.next();
-
-                // Tape tape = null;
-                boolean cont = true;
-                HSMHelperFileProperties fileProperties = null;
-                MediaType media = null;
 
                 counter--;
                 if (counter == 0) {
@@ -385,101 +426,7 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
                     counter = this.maxFilesBeforeMessage;
                 }
 
-                // Try to find a corresponding File object
-                File file = (File) FilesController.getInstance().exists(key);
-                if (file == null) {
-                    // the file object has to be created
-                    // We do not know the owner of the file yet.
-                    // Assuming the client is the owner.
-
-                    // Get the file properties from HPSS
-                    try {
-                        fileProperties = HSMFactory.getHSMBridge()
-                                .getFileProperties(key);
-                    } catch (HSMException e) {
-                        processException(e, fileRequest);
-                        cont = false;
-                    }
-                    if (cont && fileProperties.getStorageName() == "DISK") {
-                        fileOnDisk(key, fileRequest);
-                        cont = false;
-                    }
-                    if (cont) {
-                        // We can safely assume that the read permissions are
-                        // granted
-                        // We have all information to create a new file object.
-                        file = FilesController.getInstance().add(key,
-                                fileProperties.getSize(),
-                                fileRequest.getClient());
-
-                        // Now, try to find out the media type from the
-                        // configuration database
-                        LOGGER.debug("Get Media Type");
-                        media = MediaTypesController.getInstance().getLike(
-                                fileProperties.getStorageName());
-                        if (media == null) {
-                            cont = false;
-                        }
-                    }
-                } else {
-                    // We already have a File. Find it in the
-                    // FilePositionOnTapes.
-                    // Maybe the metadata of the file has to be updated
-                    FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
-                            .getInstance().exists(file.getName());
-                    if (fpot == null) {
-                        LOGGER
-                                .error("No FilePostionOnTape references this File. This should never happen");
-                        // TODO It could eventually happens when the file
-                        // instances are being deleted at the same time the
-                        // dispatcher ask this question.
-                        // This is a normal case, when there are requests in the
-                        // db, and treqs was started after the insert.
-                        cont = false;
-                        FilesController.getInstance().remove(file.getName());
-                    }
-                    if (cont) {
-                        // TODO (jschaeff) when metadata have to be updated,
-                        // propagate the new metadata
-                        if (fpot.isMetadataOutdated()) {
-                            LOGGER.info("Refreshing metadata of file {}", key);
-                            try {
-                                fileProperties = HSMFactory.getHSMBridge()
-                                        .getFileProperties(key);
-                            } catch (HSMException e1) {
-                                processException(e1, fileRequest);
-                                cont = false;
-                            }
-                            if (cont
-                                    && fileProperties.getStorageName() == "DISK") {
-                                fileOnDisk(key, fileRequest);
-                                cont = false;
-                            }
-                            if (cont) {
-                                fpot.getFile()
-                                        .setSize(fileProperties.getSize());
-                                media = MediaTypesController
-                                        .getInstance()
-                                        .getLike(
-                                                fileProperties.getStorageName());
-                                if (media == null) {
-                                    cont = false;
-                                }
-                            }
-                        } else {
-                            // FIXME I added this fileProperties, but I'm not
-                            // sure.
-                            fileProperties = new HSMHelperFileProperties(fpot
-                                    .getTape().getName(), fpot.getPosition(),
-                                    fpot.getFile().getSize(), (byte) 0);
-                            media = fpot.getTape().getMediaType();
-                        }
-                    }
-                }
-                if (cont) {
-                    cont = submitRequest(fileRequest, fileProperties, media,
-                            file);
-                }
+                this.innerProcess(fileRequest);
 
             }
             if (newRequests.size() > 0) {
@@ -490,61 +437,182 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
         LOGGER.trace("< process");
     }
 
-    private void processException(HSMException e, FileRequest fileReq)
+    /**
+     * Processes the inner part of the loop while processing the new requests.
+     * <p>
+     * This method is very complex, and to try to divide in several method could
+     * lead to misunderstandings. It is very long, but prevents to call several
+     * times the same things.
+     * <p>
+     * If there is a problem in any step, the file will not be processed.
+     *
+     * @param fileRequest
+     *            Request to process.
+     * @throws TReqSException
+     *             If there is a problem while processing the requests.
+     */
+    private void innerProcess(final FileRequest fileRequest)
+            throws TReqSException {
+        LOGGER.trace("> innerProcess");
+
+        boolean cont = true;
+        HSMHelperFileProperties fileProperties = null;
+        MediaType media = null;
+
+        // Try to find a corresponding File object
+        File file = (File) FilesController.getInstance().exists(
+                fileRequest.getName());
+        if (file == null) {
+            // The object file has to be created.
+
+            // Get the file properties from HPSS
+            try {
+                fileProperties = HSMFactory.getHSMBridge().getFileProperties(
+                        fileRequest.getName());
+            } catch (AbstractHSMException e) {
+                this.processException(e, fileRequest);
+                cont = false;
+            }
+            if (cont && fileProperties.getTapeName() == FILE_ON_DISK) {
+                this.fileOnDisk(fileRequest);
+                cont = false;
+            }
+            // The file is not registered in the application and it is not in
+            // disk.
+            if (cont) {
+                // We have all information to create a new file object.
+                file = FilesController.getInstance().add(fileRequest.getName(),
+                        fileProperties.getSize());
+
+                // Now, try to find out the media type.
+                media = MediaTypesController.getInstance().getMediaType(
+                        fileProperties.getTapeName());
+                if (media == null) {
+                    cont = false;
+                }
+            }
+        } else {
+            // The file is already registered in the application.
+            // Maybe the metadata of the file has to be updated
+            FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+                    .getInstance().exists(file.getName());
+            if (fpot == null) {
+                LOGGER.error("No FilePostionOnTape references this File. This "
+                        + "should never happen");
+                cont = false;
+                FilesController.getInstance().remove(file.getName());
+            }
+            if (cont) {
+                if (fpot.isMetadataOutdated()) {
+                    LOGGER.info("Refreshing metadata of file {}",
+                            fileRequest.getName());
+                    try {
+                        fileProperties = HSMFactory.getHSMBridge()
+                                .getFileProperties(fileRequest.getName());
+                    } catch (AbstractHSMException e1) {
+                        this.processException(e1, fileRequest);
+                        cont = false;
+                    }
+                    if (cont && fileProperties.getTapeName() == FILE_ON_DISK) {
+                        this.fileOnDisk(fileRequest);
+                        cont = false;
+                    }
+                    if (cont) {
+                        fpot.getFile().setSize(fileProperties.getSize());
+                        media = MediaTypesController.getInstance()
+                                .getMediaType(fileProperties.getTapeName());
+                        if (media == null) {
+                            cont = false;
+                        }
+                    }
+                } else {
+                    fileProperties = new HSMHelperFileProperties(fpot.getTape()
+                            .getName(), fpot.getPosition(), fpot.getFile()
+                            .getSize());
+                    media = fpot.getTape().getMediaType();
+                }
+            }
+        }
+        if (cont) {
+            this.submitRequest(fileProperties, media, file, fileRequest);
+        }
+
+        LOGGER.trace("< innerProcess");
+    }
+
+    /**
+     * Process a generated exception, writing the problem in the database. It
+     * just write the problem in the database, but it does not stop the
+     * application.
+     *
+     * @param exception
+     *            Exception to process.
+     * @param request
+     *            Problematic request
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem retrieving the configuration.
+     */
+    private void processException(final AbstractHSMException exception,
+            final FileRequest request)
             throws ProblematicConfiguationFileException {
         LOGGER.trace("< processException");
 
-        assert e != null;
-        assert fileReq != null;
+        assert exception != null;
+        assert request != null;
 
-        if (e instanceof HSMStatException) {
-            // The file in this request is not registered in HPSS
-            LOGGER.warn(e.getMessage());
-            // TODO (jschaeff)
-            // If the error is of type HPSS_EIO, we could reschedule the stat
-            // for later because it happens when HPSS core server is temporally
-            // unreachable1
-            LOGGER
-                    .info("Setting FileRequest " + fileReq.getId()
-                            + " as failed");
-            try {
-                DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
-                        FileStatus.FS_FAILED, e.getHSMErrorCode(),
-                        e.getMessage());
-            } catch (TReqSException e1) {
-                LOGGER.error(
-                        "Error {} trying to update file request status : {}",
-                        e1.getCode(), e.getMessage());
-            }
+        if (exception instanceof HSMStatException) {
+            // TODO (jschaeff) if the error is HPSS_EIO, we could reschedule the
+            // stage because it could be due to a temporarily problem in HPSS.
+            // It means that the requests should not be passed as failed.
+            LOGGER.info("Setting FileRequest {} as failed", request.getId());
+            this.logReadingException(exception, request);
         } else {
-            LOGGER.warn(e.getMessage());
-            try {
-                DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
-                        FileStatus.FS_FAILED, e.getHSMErrorCode(),
-                        e.getMessage());
-            } catch (TReqSException e2) {
-                LOGGER.error(
-                        "Error {} trying to update file request status : {}",
-                        e2.getCode(), e.getMessage());
-            }
+            LOGGER.warn(exception.getMessage());
+            this.logReadingException(exception, request);
         }
 
         LOGGER.trace("< processException");
     }
 
     /**
-     * This method is just for tests, because it reinitializes the dispatcher.
+     * Logs the error in the database.
+     *
+     * @param exception
+     *            Exception to log.
+     * @param fileRequest
+     *            FileRequest that had a problem.
      */
-    public void restart() {
-        this.status = ProcessStatus.STARTING;
+    private void logReadingException(final AbstractHSMException exception,
+            final FileRequest fileRequest) {
+        try {
+            AbstractDAOFactory
+                    .getDAOFactoryInstance()
+                    .getReadingDAO()
+                    .setRequestStatusById(fileRequest.getId(),
+                            RequestStatus.FAILED, exception.getErrorCode(),
+                            exception.getMessage());
+        } catch (TReqSException e1) {
+            LOGGER.error("Error trying to update request status: {}",
+                    exception.getMessage());
+        }
     }
 
     /**
-     * This method has a default visibility just for testing purposes.
-     * 
-     * @throws TReqSException
+     * This method is just for tests, because it reinitializes the dispatcher.
      */
-    void retrieveNewRequest() throws TReqSException {
+    public void restart() {
+        super.setStatus(ProcessStatus.STARTING);
+    }
+
+    /**
+     * Retrieves the requests from the data source.
+     * <p>
+     * This method has a default visibility just for testing purposes.
+     *
+     * @throws TReqSException
+     *             If there is problem retrieving the new requests.
+     */
+    void retrieveNewRequests() throws TReqSException {
         LOGGER.trace("> retrieveNewRequest");
 
         // Get new requests
@@ -557,13 +625,19 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
                 LOGGER.info("Beginning MetaData fishing on HPSS for {} files",
                         newRequests.size());
             }
-            process(newRequests);
+            this.process(newRequests);
         }
 
         LOGGER.trace("< retrieveNewRequest");
     }
 
-    void setMaxFilesBeforeMessage(short max) {
+    /**
+     * Establishes the quantity of files to process before a message.
+     *
+     * @param max
+     *            Maximal quantity of files before a message.
+     */
+    void setMaxFilesBeforeMessage(final short max) {
         LOGGER.trace("> setMaxFilesBeforeMessage");
 
         assert max > 0;
@@ -574,9 +648,12 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
-     * Setter
+     * Establishes the quantity of requests to process in a single query.
+     *
+     * @param max
+     *            Max requests.
      */
-    public void setMaxRequests(short max) {
+    public void setMaxRequests(final short max) {
         LOGGER.trace("> setMaxRequests");
 
         assert max > 0;
@@ -586,95 +663,88 @@ public class Dispatcher extends fr.in2p3.cc.storage.treqs.control.Process {
         LOGGER.trace("< setMaxRequests");
     }
 
-    public void setSecondsBetweenLoops(byte seconds) {
+    /**
+     * Sets the quantity of seconds between loops.
+     *
+     * @param seconds
+     *            Quantity of seconds.
+     */
+    public void setSecondsBetweenLoops(final short seconds) {
         LOGGER.trace("> setSecondsBetweenLoops");
 
         assert seconds > 0;
 
-        this.millisBetweenLoops = seconds * MILLIS;
+        this.millisBetweenLoops = seconds * Constants.MILLISECONDS;
 
         LOGGER.trace("< setSecondsBetweenLoops");
     }
 
     /**
-     * @param fileReq
-     * @param tape
-     * @param cont
+     * Creates the necessary objects to register an fpot in a queue.
+     *
      * @param fileProperties
+     *            Properties of the file.
      * @param media
+     *            Media type.
      * @param file
-     * @return
+     *            File.
+     * @param request
+     *            Request of the file.
      * @throws TReqSException
+     *             If there is a problem adding an object.
      */
-    private boolean submitRequest(FileRequest fileReq,
-            HSMHelperFileProperties fileProperties, MediaType media, File file)
+    private void submitRequest(final HSMHelperFileProperties fileProperties,
+            final MediaType media, final File file, final FileRequest request)
             throws TReqSException {
         LOGGER.trace("> submitRequest");
 
-        assert fileReq != null;
         assert fileProperties != null;
         assert media != null;
         assert file != null;
+        assert request != null;
 
-        boolean cont = true;
-        Tape tape = (Tape) TapesController.getInstance().exists(
-                fileProperties.getStorageName());
-        if (tape == null) {
-            LOGGER.debug("Creating new tape instance : {}", fileProperties
-                    .getStorageName());
-            tape = TapesController.getInstance().add(
-                    fileProperties.getStorageName(), media,
-                    TapeStatus.TS_UNLOCKED);
-        }
-        FilePositionOnTape fpot = null;
-        fpot = FilePositionOnTapesController.getInstance().add(file, tape,
-                fileProperties.getPosition());
-        LOGGER.debug("Got a FilePositionOnTape for tape {} and file ", fpot
-                .getTape().getName(), fpot.getFile().getName());
+        Tape tape = TapesController.getInstance().add(
+                fileProperties.getTapeName(), media);
+
+        FilePositionOnTape fpot = FilePositionOnTapesController.getInstance()
+                .add(file, tape, fileProperties.getPosition(),
+                        request.getUser());
 
         // We have a FilePositionOnTape. We have to put it in a queue
         QueuesController.getInstance().addFilePositionOnTape(fpot,
-                fileReq.getNumberTries());
-        LOGGER.debug("FilepositionOnTape registered to a queue");
-        try {
-            DAO.getReadingDAO().setRequestStatusById(fileReq.getId(),
-                    FileStatus.FS_SUBMITTED,
-                    "File request submitted to a queue");
-        } catch (PersistanceException e) {
-            LOGGER.error("Error {} trying to update file request status : ", e
-                    .getCode(), e.getMessage());
-            cont = false;
-        }
+                request.getNumberTries());
+        LOGGER.debug("FilepositionOnTape registered in a queue");
 
         LOGGER.trace("< submitRequest");
-
-        return cont;
     }
 
-    /**
-     * Run periodically over the database to do the work. Call
-     * get_new_requests() and treat all the results
-     * 
-     * @throws TReqSException
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#toStart()
      */
     @Override
     protected void toStart() {
         LOGGER.trace("> toStart");
 
-        while (this.keepOn()) {
+        try {
+            while (this.keepOn()) {
 
-            this.action();
+                this.action();
 
-            if (this.keepOn()) {
-                LOGGER.debug("Sleeping {} milliseconds",
-                        this.millisBetweenLoops);
-                // Waits before restart the process.
-                try {
-                    Thread.sleep(this.millisBetweenLoops);
-                } catch (InterruptedException e) {
-                    // Nothing.
+                if (this.keepOn()) {
+                    LOGGER.debug("Sleeping {} milliseconds",
+                            this.millisBetweenLoops);
+                    // Waits before restart the process.
+                    try {
+                        Thread.sleep(this.millisBetweenLoops);
+                    } catch (InterruptedException e) {
+                        // Nothing.
+                    }
                 }
             }
+        } catch (TReqSException e) {
+            throw new RuntimeException(e);
         }
 
         LOGGER.trace("< toStart");
