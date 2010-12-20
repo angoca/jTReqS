@@ -89,11 +89,13 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * una se las segunda lista corresponde a las solicitudes de cada usuario. Por
  * cada usuario se va a pedir la info con el algoritmo de escoger el mejor
  * usuado.
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
 public final class Dispatcher extends
         fr.in2p3.cc.storage.treqs.control.AbstractProcess {
 
-    private static final String FILE_ON_DISK = "DISK";
     /**
      * The singleton instance.
      */
@@ -121,6 +123,7 @@ public final class Dispatcher extends
     /**
      * Returns the singleton instance.
      *
+     * @return The singleton instance.
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving the configuration.
      */
@@ -133,6 +136,8 @@ public final class Dispatcher extends
 
             instance = new Dispatcher();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
@@ -185,6 +190,7 @@ public final class Dispatcher extends
      * Performs the process of the dispatcher.
      *
      * @throws TReqSException
+     *             If there is a problem while executing the action.
      */
     private void action() throws TReqSException {
         LOGGER.trace("> action");
@@ -192,9 +198,8 @@ public final class Dispatcher extends
         try {
             this.cleaningReferences();
         } catch (Exception e2) {
-            LOGGER.error(
-                    "Problem while cleaning references: {}. Stopping Dispatcher.",
-                    e2.getMessage());
+            LOGGER.error("Problem while cleaning references: {}. Stopping "
+                    + "Dispatcher.", e2.getMessage());
             Starter.getInstance().toStop();
             throw new DispatcherException(e2);
         }
@@ -206,12 +211,12 @@ public final class Dispatcher extends
                 if (e1 instanceof TReqSException) {
                     TReqSException e = (TReqSException) e1;
                     LOGGER.error(
-                            "Problem retrieving new requests: {}. Stopping Dispatcher.",
-                            e.getMessage());
+                            "Problem retrieving new requests: {}. Stopping "
+                                    + "Dispatcher.", e.getMessage());
                 } else {
                     LOGGER.error(
-                            "Unknown problem while retrieving new requests: {}. Stopping.",
-                            e1.getMessage());
+                            "Unknown problem while retrieving new requests: "
+                                    + "{}. Stopping.", e1.getMessage());
                 }
                 Starter.getInstance().toStop();
                 throw new DispatcherException(e1);
@@ -256,10 +261,8 @@ public final class Dispatcher extends
      *
      * @param request
      *            Request that asks for the file.
-     * @throws ProblematicConfiguationFileException
      */
-    private void fileOnDisk(final FileRequest request)
-            throws ProblematicConfiguationFileException {
+    private void fileOnDisk(final FileRequest request) {
         LOGGER.trace("> fileOnDisk");
 
         assert request != null;
@@ -271,7 +274,8 @@ public final class Dispatcher extends
                     .getDAOFactoryInstance()
                     .getReadingDAO()
                     .setRequestStatusById(request.getId(),
-                            RequestStatus.ON_DISK, 0, "File is already on disk");
+                            RequestStatus.ON_DISK, 0,
+                            "File is already on " + "disk");
         } catch (TReqSException e) {
             LOGGER.error("Error trying to update request status: {}",
                     e.getMessage());
@@ -323,9 +327,11 @@ public final class Dispatcher extends
                     .iterator();
             while (iterator.hasNext()) {
                 PersistenceHelperFileRequest dbFileRequest = iterator.next();
-                LOGGER.debug("New request [" + dbFileRequest.getId()
-                        + "] for file '" + dbFileRequest.getFileName()
-                        + "' from user: " + dbFileRequest.getOwnerName());
+                LOGGER.debug(
+                        "New request [{}] for file '{}' from user: {}",
+                        new Object[] { dbFileRequest.getId(),
+                                dbFileRequest.getFileName(),
+                                dbFileRequest.getOwnerName() });
                 User owner = UsersController.getInstance().add(
                         dbFileRequest.getOwnerName());
                 FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
@@ -336,26 +342,12 @@ public final class Dispatcher extends
             }
         }
 
+        assert newRequests != null;
+
         LOGGER.trace("< getNewRequests");
 
         return newRequests;
     }
-
-    /*
-     * Verify the permissions on a file against the user requesting it <p> TODO
-     * (jschaeff) implement checkFilePermission
-     *
-     * @param file A reference to the file object
-     *
-     * @param user A reference to the user object
-     *
-     * @return true if the permissions are OK, false otherwise
-     */
-    // private boolean checkFilePermission(File file, User user) {
-    // LOGGER.trace(">< checkFilePermission");
-    //
-    // return false;
-    // }
 
     /**
      * Retrieves the quantity of seconds between loops.
@@ -455,6 +447,8 @@ public final class Dispatcher extends
             throws TReqSException {
         LOGGER.trace("> innerProcess");
 
+        assert fileRequest != null;
+
         boolean cont = true;
         HSMHelperFileProperties fileProperties = null;
         MediaType media = null;
@@ -465,7 +459,7 @@ public final class Dispatcher extends
         if (file == null) {
             // The object file has to be created.
 
-            // Get the file properties from HPSS
+            // Get the file properties from HSM.
             try {
                 fileProperties = HSMFactory.getHSMBridge().getFileProperties(
                         fileRequest.getName());
@@ -473,7 +467,7 @@ public final class Dispatcher extends
                 this.processException(e, fileRequest);
                 cont = false;
             }
-            if (cont && fileProperties.getTapeName() == FILE_ON_DISK) {
+            if (cont && fileProperties.getTapeName() == Constants.FILE_ON_DISK) {
                 this.fileOnDisk(fileRequest);
                 cont = false;
             }
@@ -498,7 +492,7 @@ public final class Dispatcher extends
                     .getInstance().exists(file.getName());
             if (fpot == null) {
                 LOGGER.error("No FilePostionOnTape references this File. This "
-                        + "should never happen");
+                        + "should never happen.");
                 cont = false;
                 FilesController.getInstance().remove(file.getName());
             }
@@ -513,7 +507,8 @@ public final class Dispatcher extends
                         this.processException(e1, fileRequest);
                         cont = false;
                     }
-                    if (cont && fileProperties.getTapeName() == FILE_ON_DISK) {
+                    if (cont
+                            && fileProperties.getTapeName() == Constants.FILE_ON_DISK) {
                         this.fileOnDisk(fileRequest);
                         cont = false;
                     }
@@ -549,20 +544,18 @@ public final class Dispatcher extends
      *            Exception to process.
      * @param request
      *            Problematic request
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem retrieving the configuration.
      */
     private void processException(final AbstractHSMException exception,
-            final FileRequest request)
-            throws ProblematicConfiguationFileException {
-        LOGGER.trace("< processException");
+            final FileRequest request) {
+        LOGGER.trace("> processException");
 
         assert exception != null;
         assert request != null;
 
         if (exception instanceof HSMStatException) {
             // TODO (jschaeff) if the error is HPSS_EIO, we could reschedule the
-            // stage because it could be due to a temporarily problem in HPSS.
+            // stage because it could be due to a temporarily problem in the
+            // HSM.
             // It means that the requests should not be passed as failed.
             LOGGER.info("Setting FileRequest {} as failed", request.getId());
             this.logReadingException(exception, request);
@@ -579,28 +572,36 @@ public final class Dispatcher extends
      *
      * @param exception
      *            Exception to log.
-     * @param fileRequest
+     * @param request
      *            FileRequest that had a problem.
      */
     private void logReadingException(final AbstractHSMException exception,
-            final FileRequest fileRequest) {
+            final FileRequest request) {
+        LOGGER.trace("> logReadingException");
+
+        assert exception != null;
+        assert request != null;
+
         try {
             AbstractDAOFactory
                     .getDAOFactoryInstance()
                     .getReadingDAO()
-                    .setRequestStatusById(fileRequest.getId(),
+                    .setRequestStatusById(request.getId(),
                             RequestStatus.FAILED, exception.getErrorCode(),
                             exception.getMessage());
         } catch (TReqSException e1) {
-            LOGGER.error("Error trying to update request status: {}",
-                    exception.getMessage());
+            LOGGER.error("Error trying to update request status", exception);
         }
+
+        LOGGER.trace("< logReadingException");
     }
 
     /**
      * This method is just for tests, because it reinitializes the dispatcher.
      */
     public void restart() {
+        LOGGER.trace(">< restart");
+
         super.setStatus(ProcessStatus.STARTING);
     }
 
@@ -622,7 +623,7 @@ public final class Dispatcher extends
 
             // Loop through the new requests.
             if (newRequests.size() > 0) {
-                LOGGER.info("Beginning MetaData fishing on HPSS for {} files",
+                LOGGER.info("Beginning MetaData fishing on HSM for {} files",
                         newRequests.size());
             }
             this.process(newRequests);
@@ -713,7 +714,6 @@ public final class Dispatcher extends
         // We have a FilePositionOnTape. We have to put it in a queue
         QueuesController.getInstance().addFilePositionOnTape(fpot,
                 request.getNumberTries());
-        LOGGER.debug("FilepositionOnTape registered in a queue");
 
         LOGGER.trace("< submitRequest");
     }
@@ -739,7 +739,7 @@ public final class Dispatcher extends
                     try {
                         Thread.sleep(this.millisBetweenLoops);
                     } catch (InterruptedException e) {
-                        // Nothing.
+                        LOGGER.error("Message", e);
                     }
                 }
             }
