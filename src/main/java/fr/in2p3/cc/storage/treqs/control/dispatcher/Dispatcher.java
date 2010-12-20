@@ -62,8 +62,8 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
-import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
@@ -157,6 +157,10 @@ public final class Dispatcher extends
      * Quantity of millis between loops.
      */
     private int millisBetweenLoops;
+    /**
+     * Flag to indicate that there are more requests to process.
+     */
+    private boolean moreRequests;
 
     /**
      * Creates the dispatcher. Initializes the attributes.
@@ -275,7 +279,7 @@ public final class Dispatcher extends
                     .getReadingDAO()
                     .setRequestStatusById(request.getId(),
                             RequestStatus.ON_DISK, 0,
-                            "File is already on " + "disk");
+                            "File is already on disk.");
         } catch (TReqSException e) {
             LOGGER.error("Error trying to update request status: {}",
                     e.getMessage());
@@ -308,37 +312,26 @@ public final class Dispatcher extends
 
         // newRequests will be returned at the end
         MultiMap newRequests = new MultiValueMap();
-        List<PersistenceHelperFileRequest> newJobs = null;
+        List<PersistenceHelperFileRequest> listRequests = null;
 
         LOGGER.info("Looking for new requests");
         // TODO This should be done several times till there are not more
         // requests in the database.
         try {
-            newJobs = AbstractDAOFactory.getDAOFactoryInstance()
+            listRequests = AbstractDAOFactory.getDAOFactoryInstance()
                     .getReadingDAO().getNewRequests(this.getMaxRequests());
         } catch (AbstractPersistanceException e) {
             LOGGER.error("Exception caught: {}", e.getMessage());
             throw e;
         }
 
-        if (newJobs != null && newJobs.size() > 0) {
-            // Loop through the list returned by getNewJobs().
-            Iterator<PersistenceHelperFileRequest> iterator = newJobs
-                    .iterator();
-            while (iterator.hasNext()) {
-                PersistenceHelperFileRequest dbFileRequest = iterator.next();
-                LOGGER.debug(
-                        "New request [{}] for file '{}' from user: {}",
-                        new Object[] { dbFileRequest.getId(),
-                                dbFileRequest.getFileName(),
-                                dbFileRequest.getOwnerName() });
-                User owner = UsersController.getInstance().add(
-                        dbFileRequest.getOwnerName());
-                FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
-                        dbFileRequest.getFileName(), owner,
-                        dbFileRequest.getNumberTries());
+        if (listRequests != null && listRequests.size() > 0) {
+            // Loop through the returned list.
 
-                newRequests.put(dbFileRequest.getFileName(), newFileReq);
+            this.getNewRequestsInner(newRequests, listRequests);
+
+            if (listRequests.size() == this.getMaxRequests()) {
+                this.moreRequests = true;
             }
         }
 
@@ -350,18 +343,52 @@ public final class Dispatcher extends
     }
 
     /**
-     * Retrieves the quantity of seconds between loops.
+     * Inner loop of new requests.
+     *
+     * @param newRequests
+     *            Map of new requests.
+     * @param newJobs
+     *            List of new jobs.
+     * @throws TReqSException
+     *             If there a problem retrieving the objects.
+     */
+    private void getNewRequestsInner(final MultiMap newRequests,
+            final List<PersistenceHelperFileRequest> newJobs)
+            throws TReqSException {
+        LOGGER.trace("> getNewRequestsInner");
+
+        assert newRequests != null;
+        assert newJobs != null;
+
+        Iterator<PersistenceHelperFileRequest> iterator = newJobs.iterator();
+        while (iterator.hasNext()) {
+            PersistenceHelperFileRequest dbFileRequest = iterator.next();
+            LOGGER.debug(
+                    "New request [{}] for file '{}' from user: {}",
+                    new Object[] { dbFileRequest.getId(),
+                            dbFileRequest.getFileName(),
+                            dbFileRequest.getOwnerName() });
+            User owner = UsersController.getInstance().add(
+                    dbFileRequest.getOwnerName());
+            FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
+                    dbFileRequest.getFileName(), owner,
+                    dbFileRequest.getNumberTries());
+
+            newRequests.put(dbFileRequest.getFileName(), newFileReq);
+        }
+
+        LOGGER.trace("< getNewRequestsInner");
+    }
+
+    /**
+     * Retrieves the quantity of milliseconds between loops.
      *
      * @return Quantity of seconds between loops.
      */
-    public short getSecondsBetweenLoops() {
-        LOGGER.trace("> getSecondsBetweenLoops");
+    public long getMillisBetweenLoops() {
+        LOGGER.trace(">< getSecondsBetweenLoops");
 
-        short ret = (short) (this.millisBetweenLoops / Constants.MILLISECONDS);
-
-        LOGGER.trace("< getSecondsBetweenLoops");
-
-        return ret;
+        return this.millisBetweenLoops;
     }
 
     /*
@@ -617,8 +644,7 @@ public final class Dispatcher extends
         LOGGER.trace("> retrieveNewRequest");
 
         // Get new requests
-        MultiMap newRequests = null;
-        newRequests = this.getNewRequests();
+        MultiMap newRequests = this.getNewRequests();
         if (newRequests != null) {
 
             // Loop through the new requests.
@@ -627,6 +653,12 @@ public final class Dispatcher extends
                         newRequests.size());
             }
             this.process(newRequests);
+
+            // Process more requests.
+            if (this.moreRequests) {
+                this.moreRequests = false;
+                this.retrieveNewRequests();
+            }
         }
 
         LOGGER.trace("< retrieveNewRequest");
@@ -734,10 +766,10 @@ public final class Dispatcher extends
 
                 if (this.keepOn()) {
                     LOGGER.debug("Sleeping {} milliseconds",
-                            this.millisBetweenLoops);
+                            this.getMillisBetweenLoops());
                     // Waits before restart the process.
                     try {
-                        Thread.sleep(this.millisBetweenLoops);
+                        Thread.sleep(this.getMillisBetweenLoops());
                     } catch (InterruptedException e) {
                         LOGGER.error("Message", e);
                     }
