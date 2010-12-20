@@ -92,6 +92,10 @@ public final class DefaultProperties {
      */
     public static final short SECONDS_BETWEEN_LOOPS = 2;
     /**
+     * Wait time between two executions of stagers.
+     */
+    public static final byte SECONDS_BETWEEN_STAGERS = 1;
+    /**
      * Quantity of simultaneous stages by queue.
      */
     public static final byte STAGING_DEPTH = 3;
@@ -99,10 +103,6 @@ public final class DefaultProperties {
      * Time of the loop to check if everything is working good.
      */
     public static final long TIME_BETWEEN_CHECK = 1000;
-    /**
-     * Wait time between two executions of stagers.
-     */
-    public static final byte TIME_BETWEEN_STAGERS = 0;
 
     /**
      * Invisible constructor.

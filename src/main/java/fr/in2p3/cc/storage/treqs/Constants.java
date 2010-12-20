@@ -51,16 +51,11 @@ public final class Constants {
     /**
      * Timeout for the metadata of allocations.
      */
-    public static final String ALLOCATIONS_TIMEOUT = null;
+    public static final String ALLOCATIONS_TIMEOUT = "ALLOCATIONS_TIMEOUT";
     /**
      * Type of authentication against the HSM.
      */
     public static final String AUTHENTICATION_TYPE = "AUTHENTICATION_TYPE";
-    /**
-     * Name for the internal property for the default name for the configuration
-     * file.
-     */
-    public static final String DEFAULT_CONFIGURATION_FILE = "DEF_CONFIG_FILE";
     /**
      * Driver used to connect to the database.
      */
@@ -77,6 +72,11 @@ public final class Constants {
      * User name to connect to the database.
      */
     public static final String DB_USER = "USERNAME";
+    /**
+     * Name for the internal property for the default name for the configuration
+     * file.
+     */
+    public static final String DEFAULT_CONFIGURATION_FILE = "DEF_CONFIG_FILE";
     /**
      * Quantity of seconds between two executions of the dispatcher.
      */
@@ -137,6 +137,10 @@ public final class Constants {
      */
     public static final String PESISTENCE_FACTORY = "DAO_FACTORY";
     /**
+     * Wait time between two stagers.
+     */
+    public static final String SECONDS_BETWEEN_STAGERS = "STAGERS_ACTIVATION_INTERVAL";
+    /**
      * Section in the configuration file for the Activator.
      */
     public static final String SECTION_ACTIVATOR = "ACTIVATOR";
@@ -187,10 +191,6 @@ public final class Constants {
      * Duration of a suspension.
      */
     public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
-    /**
-     * Wait time between two stagers.
-     */
-    public static final String TIME_BETWEEN_STAGERS = "TIME_BETWEEN_STAGERS";
 
     /**
      * Invisible constructor.
