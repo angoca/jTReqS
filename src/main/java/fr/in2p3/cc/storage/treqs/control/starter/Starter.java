@@ -314,8 +314,7 @@ public final class Starter {
         Dispatcher.getInstance();
         // Creates and retrieve the activation time of the activator.
         // This time is half of the default activation time.
-        long sleep = Activator.getInstance().getSecondsBetweenLoops()
-                * Constants.MILLISECONDS / 2;
+        long sleep = Activator.getInstance().getMillisBetweenLoops() / 2;
 
         try {
             this.startDispatcher();
