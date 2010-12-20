@@ -1,9 +1,7 @@
-package fr.in2p3.cc.storage.treqs.control.activator;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.control.activator;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control.activator;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -47,40 +46,47 @@ import org.apache.commons.collections.MultiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.ResourcesController;
 import fr.in2p3.cc.storage.treqs.control.StagersController;
+import fr.in2p3.cc.storage.treqs.control.UsersController;
+import fr.in2p3.cc.storage.treqs.control.starter.Starter;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.Stager;
-import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.dao.DAO;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceHelperResourceAllocation;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
+import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Class responsible for activation of the staging queues. This class runs as a
  * thread and periodically scans the waiting queues to activate them.
  * <p>
  * It is recommended to have a configuration with the maxStager as multiple of
- * the maxStagersPerQueue. TODO write this in the configuration file.
+ * the maxStagersPerQueue.
+ * <p>
+ * TODO Asegurarse que una queue activated que tenia una created va a ser la
+ * próxima en ser activada (para no desmontar la cinta del drive)
+ *
+ * @author Jonathan Schaeffer
+ * @since 1.0
  */
-public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
+public final class Activator extends
+        fr.in2p3.cc.storage.treqs.control.AbstractProcess {
     /**
      * The singleton instance.
      */
-    private static Activator _instance = null;
+    private static Activator instance = null;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Activator.class);
-    private static final short MILLIS = 1000;
-    private static final byte SECONDS_BETWEEN_LOOPS = 2;
-    private static final byte STAGING_DEPTH = 0;
 
     /**
      * Destroys the only instance. ONLY for testing purposes.
@@ -88,40 +94,44 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        // _instance.conclude();
-        // _instance.waitToFinish();
+        instance.conclude();
+        instance.waitToFinish();
 
-        _instance = null;
+        instance = null;
 
         LOGGER.trace("< destroyInstance");
     }
 
     /**
-     * Access the singleton instance.
-     * 
+     * Retrieves the singleton instance.
+     *
      * @return Unique instance of this class.
-     * @throws TReqSException
+     * @throws ProblematicConfiguationFileException
+     *             If there is problem retrieving the configuration.
      */
-    public static Activator getInstance() throws TReqSException {
+    public static Activator getInstance()
+            throws ProblematicConfiguationFileException {
         LOGGER.trace("> getInstance");
 
-        if (_instance == null) {
+        if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            _instance = new Activator();
+            instance = new Activator();
         }
+
+        assert instance != null;
 
         LOGGER.trace("< getInstance");
 
-        return _instance;
+        return instance;
     }
 
     /**
-     * Count active stagers
+     * Count active stagers.
      */
     private short activeStagers;
     /**
-     * List of drives allocations per PVR.
+     * List of drives allocations per media type.
      */
     private List<Resource> allocations;
     /**
@@ -136,42 +146,51 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
      * Maximum age of the resources metadata.
      */
     private short metadataTimeout;
+    /**
+     * Time between loops.
+     */
     private int millisBetweenLoops;
+    /**
+     * Deferred time between stagers.
+     */
+    private int millisBetweenStagers;
 
-    private int timeBetweenStagers;
-
-    private Activator() throws TReqSException {
+    /**
+     * Creates the activator, establishing all the values.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem while retrieving the configuration
+     *             file.
+     */
+    private Activator() throws ProblematicConfiguationFileException {
         super("Activator");
         LOGGER.trace("> create activator");
 
-        byte interval = SECONDS_BETWEEN_LOOPS;
-        try {
-            interval = Byte.parseByte(Configurator.getInstance().getValue(
-                    "MAIN", "ACTIVATOR_INTERVAL"));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info(
-                            "No setting for MAIN.ACTIVATOR_INTERVAL, arbitrary default value set to {} seconds",
-                            interval);
-        }
+        short interval = Configurator.getInstance().getShortValue(
+                Constants.SECTION_ACTIVATOR, Constants.ACTIVATOR_INTERVAL,
+                DefaultProperties.SECONDS_BETWEEN_LOOPS);
         this.setSecondsBetweenLoops(interval);
 
-        // TODO retrieve these values from the configuration file.
-        this.setMaxStagers((short) 1000);
+        short totalStagers = Configurator.getInstance().getShortValue(
+                Constants.SECTION_ACTIVATOR, Constants.MAX_STAGERS,
+                DefaultProperties.MAX_STAGERS);
+        this.setMaxStagers(totalStagers);
 
-        byte maxStager = STAGING_DEPTH;
-        try {
-            maxStager = Byte.parseByte(Configurator.getInstance().getValue(
-                    "MAIN", "STAGING_DEPTH"));
-        } catch (ConfigNotFoundException e) {
-            LOGGER
-                    .info(
-                            "No setting for MAIN.STAGING_DEPTH, default value will be used: {}",
-                            maxStager);
-        }
-        this.setMaxStagersPerQueue(maxStager);
-        this.setMetadataTimeout((short) 3600);
-        this.setTimeBetweenStagers(50);
+        byte maxStagerPerQueue = Configurator.getInstance().getByteValue(
+                Constants.SECTION_ACTIVATOR, Constants.STAGING_DEPTH,
+                DefaultProperties.STAGING_DEPTH);
+        this.setMaxStagersPerQueue(maxStagerPerQueue);
+
+        short allocationsTimeout = Configurator.getInstance().getShortValue(
+                Constants.SECTION_ACTIVATOR, Constants.ALLOCATIONS_TIMEOUT,
+                DefaultProperties.ALLOCATIONS_TIMEOUT);
+        this.setMetadataTimeout(allocationsTimeout);
+
+        byte timeStagers = Configurator.getInstance().getByteValue(
+                Constants.SECTION_ACTIVATOR, Constants.SECONDS_BETWEEN_STAGERS,
+                DefaultProperties.SECONDS_BETWEEN_STAGERS);
+        this.setSecondsBetweenStagers(timeStagers);
+
         this.activeStagers = 0;
 
         this.allocations = new ArrayList<Resource>();
@@ -181,7 +200,13 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
         LOGGER.trace("< create activator");
     }
 
-    private void action() {
+    /**
+     * Executes the activator.
+     *
+     * @throws TReqSException
+     *             If there is a problem doing the action.
+     */
+    private void action() throws TReqSException {
         LOGGER.trace("> action");
 
         // First remove all done stagers
@@ -195,7 +220,8 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
                 this.refreshAllocations();
             } catch (TReqSException e) {
                 LOGGER.error(e.getMessage());
-                this.conclude();
+                Starter.getInstance().toStop();
+                throw new ActivatorException(e);
             }
         }
         if (this.keepOn()) {
@@ -204,16 +230,18 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
                 this.countUsedResources();
             } catch (TReqSException e) {
                 LOGGER.error(e.getMessage());
-                this.conclude();
+                Starter.getInstance().toStop();
+                throw new ActivatorException(e);
             }
         }
         if (this.keepOn()) {
             // Loop through the resources
             try {
-                process();
+                this.process();
             } catch (TReqSException e) {
                 LOGGER.error(e.getMessage());
-                this.conclude();
+                Starter.getInstance().toStop();
+                throw new ActivatorException(e);
             }
         }
 
@@ -221,22 +249,19 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
-     * Activate a queue. This function will also trigger the stagers.
-     * 
+     * Activates a queue. This function will also trigger the stagers.
+     *
      * @param queue
-     *            the queue to activate.
+     *            The queue to activate.
      * @throws TReqSException
      *             If there is a problem activating the queue.
      */
-    void activate(Queue queue) throws TReqSException {
+    void activate(final Queue queue) throws TReqSException {
         LOGGER.trace("> activate");
 
         assert queue != null;
 
         boolean cont = true;
-        Stager stager;
-
-        queue.dump();
 
         if (this.activeStagers > this.maxStagers - this.maxStagersPerQueue) {
             LOGGER.warn("No stagers available to activate queue.");
@@ -248,20 +273,19 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
             LOGGER.debug("Preparing {} stagers", this.maxStagersPerQueue);
             int i;
             for (i = 1; i <= this.maxStagersPerQueue; i++) {
-                LOGGER
-                        .info("Starting stager {}/{}", i,
-                                this.maxStagersPerQueue);
+                LOGGER.info("Starting stager {} of {}", i,
+                        this.maxStagersPerQueue);
 
-                stager = StagersController.getInstance().create(queue);
+                Stager stager = StagersController.getInstance().create(queue);
 
                 LOGGER.debug("Thread started: {}", stager.getName());
                 stager.start();
                 try {
                     LOGGER.info("Sleeping between stagers, {} millis",
-                            this.timeBetweenStagers);
-                    Thread.sleep(this.timeBetweenStagers);
+                            this.getMillisBetweenStagers());
+                    Thread.sleep(this.getMillisBetweenStagers());
                 } catch (InterruptedException e) {
-                    // Nothing.
+                    LOGGER.error("Message", e);
                 }
                 this.activeStagers++;
             }
@@ -272,27 +296,27 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
-     * Browse the queues and count the activated queues into the corresponding
-     * PVR resource
-     * 
-     * @return the number of queues in QS_ACTIVATED state
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     * Browses the queues and counts the activated queues into the corresponding
+     * media type resource.
+     *
+     * @return the number of queues in ACTIVATED state.
+     * @throws AbstractConfiguratorException
+     *             If there is a problem retrieving the configuration.
      */
-    private short countUsedResources() throws NumberFormatException,
-            ProblematicConfiguationFileException {
+    private short countUsedResources() throws AbstractConfiguratorException {
         LOGGER.trace("> countUsedResources");
 
         // Reset all used resources
-        for (Iterator<Resource> iterator = this.allocations.iterator(); iterator
-                .hasNext();) {
-            Resource resource = iterator.next();
-            resource.resetUsedResources();
+        Iterator<Resource> iterator = this.allocations.iterator();
+        while (iterator.hasNext()) {
+            iterator.next().resetUsedResources();
         }
 
         short active = QueuesController.getInstance().countUsedResources(
                 this.allocations);
         LOGGER.info("There are {} activated queues", active);
+
+        assert active >= 0;
 
         LOGGER.trace("< countUsedResources");
 
@@ -300,9 +324,9 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
-     * Getter
-     * 
-     * @return
+     * Getter.
+     *
+     * @return Maximal quantity of stagers.
      */
     short getMaxStagers() {
         LOGGER.trace(">< getMaxStagers");
@@ -311,9 +335,9 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
     }
 
     /**
-     * Getter
-     * 
-     * @return
+     * Getter.
+     *
+     * @return Maximal quantity of stagers per queue.
      */
     short getMaxStagersPerQueue() {
         LOGGER.trace(">< getStagersPerQueue");
@@ -321,20 +345,37 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
         return this.maxStagersPerQueue;
     }
 
-    short getMetadataTimeout() {
+    /**
+     * Retrieves the validity of metadata.
+     *
+     * @return Value to consider the metadata as outdated.
+     */
+    private short getMetadataTimeout() {
         LOGGER.trace(">< getMetadataTimeout");
 
         return this.metadataTimeout;
     }
 
-    public byte getSecondsBetweenLoops() {
-        LOGGER.trace(">< getSecondsBetweenLoops");
+    /**
+     * Retrieves the quantity of milliseconds between loops.
+     *
+     * @return Seconds between loops.
+     */
+    public int getMillisBetweenLoops() {
+        LOGGER.trace(">< getMillisBetweenLoops");
 
-        return (byte) (this.millisBetweenLoops / MILLIS);
+        return this.millisBetweenLoops;
     }
 
-    public int getTimeBetweenStagers() {
-        return this.timeBetweenStagers;
+    /**
+     * Retrieves the quantity of milliseconds to wait between two stagers.
+     *
+     * @return Seconds between two stagers.
+     */
+    public int getMillisBetweenStagers() {
+        LOGGER.trace(">< getMillisBetweenStagers");
+
+        return this.millisBetweenStagers;
     }
 
     /**
@@ -344,125 +385,119 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
-        this.changeStatus(ProcessStatus.STARTED);
+        this.setStatus(ProcessStatus.STARTED);
 
-        action();
+        try {
+            this.action();
+        } catch (TReqSException e) {
+            throw new RuntimeException(e);
+        }
 
-        this.changeStatus(ProcessStatus.STOPPED);
+        this.setStatus(ProcessStatus.STOPPED);
 
         LOGGER.trace("< oneLoop");
     }
 
     /**
-     * @param bestQueue
-     * @return
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
+     * Main method of the activator, where the queues are selected to be
+     * activated.
+     *
+     * @throws AbstractConfiguratorException
+     *             If there is a problem while retrieving the configuration.
      */
-    private void process() throws NumberFormatException,
-            ProblematicConfiguationFileException {
-        Queue bestQueue = null;
-        User bestUser;
-        for (Iterator<Resource> iterator = this.allocations.iterator(); iterator
-                .hasNext();) {
-            Resource resource = iterator.next();
+    private void process() throws AbstractConfiguratorException {
+        LOGGER.trace("> process");
+
+        Iterator<Resource> resources = this.allocations.iterator();
+        while (resources.hasNext()) {
+            Resource resource = resources.next();
             // while there is room to activate a queue, do it
             int freeResources = resource.countFreeResources();
             int waitingQueues = QueuesController.getInstance()
                     .countWaitingQueues(resource.getMediaType());
+
             boolean cont = true;
             while ((freeResources > 0) && (waitingQueues > 0) && cont) {
                 LOGGER.debug("Still {} resources available", freeResources);
-                bestUser = QueuesController.getInstance().selectBestUser(
+                // Select best queue for the best user
+                Queue bestQueue = QueuesController.getInstance().getBestQueue(
                         resource);
-                if (bestUser == null) {
-                    // TODO this should never happen, the queue has to have at
-                    // least one user.
-                    // There is no non-blocked user among the waiting
-                    // queues, just do nothing and break the while loop,
-                    // otherwise, it is doomed to infinite loop
-                    LOGGER.error("There is not Best User");
-                    cont = false;
-                }
-                if (cont) {
-                    // Select best queue for the best user
-                    bestQueue = QueuesController.getInstance().selectBestQueue(
-                            resource, bestUser);
 
-                    // Activate the best queue
-                    if (bestQueue != null) {
-                        LOGGER.info("Activating queue {} for user {}",
-                                bestQueue.getTape().getName(), bestQueue
-                                        .getOwner().getName());
-                        try {
-                            this.activate(bestQueue);
-                        } catch (TReqSException e) {
-                            LOGGER
-                                    .error(
-                                            "Error activating queue {} in state {} - {}",
-                                            new String[] {
-                                                    bestQueue.getTape()
-                                                            .getName(),
-                                                    bestQueue.getStatus()
-                                                            .name(),
-                                                    e.getMessage() });
-                        }
-                    } else {
-                        // TODO this should never happen, at least one queue.
-                        LOGGER.warn("Unable to choose a best queue");
+                // Activate the best queue
+                if (bestQueue != null) {
+                    LOGGER.info("Activating queue {} for user {}", bestQueue
+                            .getTape().getName(), bestQueue.getOwner()
+                            .getName());
+                    try {
+                        this.activate(bestQueue);
+                    } catch (TReqSException e) {
+                        LOGGER.error(
+                                "Error activating queue {} in state {} - {}",
+                                new String[] { bestQueue.getTape().getName(),
+                                        bestQueue.getStatus().name(),
+                                        e.getMessage() });
                     }
-                    // Always decrement waiting queues to avoid infinite loops
-                    waitingQueues--;
-                    freeResources--;
+                } else {
+                    LOGGER.error("Unable to choose a best queue.");
+                    assert false;
                 }
+                waitingQueues--;
+                freeResources--;
             }
         }
+
+        LOGGER.trace("< process");
     }
 
     /**
      * Get the allocation information from configuration database. Puts data
      * into Allocations list.
-     * 
+     *
      * @throws TReqSException
+     *             If there is a problem retrieving the allocations.
      */
     @SuppressWarnings("unchecked")
     void refreshAllocations() throws TReqSException {
         LOGGER.trace("> refreshAllocations");
 
-        // Get the drives allocations from DB
+        // Get the drives allocations from data source.
         this.allocations.clear();
-        List<Resource> resources = DAO.getConfigurationDAO()
-                .getMediaAllocations();
-        this.allocations.addAll(resources);
+        this.allocations.addAll(ResourcesController.getInstance()
+                .getMediaAllocations());
 
-        // Now get the shares from DB
-        MultiMap dbshare = DAO.getConfigurationDAO().getResourceAllocation();
+        // Now get the shares from the data source.
+        MultiMap shares = ResourcesController.getInstance()
+                .getResourceAllocation();
 
-        // browse the resources
-        for (Iterator<Resource> iterator = this.allocations.iterator(); iterator
-                .hasNext();) {
-            Resource resource = iterator.next();
-            // Find all shares for the current pvrid
+        // Browse the resources
+        Iterator<Resource> resources = this.allocations.iterator();
+        while (resources.hasNext()) {
+            Resource resource = resources.next();
+            // Find all shares for the current media type.
             byte id = resource.getMediaType().getId();
-            Collection<PersistanceHelperResourceAllocation> shareRange = (Collection<PersistanceHelperResourceAllocation>) dbshare
+            Collection<PersistenceHelperResourceAllocation> shareRange = (Collection<PersistenceHelperResourceAllocation>) shares
                     .get(new Byte(id));
             if (shareRange != null) {
-                // Browse the shares for this PVR and set the resources
-                for (Iterator<PersistanceHelperResourceAllocation> iterator2 = shareRange
-                        .iterator(); iterator2.hasNext();) {
-                    PersistanceHelperResourceAllocation resAlloc = iterator2
+                // Browse the shares for this media type and set the resources
+                Iterator<PersistenceHelperResourceAllocation> iterShares = shareRange
+                        .iterator();
+                while (iterShares.hasNext()) {
+                    PersistenceHelperResourceAllocation resAlloc = iterShares
                             .next();
-                    resource.setUserAllocation(resAlloc.getUser(), resAlloc
+
+                    resource.setUserAllocation(UsersController.getInstance()
+                            .add(resAlloc.getUsername()), resAlloc
                             .getAllocation());
                     resource.setTimestamp(new GregorianCalendar());
                     LOGGER.info(
                             "Setting share on media: {} ; user: {}; share: {}",
                             new Object[] { resource.getMediaType().getName(),
-                                    resAlloc.getUser().getName(),
+                                    resAlloc.getUsername(),
                                     resAlloc.getAllocation() });
                 }
             } else {
-                // FIXME throw new RuntimeException("no share range for " + id);
+                LOGGER.error("This should never happen.");
+                assert false;
             }
         }
 
@@ -473,62 +508,68 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
      * This method is just for tests, because it reinitializes the activator.
      */
     public void restart() {
-        this.status = ProcessStatus.STARTING;
+        LOGGER.trace("> restart");
+
+        super.setStatus(ProcessStatus.STARTING);
+
+        LOGGER.trace("< restart");
     }
 
     /**
      * This is ONLY for test purposes. It does not have to be used.
-     * 
-     * @param activeStagers
-     *            Qty of stagers.
+     *
+     * @param qty
+     *            Quantity of stagers.
      */
-    void setActiveStagers(short activeStagers) {
+    void setActiveStagers(final short qty) {
         LOGGER.trace("> setActiveStagers");
 
-        assert activeStagers >= 0;
+        assert qty >= 0;
 
-        this.activeStagers = activeStagers;
+        this.activeStagers = qty;
 
         LOGGER.trace("> setActiveStagers");
     }
 
     /**
-     * Setter
-     * 
-     * @param maxStagers
+     * Setter.
+     *
+     * @param max
+     *            Maximal quantity of stagers.
      */
-    void setMaxStagers(short maxStagers) {
+    void setMaxStagers(final short max) {
         LOGGER.trace("> setMaxStagers");
 
-        assert maxStagers > 0;
+        assert max > 0;
 
-        this.maxStagers = maxStagers;
+        this.maxStagers = max;
 
         LOGGER.trace("< setMaxStagers");
     }
 
     /**
-     * Setter
-     * 
-     * @param maxStagersPerQueue
+     * Setter.
+     *
+     * @param max
+     *            Maximal quantity of stagers per queue.
      */
-    void setMaxStagersPerQueue(byte maxStagersPerQueue) {
+    void setMaxStagersPerQueue(final byte max) {
         LOGGER.trace("> setStagersPerQueue");
 
-        assert maxStagersPerQueue > 0;
+        assert max > 0;
 
-        this.maxStagersPerQueue = maxStagersPerQueue;
+        this.maxStagersPerQueue = max;
 
         LOGGER.trace("< setStagersPerQueue");
     }
 
     /**
      * Quantity of seconds to consider the metadata outdated.
-     * 
+     *
      * @param timeout
      *            Seconds.
      */
-    void setMetadataTimeout(short timeout) {
+    void setMetadataTimeout(final short timeout) {
         LOGGER.trace("> setMetadataTimeout");
 
         assert timeout > 0;
@@ -538,50 +579,64 @@ public class Activator extends fr.in2p3.cc.storage.treqs.control.Process {
         LOGGER.trace("< setMetadataTimeout");
     }
 
-    public void setSecondsBetweenLoops(byte seconds) {
+    /**
+     * Establishes the quantity of seconds between loops.
+     *
+     * @param seconds
+     *            seconds between loops.
+     */
+    public void setSecondsBetweenLoops(final short seconds) {
         LOGGER.trace("> setSecondsBetweenLoops");
 
         assert seconds > 0;
 
-        this.millisBetweenLoops = seconds * MILLIS;
+        this.millisBetweenLoops = seconds * Constants.MILLISECONDS;
 
         LOGGER.trace("< setSecondsBetweenLoops");
     }
 
-    void setTimeBetweenStagers(int time) {
-        LOGGER.trace("> setTimeBetweenStagers");
+    /**
+     * Establishes the quantity of seconds between stagers.
+     *
+     * @param seconds
+     *            Quantity of seconds between two stager activation.
+     */
+    void setSecondsBetweenStagers(final int seconds) {
+        LOGGER.trace("> setSecondsBetweenStagers");
 
-        assert time >= 0;
+        assert seconds >= 0;
 
-        this.timeBetweenStagers = time;
+        this.millisBetweenStagers = seconds * Constants.MILLISECONDS;
 
-        LOGGER.trace("< setTimeBetweenStagers");
+        LOGGER.trace("< setSecondsBetweenStagers");
     }
 
     /**
      * Just browse periodically the list of users and queues to activate the
-     * best queue
-     * 
-     * @return
+     * best queue.
      */
     @Override
     protected void toStart() {
         LOGGER.trace("> toStart");
 
-        while (this.keepOn()) {
+        try {
+            while (this.keepOn()) {
 
-            this.action();
+                this.action();
 
-            if (this.keepOn()) {
-                LOGGER.debug("Sleeping {} milliseconds",
-                        this.millisBetweenLoops);
-                // Waits before restart the process.
-                try {
-                    Thread.sleep(this.millisBetweenLoops);
-                } catch (InterruptedException e) {
-                    // Nothing.
+                if (this.keepOn()) {
+                    LOGGER.debug("Sleeping {} milliseconds",
+                            this.getMillisBetweenLoops());
+                    // Waits before restart the process.
+                    try {
+                        Thread.sleep(this.getMillisBetweenLoops());
+                    } catch (InterruptedException e) {
+                        LOGGER.error("message", e);
+                    }
                 }
             }
+        } catch (TReqSException e) {
+            throw new RuntimeException(e);
         }
 
         LOGGER.trace("< toStart");
