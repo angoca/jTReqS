@@ -225,7 +225,7 @@ public final class StagersController {
                 try {
                     Thread.sleep(Constants.MILLISECONDS);
                 } catch (InterruptedException e) {
-                    // Nothing
+                    LOGGER.error("message", e);
                 }
             }
         }
