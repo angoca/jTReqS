@@ -518,7 +518,7 @@ public final class Dispatcher extends
                     .getInstance().exists(file.getName());
             if (fpot == null) {
                 LOGGER.error("No FilePostionOnTape references this File. This "
-                        + "should never happen.");
+                        + "should never happen - 2.");
                 cont = false;
                 FilesController.getInstance().remove(file.getName());
             }
