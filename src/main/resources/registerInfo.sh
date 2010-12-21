@@ -1,9 +1,9 @@
 #!/bin/sh
 # File:  registerInfo.sh
 #
-# Copyright      Jonathan Schaeffer 2009-2010, 
+# Copyright      Jonathan Schaeffer 2009-2010,
 #                CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
-# Contributors : Andres Gomez, 
+# Contributors   Andres Gomez,
 #                CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
 #
 # This software is a computer program whose purpose is to schedule, sort
@@ -13,7 +13,7 @@
 # abiding by the rules of distribution of free software.  You can  use,
 # modify and/or redistribute the software under the terms of the CeCILL
 # license as circulated by CEA, CNRS and INRIA at the following URL
-# "http://www.cecill.info". 
+# "http://www.cecill.info".
 #
 # As a counterpart to the access to the source code and rights to copy,
 # modify and redistribute granted by the license, users are provided only
