@@ -495,7 +495,7 @@ public final class Activator extends
                                     resAlloc.getAllocation() });
                 }
             } else {
-                LOGGER.error("This should never happen.");
+                LOGGER.error("This should never happen - 1.");
                 assert false;
             }
         }
