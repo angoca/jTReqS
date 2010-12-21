@@ -273,6 +273,7 @@ public final class MySQLBroker {
 
         int rows;
         Statement statement = null;
+
         // The Broker can process just one query at a time.
         synchronized (instance) {
             validConnection();
@@ -319,6 +320,7 @@ public final class MySQLBroker {
         ResultSet rs;
         Statement stmt;
         Object[] ret;
+
         // The Broker can process just one query at a time.
         synchronized (instance) {
             rs = null;
@@ -326,6 +328,7 @@ public final class MySQLBroker {
             validConnection();
             try {
                 stmt = (Statement) this.connection.createStatement();
+                LOGGER.debug("Query: '{}'", query);
                 rs = stmt.executeQuery(query);
             } catch (SQLException ex) {
                 handleSQLException(ex);
@@ -363,10 +366,12 @@ public final class MySQLBroker {
 
         validConnection();
         PreparedStatement ret;
+
         // The Broker can process just one query at a time.
         synchronized (instance) {
             ret = null;
             try {
+                LOGGER.debug("Query: '{}'", query);
                 ret = this.connection.prepareStatement(query,
                         java.sql.Statement.RETURN_GENERATED_KEYS);
             } catch (SQLException e) {
