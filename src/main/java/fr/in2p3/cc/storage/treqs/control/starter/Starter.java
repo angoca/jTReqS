@@ -54,7 +54,6 @@ import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.InitDB;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -243,9 +242,6 @@ public final class Starter {
                     System.getProperty(Constants.CONFIGURATION_FILE));
             Configurator.getInstance();
 
-            // Initialize the database if necessary.
-            InitDB.initializeDatabase();
-
             this.toStart();
         }
 
@@ -304,6 +300,9 @@ public final class Starter {
         LOGGER.trace("> toStart");
 
         // TODO Check the PID of a same process to prevent two TReqS.
+
+        // Initialize the database if necessary.
+        AbstractDAOFactory.getDAOFactoryInstance().initialize();
 
         // Cleans the database.
         int qty = AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()

@@ -150,4 +150,12 @@ public abstract class AbstractDAOFactory {
 
         return instance;
     }
+
+    /**
+     * Initializes the data source.
+     *
+     * @throws TReqSException
+     *             If there is a problem while initializing the data source.
+     */
+    public abstract void initialize() throws TReqSException;
 }
