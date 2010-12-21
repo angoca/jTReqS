@@ -106,7 +106,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
 
         if (mediaTypeList.size() == 0) {
             // No entry in table, something wrong with configuration.
-            LOGGER.error("No drives (media type) found. Please define them "
+            LOGGER.warn("No drives (media type) found. Please define them "
                     + "in the database.");
         }
 
