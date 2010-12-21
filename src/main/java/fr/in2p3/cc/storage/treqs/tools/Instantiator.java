@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.control.Selector;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 
 /**
  * Instantiates a class given the name of the file.
@@ -104,6 +105,39 @@ public final class Instantiator {
     }
 
     /**
+     * Instantiates a class and return it, given the name of the class to
+     * process.
+     *
+     * @param daoFactoryName
+     *            name of the class to instantiate.
+     * @return Instance of the corresponding name.
+     * @throws InstantiatorException
+     *             If there is a problem while instantiating the class.
+     */
+    public static AbstractDAOFactory getDataSourceAccess(
+            final String daoFactoryName) throws InstantiatorException {
+        LOGGER.trace("> getDataSourceAccess");
+
+        // Retrieves the class.
+        Class<?> daoFactory = (Class<?>) getClass(daoFactoryName);
+
+        // Instantiates the class calling the constructor.
+        AbstractDAOFactory daoInst = null;
+        try {
+            Constructor<?> constructor = daoFactory.getConstructor();
+            daoInst = (AbstractDAOFactory) constructor.newInstance();
+        } catch (Exception e) {
+            throw new InstantiatorException(e);
+        }
+
+        assert daoInst != null;
+
+        LOGGER.trace("< getDataSourceAccess");
+
+        return daoInst;
+    }
+
+    /**
      * Instantiates the given class.
      *
      * @param classname
@@ -141,7 +175,7 @@ public final class Instantiator {
      * @throws InstantiatorException
      *             If there is a problem while instantiating the class.
      */
-    public static Class<?> getClass(final String classname)
+    private static Class<?> getClass(final String classname)
             throws InstantiatorException {
         LOGGER.trace("> getClass");
 
