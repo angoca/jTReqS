@@ -130,6 +130,7 @@ public final class Starter {
     /**
      * Returns the singleton instance.
      *
+     * @return Singleton instance.
      */
     public static Starter getInstance() {
         LOGGER.trace("> getInstance");
@@ -182,7 +183,7 @@ public final class Starter {
                 HELP_LONG_COMMAND_OPTION, false, HELP_COMMAND_DESCRIPTION);
         // Configuration file.
         this.options.addOption(CONFIG_FILE_SHORT_COMMAND_OPTION,
-                CONFIG_FILE_LONG_COMMAND_OPTION, false,
+                CONFIG_FILE_LONG_COMMAND_OPTION, true,
                 CONFIG_FILE_COMMAND_DESCRIPTION);
         // Requests file.
         OptionBuilder.withDescription(REQUESTS_FILE_COMMAND_DESCRIPTION);
@@ -218,7 +219,7 @@ public final class Starter {
 
         LOGGER.info("Starting Server");
 
-        CommandLine cli = prepareCommandOptions(arguments);
+        CommandLine cli = this.prepareCommandOptions(arguments);
 
         if (cli.hasOption(HELP_LONG_COMMAND_OPTION)) {
             this.showHelp();
@@ -230,14 +231,16 @@ public final class Starter {
             String configurationFile = cli
                     .getOptionValue(CONFIG_FILE_LONG_COMMAND_OPTION);
             if (configurationFile != null) {
-                System.setProperty(Constants.DEFAULT_CONFIGURATION_FILE,
+                System.setProperty(Constants.CONFIGURATION_FILE,
                         configurationFile);
             } else {
-                System.setProperty(Constants.DEFAULT_CONFIGURATION_FILE,
+                System.setProperty(Constants.CONFIGURATION_FILE,
                         DefaultProperties.CONFIGURATION_PROPERTIES);
             }
 
             // Starts the configurator.
+            LOGGER.info("Used configuration file {}",
+                    System.getProperty(Constants.CONFIGURATION_FILE));
             Configurator.getInstance();
 
             // Initialize the database if necessary.
