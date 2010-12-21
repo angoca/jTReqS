@@ -38,13 +38,14 @@ package fr.in2p3.cc.storage.treqs.control;
 
 import org.apache.commons.collections.MultiMap;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
-import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Template for the algorithm to choose the best user and the best queue.
+ * <p>
+ * The constructor should be without parameters.
  *
  * @author Andres Gomez
  * @since 1.5
@@ -60,9 +61,9 @@ public interface Selector {
      * @param resource
      *            iterator to the concerned resource
      * @return The best queue
-     * @throws ProblematicConfiguationFileException
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
+     *             Problem using the selector.
      */
-    public Queue selectBestQueue(final MultiMap queues, final Resource resource)
-            throws ProblematicConfiguationFileException, AbstractConfiguratorException;
+    Queue selectBestQueue(final MultiMap queues, final Resource resource)
+            throws TReqSException;
 }
