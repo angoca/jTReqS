@@ -776,6 +776,13 @@ public final class Dispatcher extends
             }
         } catch (TReqSException e) {
             throw new RuntimeException(e);
+        } catch (Throwable t) {
+            try {
+                Starter.getInstance().toStop();
+                LOGGER.error("Stopping", t);
+            } catch (ProblematicConfiguationFileException e) {
+                LOGGER.error("Error", e);
+            }
         }
 
         LOGGER.trace("< toStart");
