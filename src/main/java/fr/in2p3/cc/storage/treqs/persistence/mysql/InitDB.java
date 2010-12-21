@@ -135,10 +135,12 @@ public final class InitDB {
         if (!tableUsersFound) {
             createTable(InitDBStatements.ALLOCATIONS,
                     InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
+            LOGGER.error("Please configure the Allocations table");
         }
         if (!tableMediatypeFound) {
             createTable(InitDBStatements.MEDIATYPES,
                     InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
+            LOGGER.error("Please configure the MediaTypes table");
         }
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();

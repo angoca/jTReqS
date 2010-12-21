@@ -237,18 +237,18 @@ final class InitDBStatements {
      * Structure of the table allocations.
      */
     static final String STRUCTURE_TABLE_ALLOCATIONS = "(" + ALLOCATIONS_ID
-            + " tinyint NOT null, " + ALLOCATIONS_USER
-            + " varchar(32) NOT null, " + ALLOCATIONS_SHARE
-            + " decimal(5,2) NOT null, " + "PRIMARY KEY (" + ALLOCATIONS_ID
+            + " tinyint not null, " + ALLOCATIONS_USER
+            + " varchar(32) not null, " + ALLOCATIONS_SHARE
+            + " decimal(5,2) not null, " + "PRIMARY KEY (" + ALLOCATIONS_ID
             + ", " + ALLOCATIONS_USER + "))";
 
     /**
      * Structure of the table media types.
      */
     static final String STRUCTURE_TABLE_MEDIATYPES = "(" + MEDIATYPES_ID
-            + " tinyint NOT null, " + MEDIATYPES_NAME
-            + " varchar(16) NOT null, " + MEDIATYPES_DRIVES
-            + " smallint default 0 NOT null, " + "PRIMARY KEY  ("
+            + " tinyint not null, " + MEDIATYPES_NAME
+            + " varchar(16) not null, " + MEDIATYPES_DRIVES
+            + " smallint default 0 not null, " + "PRIMARY KEY  ("
             + MEDIATYPES_ID + ")) ";
 
     /**
@@ -257,16 +257,16 @@ final class InitDBStatements {
      * validate the precision of the DB columns with Java types.
      */
     static final String STRUCTURE_TABLE_QUEUES = "(" + QUEUES_ID
-            + " int NOT null auto_increment, " + QUEUES_NAME
+            + " int not null auto_increment, " + QUEUES_NAME
             + " char(12) not null, " + QUEUES_CREATION_TIME
             + " datetime not null, " + QUEUES_MEDIATYPE_ID
             + " tinyint not null, " + QUEUES_NB_REQS_FAILED
-            + " int default 0, " + QUEUES_ACTIVATION_TIME
-            + " datetime default null, " + QUEUES_END_TIME
-            + " datetime default null, " + QUEUES_STATUS
-            + " smallint default 200, " + QUEUES_NB_REQS + " int default 0, "
-            + QUEUES_OWNER + " varchar(32) default null, " + QUEUES_BYTE_SIZE
-            + " bigint default 0, " + QUEUES_NB_REQS_DONE + " int default 0, "
+            + " int not null default 0, " + QUEUES_ACTIVATION_TIME
+            + " datetime, " + QUEUES_END_TIME + " datetime, " + QUEUES_STATUS
+            + " smallint not null default 200, " + QUEUES_NB_REQS
+            + " int not null default 0, " + QUEUES_OWNER + " varchar(32), "
+            + QUEUES_BYTE_SIZE + " bigint not null default 0, "
+            + QUEUES_NB_REQS_DONE + " int not null default 0, "
             + "PRIMARY KEY (" + QUEUES_ID + ")) ";
 
     /**
@@ -275,25 +275,20 @@ final class InitDBStatements {
      * validate the precision of the DB columns with Java types.
      */
     static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
-            + " int NOT null auto_increment, " + REQUESTS_FILE
-            + " varchar(1024) NOT null, " + REQUESTS_CREATION_TIME
-            + " datetime NOT null, " + REQUESTS_USER
-            + " varchar(32) NOT null, " + REQUESTS_CLIENT
-            + " varchar(32) NOT null, " + REQUESTS_VERSION
-            + " varchar(16) NOT null, " + REQUESTS_EMAIL
-            + " varchar(64) default null, " + REQUESTS_QUEUE_ID
-            + " int default null, " + REQUESTS_TAPE + " char(8) default null, "
-            + REQUESTS_POSITION + " int default null, " + REQUESTS_LEVEL
-            + " tinyint default null, " + REQUESTS_SIZE
-            + " bigint  default null, " + REQUESTS_TRIES
-            + " tinyint default 0, " + REQUESTS_ERRORCODE
-            + " smallint default null, " + REQUESTS_SUBMISSION_TIME
-            + " datetime default null, " + REQUESTS_QUEUED_TIME
-            + " datetime default null, " + REQUESTS_END_TIME
-            + " datetime default null, " + REQUESTS_STATUS
-            + " smallint default 100, " + REQUESTS_MESSAGE
-            + " varchar(254) default null, " + "PRIMARY KEY  (" + REQUESTS_ID
-            + "))";
+            + " int not null auto_increment, " + REQUESTS_FILE
+            + " varchar(1024) not null, " + REQUESTS_CREATION_TIME
+            + " datetime not null, " + REQUESTS_USER
+            + " varchar(32) not null, " + REQUESTS_CLIENT
+            + " varchar(32) not null, " + REQUESTS_VERSION
+            + " varchar(16) not null, " + REQUESTS_EMAIL + " varchar(64), "
+            + REQUESTS_QUEUE_ID + " int, " + REQUESTS_TAPE + " char(8), "
+            + REQUESTS_POSITION + " int, " + REQUESTS_LEVEL + " tinyint, "
+            + REQUESTS_SIZE + " bigint, " + REQUESTS_TRIES
+            + " tinyint default 0, " + REQUESTS_ERRORCODE + " smallint, "
+            + REQUESTS_SUBMISSION_TIME + " datetime, " + REQUESTS_QUEUED_TIME
+            + " datetime, " + REQUESTS_END_TIME + " datetime, "
+            + REQUESTS_STATUS + " smallint default 100, " + REQUESTS_MESSAGE
+            + " varchar(254), " + "PRIMARY KEY  (" + REQUESTS_ID + "))";
 
     /**
      * Default constructor hidden.
