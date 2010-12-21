@@ -116,13 +116,15 @@ public final class InitDB {
             MySQLBroker.getInstance().terminateExecution(objects);
         }
         // All tables have been scanned. Create the missing ones
-        if (!tableRequestFound) {
-            createTable(InitDBStatements.REQUESTS,
-                    InitDBStatements.STRUCTURE_TABLE_REQUESTS);
+        if (!tableMediatypeFound) {
+            createTable(InitDBStatements.MEDIATYPES,
+                    InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
+            LOGGER.error("Please configure the MediaTypes table");
         }
-        if (!tableRequestHistoryFound) {
-            createTable(InitDBStatements.REQUESTS_HISTORY,
-                    InitDBStatements.STRUCTURE_TABLE_REQUESTS);
+        if (!tableUsersFound) {
+            createTable(InitDBStatements.ALLOCATIONS,
+                    InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
+            LOGGER.error("Please configure the Allocations table");
         }
         if (!tableQueuesFound) {
             createTable(InitDBStatements.QUEUES,
@@ -132,15 +134,13 @@ public final class InitDB {
             createTable(InitDBStatements.QUEUES_HISTORY,
                     InitDBStatements.STRUCTURE_TABLE_QUEUES);
         }
-        if (!tableUsersFound) {
-            createTable(InitDBStatements.ALLOCATIONS,
-                    InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
-            LOGGER.error("Please configure the Allocations table");
+        if (!tableRequestFound) {
+            createTable(InitDBStatements.REQUESTS,
+                    InitDBStatements.STRUCTURE_TABLE_REQUESTS);
         }
-        if (!tableMediatypeFound) {
-            createTable(InitDBStatements.MEDIATYPES,
-                    InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
-            LOGGER.error("Please configure the MediaTypes table");
+        if (!tableRequestHistoryFound) {
+            createTable(InitDBStatements.REQUESTS_HISTORY,
+                    InitDBStatements.STRUCTURE_TABLE_REQUESTS);
         }
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
