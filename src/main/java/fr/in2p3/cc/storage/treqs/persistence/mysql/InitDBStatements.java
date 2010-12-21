@@ -240,7 +240,9 @@ final class InitDBStatements {
             + " tinyint not null, " + ALLOCATIONS_USER
             + " varchar(32) not null, " + ALLOCATIONS_SHARE
             + " decimal(5,2) not null, " + "PRIMARY KEY (" + ALLOCATIONS_ID
-            + ", " + ALLOCATIONS_USER + "))";
+            + ", " + ALLOCATIONS_USER + "), FOREIGN KEY (" + ALLOCATIONS_ID
+            + ") REFERENCES " + MEDIATYPES + " (" + MEDIATYPES_ID
+            + ")) ENGINE=InnoDB";
 
     /**
      * Structure of the table media types.
@@ -249,7 +251,7 @@ final class InitDBStatements {
             + " tinyint not null, " + MEDIATYPES_NAME
             + " varchar(16) not null, " + MEDIATYPES_DRIVES
             + " smallint default 0 not null, " + "PRIMARY KEY  ("
-            + MEDIATYPES_ID + ")) ";
+            + MEDIATYPES_ID + ")) ENGINE=InnoDB";
 
     /**
      * Structure of the table queues. The columns were sorted in order to have
@@ -267,7 +269,9 @@ final class InitDBStatements {
             + " int not null default 0, " + QUEUES_OWNER + " varchar(32), "
             + QUEUES_BYTE_SIZE + " bigint not null default 0, "
             + QUEUES_NB_REQS_DONE + " int not null default 0, "
-            + "PRIMARY KEY (" + QUEUES_ID + ")) ";
+            + "PRIMARY KEY (" + QUEUES_ID + "), FOREIGN KEY ("
+            + QUEUES_MEDIATYPE_ID + ") REFERENCES " + MEDIATYPES + " ("
+            + MEDIATYPES_ID + ")) ENGINE=InnoDB";
 
     /**
      * Structure of the table requests. The columns were sorted in order to have
@@ -288,7 +292,10 @@ final class InitDBStatements {
             + REQUESTS_SUBMISSION_TIME + " datetime, " + REQUESTS_QUEUED_TIME
             + " datetime, " + REQUESTS_END_TIME + " datetime, "
             + REQUESTS_STATUS + " smallint default 100, " + REQUESTS_MESSAGE
-            + " varchar(254), " + "PRIMARY KEY  (" + REQUESTS_ID + "))";
+            + " varchar(254), " + "PRIMARY KEY  (" + REQUESTS_ID
+            + "), FOREIGN KEY ("
+            + REQUESTS_QUEUE_ID + ") REFERENCES " + QUEUES + " ("
+            + QUEUES_ID + ")) ENGINE=InnoDB";
 
     /**
      * Default constructor hidden.
