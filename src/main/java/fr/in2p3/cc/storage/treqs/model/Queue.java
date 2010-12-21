@@ -62,7 +62,6 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException.InvalidStateReasons;
 import fr.in2p3.cc.storage.treqs.model.exception.MaximalSuspensionTriesException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
@@ -528,10 +527,10 @@ public final class Queue implements Comparable<Queue> {
      * Removes of the references from the queue, in order to help the Garbage
      * collector and it helps to only hold in memory the currently used objects.
      *
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem getting a configuration.
      */
-    private void cleanReferences() throws AbstractConfiguratorException {
+    private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
         @SuppressWarnings("rawtypes")
