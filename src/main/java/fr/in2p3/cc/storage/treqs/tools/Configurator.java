@@ -43,7 +43,7 @@ import org.apache.commons.configuration.SystemConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.Constants;
 
 /**
  * Reads the configuration from the properties file and then, keep that
@@ -116,10 +116,10 @@ public final class Configurator {
         this.properties.addConfiguration(new SystemConfiguration());
         try {
             this.properties.addConfiguration(new HierarchicalINIConfiguration(
-                    DefaultProperties.CONFIGURATION_PROPERTIES));
+                    System.getProperty(Constants.CONFIGURATION_FILE)));
         } catch (ConfigurationException e) {
             throw new ProblematicConfiguationFileException(
-                    DefaultProperties.CONFIGURATION_PROPERTIES, e);
+                    System.getProperty(Constants.CONFIGURATION_FILE), e);
         }
 
         LOGGER.trace("< Create instance");
