@@ -495,8 +495,7 @@ public final class Activator extends
                                     resAlloc.getAllocation() });
                 }
             } else {
-                LOGGER.error("This should never happen - 1.");
-                assert false;
+                LOGGER.info("This media type has not defined users: id {}", id);
             }
         }
 
@@ -636,6 +635,13 @@ public final class Activator extends
             }
         } catch (TReqSException e) {
             throw new RuntimeException(e);
+        } catch (Throwable t) {
+            try {
+                Starter.getInstance().toStop();
+                LOGGER.error("Stopping", t);
+            } catch (ProblematicConfiguationFileException e) {
+                LOGGER.error("Error", e);
+            }
         }
 
         LOGGER.trace("< toStart");
