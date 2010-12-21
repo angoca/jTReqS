@@ -63,6 +63,11 @@ public final class DefaultProperties {
     public static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage."
             + "treqs.hsm.command.HSMCommandBridge";
     /**
+     * Default selector.
+     */
+    public static final String DEFAULT_SELECTOR = "fr.in2p3.cc.storage.treqs."
+            + "control.selector.JonathanSelector";
+    /**
      * Time to rest in temporary suspended state.
      */
     public static final short DEFAULT_SUSPEND_DURATION = 600;
@@ -90,7 +95,7 @@ public final class DefaultProperties {
      * Quantity of seconds between activations for the Activator and the
      * Dispatcher.
      */
-    public static final short SECONDS_BETWEEN_LOOPS = 2;
+    public static final short SECONDS_BETWEEN_LOOPS = 60;
     /**
      * Wait time between two executions of stagers.
      */
