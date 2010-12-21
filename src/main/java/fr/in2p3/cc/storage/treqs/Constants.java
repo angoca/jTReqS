@@ -73,10 +73,9 @@ public final class Constants {
      */
     public static final String DB_USER = "USERNAME";
     /**
-     * Name for the internal property for the default name for the configuration
-     * file.
+     * Name for the internal property for the name for the configuration file.
      */
-    public static final String DEFAULT_CONFIGURATION_FILE = "DEF_CONFIG_FILE";
+    public static final String CONFIGURATION_FILE = "CONFIG_FILE";
     /**
      * Quantity of seconds between two executions of the dispatcher.
      */
@@ -139,7 +138,8 @@ public final class Constants {
     /**
      * Wait time between two stagers.
      */
-    public static final String SECONDS_BETWEEN_STAGERS = "STAGERS_ACTIVATION_INTERVAL";
+    public static final String SECONDS_BETWEEN_STAGERS = "STAGERS_ACTIVATION_"
+            + "INTERVAL";
     /**
      * Section in the configuration file for the Activator.
      */
