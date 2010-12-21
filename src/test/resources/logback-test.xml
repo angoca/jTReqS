@@ -43,12 +43,24 @@
       <Pattern> %date{ISO8601} [%thread] %-4relative %-5level %logger{35} - %message%n </Pattern>
     </encoder>
   </appender>
+
+  <appender name="LogFile" class="ch.qos.logback.core.FileAppender">
+    <append>true</append>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <charset>ISO-8859-1</charset>
+      <pattern>
+        %date{ISO8601} [%thread] %-5level %logger{35} - %message%n
+      </pattern>
+    </encoder>
+    <file>jtreqs-test.log</file>
+  </appender>
   <!--
     logger name="fr.in2p3.cc.storage.treqs.control.QueuesController"
     level="DEBUG"> <appender-ref ref="Console" /> </logger
   -->
 
-  <root level="DEBUG">
+  <root level="info">
     <appender-ref ref="Console" />
+    <appender-ref ref="LogFile" />
   </root>
 </configuration>
