@@ -1,7 +1,7 @@
  /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -43,151 +43,164 @@
 char* LOGGER;
 
 JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSJNIBridge_hpssInit(
-		JNIEnv* env, jclass js, jstring jAuthType, jstring jKeytab,
-		jstring jUser) {
-	const char * authType;
-	const char * keytab;
-	const char * user;
-	jclass hsmInitException;
-	jint rc;
+    JNIEnv* env, jclass js, jstring jAuthType, jstring jKeytab,
+    jstring jUser) {
+  const char * authType;
+  const char * keytab;
+  const char * user;
+  jclass hsmInitException;
+  jint rc;
 
-	LOGGER = getenv("TREQS_TRACE");
-	if (strcmp(LOGGER, "TRACE") == 0) {
-		printf("> hpssInit\n");
-	}
+  LOGGER = getenv("TREQS_TRACE");
+  if (strcmp(LOGGER, "TRACE") == 0) {
+    printf("> hpssInit\n");
+  }
 
-	// Converts Java Strings in char*;
-	authType = (*env)->GetStringUTFChars(env, jAuthType, JNI_FALSE);
-	keytab = (*env)->GetStringUTFChars(env, jKeytab, JNI_FALSE);
-	user = (*env)->GetStringUTFChars(env, jUser, JNI_FALSE);
+  // Converts Java Strings in char*;
+  authType = (*env)->GetStringUTFChars(env, jAuthType, JNI_FALSE);
+  keytab = (*env)->GetStringUTFChars(env, jKeytab, JNI_FALSE);
+  user = (*env)->GetStringUTFChars(env, jUser, JNI_FALSE);
 
-	// Calls the Broker.
-	rc = init(authType, keytab, user);
+  // Calls the Broker.
+  rc = init(authType, keytab, user);
 
-	// Release JNI components.
-	(*env)->ReleaseStringUTFChars(env, jAuthType, authType);
-	(*env)->ReleaseStringUTFChars(env, jKeytab, keytab);
-	(*env)->ReleaseStringUTFChars(env, jUser, user);
+  // Release JNI components.
+  (*env)->ReleaseStringUTFChars(env, jAuthType, authType);
+  (*env)->ReleaseStringUTFChars(env, jKeytab, keytab);
+  (*env)->ReleaseStringUTFChars(env, jUser, user);
 
-	// Throws an exception if there is a problem.
-	if (rc != HPSS_E_NOERROR) {
-		hsmInitException = (*env)->FindClass(env,
-				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMInitException");
-		// FIXME there is a problem here while throwing the exception.
-		//		(*env)->ThrowNew(env, hsmInitException, "" + rc);
-	}
+  // Throws an exception if there is a problem.
+  if (rc != HPSS_E_NOERROR) {
+    hsmInitException = (*env)->FindClass(env,
+        "fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException");
+    // FIXME there is a problem here while throwing the exception.
+    //		(*env)->ThrowNew(env, hsmInitException, "" + rc);
+  }
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
-		printf("< hpssInit\n");
-	}
+  if (strcmp(LOGGER, "TRACE") == 0) {
+    printf("< hpssInit\n");
+  }
 }
 
 JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_getFileProperties(
-		JNIEnv* env, jclass js, jstring jFileName, jobject helper) {
+    JNIEnv* env, jclass js, jstring jFileName, jobject helper) {
 
-	const char * filename;
+  const char * filename;
 
-	int position;
-	int storageLevel;
-	char tape[12];
-	unsigned long length;
-	unsigned long long int size = 0;
+  int position;
+  int storageLevel;
+  char tape[12];
+  unsigned long length;
+  unsigned long long int size = 0;
 
-	// JNI
-	jclass jclazz;
-	jmethodID jmethodSetPosition;
-	jmethodID jmethodSetStorageName;
-	jmethodID jmethodSetSize;
-	jstring jtape;
-	jclass hsmInitException;
-	jint rc = 0;
+  // JNI
+  jclass jclazz;
+  jmethodID jmethodSetPosition;
+  jmethodID jmethodSetStorageName;
+  jmethodID jmethodSetSize;
+  jstring jtape;
+  jclass hsmInitException;
+  jint rc = 0;
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
-		printf("> getFileProperties\n");
-	}
+  if (strcmp(LOGGER, "TRACE") == 0) {
+    printf("> getFileProperties\n");
+  }
 
-	// Converts JavaString in char*.
-	filename = (*env)->GetStringUTFChars(env, jFileName, JNI_FALSE);
+  // Converts JavaString in char*.
+  filename = (*env)->GetStringUTFChars(env, jFileName, JNI_FALSE);
 
-	// Calls the broker.
-	rc = getFileProperties(filename, &position, &storageLevel, tape, &length);
+  // Calls the broker.
+  rc = getFileProperties(filename, &position, &storageLevel, tape, &length);
 
-	// Release JNI component.
-	(*env)->ReleaseStringUTFChars(env, jFileName, filename);
+  // Release JNI component.
+  (*env)->ReleaseStringUTFChars(env, jFileName, filename);
 
-	// Throws an exception if there is a problem.
-	if (rc != HPSS_E_NOERROR) {
-		hsmInitException = (*env)->FindClass(env,
-				"fr.in2p3.cc.storage.treqs.hsm.exception.HSMInitException");
-		(*env)->ThrowNew(env, hsmInitException, "" + rc);
-	}
+  // Throws an exception if there is a problem.
+  if (rc != HPSS_E_NOERROR) {
+    hsmInitException = (*env)->FindClass(env,
+        "fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException");
+    (*env)->ThrowNew(env, hsmInitException, "" + rc);
+  }
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
-		printf("Converting results\n");
-	}
-	// Returns the elements to java and release JNI components.
-	// Position.
-	if (cont) {
-		// This does not seem to work on 64b
-		// CONVERT_U64_TO_LONGLONG(length, *s);
-		// TODO (jschaeff) this conversion is ugly
-		size = atoll(u64tostr(length));
-		if (storageLevel == 0) {
-			strcpy(tape, "DISK");
-			position = -1;
-		}
+  if (strcmp(LOGGER, "TRACE") == 0) {
+    printf("Converting results\n");
+  }
+  // Returns the elements to java and release JNI components.
+  // Position.
+  if (cont) {
+    // This does not seem to work on 64b
+    // CONVERT_U64_TO_LONGLONG(length, *s);
+    // TODO (jschaeff) this conversion is ugly
+    size = atoll(u64tostr(length));
+    if (storageLevel == 0) {
+      strcpy(tape, "DISK");
+      position = -1;
+    }
 
-		jclazz = (*env)->GetObjectClass(env, helper);
-		jmethodSetPosition = (*env)->GetMethodID(env, jclazz, "setPosition",
-				"(I)V");
-		if (jmethodSetPosition == 0) {
-			printf("Can't find method setPosition");
-			return -30001;
-		}
-		(*env)->ExceptionClear(env);
-		(*env)->CallVoidMethod(env, helper, jmethodSetPosition, position);
-		if ((*env)->ExceptionOccurred(env)) {
-			printf("Error occurred copying array back (setPosition)");
-			(*env)->ExceptionDescribe(env);
-			(*env)->ExceptionClear(env);
-		}
-	}
-	// StorageLevel - StorageName
-	if (cont) {
-		jmethodSetStorageName = (*env)->GetMethodID(env, jclazz,
-				"setStorageName", "(Ljava/lang/String;)V");
-		if (jmethodSetStorageName == 0) {
-			printf("Can't find method setStorageName");
-			return -30002;
-		}
-		(*env)->ExceptionClear(env);
-		jtape = (*env)->NewStringUTF(env, tape);
-		(*env)->CallVoidMethod(env, helper, jmethodSetStorageName, jtape);
-		if ((*env)->ExceptionOccurred(env)) {
-			printf("Error occurred copying array back (setStorageName)");
-			(*env)->ExceptionDescribe(env);
-			(*env)->ExceptionClear(env);
-		}
-	}
-	// Size
-	if (cont) {
-		jmethodSetSize = (*env)->GetMethodID(env, jclazz, "setSize", "(J)V");
-		if (jmethodSetSize == 0) {
-			printf("Can't find method setSize");
-			return -30003;
-		}
-		(*env)->ExceptionClear(env);
-		(*env)->CallVoidMethod(env, helper, jmethodSetSize, size);
-		if ((*env)->ExceptionOccurred(env)) {
-			printf("Error occurred copying array back (setSize)");
-			(*env)->ExceptionDescribe(env);
-			(*env)->ExceptionClear(env);
-		}
-	}
+    jclazz = (*env)->GetObjectClass(env, helper);
+    jmethodSetPosition = (*env)->GetMethodID(env, jclazz, "setPosition",
+        "(I)V");
+    if (jmethodSetPosition == 0) {
+      printf("Can't find method setPosition");
+      return -30001;
+    }
+    (*env)->ExceptionClear(env);
+    (*env)->CallVoidMethod(env, helper, jmethodSetPosition, position);
+    if ((*env)->ExceptionOccurred(env)) {
+      printf("Error occurred copying array back (setPosition)");
+      (*env)->ExceptionDescribe(env);
+      (*env)->ExceptionClear(env);
+    }
+  }
+  // StorageLevel - StorageName
+  if (cont) {
+    jmethodSetStorageName = (*env)->GetMethodID(env, jclazz,
+        "setStorageName", "(Ljava/lang/String;)V");
+    if (jmethodSetStorageName == 0) {
+      printf("Can't find method setStorageName");
+      return -30002;
+    }
+    (*env)->ExceptionClear(env);
+    jtape = (*env)->NewStringUTF(env, tape);
+    (*env)->CallVoidMethod(env, helper, jmethodSetStorageName, jtape);
+    if ((*env)->ExceptionOccurred(env)) {
+      printf("Error occurred copying array back (setStorageName)");
+      (*env)->ExceptionDescribe(env);
+      (*env)->ExceptionClear(env);
+    }
+  }
+  // Size
+  if (cont) {
+    jmethodSetSize = (*env)->GetMethodID(env, jclazz, "setSize", "(J)V");
+    if (jmethodSetSize == 0) {
+      printf("Can't find method setSize");
+      return -30003;
+    }
+    (*env)->ExceptionClear(env);
+    (*env)->CallVoidMethod(env, helper, jmethodSetSize, size);
+    if ((*env)->ExceptionOccurred(env)) {
+      printf("Error occurred copying array back (setSize)");
+      (*env)->ExceptionDescribe(env);
+      (*env)->ExceptionClear(env);
+    }
+  }
 
-	if (strcmp(LOGGER, "TRACE") == 0) {
-		printf("< getFileProperties\n");
-	}
+  if (strcmp(LOGGER, "TRACE") == 0) {
+    printf("< getFileProperties\n");
+  }
 
-	return rc;
+  return rc;
+}
+
+JNIEXPORT jint JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_HPSSBridge_stage(
+    JNIEnv* env, jclass js, jstring jFileName, jlong size) {
+
+    // FIXME
+  // Throws an exception if there is a problem.
+  if (rc != HPSS_E_NOERROR) {
+    hsmInitException = (*env)->FindClass(env,
+        "fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException");
+    (*env)->ThrowNew(env, HSMResourceException, rc);
+  }
+
 }

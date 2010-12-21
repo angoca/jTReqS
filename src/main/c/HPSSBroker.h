@@ -1,9 +1,7 @@
-/*
- * Copyright      Jonathan Schaeffer 2009-2010,
  /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
- * Contributors : Andres Gomez,
+ * Contributors   Andres Gomez,
  *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
  *
  * This software is a computer program whose purpose is to schedule, sort
@@ -39,7 +37,6 @@
 #include <stdio.h>
 #include "hpss_api.h"
 
-
 //! This class interacts directly with HPSS.
 
 //! Initializes the HPSS_API with the given credentials.
@@ -55,9 +52,16 @@ int init(const char * authType, const char * keytab, const char * user);
 /**
  * @name (in) Name of the file to query.
  * @position (out) Position of the file in the tape.
- * @storageLevel (out) Indicates the highest level where the file can be found.
+ * @higherStorageLevel (out) Indicates the highest level where the file can be found.
  * @tape (out) Name of the tape where the file is stored.
- * @length (out) Size of the file.
+ * @size (out) Size of the file.
  */
-int getFileProperties(const char * name, int * position, int * storageLevel,
-		char * tape, unsigned long * length);
+int getFileProperties(const char * name, int * position, int * higherStorageLevel,
+    char * tape, unsigned long * size);
+
+//! Stages a file stored in HPSS.
+/**
+ * @name (in) Name of the file to query.
+ * @size (in) Size of the file.
+ */
+void stage(const char * name, unsigned long * size);
