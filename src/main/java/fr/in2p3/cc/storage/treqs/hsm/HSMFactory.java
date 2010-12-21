@@ -43,6 +43,7 @@ import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.Instantiator;
+import fr.in2p3.cc.storage.treqs.tools.InstantiatorException;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -72,9 +73,11 @@ public final class HSMFactory {
      * @return The configured HSM bridge.
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving the configuration.
+     * @throws InstantiatorException
+     *             If there is a problem while instantiating the class.
      */
     public static AbstractHSMBridge getHSMBridge()
-            throws ProblematicConfiguationFileException {
+            throws ProblematicConfiguationFileException, InstantiatorException {
         LOGGER.trace("> getHSMBridge");
 
         String hsmBridgeClass = DefaultProperties.DEFAULT_HSM_BRIDGE;

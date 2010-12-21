@@ -69,7 +69,6 @@ import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -236,10 +235,10 @@ public final class Dispatcher extends
      * With the new mechanism to clean objects once the queue has finished, it
      * is not necessary to exist this method.
      *
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
-    private void cleaningReferences() throws AbstractConfiguratorException {
+    private void cleaningReferences() throws TReqSException {
         LOGGER.trace("> cleaningReferences");
 
         // Clean the finished queues.

@@ -34,40 +34,11 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control.dispatcher;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.in2p3.cc.storage.treqs.TReqSException;
-
 /**
- * Wraps a problem in the dispatcher.
+ * Algorithm to choose the best queue.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-public final class DispatcherException extends TReqSException {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(DispatcherException.class);
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -6052223367724562311L;
+package fr.in2p3.cc.storage.treqs.control.selector;
 
-    /**
-     * Wraps an exception.
-     *
-     * @param exception
-     *            Wrapped exception.
-     */
-    public DispatcherException(final Exception exception) {
-        super(exception);
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-}

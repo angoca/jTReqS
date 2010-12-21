@@ -59,7 +59,6 @@ import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -300,10 +299,10 @@ public final class Activator extends
      * media type resource.
      *
      * @return the number of queues in ACTIVATED state.
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem retrieving the configuration.
      */
-    private short countUsedResources() throws AbstractConfiguratorException {
+    private short countUsedResources() throws TReqSException {
         LOGGER.trace("> countUsedResources");
 
         // Reset all used resources
@@ -402,10 +401,10 @@ public final class Activator extends
      * Main method of the activator, where the queues are selected to be
      * activated.
      *
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem while retrieving the configuration.
      */
-    private void process() throws AbstractConfiguratorException {
+    private void process() throws TReqSException {
         LOGGER.trace("> process");
 
         Iterator<Resource> resources = this.allocations.iterator();

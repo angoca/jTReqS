@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.selector;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,11 +48,13 @@ import org.apache.commons.collections.MultiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.Selector;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 
 /**
  * Implementation of the algorithm to choose the best queue.
@@ -62,7 +64,7 @@ import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
  * @author Andres Gomez
  * @since 1.5
  */
-public class JonathanSelector implements Selector {
+public final class JonathanSelector implements Selector {
     /**
      * Logger.
      */
@@ -78,7 +80,7 @@ public class JonathanSelector implements Selector {
      */
     @Override
     public Queue selectBestQueue(final MultiMap queues, final Resource resource)
-            throws AbstractConfiguratorException {
+            throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         Queue ret = null;
@@ -110,13 +112,13 @@ public class JonathanSelector implements Selector {
      * @param user
      *            The best user.
      * @return The best queue for the given user of the given resource.
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
     @SuppressWarnings("unchecked")
     Queue selectBestQueue(final MultiMap queuesMap,
             final Resource resource, final User user)
-            throws AbstractConfiguratorException {
+            throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queuesMap != null;
@@ -171,12 +173,12 @@ public class JonathanSelector implements Selector {
      *            Currently analyzed queue.
      * @return Selected queue or null if the queue does not correspond to the
      *         criteria.
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
     private Queue/* ? */checkQueue(final Resource resource, final User user,
             final Queue currentlySelected, final String tapename,
-            final Queue queue) throws AbstractConfiguratorException {
+            final Queue queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null;

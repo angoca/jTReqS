@@ -49,7 +49,6 @@ import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 
 /**
  * AbstractController for the FilePostionOnTape classes.
@@ -197,10 +196,10 @@ public final class FilePositionOnTapesController extends AbstractController {
      * Removes the instances of fpots whose queues are already deleted.
      *
      * @return Quantity of instances removed.
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there a problem getting the configuration.
      */
-    public int cleanup() throws AbstractConfiguratorException {
+    public int cleanup() throws TReqSException {
         LOGGER.trace("> cleanup");
 
         int size = 0;

@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control.dispatcher;
+package fr.in2p3.cc.storage.treqs.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,30 +42,31 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
- * Wraps a problem in the dispatcher.
+ * Wraps an exception when Instantiating.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-public final class DispatcherException extends TReqSException {
+public final class InstantiatorException extends TReqSException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(DispatcherException.class);
+            .getLogger(InstantiatorException.class);
+
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = -6052223367724562311L;
+    private static final long serialVersionUID = -5983602407229142385L;
 
     /**
      * Wraps an exception.
      *
-     * @param exception
+     * @param e
      *            Wrapped exception.
      */
-    public DispatcherException(final Exception exception) {
-        super(exception);
+    public InstantiatorException(final Exception e) {
+        super(e);
 
         LOGGER.trace(">< Instance creation");
     }
