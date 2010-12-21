@@ -36,8 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence;
 
-import java.lang.reflect.Constructor;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +47,6 @@ import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.Instantiator;
-import fr.in2p3.cc.storage.treqs.tools.InstantiatorException;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
@@ -115,7 +112,7 @@ public abstract class AbstractDAOFactory {
                     Constants.PESISTENCE_FACTORY, daoName });
         }
 
-        instance = getDataSourceAccess(daoName);
+        instance = Instantiator.getDataSourceAccess(daoName);
 
         LOGGER.trace("< createDAOFactory");
     }
@@ -152,41 +149,5 @@ public abstract class AbstractDAOFactory {
         LOGGER.trace("< getDAOFactoryInstance");
 
         return instance;
-    }
-
-    /**
-     * Instantiates a class and return it, given the name of the class to
-     * process.
-     *
-     * @param daoFactoryName
-     *            name of the class to instantiate.
-     * @return Instance of the corresponding name.
-     * @throws PersistenceFactoryException
-     *             If there is a problem while instantiating the class.
-     * @throws InstantiatorException
-     *             If there is a problem while instantiating the class.
-     */
-    private static AbstractDAOFactory getDataSourceAccess(
-            final String daoFactoryName) throws PersistenceFactoryException,
-            InstantiatorException {
-        LOGGER.trace("> getDataSourceAccess");
-
-        // Retrieves the class.
-        Class<?> daoFactory = (Class<?>) Instantiator.getClass(daoFactoryName);
-
-        // Instantiates the class calling the constructor.
-        AbstractDAOFactory daoInst = null;
-        try {
-            Constructor<?> constructor  = daoFactory.getConstructor();
-            daoInst = (AbstractDAOFactory) constructor.newInstance();
-        } catch (Exception e) {
-            throw new PersistenceFactoryException(e);
-        }
-
-        assert daoInst != null;
-
-        LOGGER.trace("< getDataSourceAccess");
-
-        return daoInst;
     }
 }
