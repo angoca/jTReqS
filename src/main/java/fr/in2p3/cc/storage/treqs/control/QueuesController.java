@@ -54,11 +54,9 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.Instantiator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
-import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * The controller for Queue objects. The Queues Controller provides an interface
@@ -100,11 +98,10 @@ public final class QueuesController {
      * Provides access to the singleton.
      *
      * @return The QueuesController singleton.
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem reading the configuration.
      */
-    public static QueuesController getInstance()
-            throws AbstractConfiguratorException {
+    public static QueuesController getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -135,13 +132,12 @@ public final class QueuesController {
     /**
      * Constructor.
      *
-     * @throws ProblematicConfiguationFileException
+     * @throws TReqSException
      *             If there is a problem while reading the configuration file.
-     * @throws KeyNotFoundException
-     *             If a key was not found.
+     *             Or f a key was not found. Or if there is a problem while
+     *             instantiating the class.
      */
-    private QueuesController() throws ProblematicConfiguationFileException,
-            KeyNotFoundException {
+    private QueuesController() throws TReqSException {
         LOGGER.trace("> create QueuesController");
 
         this.queuesMap = new MultiValueMap();
@@ -150,9 +146,17 @@ public final class QueuesController {
                 Constants.SECTION_QUEUE, Constants.SUSPEND_DURATION,
                 DefaultProperties.DEFAULT_SUSPEND_DURATION);
 
-        this.selector = (Selector) Instantiator.getClass(Configurator
-                .getInstance().getStringValue(Constants.SECTION_QUEUE,
-                        Constants.SELECTOR));
+        String selectorName = DefaultProperties.DEFAULT_SELECTOR;
+        try {
+            selectorName = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_QUEUE, Constants.SELECTOR);
+        } catch (KeyNotFoundException e) {
+            LOGGER.debug("No setting for {}.{}, default "
+                    + "value will be used: {}", new Object[] {
+                    Constants.SECTION_QUEUE, Constants.SELECTOR, selectorName });
+        }
+
+        this.selector = Instantiator.getSelector(selectorName);
 
         LOGGER.trace("< create QueuesController");
     }
@@ -510,11 +514,11 @@ public final class QueuesController {
      * @param resource
      *            Type of queue to select.
      * @return The best queue chosen by the selector.
-     * @throws AbstractConfiguratorException
-     *             If there is problem retrieving a configuration file.
+     * @throws TReqSException
+     *             If there a problem using the selector.
      */
-    public Queue/* ! */getBestQueue(Resource resource)
-            throws AbstractConfiguratorException {
+    public Queue/* ! */getBestQueue(final Resource resource)
+            throws TReqSException {
         LOGGER.trace("< getBestQueue");
 
         Queue ret = this.selector.selectBestQueue(this.queuesMap, resource);
