@@ -98,7 +98,7 @@ public final class Resource {
 
         this.setMediaType(media);
         this.setTimestamp(new GregorianCalendar());
-        this.setTotalAllocation(totalAllocation);
+        this.setTotalAllocation(totalDriveAllocation);
 
         this.userAllocation = new HashMap<User, Float>();
         this.usedResources = new HashMap<User, Byte>();
