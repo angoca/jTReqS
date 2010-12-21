@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.selector;
 
 import org.apache.commons.collections.map.MultiValueMap;
 import org.junit.After;
@@ -43,6 +43,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.HelperControl;
+import fr.in2p3.cc.storage.treqs.control.QueuesController;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Helper;
@@ -52,7 +54,6 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -85,11 +86,10 @@ public class JonathanSelectorTest {
     /**
      * Tests that there is not best queue.
      *
-     * @throws AbstractConfiguratorException
-     *             Never.
+     * @throws TReqSException
      */
     @Test
-    public void test01BestQueue() throws AbstractConfiguratorException {
+    public void test01BestQueue() throws TReqSException {
 
         String username = "username";
         User user = new User(username);
@@ -117,10 +117,10 @@ public class JonathanSelectorTest {
         File file = new File("filename", 300);
         Tape tape = new Tape("tapename", media);
         FilePositionOnTape fpot = new FilePositionOnTape(file, 20, tape, user);
-        Queue queue = QueuesController.getInstance().create(fpot, (byte) 1);
+        Queue queue = HelperControl.create(fpot, (byte) 1);
 
-        Queue actual = new JonathanSelector().selectBestQueue(QueuesController
-                .getInstance().getQueues(), resource, user);
+        Queue actual = new JonathanSelector().selectBestQueue(
+                HelperControl.getQueues(), resource, user);
         Queue expected = queue;
 
         Assert.assertEquals(expected, actual);
@@ -133,8 +133,8 @@ public class JonathanSelectorTest {
         MediaType media = new MediaType((byte) 1, "media");
         Resource resource = new Resource(media, (byte) NUMBER_5);
 
-        User actual = new JonathanSelector().selectBestUser(QueuesController
-                .getInstance().getQueues(), resource);
+        User actual = new JonathanSelector().selectBestUser(
+                HelperControl.getQueues(), resource);
         User expected = user;
         Assert.assertEquals(expected, actual);
     }
@@ -157,15 +157,15 @@ public class JonathanSelectorTest {
         Tape tape1 = new Tape("tapename1", media);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
                 user);
-        Queue queue1 = QueuesController.getInstance().create(fpot1, (byte) 1);
+        Queue queue1 = HelperControl.create(fpot1, (byte) 1);
 
         File file2 = new File("filename2", 300);
         Tape tape2 = new Tape("tapename2", media);
         FilePositionOnTape fpot = new FilePositionOnTape(file2, 20, tape2, user);
-        QueuesController.getInstance().create(fpot, (byte) 1);
+        HelperControl.create(fpot, (byte) 1);
 
-        Queue actual = new JonathanSelector().selectBestQueue(QueuesController
-                .getInstance().getQueues(), resource, user);
+        Queue actual = new JonathanSelector().selectBestQueue(
+                HelperControl.getQueues(), resource, user);
         Queue expected = queue1;
 
         Assert.assertEquals(expected, actual);
@@ -180,12 +180,12 @@ public class JonathanSelectorTest {
         File file = new File("filename", 300);
         Tape tape = new Tape("tapename", media);
         FilePositionOnTape fpot = new FilePositionOnTape(file, 20, tape, user);
-        QueuesController.getInstance().create(fpot, (byte) 1);
+        HelperControl.create(fpot, (byte) 1);
         resource.setUserAllocation(user, (byte) NUMBER_5);
         resource.increaseUsedResources(user);
 
-        User actual = new JonathanSelector().selectBestUser(QueuesController
-                .getInstance().getQueues(), resource);
+        User actual = new JonathanSelector().selectBestUser(
+                HelperControl.getQueues(), resource);
         User expected = user;
         Assert.assertEquals(expected, actual);
     }
@@ -210,21 +210,21 @@ public class JonathanSelectorTest {
         File file1 = new File("filename1", 300);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
                 user);
-        Queue queue1 = QueuesController.getInstance().create(fpot1, (byte) 1);
+        Queue queue1 = HelperControl.create(fpot1, (byte) 1);
         Helper.changeToActivated(queue1);
 
         File file3 = new File("filename3", 600);
         FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 20, tape1,
                 user);
-        QueuesController.getInstance().create(fpot3, (byte) 1);
+        HelperControl.create(fpot3, (byte) 1);
 
         File file2 = new File("filename2", 500);
         Tape tape2 = new Tape("tapename2", media);
         FilePositionOnTape fpot = new FilePositionOnTape(file2, 20, tape2, user);
-        Queue queue2 = QueuesController.getInstance().create(fpot, (byte) 1);
+        Queue queue2 = HelperControl.create(fpot, (byte) 1);
 
-        Queue actual = new JonathanSelector().selectBestQueue(QueuesController
-                .getInstance().getQueues(), resource, user);
+        Queue actual = new JonathanSelector().selectBestQueue(
+                HelperControl.getQueues(), resource, user);
         Queue expected = queue2;
 
         Assert.assertEquals(expected, actual);
@@ -241,14 +241,14 @@ public class JonathanSelectorTest {
         Tape tape1 = new Tape("tapename1", media);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
                 user1);
-        QueuesController.getInstance().create(fpot1, (byte) 1);
+        HelperControl.create(fpot1, (byte) 1);
 
         User user2 = new User("username2");
         File file2 = new File("filename2", 400);
         Tape tape2 = new Tape("tapename2", media);
         FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape2,
                 user2);
-        QueuesController.getInstance().create(fpot2, (byte) 1);
+        HelperControl.create(fpot2, (byte) 1);
 
         resource.setUserAllocation(user1, (byte) 2);
         resource.setUserAllocation(user2, (byte) 2);
@@ -257,8 +257,8 @@ public class JonathanSelectorTest {
         resource.increaseUsedResources(user1);
         resource.increaseUsedResources(user2);
 
-        User actual = new JonathanSelector().selectBestUser(QueuesController
-                .getInstance().getQueues(), resource);
+        User actual = new JonathanSelector().selectBestUser(
+                HelperControl.getQueues(), resource);
         User expected = user2;
         Assert.assertEquals(expected, actual);
     }
@@ -271,14 +271,13 @@ public class JonathanSelectorTest {
      */
     @Test(expected = AssertionError.class)
     public void test05BestQueue() throws TReqSException {
-        new JonathanSelector().selectBestQueue(QueuesController.getInstance()
-                .getQueues(), null, new User("username"));
+        new JonathanSelector().selectBestQueue(HelperControl.getQueues(), null,
+                new User("username"));
     }
 
     @Test(expected = AssertionError.class)
-    public void test05BestUser() throws AbstractConfiguratorException {
-        new JonathanSelector().selectBestUser(QueuesController.getInstance()
-                .getQueues(), null);
+    public void test05BestUser() throws TReqSException {
+        new JonathanSelector().selectBestUser(HelperControl.getQueues(), null);
     }
 
     /**
@@ -293,8 +292,8 @@ public class JonathanSelectorTest {
         Resource resource = new Resource(media, (byte) NUMBER_5);
 
         try {
-            new JonathanSelector().selectBestQueue(QueuesController
-                    .getInstance().getQueues(), resource, null);
+            new JonathanSelector().selectBestQueue(HelperControl.getQueues(),
+                    resource, null);
             Assert.fail();
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -311,8 +310,8 @@ public class JonathanSelectorTest {
         Resource resource = new Resource(media, (byte) NUMBER_5);
 
         try {
-            new JonathanSelector().selectBestQueue(QueuesController
-                    .getInstance().getQueues(), resource, user);
+            new JonathanSelector().selectBestQueue(HelperControl.getQueues(),
+                    resource, user);
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
                 Assert.fail();
