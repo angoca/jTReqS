@@ -53,7 +53,7 @@ public final class MySQLStatements {
     /**
      * Allocations table: Id of the allocation.
      */
-    static final String ALLOCATIONS_ID = "id";
+    static final String ALLOCATIONS_ID = "media_id";
     /**
      * Allocations table: Allocation for a given user.
      */
