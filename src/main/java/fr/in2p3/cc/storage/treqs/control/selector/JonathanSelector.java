@@ -89,7 +89,8 @@ public final class JonathanSelector implements Selector {
             // There is no non-blocked user among the waiting
             // queues, just do nothing and break the while loop,
             // otherwise, it is doomed to infinite loop
-            LOGGER.error("There is not Best User. This should never happen.");
+            LOGGER.error("There is not Best User. "
+                    + "This should never happen - 3.");
             assert false;
         } else {
             ret = this.selectBestQueue(queues, resource, bestUser);
@@ -116,9 +117,8 @@ public final class JonathanSelector implements Selector {
      *             If there a problem retrieving the instance.
      */
     @SuppressWarnings("unchecked")
-    Queue selectBestQueue(final MultiMap queuesMap,
-            final Resource resource, final User user)
-            throws TReqSException {
+    Queue selectBestQueue(final MultiMap queuesMap, final Resource resource,
+            final User user) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queuesMap != null;
@@ -318,7 +318,7 @@ public final class JonathanSelector implements Selector {
                                 resource.getUsedResources(user) });
             } else {
                 LOGGER.info("The queue does not have an owner: {}. This "
-                        + "should never happen.", queue.getTape().getName());
+                        + "should never happen - 3.", queue.getTape().getName());
                 assert false;
             }
 
