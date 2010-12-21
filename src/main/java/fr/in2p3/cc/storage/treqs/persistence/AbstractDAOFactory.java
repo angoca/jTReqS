@@ -37,7 +37,6 @@
 package fr.in2p3.cc.storage.treqs.persistence;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +47,10 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.tools.Instantiator;
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.Instantiator;
+import fr.in2p3.cc.storage.treqs.tools.InstantiatorException;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * DAO factory. Retrieves the corresponding DAO Factory for each persistence
@@ -163,35 +163,23 @@ public abstract class AbstractDAOFactory {
      * @return Instance of the corresponding name.
      * @throws PersistenceFactoryException
      *             If there is a problem while instantiating the class.
+     * @throws InstantiatorException
+     *             If there is a problem while instantiating the class.
      */
     private static AbstractDAOFactory getDataSourceAccess(
-            final String daoFactoryName) throws PersistenceFactoryException {
+            final String daoFactoryName) throws PersistenceFactoryException,
+            InstantiatorException {
         LOGGER.trace("> getDataSourceAccess");
 
         // Retrieves the class.
         Class<?> daoFactory = (Class<?>) Instantiator.getClass(daoFactoryName);
 
-        // Retrieves the constructor.
-        Constructor<?> constructor = null;
-        try {
-            constructor = daoFactory.getConstructor();
-        } catch (SecurityException e) {
-            throw new PersistenceFactoryException(e);
-        } catch (NoSuchMethodException e) {
-            throw new PersistenceFactoryException(e);
-        }
-
         // Instantiates the class calling the constructor.
         AbstractDAOFactory daoInst = null;
         try {
+            Constructor<?> constructor  = daoFactory.getConstructor();
             daoInst = (AbstractDAOFactory) constructor.newInstance();
-        } catch (IllegalArgumentException e) {
-            throw new PersistenceFactoryException(e);
-        } catch (IllegalAccessException e) {
-            throw new PersistenceFactoryException(e);
-        } catch (InvocationTargetException e) {
-            throw new PersistenceFactoryException(e);
-        } catch (InstantiationException e) {
+        } catch (Exception e) {
             throw new PersistenceFactoryException(e);
         }
 
