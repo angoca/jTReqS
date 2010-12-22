@@ -39,7 +39,6 @@ package fr.in2p3.cc.storage.treqs.control.starter;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
@@ -97,22 +96,23 @@ public final class Starter {
      */
     private static final String HELP_SHORT_COMMAND_OPTION = "h";
     /**
-     * Argument for the command option: Requests file.
-     */
-    private static final String REQUESTS_FILE_COMMAND_ARGUMENT = "REQUESTS"
-            + "_FILE";
-    /**
-     * Description of the command option: Requests file.
-     */
-    private static final String REQUESTS_FILE_COMMAND_DESCRIPTION = "r";
-    /**
-     * Long name for the command option: Requests file.
-     */
-    private static final String REQUESTS_FILE_LONG_COMMAND_OPTION = "reqfile";
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
+    /**
+     * Long name for the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_COMMAND_OPTION = "db";
+    /**
+     * Short name for the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_LONG_COMMAND_OPTION = "data"
+            + "base-script";
+    /**
+     * Description of the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_DESCRIPTION = "Shows the "
+            + "script to create the tables";
     /**
      * The singleton instance.
      */
@@ -183,16 +183,16 @@ public final class Starter {
         // Help
         this.options.addOption(HELP_SHORT_COMMAND_OPTION,
                 HELP_LONG_COMMAND_OPTION, false, HELP_COMMAND_DESCRIPTION);
+
         // Configuration file.
         this.options.addOption(CONFIG_FILE_SHORT_COMMAND_OPTION,
                 CONFIG_FILE_LONG_COMMAND_OPTION, true,
                 CONFIG_FILE_COMMAND_DESCRIPTION);
-        // Requests file.
-        OptionBuilder.withDescription(REQUESTS_FILE_COMMAND_DESCRIPTION);
-        OptionBuilder.withLongOpt(REQUESTS_FILE_LONG_COMMAND_OPTION);
-        OptionBuilder.hasArg();
-        OptionBuilder.withArgName(REQUESTS_FILE_COMMAND_ARGUMENT);
-        options.addOption(OptionBuilder.create());
+
+        // Datasource script.
+        this.options.addOption(DATABASE_SCRIPT_COMMAND_OPTION,
+                DATABASE_SCRIPT_LONG_COMMAND_OPTION, false,
+                DATABASE_SCRIPT_DESCRIPTION);
 
         CommandLineParser parser = new PosixParser();
 
@@ -247,7 +247,12 @@ public final class Starter {
                     System.getProperty(Constants.CONFIGURATION_FILE));
             Configurator.getInstance();
 
-            this.toStart();
+            if (cli.hasOption(DATABASE_SCRIPT_LONG_COMMAND_OPTION)) {
+                System.out.println(AbstractDAOFactory.getDAOFactoryInstance()
+                        .dumpStructure());
+            } else {
+                this.toStart();
+            }
         }
 
         LOGGER.trace("< process");

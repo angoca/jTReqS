@@ -104,7 +104,7 @@ public final class Watchdog {
         int index = name.indexOf('@');
         int pid = Integer.parseInt(name.substring(0, index));
 
-        AbstractDAOFactory.getDAOFactoryInstance().getWatchDog().start(pid);
+        AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().start(pid);
 
         LOGGER.trace("< start");
     }
@@ -118,7 +118,7 @@ public final class Watchdog {
     public void heartBeat() throws TReqSException {
         LOGGER.trace("> heartBeat");
 
-        AbstractDAOFactory.getDAOFactoryInstance().getWatchDog().heartBeat();
+        AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().heartBeat();
 
         LOGGER.trace("< heartBeat");
     }

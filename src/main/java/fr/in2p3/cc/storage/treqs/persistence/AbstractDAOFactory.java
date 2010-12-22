@@ -95,7 +95,7 @@ public abstract class AbstractDAOFactory {
      *
      * @return The DAO for the watchdog.
      */
-    public abstract WatchDogDAO getWatchDog();
+    public abstract WatchDogDAO getWatchDogDAO();
 
     /**
      * Creates the DAO factory.
@@ -166,4 +166,11 @@ public abstract class AbstractDAOFactory {
      *             If there is a problem while initializing the data source.
      */
     public abstract void initialize() throws TReqSException;
+
+    /**
+     * Dumps the structure of the data source.
+     *
+     * @return Structure of the data source.
+     */
+    public abstract String dumpStructure();
 }

@@ -59,7 +59,8 @@ public final class MySQLInit {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(MySQLInit.class);
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MySQLInit.class);
 
     /**
      * Verifies the existence of the tables. If they do not exist, then it will
@@ -150,8 +151,8 @@ public final class MySQLInit {
      * @throws TReqSException
      *             If there is a problem executing the statement.
      */
-    private void createTable(final String tableName,
-            final String structure) throws TReqSException {
+    private void createTable(final String tableName, final String structure)
+            throws TReqSException {
         LOGGER.trace("> createTable");
 
         assert tableName != null && !tableName.equals("");
@@ -172,5 +173,36 @@ public final class MySQLInit {
      */
     MySQLInit() {
         // Nothing.
+    }
+
+    /**
+     * Dumps the structure of the database.
+     *
+     * @return Structure of the create tables.
+     */
+    public String dumpStructure() {
+        LOGGER.trace("> dumpStructure");
+
+        String structure = "";
+
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.MEDIATYPES + " "
+                + InitDBStatements.STRUCTURE_TABLE_MEDIATYPES + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.ALLOCATIONS + " "
+                + InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.QUEUES + " "
+                + InitDBStatements.STRUCTURE_TABLE_QUEUES + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.REQUESTS + " "
+                + InitDBStatements.STRUCTURE_TABLE_REQUESTS + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.HEART_BEAT + " "
+                + InitDBStatements.STRUCTURE_TABLE_HEART_BEAT + ";\n";
+
+        LOGGER.trace("> dumpStructure");
+
+        return structure;
     }
 }

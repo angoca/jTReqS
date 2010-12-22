@@ -54,13 +54,13 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class MySQLWatchDog implements WatchDogDAO {
+public final class MySQLWatchDogDAO implements WatchDogDAO {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLWatchDog.class);
+            .getLogger(MySQLWatchDogDAO.class);
 
     /*
      * (non-Javadoc)

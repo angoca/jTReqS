@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLWatchDog;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLWatchDogDAO;
 
 /**
  * DAO factory. This is the implementation of the Factory method for the MySQL
@@ -109,10 +109,10 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDog()
      */
     @Override
-    public WatchDogDAO getWatchDog() {
+    public WatchDogDAO getWatchDogDAO() {
         LOGGER.trace(">< getWatchDog");
 
-        return new MySQLWatchDog();
+        return new MySQLWatchDogDAO();
     }
 
     /*
@@ -128,5 +128,12 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
         new MySQLInit().initializeDatabase();
 
         LOGGER.trace("< initialize");
+    }
+
+    @Override
+    public String dumpStructure() {
+        LOGGER.trace(">< dumpStructure");
+
+        return new MySQLInit().dumpStructure();
     }
 }
