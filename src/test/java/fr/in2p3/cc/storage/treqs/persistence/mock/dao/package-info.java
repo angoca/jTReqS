@@ -35,10 +35,10 @@
  *
  */
 /**
- * Implementation of the DAO with mock values.
+ * Specifics DAOs for the Mock persistence.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.persistance.mock;
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 

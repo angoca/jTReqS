@@ -34,11 +34,37 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
+
+import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
+
 /**
- * Specifics DAOs for the Mock persistence.
+ * Implementation of the watchdog for Mock.
  *
- * @author Andres Gomez
+ * @author Andrés Gómez
  * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.persistance.mock.dao;
+public final class MockWatchDogDAO implements WatchDogDAO {
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#start(java.lang.String)
+     */
+    @Override
+    public void start(final int pid) {
+        // TODO Auto-generated method stub
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#heartBeat()
+     */
+    @Override
+    public void heartBeat() {
+        // TODO Auto-generated method stub
+    }
+
+}

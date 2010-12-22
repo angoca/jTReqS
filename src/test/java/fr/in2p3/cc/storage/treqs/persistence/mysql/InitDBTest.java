@@ -1,21 +1,25 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLInit;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.AbstractMySQLException;
 
-public class InitDBTest {
+public final class InitDBTest {
 
     /**
      * @param query
+     * @throws TReqSException
+     *             Never.
      */
-    private static void dropTable(String query) {
+    private static void dropTable(final String query) throws TReqSException {
         try {
             MySQLBroker.getInstance().executeModification(query);
-        } catch (MySQLException e) {
+        } catch (AbstractMySQLException e) {
             e.printStackTrace();
         }
     }
@@ -39,22 +43,24 @@ public class InitDBTest {
 
     /**
      * Create the first time.
-     * 
+     *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void test01create() throws TReqSException {
-        InitDB.initializeDatabase();
+        new MySQLInit().initializeDatabase();
     }
 
     /**
      * Not create.
-     * 
+     *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void test02create() throws TReqSException {
-        InitDB.initializeDatabase();
+        new MySQLInit().initializeDatabase();
     }
 
 }

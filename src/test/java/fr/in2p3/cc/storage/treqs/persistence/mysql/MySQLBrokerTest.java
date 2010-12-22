@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -47,13 +47,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.OpenMySQLException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class MySQLBrokerTest {
+public final class MySQLBrokerTest {
+
+    private static final String REQUESTS = "REQUESTS";
 
     @After
     public void tearDown() {
@@ -70,7 +73,7 @@ public class MySQLBrokerTest {
             MySQLBroker.getInstance().connect();
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof OpenMySQLException)) {
+            if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
         }
@@ -95,7 +98,7 @@ public class MySQLBrokerTest {
             MySQLBroker.getInstance().connect();
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof OpenMySQLException)) {
+            if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
         }
@@ -110,13 +113,13 @@ public class MySQLBrokerTest {
                 "com.mysql.jdbc.Driver");
         Configurator.getInstance().setValue("JOBSDB", "URL",
                 "jdbc:mysql://localhost/treqsjobs");
-        Configurator.getInstance().setValue("JOBSDB", "USERNAME", "bad-user");
+        Configurator.getInstance().setValue("JOBSDB", "DB_USER", "bad-user");
         boolean failed = false;
         try {
             MySQLBroker.getInstance().connect();
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof OpenMySQLException)) {
+            if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
         }
@@ -140,7 +143,7 @@ public class MySQLBrokerTest {
             MySQLBroker.getInstance().connect();
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof OpenMySQLException)) {
+            if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
         }
@@ -277,7 +280,7 @@ public class MySQLBrokerTest {
             MySQLBroker.getInstance().executeSelect(query);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -295,7 +298,7 @@ public class MySQLBrokerTest {
             MySQLBroker.getInstance().executeModification(query);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -315,7 +318,7 @@ public class MySQLBrokerTest {
             MySQLBroker.getInstance().executeSelect(query);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -330,7 +333,7 @@ public class MySQLBrokerTest {
         MySQLBroker.getInstance().connect();
         String query = "DROP TABLE IF EXISTS t1 ";
         MySQLBroker.getInstance().executeModification(query);
-        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        query = "CREATE TABLE t1 " + REQUESTS;
         MySQLBroker.getInstance().executeModification(query);
         query = "DROP TABLE t1 ";
         MySQLBroker.getInstance().executeModification(query);
@@ -355,7 +358,7 @@ public class MySQLBrokerTest {
         MySQLBroker.getInstance().connect();
         String query = "DROP TABLE IF EXISTS t1 ";
         MySQLBroker.getInstance().executeModification(query);
-        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        query = "CREATE TABLE t1 " + REQUESTS;
         MySQLBroker.getInstance().executeModification(query);
 
         query = "INSERT INTO t1 (USER) VALUES('1')";
@@ -374,7 +377,7 @@ public class MySQLBrokerTest {
         MySQLBroker.getInstance().connect();
         String query = "DROP TABLE IF EXISTS t1 ";
         MySQLBroker.getInstance().executeModification(query);
-        query = "CREATE TABLE t1 " + MySQLStatements.SQL_TABLE_JOBS_REQUESTS;
+        query = "CREATE TABLE t1 " + REQUESTS;
         MySQLBroker.getInstance().executeModification(query);
         query = "INSERT INTO t1 (USER) VALUES('1')";
         MySQLBroker.getInstance().connect();
