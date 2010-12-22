@@ -73,9 +73,7 @@ public final class InitDB {
 
         // Test the existence of the needed tables.
         boolean tableRequestFound = false;
-        boolean tableRequestHistoryFound = false;
         boolean tableQueuesFound = false;
-        boolean tableQueuesHistoryFound = false;
 
         boolean tableUsersFound = false;
         boolean tableMediatypeFound = false;
@@ -93,14 +91,8 @@ public final class InitDB {
                 if (tablename.equals(InitDBStatements.REQUESTS)) {
                     tableRequestFound = true;
                 }
-                if (tablename.equals(InitDBStatements.REQUESTS_HISTORY)) {
-                    tableRequestHistoryFound = true;
-                }
                 if (tablename.equals(InitDBStatements.QUEUES)) {
                     tableQueuesFound = true;
-                }
-                if (tablename.equals(InitDBStatements.QUEUES_HISTORY)) {
-                    tableQueuesHistoryFound = true;
                 }
                 if (tablename.equals(InitDBStatements.ALLOCATIONS)) {
                     tableUsersFound = true;
@@ -130,16 +122,8 @@ public final class InitDB {
             createTable(InitDBStatements.QUEUES,
                     InitDBStatements.STRUCTURE_TABLE_QUEUES);
         }
-        if (!tableQueuesHistoryFound) {
-            createTable(InitDBStatements.QUEUES_HISTORY,
-                    InitDBStatements.STRUCTURE_TABLE_QUEUES);
-        }
         if (!tableRequestFound) {
             createTable(InitDBStatements.REQUESTS,
-                    InitDBStatements.STRUCTURE_TABLE_REQUESTS);
-        }
-        if (!tableRequestHistoryFound) {
-            createTable(InitDBStatements.REQUESTS_HISTORY,
                     InitDBStatements.STRUCTURE_TABLE_REQUESTS);
         }
         MySQLBroker.getInstance().disconnect();

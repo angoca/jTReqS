@@ -105,10 +105,6 @@ final class InitDBStatements {
      */
     private static final String QUEUES_END_TIME = MySQLStatements.QUEUES_END_TIME;
     /**
-     * Queues history table name.
-     */
-    static final String QUEUES_HISTORY = MySQLStatements.QUEUES_HISTORY;
-    /**
      * Queues table: Id of the queue.
      */
     private static final String QUEUES_ID = MySQLStatements.QUEUES_ID;
@@ -176,10 +172,6 @@ final class InitDBStatements {
      * Requests table: Name of the file to stage.
      */
     private static final String REQUESTS_FILE = MySQLStatements.REQUESTS_FILE;
-    /**
-     * Request history table name.
-     */
-    static final String REQUESTS_HISTORY = MySQLStatements.REQUESTS_HISTORY;
     /**
      * Requests table: Id of the request.
      */

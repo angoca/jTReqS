@@ -99,10 +99,6 @@ public final class MySQLStatements {
      */
     static final String QUEUES_END_TIME = "end_time";
     /**
-     * Queues history table name.
-     */
-    static final String QUEUES_HISTORY = "queues_history";
-    /**
      * Queues table: Id of the queue.
      */
     static final String QUEUES_ID = "id";
@@ -174,10 +170,6 @@ public final class MySQLStatements {
      * Requests table: Name of the file to stage.
      */
     static final String REQUESTS_FILE = "file";
-    /**
-     * Request history table name.
-     */
-    static final String REQUESTS_HISTORY = "requests_history";
     /**
      * Requests table: Id of the request.
      */
