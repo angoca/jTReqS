@@ -191,6 +191,14 @@ public final class Constants {
      * Duration of a suspension.
      */
     public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
+    /**
+     * Section Watchdog.
+     */
+    public static final String WATCHDOG = "WATCHDOG";
+    /**
+     * Interval for the watchdog.
+     */
+    public static final String WATCHDOG_INTERVAL = "WATCHDOG_INTERVAL";
 
     /**
      * Invisible constructor.

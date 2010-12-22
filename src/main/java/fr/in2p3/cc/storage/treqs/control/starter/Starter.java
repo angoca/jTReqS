@@ -339,9 +339,15 @@ public final class Starter {
 
             this.startActivator();
 
+            sleep = DefaultProperties.TIME_BETWEEN_CHECK;
+            sleep = Configurator.getInstance().getShortValue(
+                    Constants.WATCHDOG, Constants.WATCHDOG_INTERVAL,
+                    (short) DefaultProperties.TIME_BETWEEN_CHECK)
+                    * Constants.MILLISECONDS;
+
             while (this.cont) {
-                // TODO dynamic property from configuration file.
-                Thread.sleep(DefaultProperties.TIME_BETWEEN_CHECK);
+                LOGGER.debug("Sleeping for {} milliseconds", sleep);
+                Thread.sleep(sleep);
                 Watchdog.getInstance().heartBeat();
             }
         } catch (InterruptedException e) {

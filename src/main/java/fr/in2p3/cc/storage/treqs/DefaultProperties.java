@@ -105,9 +105,9 @@ public final class DefaultProperties {
      */
     public static final byte STAGING_DEPTH = 3;
     /**
-     * Time of the loop to check if everything is working good.
+     * Time of the loop to check if everything is working good in seconds.
      */
-    public static final long TIME_BETWEEN_CHECK = 1000;
+    public static final long TIME_BETWEEN_CHECK = 1;
 
     /**
      * Invisible constructor.
