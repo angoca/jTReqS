@@ -103,19 +103,19 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
     }
 
     /*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#startsWatchDog()
-	 */
-	@Override
-	public WatchDogDAO getWatchDog() {
-	    LOGGER.trace(">< getWatchDog");
-	
-	    return new MySQLWatchDog();
-	}
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDog()
+     */
+    @Override
+    public WatchDogDAO getWatchDog() {
+        LOGGER.trace(">< getWatchDog");
 
-	/*
+        return new MySQLWatchDog();
+    }
+
+    /*
      * (non-Javadoc)
      *
      * @see
@@ -125,7 +125,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
     public void initialize() throws TReqSException {
         LOGGER.trace("> initialize");
 
-        InitDB.initializeDatabase();
+        new MySQLInit().initializeDatabase();
 
         LOGGER.trace("< initialize");
     }

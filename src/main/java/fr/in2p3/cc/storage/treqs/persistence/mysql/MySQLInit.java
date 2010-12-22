@@ -54,12 +54,12 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class InitDB {
+public final class MySQLInit {
 
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(InitDB.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MySQLInit.class);
 
     /**
      * Verifies the existence of the tables. If they do not exist, then it will
@@ -68,7 +68,7 @@ public final class InitDB {
      * @throws TReqSException
      *             If there is a problem using the data source.
      */
-    public static void initializeDatabase() throws TReqSException {
+    public void initializeDatabase() throws TReqSException {
         LOGGER.trace("> initializeDatabase");
 
         // Test the existence of the needed tables.
@@ -112,7 +112,7 @@ public final class InitDB {
         }
         // All tables have been scanned. Create the missing ones
         if (!tableMediatypeFound) {
-            createTable(InitDBStatements.MEDIATYPES,
+            this.createTable(InitDBStatements.MEDIATYPES,
                     InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
             LOGGER.error("Please configure the MediaTypes table");
         }
@@ -150,7 +150,7 @@ public final class InitDB {
      * @throws TReqSException
      *             If there is a problem executing the statement.
      */
-    private static void createTable(final String tableName,
+    private void createTable(final String tableName,
             final String structure) throws TReqSException {
         LOGGER.trace("> createTable");
 
@@ -170,7 +170,7 @@ public final class InitDB {
     /**
      * Default constructor hidden.
      */
-    private InitDB() {
+    MySQLInit() {
         // Nothing.
     }
 }
