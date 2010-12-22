@@ -45,6 +45,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.Instantiator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
@@ -88,6 +89,13 @@ public abstract class AbstractDAOFactory {
      * @return The DAO for the reading object.
      */
     public abstract ReadingDAO getReadingDAO();
+
+    /**
+     * Starts the process of monitoring in the database.
+     *
+     * @return The DAO for the watchdog.
+     */
+    public abstract WatchDogDAO getWatchDog();
 
     /**
      * Creates the DAO factory.

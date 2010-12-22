@@ -56,11 +56,14 @@ import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
+import fr.in2p3.cc.storage.treqs.tools.Watchdog;
 
 /**
  * Starts the application, loading the threads in the order. TODO JMX to reload
  * configuration. TODO JMX to stop the application TODO JMX to reload the
- * configuration.
+ * configuration. TODO jmx to lock a user (continue but no more activations)
+ * TODO jmx to lock a tape TODO jmx to lock a file TODO jmx to lock a user
+ * completely (cancel all related queues)
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -214,6 +217,8 @@ public final class Starter {
     public void process(final String[] arguments) throws Exception {
         LOGGER.trace("> process");
 
+        // TODO check that there are not two appl instances running.
+
         assert arguments != null;
 
         LOGGER.info("Starting Server");
@@ -304,6 +309,9 @@ public final class Starter {
         // Initialize the database if necessary.
         AbstractDAOFactory.getDAOFactoryInstance().initialize();
 
+        // Initializes the watchdog.
+        Watchdog.getInstance().start();
+
         // Cleans the database.
         int qty = AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
                 .abortPendingQueues();
@@ -329,8 +337,7 @@ public final class Starter {
             while (this.cont) {
                 // TODO dynamic property from configuration file.
                 Thread.sleep(DefaultProperties.TIME_BETWEEN_CHECK);
-                // TODO Wathdog.
-                // TODO archiver
+                Watchdog.getInstance().heartBeat();
             }
         } catch (InterruptedException e) {
             throw new ExecutionErrorException(e);

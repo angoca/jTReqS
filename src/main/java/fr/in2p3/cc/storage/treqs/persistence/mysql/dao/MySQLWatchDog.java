@@ -34,99 +34,76 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistence.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql.dao;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
-import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLWatchDog;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 /**
- * DAO factory. This is the implementation of the Factory method for the MySQL
- * data source access.
+ * Implementation of the watchdog for MySQL.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class MySQLDAOFactory extends AbstractDAOFactory {
+public final class MySQLWatchDog implements WatchDogDAO {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLDAOFactory.class);
+            .getLogger(MySQLWatchDog.class);
 
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getConfigurationDAO()
+     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#start(int)
      */
     @Override
-    public ConfigurationDAO getConfigurationDAO() {
-        LOGGER.trace(">< getConfigurationDAO");
+    public void start(final int pid) throws TReqSException {
+        LOGGER.trace("> start");
 
-        return new MySQLConfigurationDAO();
+        // Deletes old register.
+        MySQLBroker.getInstance().executeModification(
+                MySQLStatements.SQL_HEART_BEAT_DELETE_OLD);
+        // Inserts new pid.
+        PreparedStatement statement = MySQLBroker.getInstance()
+                .getPreparedStatement(MySQLStatements.SQL_HEART_BEAT_INSERT);
+
+        try {
+            int index = 1;
+            // Insert the pid.
+            statement.setInt(index++, pid);
+
+            statement.execute();
+        } catch (SQLException e) {
+            throw new MySQLExecuteException(e);
+        }
+
+        LOGGER.trace("< start");
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getQueueDAO()
+     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#heartBeat()
      */
     @Override
-    public QueueDAO getQueueDAO() {
-        LOGGER.trace(">< getQueueDAO");
+    public void heartBeat() throws TReqSException {
+        LOGGER.trace("> heartBeat");
 
-        return new MySQLQueueDAO();
+        MySQLBroker.getInstance().executeModification(
+                MySQLStatements.SQL_HEART_BEAT_UPDATE);
+
+        LOGGER.trace("< heartBeat");
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getReadingDAO()
-     */
-    @Override
-    public ReadingDAO getReadingDAO() {
-        LOGGER.trace(">< getReadingDAO");
-
-        return new MySQLReadingDAO();
-    }
-
-    /*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#startsWatchDog()
-	 */
-	@Override
-	public WatchDogDAO getWatchDog() {
-	    LOGGER.trace(">< getWatchDog");
-	
-	    return new MySQLWatchDog();
-	}
-
-	/*
-     * (non-Javadoc)
-     *
-     * @see
-     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#initialize()
-     */
-    @Override
-    public void initialize() throws TReqSException {
-        LOGGER.trace("> initialize");
-
-        InitDB.initializeDatabase();
-
-        LOGGER.trace("< initialize");
-    }
 }

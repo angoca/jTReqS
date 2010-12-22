@@ -72,11 +72,11 @@ public final class InitDB {
         LOGGER.trace("> initializeDatabase");
 
         // Test the existence of the needed tables.
-        boolean tableRequestFound = false;
-        boolean tableQueuesFound = false;
-
-        boolean tableUsersFound = false;
+        boolean tableAllocationsFound = false;
+        boolean tableHeartBeat = false;
         boolean tableMediatypeFound = false;
+        boolean tableQueuesFound = false;
+        boolean tableRequestFound = false;
 
         // Search for the "current" table in the database.
         MySQLBroker.getInstance().connect();
@@ -88,17 +88,20 @@ public final class InitDB {
         try {
             while (result.next()) {
                 String tablename = result.getString(1);
-                if (tablename.equals(InitDBStatements.REQUESTS)) {
-                    tableRequestFound = true;
+                if (tablename.equals(InitDBStatements.ALLOCATIONS)) {
+                    tableAllocationsFound = true;
+                }
+                if (tablename.equals(InitDBStatements.HEART_BEAT)) {
+                    tableHeartBeat = true;
+                }
+                if (tablename.equals(InitDBStatements.MEDIATYPES)) {
+                    tableMediatypeFound = true;
                 }
                 if (tablename.equals(InitDBStatements.QUEUES)) {
                     tableQueuesFound = true;
                 }
-                if (tablename.equals(InitDBStatements.ALLOCATIONS)) {
-                    tableUsersFound = true;
-                }
-                if (tablename.equals(InitDBStatements.MEDIATYPES)) {
-                    tableMediatypeFound = true;
+                if (tablename.equals(InitDBStatements.REQUESTS)) {
+                    tableRequestFound = true;
                 }
                 LOGGER.debug("Table found: {}", tablename);
             }
@@ -113,7 +116,7 @@ public final class InitDB {
                     InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
             LOGGER.error("Please configure the MediaTypes table");
         }
-        if (!tableUsersFound) {
+        if (!tableAllocationsFound) {
             createTable(InitDBStatements.ALLOCATIONS,
                     InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
             LOGGER.error("Please configure the Allocations table");
@@ -125,6 +128,10 @@ public final class InitDB {
         if (!tableRequestFound) {
             createTable(InitDBStatements.REQUESTS,
                     InitDBStatements.STRUCTURE_TABLE_REQUESTS);
+        }
+        if (!tableHeartBeat) {
+            createTable(InitDBStatements.HEART_BEAT,
+                    InitDBStatements.STRUCTURE_TABLE_HEART_BEAT);
         }
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();

@@ -63,6 +63,22 @@ public final class MySQLStatements {
      */
     static final String ALLOCATIONS_SHARE = "share";
     /**
+     * Heart beat table.
+     */
+    static final String HEART_BEAT = "heart_beat";
+    /**
+     * Heart beat table: Process id.
+     */
+    static final String HEART_BEAT_PID = "pid";
+    /**
+     * Heart beat table: Application start.
+     */
+    static final String HEART_BEAT_START_TIME = "start_time";
+    /**
+     * Heart beat table: Most recent beat.
+     */
+    static final String HEART_BEAT_LAST_TIME = "last_time";
+    /**
      * Media type table name.
      */
     static final String MEDIATYPES = "mediatypes";
@@ -224,6 +240,24 @@ public final class MySQLStatements {
     static final String REQUESTS_VERSION = "version";
 
     /**
+     * Deletes old (all) registers in the heart beat table.
+     */
+    public static final String SQL_HEART_BEAT_DELETE_OLD = "DELETE FROM "
+            + HEART_BEAT;
+
+    /**
+     * Inserts a new pid in the heart beat table.
+     */
+    public static final String SQL_HEART_BEAT_INSERT = "INSERT INTO "
+            + HEART_BEAT + " (" + HEART_BEAT_PID + ", " + HEART_BEAT_START_TIME
+            + ", " + HEART_BEAT_LAST_TIME + ") VALUES (?, NOW(), NOW())";
+
+    /**
+     * Changes the last beat of the application.
+     */
+    public static final String SQL_HEART_BEAT_UPDATE = "UPDATE " + HEART_BEAT
+            + " SET " + HEART_BEAT_LAST_TIME + " = NOW()";
+    /**
      * SQL statement to insert a new queue in the database.
      * <p>
      * Queues 1.
@@ -308,9 +342,8 @@ public final class MySQLStatements {
      */
     public static final String SQL_REQUESTS_UPDATE_UNPROCESSED = "UPDATE "
             + REQUESTS + " SET " + REQUESTS_STATUS + " = "
-            + RequestStatus.CREATED.getId() + " WHERE "
-            + REQUESTS_STATUS + " BETWEEN "
-            + RequestStatus.SUBMITTED.getId() + " AND "
+            + RequestStatus.CREATED.getId() + " WHERE " + REQUESTS_STATUS
+            + " BETWEEN " + RequestStatus.SUBMITTED.getId() + " AND "
             + RequestStatus.QUEUED.getId();
 
     /**

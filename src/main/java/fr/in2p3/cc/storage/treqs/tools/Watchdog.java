@@ -34,99 +34,92 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistence.mysql;
+package fr.in2p3.cc.storage.treqs.tools;
+
+import java.lang.management.ManagementFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLWatchDog;
 
 /**
- * DAO factory. This is the implementation of the Factory method for the MySQL
- * data source access.
+ * Registers continually in the data source to indicate that the application is
+ * still working.
+ * <p>
+ * The implementation is dependent to the virtual machine
+ * http://blog.igorminar.com/2007/03/how-java-application-can-discover-its.html
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class MySQLDAOFactory extends AbstractDAOFactory {
+public final class Watchdog {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLDAOFactory.class);
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getConfigurationDAO()
+            .getLogger(Watchdog.class);
+    /**
+     * Singleton instance.
      */
-    @Override
-    public ConfigurationDAO getConfigurationDAO() {
-        LOGGER.trace(">< getConfigurationDAO");
+    private static Watchdog instance;
 
-        return new MySQLConfigurationDAO();
+    /**
+     * Retrieves the singleton.
+     *
+     * @return Unique instance.
+     */
+    public static Watchdog getInstance() {
+        LOGGER.trace("> getInstance");
+
+        if (instance == null) {
+            LOGGER.debug("Creating instance.");
+
+            instance = new Watchdog();
+        }
+
+        assert instance != null;
+
+        LOGGER.trace("< getInstance");
+
+        return instance;
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Starts the monitoring process.
      *
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getQueueDAO()
+     * @throws TReqSException
+     *             If there a problem while accessing the data source.
      */
-    @Override
-    public QueueDAO getQueueDAO() {
-        LOGGER.trace(">< getQueueDAO");
+    public void start() throws TReqSException {
+        LOGGER.trace("> start");
 
-        return new MySQLQueueDAO();
+        // Warning, this is dependent to the virtual machine.
+        // http://blog.igorminar.com/2007/03/how-java-application-can-discover-its.html
+        String name = ManagementFactory.getRuntimeMXBean().getName();
+
+        LOGGER.warn("PID {}", name);
+        int index = name.indexOf('@');
+        int pid = Integer.parseInt(name.substring(0, index));
+
+        AbstractDAOFactory.getDAOFactoryInstance().getWatchDog().start(pid);
+
+        LOGGER.trace("< start");
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Registers a beat in the data source.
      *
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getReadingDAO()
+     * @throws TReqSException
+     *             If there a problem while accessing the data source.
      */
-    @Override
-    public ReadingDAO getReadingDAO() {
-        LOGGER.trace(">< getReadingDAO");
+    public void heartBeat() throws TReqSException {
+        LOGGER.trace("> heartBeat");
 
-        return new MySQLReadingDAO();
-    }
+        AbstractDAOFactory.getDAOFactoryInstance().getWatchDog().heartBeat();
 
-    /*
-	 * (non-Javadoc)
-	 *
-	 * @see
-	 * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#startsWatchDog()
-	 */
-	@Override
-	public WatchDogDAO getWatchDog() {
-	    LOGGER.trace(">< getWatchDog");
-	
-	    return new MySQLWatchDog();
-	}
-
-	/*
-     * (non-Javadoc)
-     *
-     * @see
-     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#initialize()
-     */
-    @Override
-    public void initialize() throws TReqSException {
-        LOGGER.trace("> initialize");
-
-        InitDB.initializeDatabase();
-
-        LOGGER.trace("< initialize");
+        LOGGER.trace("< heartBeat");
     }
 }

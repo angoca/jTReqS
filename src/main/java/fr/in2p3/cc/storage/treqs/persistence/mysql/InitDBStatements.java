@@ -69,6 +69,22 @@ final class InitDBStatements {
     static final String CREATE_TABLE = "CREATE TABLE ";
 
     /**
+     * Heart beat table.
+     */
+    static final String HEART_BEAT = MySQLStatements.HEART_BEAT;
+    /**
+     * Heart beat table: Process id.
+     */
+    static final String HEART_BEAT_PID = MySQLStatements.HEART_BEAT_PID;
+    /**
+     * Heart beat table: Application start.
+     */
+    static final String HEART_BEAT_START_TIME = MySQLStatements.HEART_BEAT_START_TIME;
+    /**
+     * Heart beat table: Most recent beat.
+     */
+    static final String HEART_BEAT_LAST_TIME = MySQLStatements.HEART_BEAT_LAST_TIME;
+    /**
      * Media type table name.
      */
     static final String MEDIATYPES = MySQLStatements.MEDIATYPES;
@@ -237,6 +253,14 @@ final class InitDBStatements {
             + ")) ENGINE=InnoDB";
 
     /**
+     * Structure of the table heart beat.
+     */
+    static final String STRUCTURE_TABLE_HEART_BEAT = "(" + HEART_BEAT_PID
+            + " int not null, " + HEART_BEAT_START_TIME
+            + " datetime not null, " + HEART_BEAT_LAST_TIME
+            + " datetime not null)";
+
+    /**
      * Structure of the table media types.
      */
     static final String STRUCTURE_TABLE_MEDIATYPES = "(" + MEDIATYPES_ID
@@ -285,9 +309,8 @@ final class InitDBStatements {
             + " datetime, " + REQUESTS_END_TIME + " datetime, "
             + REQUESTS_STATUS + " smallint default 100, " + REQUESTS_MESSAGE
             + " varchar(254), " + "PRIMARY KEY  (" + REQUESTS_ID
-            + "), FOREIGN KEY ("
-            + REQUESTS_QUEUE_ID + ") REFERENCES " + QUEUES + " ("
-            + QUEUES_ID + ")) ENGINE=InnoDB";
+            + "), FOREIGN KEY (" + REQUESTS_QUEUE_ID + ") REFERENCES " + QUEUES
+            + " (" + QUEUES_ID + ")) ENGINE=InnoDB";
 
     /**
      * Default constructor hidden.
