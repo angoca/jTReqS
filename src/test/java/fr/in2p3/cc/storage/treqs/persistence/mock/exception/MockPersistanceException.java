@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mock.exception;
+package fr.in2p3.cc.storage.treqs.persistence.mock.exception;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -37,16 +37,16 @@ package fr.in2p3.cc.storage.treqs.persistance.mock.exception;
  *
  */
 
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 
-public class MockPersistanceException extends PersistanceException {
+public final class MockPersistanceException extends AbstractPersistanceException {
 
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = 247769961987947808L;
 
-    public MockPersistanceException(Exception e) {
+    public MockPersistanceException(final Exception e) {
         super(e);
     }
 
