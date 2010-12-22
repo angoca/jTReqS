@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mock;
+package fr.in2p3.cc.storage.treqs.persistence.mock;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -43,16 +43,18 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
-import fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO;
-import fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
+import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockConfigurationDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockQueueDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockReadingDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockWatchDogDAO;
 
 /**
  * DAO factory. This is the implementation of the Factory method for the Mock
  * data source access.
  */
-public final class MockDAOFactory extends DAOFactory {
+public final class MockDAOFactory extends AbstractDAOFactory {
 
     /**
      * Logger.
@@ -60,15 +62,78 @@ public final class MockDAOFactory extends DAOFactory {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockDAOFactory.class);
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getConfigurationDAO
+     * ()
+     */
+    @Override
     public ConfigurationDAO getConfigurationDAO() {
+        LOGGER.trace(">< getConfigurationDAO");
+
         return new MockConfigurationDAO();
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getQueueDAO()
+     */
+    @Override
     public QueueDAO getQueueDAO() {
+        LOGGER.trace(">< getQueueDAO");
+
         return new MockQueueDAO();
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getReadingDAO()
+     */
+    @Override
     public ReadingDAO getReadingDAO() {
+        LOGGER.trace(">< getReadingDAO");
+
         return new MockReadingDAO();
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDog()
+     */
+    @Override
+    public WatchDogDAO getWatchDogDAO() {
+        LOGGER.trace(">< getReadingDAO");
+
+        return new MockWatchDogDAO();
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#initialize()
+     */
+    @Override
+    public void initialize() {
+
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#dumpStructure()
+     */
+    @Override
+    public String dumpStructure() {
+        return "";
     }
 }

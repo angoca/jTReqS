@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mock.dao;
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -44,18 +44,17 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.Queue;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
+import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.helper.PersistenceHelperFileRequest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 /**
- * Managing Reading object updates to database
+ * Managing Reading object updates to database.
  */
-public class MockReadingDAO implements ReadingDAO {
+public final class MockReadingDAO implements ReadingDAO {
     /**
      * Logger.
      */
@@ -64,8 +63,8 @@ public class MockReadingDAO implements ReadingDAO {
 
     private List<PersistenceHelperFileRequest> newJobs;
 
-    private PersistanceException newJobsException;
-    private PersistanceException requestStatusByIdException;
+    private AbstractPersistanceException newJobsException;
+    private AbstractPersistanceException requestStatusByIdException;
 
     public MockReadingDAO() {
         this.requestStatusByIdException = null;
@@ -87,7 +86,7 @@ public class MockReadingDAO implements ReadingDAO {
     /**
      * @param jobs
      */
-    private void createRequest(List<PersistenceHelperFileRequest> jobs) {
+    private void createRequest(final List<PersistenceHelperFileRequest> jobs) {
         short id = (short) (Math.random() * 1000 + 1);
         String filename = "path" + (int) (Math.random() * 10) + "/file"
                 + (int) (Math.random() * 100);
@@ -101,65 +100,77 @@ public class MockReadingDAO implements ReadingDAO {
         jobs.add(request);
     }
 
-    // @Override
-    public void firstUpdate(FilePositionOnTape fpot, FileStatus status,
-            String message, Queue queue) throws ExecuteMySQLException {
-
+    @Override
+    public void firstUpdate(final Reading reading, final String message)
+            throws MySQLExecuteException {
+        LOGGER.trace(">< firstUpdate");
     }
 
-    public List<PersistenceHelperFileRequest> getNewJobs(int l)
-            throws PersistanceException {
+    @Override
+    public List<PersistenceHelperFileRequest> getNewRequests(final int l)
+            throws AbstractPersistanceException {
+        LOGGER.trace("> getNewJobs");
 
         if (this.newJobsException != null) {
-            PersistanceException toThrow = this.newJobsException;
+            AbstractPersistanceException toThrow = this.newJobsException;
             this.newJobsException = null;
             throw toThrow;
         }
 
         List<PersistenceHelperFileRequest> ret = this.newJobs;
         this.newJobs = createJobs();
+
+        LOGGER.trace("< getNewJobs");
+
         return ret;
     }
 
-    public void setNewJobs(List<PersistenceHelperFileRequest> jobs) {
+    public void setNewJobs(final List<PersistenceHelperFileRequest> jobs) {
         this.newJobs = jobs;
     }
 
-    public void setNewJobsException(PersistanceException exception) {
+    public void setNewJobsException(final AbstractPersistanceException exception) {
         this.newJobsException = exception;
     }
 
-    // @Override
-    public void setRequestStatusById(int r, FileStatus fs, int errcode, String m)
-            throws PersistanceException {
+    public void setRequestStatusById(final int r, final RequestStatus fs,
+            final int errcode, final String m) throws AbstractPersistanceException {
+        LOGGER.trace("> setRequestStatusById-code");
+
         if (this.requestStatusByIdException != null) {
-            PersistanceException toThrow = this.requestStatusByIdException;
+            AbstractPersistanceException toThrow = this.requestStatusByIdException;
+            this.requestStatusByIdException = null;
+            throw toThrow;
+        }
+
+        LOGGER.trace("< setRequestStatusById-code");
+    }
+
+    public void setRequestStatusById(final int id,
+            final RequestStatus status, final String message)
+            throws AbstractPersistanceException {
+        if (this.requestStatusByIdException != null) {
+            AbstractPersistanceException toThrow = this.requestStatusByIdException;
             this.requestStatusByIdException = null;
             throw toThrow;
         }
     }
 
-    // @Override
-    public void setRequestStatusById(int id, FileStatus status, String message)
-            throws PersistanceException {
-        if (this.requestStatusByIdException != null) {
-            PersistanceException toThrow = this.requestStatusByIdException;
-            this.requestStatusByIdException = null;
-            throw toThrow;
-        }
-    }
-
-    public void setRequestStatusByIdException(PersistanceException exception) {
+    public void setRequestStatusByIdException(
+            final AbstractPersistanceException exception) {
         this.requestStatusByIdException = exception;
     }
 
-    // @Override
-    public void update(FilePositionOnTape fpot, FileStatus fileState,
-            Calendar endTime, byte nbTries, String errorMessage,
-            short errorCode, Queue queue) throws PersistanceException {
+    @Override
+    public void update(final Reading reading, final RequestStatus status,
+            final Calendar time) throws AbstractPersistanceException {
+        LOGGER.trace(">< update");
     }
 
-    public int updateUnfinishedRequests() throws PersistanceException {
+    @Override
+    public int updateUnfinishedRequests() throws AbstractPersistanceException {
+        LOGGER.trace(">< updateUnfinishedRequests");
+
         return 0;
     }
 

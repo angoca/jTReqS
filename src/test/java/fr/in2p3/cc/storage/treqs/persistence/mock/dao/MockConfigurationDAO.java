@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mock.dao;
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,17 +8,16 @@ import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.helper.PersistanceHelperResourceAllocation;
-import fr.in2p3.cc.storage.treqs.persistance.mock.exception.MockPersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
+import fr.in2p3.cc.storage.treqs.persistence.mock.exception.MockPersistanceException;
 
-public class MockConfigurationDAO implements ConfigurationDAO {
+public final class MockConfigurationDAO implements ConfigurationDAO {
 
     /**
      * Logger.
@@ -45,13 +44,15 @@ public class MockConfigurationDAO implements ConfigurationDAO {
      * </code>
      *
      * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations()
+     * @throws TReqSException
+     *             Never.
      */
-    // @Override
+    @Override
     public List<Resource> getMediaAllocations() throws TReqSException {
         LOGGER.trace("> getMediaAllocations");
 
         if (this.exception != null) {
-            PersistanceException toThrow = this.exception;
+            AbstractPersistanceException toThrow = this.exception;
             this.exception = null;
             throw toThrow;
         }
@@ -81,70 +82,65 @@ public class MockConfigurationDAO implements ConfigurationDAO {
      * </code>
      *
      * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation()
+     * @throws AbstractPersistanceException
+     *             Never.
      */
-    // @Override
-    public MultiMap getResourceAllocation() throws PersistanceException {
+    @Override
+    public MultiMap getResourceAllocation() throws AbstractPersistanceException {
         LOGGER.trace("> getResourceAllocation");
 
         if (this.exception != null) {
-            PersistanceException toThrow = this.exception;
+            AbstractPersistanceException toThrow = this.exception;
             this.exception = null;
             throw toThrow;
         }
         MultiMap values = new MultiValueMap();
-        User user1 = new User("user1");
-        User user2 = new User("user2");
-        User user3 = new User("user3");
-        User user4 = new User("user4");
-        User user5 = new User("user5");
-        User user6 = new User("user6");
-        User user7 = new User("user7");
         // T10KA
-        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-                user1, 2));
-        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-                user2, 1));
-        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-                user3, 1));
+        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
+                "user1", 2));
+        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
+                "user2", 1));
+        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
+                "user3", 1));
         // No user4
         // No user5
-        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-                user6, 2));
-        values.put(new Float(0.1), new PersistanceHelperResourceAllocation(
-                user7, 3));
+        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
+                "user6", 2));
+        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
+                "user7", 3));
 
         // T10KB
-        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-                user1, 3));
-        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-                user2, 2));
+        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
+                "user1", 3));
+        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
+                "user2", 2));
         // No user3
-        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-                user4, 1));
+        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
+                "user4", 1));
         // No user5
         // No user6
-        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-                user7, 3));
+        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
+                "user7", 3));
 
         // T10KC
         // No user1
         // No user2
         // No user3
         // No user4
-        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-                user5, 1));
-        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-                user6, 1));
-        values.put(new Float(0.2), new PersistanceHelperResourceAllocation(
-                user7, 2));
+        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
+                "user5", 1));
+        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
+                "user6", 1));
+        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
+                "user6", 2));
 
         LOGGER.trace("< getResourceAllocation");
 
         return values;
     }
 
-    public void setMediaTypeException(MockPersistanceException exception) {
-        this.exception = exception;
+    public void setMediaTypeException(final MockPersistanceException excep) {
+        this.exception = excep;
     }
 
 }

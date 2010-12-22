@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.persistance.mock.dao;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,21 +34,21 @@ package fr.in2p3.cc.storage.treqs.persistance.mock.dao;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 
 import java.util.Calendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.QueueStatus;
-import fr.in2p3.cc.storage.treqs.model.Tape;
+import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 
 /**
- * Managing Queues object updates to database
+ * Managing Queues object updates to database.
  */
-public class MockQueueDAO implements QueueDAO {
+public final class MockQueueDAO implements QueueDAO {
 
     /**
      * Logger.
@@ -58,25 +56,29 @@ public class MockQueueDAO implements QueueDAO {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockQueueDAO.class);
 
-    public int abortPendingQueues() throws PersistanceException {
+    @Override
+    public int abortPendingQueues() throws AbstractPersistanceException {
+        LOGGER.trace(">< abortPendingQueues");
+
         return 0;
     }
 
-    // @Override
-    public int insert(QueueStatus status, Tape tape, int size, long byteSize,
-            Calendar creationTime) {
+    @Override
+    public int insert(final Queue queue) {
+        LOGGER.trace(">< insert");
+
         return 0;
     }
 
-    // @Override
-    public void updateAddRequest(int jobsSize, String ownerName, long byteSize,
-            int id) {
+    @Override
+    public void updateAddRequest(final Queue queue) {
+        LOGGER.trace(">< updateAddRequest");
     }
 
-    // @Override
-    public void updateState(Calendar time, QueueStatus status, int size,
-            short nbDone, short nbFailed, String ownerName, long byteSize,
-            int id) {
+    @Override
+    public void updateState(final Queue queue, final Calendar time,
+            final short nbDone, final short nbFailed) {
+        LOGGER.trace(">< updateState");
     }
 
 }
