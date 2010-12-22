@@ -252,7 +252,7 @@ public abstract class AbstractProcess extends Thread {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                // Nothing.
+                LOGGER.error("Error", e);
             }
         }
 
