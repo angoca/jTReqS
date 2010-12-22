@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.Selector;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;

@@ -43,7 +43,7 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.control.Selector;
+import fr.in2p3.cc.storage.treqs.control.selector.Selector;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 
