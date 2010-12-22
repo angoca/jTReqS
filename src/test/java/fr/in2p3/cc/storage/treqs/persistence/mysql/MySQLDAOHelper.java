@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -40,12 +40,13 @@ package fr.in2p3.cc.storage.treqs.persistance.mysql;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.tools.RandomString;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
-public class MySQLDAOHelper {
+public final class MySQLDAOHelper {
     /**
      * Logger.
      */
@@ -69,19 +70,24 @@ public class MySQLDAOHelper {
     /**
      * @param args
      * @throws TReqSException
+     *             Never.
      */
-    public static void main(String[] args) throws TReqSException {
+    public static void main(final String[] args) throws TReqSException {
         MySQLBroker.getInstance().connect();
         RequestsDAO.deleteAll();
         int size = (int) (Math.random() * 5) + 2;
         for (int i = 0; i < size; i++) {
             String fileName = getFileName();
             String userName = getUserName();
-            FileStatus status = FileStatus.FS_CREATED;
+            RequestStatus status = RequestStatus.CREATED;
             LOGGER.warn("Generated: {} - {}, {}", new String[] { (i + 1) + "",
                     fileName, userName });
             RequestsDAO.insertRow(fileName, userName, status);
         }
         MySQLBroker.getInstance().disconnect();
+    }
+
+    private MySQLDAOHelper() {
+        // Nothing.
     }
 }

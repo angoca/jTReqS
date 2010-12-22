@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -46,17 +46,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class MySQLConfigurationDAOTest {
+public final class MySQLConfigurationDAOTest {
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
-        MySQLConfigurationDAO.destroyInstance();
     }
 
     @Test
@@ -65,7 +65,7 @@ public class MySQLConfigurationDAOTest {
         String query = "DELETE FROM mediatype ";
         MySQLBroker.getInstance().executeModification(query);
 
-        List<Resource> actual = MySQLConfigurationDAO.getInstance()
+        List<Resource> actual = new MySQLConfigurationDAO()
                 .getMediaAllocations();
 
         Assert.assertTrue(actual.size() == 0);
@@ -77,8 +77,7 @@ public class MySQLConfigurationDAOTest {
         String query = "DELETE FROM allocation";
         MySQLBroker.getInstance().executeModification(query);
 
-        MultiMap map = MySQLConfigurationDAO.getInstance()
-                .getResourceAllocation();
+        MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
 
         int actual = map.size();
 
@@ -97,7 +96,7 @@ public class MySQLConfigurationDAOTest {
         query = "INSERT INTO mediatype VALUES (1, \"T10K-A\", 5, \"??\", \"JT\")";
         MySQLBroker.getInstance().executeModification(query);
 
-        List<Resource> actual = MySQLConfigurationDAO.getInstance()
+        List<Resource> actual = new MySQLConfigurationDAO()
                 .getMediaAllocations();
 
         Assert.assertTrue(actual.size() == 1);
@@ -113,8 +112,7 @@ public class MySQLConfigurationDAOTest {
         query = "INSERT INTO allocation VALUES (\"user1\", 2, 0.5, 0.6, 8, 5, \"\", \"\", \"\")";
         MySQLBroker.getInstance().executeModification(query);
 
-        MultiMap map = MySQLConfigurationDAO.getInstance()
-                .getResourceAllocation();
+        MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
 
         int actual = map.size();
 
@@ -135,7 +133,7 @@ public class MySQLConfigurationDAOTest {
         query = "INSERT INTO mediatype VALUES (3, \"T10K-C\", 8, \"??\", \"JS\")";
         MySQLBroker.getInstance().executeModification(query);
 
-        List<Resource> actual = MySQLConfigurationDAO.getInstance()
+        List<Resource> actual = new MySQLConfigurationDAO()
                 .getMediaAllocations();
 
         Assert.assertTrue(actual.size() == 2);
@@ -153,8 +151,7 @@ public class MySQLConfigurationDAOTest {
         query = "INSERT INTO allocation VALUES (\"user3\", 4, 0.5, 0.6, 8, 5, \"\", \"\", \"\")";
         MySQLBroker.getInstance().executeModification(query);
 
-        MultiMap map = MySQLConfigurationDAO.getInstance()
-                .getResourceAllocation();
+        MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
 
         int actual = map.size();
 
@@ -168,10 +165,10 @@ public class MySQLConfigurationDAOTest {
     public void test04getMediaAllocation() throws TReqSException {
         boolean failed = false;
         try {
-            MySQLConfigurationDAO.getInstance().getMediaAllocations();
+            new MySQLConfigurationDAO().getMediaAllocations();
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }

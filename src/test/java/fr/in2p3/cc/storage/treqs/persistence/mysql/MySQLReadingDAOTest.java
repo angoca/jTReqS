@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -52,35 +52,39 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
+import fr.in2p3.cc.storage.treqs.model.Helper;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
+import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.PersistanceException;
-import fr.in2p3.cc.storage.treqs.persistance.helper.PersistenceHelperFileRequest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class MySQLReadingDAOTest {
+public final class MySQLReadingDAOTest {
+    private static final int NUMBER_3 = 3;
+    private static final int NUMBER_4 = 4;
+
     @BeforeClass
     public static void oneTimeSetUp() throws TReqSException {
         Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+                "fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockQueueDAO");
     }
 
     @AfterClass
     public static void oneTimeTearDown() {
         Configurator.destroyInstance();
         MySQLBroker.destroyInstance();
-        MySQLReadingDAO.destroyInstance();
     }
 
     @After
@@ -92,19 +96,15 @@ public class MySQLReadingDAOTest {
     }
 
     @Test
-    public void testFirstUpdate01() throws NumberFormatException,
-            TReqSException {
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
+    public void testFirstUpdate01() throws TReqSException {
         FilePositionOnTape fpot = null;
-        FileStatus status = FileStatus.FS_CREATED;
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message,
-                    queue);
+            new MySQLReadingDAO().firstUpdate(reading, message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -117,24 +117,22 @@ public class MySQLReadingDAOTest {
     }
 
     @Test
-    public void testFirstUpdate02() throws NumberFormatException,
-            TReqSException {
+    public void testFirstUpdate02() throws TReqSException {
         User owner = new User("username");
         long size = 100;
-        File file = new File("filename", owner, size);
-        int position = 4;
+        File file = new File("filename", size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = null;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message,
-                    queue);
+            new MySQLReadingDAO().firstUpdate(reading, message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -147,24 +145,22 @@ public class MySQLReadingDAOTest {
     }
 
     @Test
-    public void testFirstUpdate03() throws NumberFormatException,
-            TReqSException {
+    public void testFirstUpdate03() throws TReqSException {
         User owner = new User("username");
         long size = 100;
-        File file = new File("filename", owner, size);
-        int position = 4;
+        File file = new File("filename", size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
         String message = null;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message,
-                    queue);
+            new MySQLReadingDAO().firstUpdate(reading, message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -177,24 +173,22 @@ public class MySQLReadingDAOTest {
     }
 
     @Test
-    public void testFirstUpdate04() throws NumberFormatException,
-            TReqSException {
+    public void testFirstUpdate04() throws TReqSException {
         User owner = new User("username");
         long size = 100;
-        File file = new File("filename", owner, size);
-        int position = 4;
+        File file = new File("filename", size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
         String message = "";
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message,
-                    queue);
+            new MySQLReadingDAO().firstUpdate(reading, message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -207,24 +201,22 @@ public class MySQLReadingDAOTest {
     }
 
     @Test
-    public void testFirstUpdate05() throws NumberFormatException,
-            TReqSException {
+    public void testFirstUpdate05() throws TReqSException {
         User owner = new User("username");
         long size = 100;
-        File file = new File("filename", owner, size);
-        int position = 4;
+        File file = new File("filename", size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
         String message = "MessageFirstUpdate";
         Queue queue = null;
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message,
-                    queue);
+            new MySQLReadingDAO().firstUpdate(reading, message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -240,28 +232,28 @@ public class MySQLReadingDAOTest {
      * Tests no connection.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testFirstUpdate06() throws TReqSException {
         User owner = new User("username");
         long size = 100;
-        File file = new File("filename", owner, size);
-        int position = 4;
+        File file = new File("filename", size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message,
-                    queue);
+            new MySQLReadingDAO().firstUpdate(reading, message);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -274,23 +266,24 @@ public class MySQLReadingDAOTest {
      * Tests to update nothing.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testFirstUpdate07() throws TReqSException {
         User owner = new User("username");
         long size = 100;
-        File file = new File("filenameNoUpdate", owner, size);
-        int position = 4;
+        File file = new File("filenameNoUpdate", size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message, queue);
+        new MySQLReadingDAO().firstUpdate(reading, message);
         MySQLBroker.getInstance().disconnect();
     }
 
@@ -298,42 +291,44 @@ public class MySQLReadingDAOTest {
      * Tests to update a row.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testFirstUpdate08() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/fileToFirstUpdate";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
         String message = "MessageFirstUpdate";
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         String query = "insert into requests (hpss_file) values ('" + fileName
                 + "')";
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().executeModification(query);
-        MySQLReadingDAO.getInstance().firstUpdate(fpot, status, message, queue);
+        new MySQLReadingDAO().firstUpdate(reading, message);
         MySQLBroker.getInstance().disconnect();
     }
 
     /**
-     * Tests assertion
+     * Tests assertion.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testGetNewJobs01() throws PersistanceException {
+    public void testGetNewJobs01() throws AbstractPersistanceException {
         int limit = 0;
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().getNewJobs(limit);
+            new MySQLReadingDAO().getNewRequests(limit);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -348,17 +343,18 @@ public class MySQLReadingDAOTest {
     /**
      * Tests no connection.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testGetNewJobs02() throws PersistanceException {
+    public void testGetNewJobs02() throws AbstractPersistanceException {
         int limit = 5;
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().getNewJobs(limit);
+            new MySQLReadingDAO().getNewRequests(limit);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -371,6 +367,7 @@ public class MySQLReadingDAOTest {
      * Tests no new jobs.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testGetNewJobs03() throws TReqSException {
@@ -379,8 +376,8 @@ public class MySQLReadingDAOTest {
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().executeModification(query);
-        List<PersistenceHelperFileRequest> jobs = MySQLReadingDAO.getInstance()
-                .getNewJobs(limit);
+        List<PersistenceHelperFileRequest> jobs = new MySQLReadingDAO()
+                .getNewRequests(limit);
         MySQLBroker.getInstance().disconnect();
 
         Assert.assertTrue(jobs.size() == 0);
@@ -390,22 +387,25 @@ public class MySQLReadingDAOTest {
      * Tests new job without user.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testGetNewJobs04() throws TReqSException {
         int limit = 5;
         String fileName1 = "NewJob04a";
         String query1 = "INSERT INTO requests (hpss_file, status) VALUES ('"
-                + fileName1 + "', " + FileStatus.FS_CREATED.getId() + ")";
+                + fileName1 + "', " + RequestStatus.CREATED.getId()
+                + ")";
         String fileName2 = "NewJob04b";
         String query2 = "INSERT INTO requests (hpss_file, status) VALUES ('"
-                + fileName2 + "', " + FileStatus.FS_CREATED.getId() + ")";
+                + fileName2 + "', " + RequestStatus.CREATED.getId()
+                + ")";
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().executeModification(query1);
         MySQLBroker.getInstance().executeModification(query2);
-        List<PersistenceHelperFileRequest> jobs = MySQLReadingDAO.getInstance()
-                .getNewJobs(limit);
+        List<PersistenceHelperFileRequest> jobs = new MySQLReadingDAO()
+                .getNewRequests(limit);
         MySQLBroker.getInstance().disconnect();
         int actual = jobs.size();
         int expected = 0;
@@ -417,6 +417,7 @@ public class MySQLReadingDAOTest {
      * Tests new job without retries.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testGetNewJobs05() throws TReqSException {
@@ -428,20 +429,20 @@ public class MySQLReadingDAOTest {
                 + "','"
                 + fileName1
                 + "', "
-                + FileStatus.FS_CREATED.getId() + ", null)";
+                + RequestStatus.CREATED.getId() + ", null)";
         String fileName2 = "NewJob05b";
         String query2 = "INSERT INTO requests (user, hpss_file, status, tries) VALUES ('"
                 + user
                 + "','"
                 + fileName2
                 + "', "
-                + FileStatus.FS_CREATED.getId() + ", null)";
+                + RequestStatus.CREATED.getId() + ", null)";
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().executeModification(query1);
         MySQLBroker.getInstance().executeModification(query2);
-        List<PersistenceHelperFileRequest> jobs = MySQLReadingDAO.getInstance()
-                .getNewJobs(limit);
+        List<PersistenceHelperFileRequest> jobs = new MySQLReadingDAO()
+                .getNewRequests(limit);
         MySQLBroker.getInstance().disconnect();
         int actual = jobs.size();
         int expected = 0;
@@ -453,6 +454,7 @@ public class MySQLReadingDAOTest {
      * Tests new jobs.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testGetNewJobs06() throws TReqSException {
@@ -464,20 +466,20 @@ public class MySQLReadingDAOTest {
                 + "','"
                 + fileName1
                 + "', "
-                + FileStatus.FS_CREATED.getId() + ")";
+                + RequestStatus.CREATED.getId() + ")";
         String fileName2 = "NewJob06b";
         String query2 = "INSERT INTO requests (user, hpss_file, status) VALUES ('"
                 + user
                 + "','"
                 + fileName2
                 + "', "
-                + FileStatus.FS_CREATED.getId() + ")";
+                + RequestStatus.CREATED.getId() + ")";
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().executeModification(query1);
         MySQLBroker.getInstance().executeModification(query2);
-        List<PersistenceHelperFileRequest> jobs = MySQLReadingDAO.getInstance()
-                .getNewJobs(limit);
+        List<PersistenceHelperFileRequest> jobs = new MySQLReadingDAO()
+                .getNewRequests(limit);
         MySQLBroker.getInstance().disconnect();
         int actual = jobs.size();
         int expected = 2;
@@ -489,18 +491,21 @@ public class MySQLReadingDAOTest {
      * Tests assertion.
      *
      * @throws SQLException
+     *             Never.
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testSetRequestStatusByIda01() throws SQLException,
             TReqSException {
         int id = -1;
 
-        FileStatus status = FileStatus.FS_SUBMITTED;
+        RequestStatus status = RequestStatus.SUBMITTED;
+        int code = 0;
         String message = "The request changed the state.";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
                     message);
             failed = true;
         } catch (Throwable e) {
@@ -517,18 +522,21 @@ public class MySQLReadingDAOTest {
      * Tests assertion.
      *
      * @throws SQLException
+     *             Never.
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testSetRequestStatusByIda02() throws SQLException,
             TReqSException {
         int id = 0;
 
-        FileStatus status = null;
+        RequestStatus status = null;
+        int code = 0;
         String message = "The request changed the state.";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
                     message);
             failed = true;
         } catch (Throwable e) {
@@ -545,18 +553,21 @@ public class MySQLReadingDAOTest {
      * Tests assertion.
      *
      * @throws SQLException
+     *             Never.
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testSetRequestStatusByIda03() throws SQLException,
             TReqSException {
         int id = 0;
 
-        FileStatus status = FileStatus.FS_SUBMITTED;
+        RequestStatus status = RequestStatus.SUBMITTED;
+        int code = 0;
         String message = null;
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
                     message);
             failed = true;
         } catch (Throwable e) {
@@ -573,18 +584,21 @@ public class MySQLReadingDAOTest {
      * Tests assertion.
      *
      * @throws SQLException
+     *             Never.
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testSetRequestStatusByIda04() throws SQLException,
             TReqSException {
         int id = 0;
 
-        FileStatus status = FileStatus.FS_SUBMITTED;
+        RequestStatus status = RequestStatus.SUBMITTED;
+        int code = 0;
         String message = "";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
                     message);
             failed = true;
         } catch (Throwable e) {
@@ -601,23 +615,26 @@ public class MySQLReadingDAOTest {
      * No connection.
      *
      * @throws SQLException
+     *             Never.
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testSetRequestStatusByIda05() throws SQLException,
             TReqSException {
         int id = 0;
 
-        FileStatus status = FileStatus.FS_SUBMITTED;
+        RequestStatus status = RequestStatus.SUBMITTED;
+        int code = 0;
         String message = "The request changed the state.";
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
                     message);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -631,7 +648,7 @@ public class MySQLReadingDAOTest {
             TReqSException {
         String fileName = "requestByIDa02";
         String query = "INSERT INTO requests (user, hpss_file, status) VALUES ('userName','"
-                + fileName + "', " + FileStatus.FS_CREATED.getId() + ")";
+                + fileName + "', " + RequestStatus.CREATED.getId() + ")";
         MySQLBroker.getInstance().connect();
         PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(query);
@@ -644,9 +661,10 @@ public class MySQLReadingDAOTest {
         result.close();
         statement.close();
 
-        FileStatus status = FileStatus.FS_SUBMITTED;
+        RequestStatus status = RequestStatus.SUBMITTED;
+        int code = 0;
         String message = "The request changed the state.";
-        MySQLReadingDAO.getInstance().setRequestStatusById(id, status, message);
+        new MySQLReadingDAO().setRequestStatusById(id, status, code, message);
 
         query = "SELECT status, message FROM requests WHERE hpss_file = '"
                 + fileName + "'";
@@ -671,20 +689,22 @@ public class MySQLReadingDAOTest {
     }
 
     /**
-     * Tests assertion
+     * Tests assertion.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testSetRequestStatusByIdb01() throws PersistanceException {
+    public void testSetRequestStatusByIdb01()
+            throws AbstractPersistanceException {
         int id = -10;
-        FileStatus status = FileStatus.FS_CREATED;
+        RequestStatus status = RequestStatus.CREATED;
         int code = 0;
         String message = "Message";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
-                    code, message);
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
+                    message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -700,18 +720,20 @@ public class MySQLReadingDAOTest {
     /**
      * Tests assertion.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testSetRequestStatusByIdb02() throws PersistanceException {
+    public void testSetRequestStatusByIdb02()
+            throws AbstractPersistanceException {
         int id = 0;
-        FileStatus status = null;
+        RequestStatus status = null;
         int code = 0;
         String message = "Message";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
-                    code, message);
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
+                    message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -727,18 +749,20 @@ public class MySQLReadingDAOTest {
     /**
      * Tests assertion.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testSetRequestStatusByIdb03() throws PersistanceException {
+    public void testSetRequestStatusByIdb03()
+            throws AbstractPersistanceException {
         int id = 0;
-        FileStatus status = FileStatus.FS_CREATED;
+        RequestStatus status = RequestStatus.CREATED;
         int code = -50;
         String message = "Message";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
-                    code, message);
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
+                    message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -754,18 +778,20 @@ public class MySQLReadingDAOTest {
     /**
      * Tests assertion.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testSetRequestStatusByIdb04() throws PersistanceException {
+    public void testSetRequestStatusByIdb04()
+            throws AbstractPersistanceException {
         int id = 0;
-        FileStatus status = FileStatus.FS_CREATED;
+        RequestStatus status = RequestStatus.CREATED;
         int code = 0;
         String message = null;
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
-                    code, message);
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
+                    message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -781,18 +807,20 @@ public class MySQLReadingDAOTest {
     /**
      * Tests assertion.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testSetRequestStatusByIdb05() throws PersistanceException {
+    public void testSetRequestStatusByIdb05()
+            throws AbstractPersistanceException {
         int id = 0;
-        FileStatus status = FileStatus.FS_CREATED;
+        RequestStatus status = RequestStatus.CREATED;
         int code = 0;
         String message = "";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
-                    code, message);
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
+                    message);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -808,21 +836,23 @@ public class MySQLReadingDAOTest {
     /**
      * Tests no connection.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testSetRequestStatusByIdb06() throws PersistanceException {
+    public void testSetRequestStatusByIdb06()
+            throws AbstractPersistanceException {
         int id = 0;
-        FileStatus status = FileStatus.FS_CREATED;
+        RequestStatus status = RequestStatus.CREATED;
         int code = 0;
         String message = "Message";
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().setRequestStatusById(id, status,
-                    code, message);
+            new MySQLReadingDAO().setRequestStatusById(id, status, code,
+                    message);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -837,7 +867,7 @@ public class MySQLReadingDAOTest {
             TReqSException {
         String fileName = "requestByIDb02";
         String query = "INSERT INTO requests (user, hpss_file, status) VALUES ('userName','"
-                + fileName + "', " + FileStatus.FS_CREATED.getId() + ")";
+                + fileName + "', " + RequestStatus.CREATED.getId() + ")";
         MySQLBroker.getInstance().connect();
         PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(query);
@@ -850,11 +880,10 @@ public class MySQLReadingDAOTest {
         result.close();
         statement.close();
 
-        FileStatus status = FileStatus.FS_SUBMITTED;
+        RequestStatus status = RequestStatus.SUBMITTED;
         int code = 0;
         String message = "The request changed the state.";
-        MySQLReadingDAO.getInstance().setRequestStatusById(id, status, code,
-                message);
+        new MySQLReadingDAO().setRequestStatusById(id, status, code, message);
 
         query = "SELECT status, message FROM requests WHERE hpss_file = '"
                 + fileName + "'";
@@ -880,20 +909,15 @@ public class MySQLReadingDAOTest {
 
     @Test
     public void testUpdate01() throws TReqSException {
-        MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
         FilePositionOnTape fpot = null;
-        FileStatus status = FileStatus.FS_CREATED;
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -910,23 +934,20 @@ public class MySQLReadingDAOTest {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = null;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = null;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -943,23 +964,20 @@ public class MySQLReadingDAOTest {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = null;
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -976,23 +994,20 @@ public class MySQLReadingDAOTest {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = -1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -1008,29 +1023,27 @@ public class MySQLReadingDAOTest {
      * Tests a null message.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate05() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = null;
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -1046,28 +1059,26 @@ public class MySQLReadingDAOTest {
      * Tests to insert an empty message. This is valid.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate06() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
+        new MySQLReadingDAO().update(reading, status, endTime);
         MySQLBroker.getInstance().disconnect();
     }
 
@@ -1076,23 +1087,20 @@ public class MySQLReadingDAOTest {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = -2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -1109,23 +1117,20 @@ public class MySQLReadingDAOTest {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
         Queue queue = null;
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -1141,32 +1146,30 @@ public class MySQLReadingDAOTest {
      * Tests no connection.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate09() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().update(fpot, status, endTime,
-                    nbTries, errorMessage, errorCode, queue);
+            new MySQLReadingDAO().update(reading, status, endTime);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -1179,28 +1182,26 @@ public class MySQLReadingDAOTest {
      * Tests to update a submitted request.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate10Submitted() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_SUBMITTED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.SUBMITTED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
+        new MySQLReadingDAO().update(reading, status, endTime);
         MySQLBroker.getInstance().disconnect();
     }
 
@@ -1208,28 +1209,26 @@ public class MySQLReadingDAOTest {
      * Tests to update a queued request.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate11Queued() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_QUEUED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.QUEUED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
+        new MySQLReadingDAO().update(reading, status, endTime);
         MySQLBroker.getInstance().disconnect();
     }
 
@@ -1237,28 +1236,26 @@ public class MySQLReadingDAOTest {
      * Tests to update a created request.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate12Created() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_CREATED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
+        new MySQLReadingDAO().update(reading, status, endTime);
         MySQLBroker.getInstance().disconnect();
     }
 
@@ -1266,28 +1263,26 @@ public class MySQLReadingDAOTest {
      * Tests to update a created failed.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate13Failed() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_FAILED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.FAILED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
+        new MySQLReadingDAO().update(reading, status, endTime);
         MySQLBroker.getInstance().disconnect();
     }
 
@@ -1295,44 +1290,44 @@ public class MySQLReadingDAOTest {
      * Tests to update a staged staged.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void testUpdate14Staged() throws TReqSException {
         User owner = new User("username");
         long size = 100;
         String fileName = "hpss/file";
-        File file = new File(fileName, owner, size);
-        int position = 4;
+        File file = new File(fileName, size);
+        int position = NUMBER_4;
         MediaType mediaType = new MediaType((byte) 2, "mediaType");
-        Tape tape = new Tape("tapename", mediaType, TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), position, tape);
-        FileStatus status = FileStatus.FS_STAGED;
+        Tape tape = new Tape("tapename", mediaType);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                owner);
+        RequestStatus status = RequestStatus.STAGED;
         Calendar endTime = new GregorianCalendar();
-        byte nbTries = 1;
-        String errorMessage = "Error message";
-        short errorCode = 2;
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) NUMBER_3);
+        Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
 
         MySQLBroker.getInstance().connect();
-        MySQLReadingDAO.getInstance().update(fpot, status, endTime, nbTries,
-                errorMessage, errorCode, queue);
+        new MySQLReadingDAO().update(reading, status, endTime);
         MySQLBroker.getInstance().disconnect();
     }
 
     /**
-     * Tests without connection
+     * Tests without connection.
      *
-     * @throws PersistanceException
+     * @throws AbstractPersistanceException
+     *             Never.
      */
     @Test
-    public void testUpdateUnfinishedRequests01() throws PersistanceException {
+    public void testUpdateUnfinishedRequests01()
+            throws AbstractPersistanceException {
         boolean failed = false;
         try {
-            MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+            new MySQLReadingDAO().updateUnfinishedRequests();
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -1345,25 +1340,28 @@ public class MySQLReadingDAOTest {
      * Tests to update a submitted requests.
      *
      * @throws TReqSException
+     *             Never.
      * @throws SQLException
+     *             Never.
      */
     @Test
     public void testUpdateUnfinishedRequests02() throws TReqSException,
             SQLException {
         String fileName = "UpdateUnfinished1";
         String query = "INSERT INTO requests (hpss_file, status) VALUES ('"
-                + fileName + "', " + FileStatus.FS_SUBMITTED.getId() + ")";
+                + fileName + "', " + RequestStatus.SUBMITTED.getId()
+                + ")";
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().executeModification(query);
-        MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+        new MySQLReadingDAO().updateUnfinishedRequests();
         query = "SELECT status FROM requests WHERE hpss_file = '" + fileName
                 + "'";
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actualState = result.getInt(1);
-            int expectedState = FileStatus.FS_CREATED.getId();
+            int expectedState = RequestStatus.CREATED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -1380,25 +1378,27 @@ public class MySQLReadingDAOTest {
      * Tests to update a queued requests.
      *
      * @throws TReqSException
+     *             Never.
      * @throws SQLException
+     *             Never.
      */
     @Test
     public void testUpdateUnfinishedRequests03() throws TReqSException,
             SQLException {
         String fileName = "UpdateUnfinished2";
         String query = "INSERT INTO requests (hpss_file, status) VALUES ('"
-                + fileName + "', " + FileStatus.FS_QUEUED.getId() + ")";
+                + fileName + "', " + RequestStatus.QUEUED.getId() + ")";
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().executeModification(query);
-        MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+        new MySQLReadingDAO().updateUnfinishedRequests();
         query = "SELECT status FROM requests WHERE hpss_file = '" + fileName
                 + "'";
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actualState = result.getInt(1);
-            int expectedState = FileStatus.FS_CREATED.getId();
+            int expectedState = RequestStatus.CREATED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -1415,13 +1415,15 @@ public class MySQLReadingDAOTest {
      * Tests to update nothing.
      *
      * @throws TReqSException
+     *             Never.
      * @throws SQLException
+     *             Never.
      */
     @Test
     public void testUpdateUnfinishedRequests04() throws TReqSException,
             SQLException {
         MySQLBroker.getInstance().connect();
-        int actual = MySQLReadingDAO.getInstance().updateUnfinishedRequests();
+        int actual = new MySQLReadingDAO().updateUnfinishedRequests();
         MySQLBroker.getInstance().disconnect();
         int expected = 0;
 

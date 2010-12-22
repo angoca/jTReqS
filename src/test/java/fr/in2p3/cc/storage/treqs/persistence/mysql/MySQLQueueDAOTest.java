@@ -1,4 +1,4 @@
-package fr.in2p3.cc.storage.treqs.persistance.mysql;
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
@@ -48,21 +48,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
+import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.model.TapeStatus;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.dao.MySQLQueueDAO;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.ExecuteMySQLException;
+import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class MySQLQueueDAOTest {
+public final class MySQLQueueDAOTest {
 
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
-        MySQLQueueDAO.destroyInstance();
     }
 
     /**
@@ -73,10 +76,10 @@ public class MySQLQueueDAOTest {
     public void testAbort01() {
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().abortPendingQueues();
+            new MySQLQueueDAO().abortPendingQueues();
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -87,25 +90,24 @@ public class MySQLQueueDAOTest {
 
     @Test
     public void testAbort02created() throws TReqSException, SQLException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"));
         int size = 987;
-        long byteSize = 987;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
-        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
+        int id = new MySQLQueueDAO().insert(queue);
 
-        MySQLQueueDAO.getInstance().abortPendingQueues();
+        new MySQLQueueDAO().abortPendingQueues();
 
         String query = "SELECT status FROM queues WHERE id = " + id;
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actual = result.getInt(1);
-            int expected = QueueStatus.QS_ENDED.getId();
+            short expected = QueueStatus.ENDED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -120,25 +122,24 @@ public class MySQLQueueDAOTest {
 
     @Test
     public void testAbort03activated() throws TReqSException, SQLException {
-        QueueStatus status = QueueStatus.QS_ACTIVATED;
-        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"));
         int size = 987;
-        long byteSize = 987;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
-        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
+        int id = new MySQLQueueDAO().insert(queue);
 
-        MySQLQueueDAO.getInstance().abortPendingQueues();
+        new MySQLQueueDAO().abortPendingQueues();
 
         String query = "SELECT status FROM queues WHERE id = " + id;
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actual = result.getInt(1);
-            int expected = QueueStatus.QS_ENDED.getId();
+            short expected = QueueStatus.ENDED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -153,25 +154,24 @@ public class MySQLQueueDAOTest {
 
     @Test
     public void testAbort04Suspended() throws TReqSException, SQLException {
-        QueueStatus status = QueueStatus.QS_TEMPORARILY_SUSPENDED;
-        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"));
         int size = 987;
-        long byteSize = 987;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
-        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
+        int id = new MySQLQueueDAO().insert(queue);
 
-        MySQLQueueDAO.getInstance().abortPendingQueues();
+        new MySQLQueueDAO().abortPendingQueues();
 
         String query = "SELECT status FROM queues WHERE id = " + id;
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actual = result.getInt(1);
-            int expected = QueueStatus.QS_ENDED.getId();
+            short expected = QueueStatus.ENDED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -186,26 +186,25 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests an update without and established connection.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testInsert02() throws TReqSException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"));
         int size = 10;
-        long byteSize = 10;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().insert(status, tape, size, byteSize,
-                    creationTime);
+            new MySQLQueueDAO().insert(queue);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -216,22 +215,21 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests that the quantity of elements inserted is equals to 1.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testInsert03() throws TReqSException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"));
         int size = 10;
-        long byteSize = 10;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
-        int actual = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
+        int actual = new MySQLQueueDAO().insert(queue);
         MySQLBroker.getInstance().disconnect();
 
         Assert.assertTrue(actual > 0);
@@ -239,23 +237,22 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a null status.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testInsert04() throws TReqSException {
-        QueueStatus status = null;
-        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"));
         int size = 10;
-        long byteSize = 10;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().insert(status, tape, size, byteSize,
-                    creationTime);
+            new MySQLQueueDAO().insert(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -270,22 +267,22 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a null tape.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testInsert05() throws TReqSException {
-        QueueStatus status = QueueStatus.QS_CREATED;
         Tape tape = null;
         int size = 10;
-        long byteSize = 10;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().insert(status, tape, size, byteSize,
-                    creationTime);
+            new MySQLQueueDAO().insert(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -299,23 +296,22 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a negative size.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testInsert06() throws TReqSException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"));
         int size = -10;
-        long byteSize = 10;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().insert(status, tape, size, byteSize,
-                    creationTime);
+            new MySQLQueueDAO().insert(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -329,23 +325,22 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a byteSize negative.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testInsert07() throws TReqSException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"));
         int size = 10;
-        long byteSize = -10;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().insert(status, tape, size, byteSize,
-                    creationTime);
+            new MySQLQueueDAO().insert(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -359,23 +354,22 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests a null creation time.
-     * 
+     *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testInsert08() throws TReqSException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape("tapename1", new MediaType((byte) 1, "media1"));
         int size = 10;
-        long byteSize = 10;
-        Calendar creationTime = null;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                size), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().insert(status, tape, size, byteSize,
-                    creationTime);
+            new MySQLQueueDAO().insert(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -388,16 +382,18 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateAddRequest01() throws ExecuteMySQLException {
-        int jobsSize = -5;
+    public void testUpdateAddRequest01() throws TReqSException {
         String ownerName = "username";
         long byteSize = 50;
-        int id = 3;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateAddRequest(jobsSize, ownerName,
-                    byteSize, id);
+            new MySQLQueueDAO().updateAddRequest(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -410,16 +406,18 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateAddRequest02() throws ExecuteMySQLException {
-        int jobsSize = 5;
+    public void testUpdateAddRequest02() throws TReqSException {
         String ownerName = null;
         long byteSize = 50;
-        int id = 3;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateAddRequest(jobsSize, ownerName,
-                    byteSize, id);
+            new MySQLQueueDAO().updateAddRequest(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -432,16 +430,18 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateAddRequest03() throws ExecuteMySQLException {
-        int jobsSize = 5;
+    public void testUpdateAddRequest03() throws TReqSException {
         String ownerName = "";
         long byteSize = 50;
-        int id = 3;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateAddRequest(jobsSize, ownerName,
-                    byteSize, id);
+            new MySQLQueueDAO().updateAddRequest(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -454,16 +454,18 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateAddRequest04() throws ExecuteMySQLException {
-        int jobsSize = 5;
+    public void testUpdateAddRequest04() throws TReqSException {
         String ownerName = "username";
         long byteSize = -50;
-        int id = 3;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateAddRequest(jobsSize, ownerName,
-                    byteSize, id);
+            new MySQLQueueDAO().updateAddRequest(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -476,16 +478,18 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateAddRequest05() throws ExecuteMySQLException {
-        int jobsSize = 5;
+    public void testUpdateAddRequest05() throws TReqSException {
         String ownerName = "username";
         long byteSize = 50;
-        int id = -3;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateAddRequest(jobsSize, ownerName,
-                    byteSize, id);
+            new MySQLQueueDAO().updateAddRequest(queue);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -499,24 +503,26 @@ public class MySQLQueueDAOTest {
 
     /**
      * Tests to update a queue when there is not a established connection.
-     * 
-     * @throws ExecuteMySQLException
+     *
+     * @throws TReqSException
      *             Never.
      */
     @Test
-    public void testUpdateAddRequest06() throws ExecuteMySQLException {
-        int jobsSize = 5;
+    public void testUpdateAddRequest06() throws TReqSException {
         String ownerName = "username";
         long byteSize = 50;
-        int id = 3;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateAddRequest(jobsSize, ownerName,
-                    byteSize, id);
+            new MySQLQueueDAO().updateAddRequest(queue);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -527,22 +533,20 @@ public class MySQLQueueDAOTest {
 
     @Test
     public void testUpdateAddRequest07() throws TReqSException, SQLException {
-        QueueStatus status = QueueStatus.QS_CREATED;
-        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"),
-                TapeStatus.TS_UNLOCKED);
-        int size = 123;
+        Tape tape = new Tape("tapename2", new MediaType((byte) 1, "media1"));
         long byteSize = 123;
-        Calendar creationTime = new GregorianCalendar();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, tape, new User("owner"));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         MySQLBroker.getInstance().connect();
-        int id = MySQLQueueDAO.getInstance().insert(status, tape, size,
-                byteSize, creationTime);
+        int id = new MySQLQueueDAO().insert(queue);
 
         int jobsSize = 456;
         String ownerName = "username";
         byteSize = 456;
-        MySQLQueueDAO.getInstance().updateAddRequest(jobsSize, ownerName,
-                byteSize, id);
+        new MySQLQueueDAO().updateAddRequest(queue);
 
         String query = "SELECT nbjobs, owner, byte_size FROM queues WHERE id = "
                 + id;
@@ -567,23 +571,24 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState01() {
+    public void testUpdateState01() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof ExecuteMySQLException)) {
+            if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
         }
@@ -593,20 +598,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState02() {
+    public void testUpdateState02() throws TReqSException {
         Calendar time = null;
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -619,20 +625,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState03() {
+    public void testUpdateState03() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = null;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -645,20 +652,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState04() {
+    public void testUpdateState04() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = -10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -671,20 +679,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState05() {
+    public void testUpdateState05() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = -50;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -697,20 +706,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState06() {
+    public void testUpdateState06() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = -90;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -723,20 +733,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState07() {
+    public void testUpdateState07() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = null;
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -749,20 +760,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState08() {
+    public void testUpdateState08() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = -100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -775,20 +787,21 @@ public class MySQLQueueDAOTest {
     }
 
     @Test
-    public void testUpdateState09() {
+    public void testUpdateState09() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = -2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
 
         boolean failed = false;
         try {
-            MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                    nbFailed, ownerName, byteSize, id);
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -803,48 +816,54 @@ public class MySQLQueueDAOTest {
     @Test
     public void testUpdateState10Create() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_CREATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
+
         MySQLBroker.getInstance().connect();
-        MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                nbFailed, ownerName, byteSize, id);
+        new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
         MySQLBroker.getInstance().disconnect();
     }
 
     @Test
     public void testUpdateState11Created() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_ACTIVATED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
+
         MySQLBroker.getInstance().connect();
-        MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                nbFailed, ownerName, byteSize, id);
+        new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
         MySQLBroker.getInstance().disconnect();
     }
 
     @Test
     public void testUpdateState12Created() throws TReqSException {
         Calendar time = new GregorianCalendar();
-        QueueStatus status = QueueStatus.QS_ENDED;
-        int size = 10;
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
         long byteSize = 100;
-        int id = 2;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                byteSize), 0, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User(ownerName));
+        Queue queue = new Queue(fpot, (byte) 3);
+
         MySQLBroker.getInstance().connect();
-        MySQLQueueDAO.getInstance().updateState(time, status, size, nbDone,
-                nbFailed, ownerName, byteSize, id);
+        new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
         MySQLBroker.getInstance().disconnect();
     }
 }
