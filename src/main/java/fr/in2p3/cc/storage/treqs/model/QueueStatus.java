@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * These are the possibles states of a queue, that have a corresponding behavior
- * in the HSM. TODO borrar la parte QS_
+ * in the HSM.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Represents a user. TODO to user the uid, group and gid.
+ * Represents a user.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -71,6 +71,7 @@ public final class User {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -104,6 +105,7 @@ public final class User {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -136,6 +138,7 @@ public final class User {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override

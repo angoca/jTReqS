@@ -58,11 +58,21 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.tools.Watchdog;
 
 /**
- * Starts the application, loading the threads in the order. TODO JMX to reload
- * configuration. TODO JMX to stop the application TODO JMX to reload the
- * configuration. TODO jmx to lock a user (continue but no more activations)
- * TODO jmx to lock a tape TODO jmx to lock a file TODO jmx to lock a user
- * completely (cancel all related queues)
+ * Starts the application, loading the threads in the order.
+ * <p>
+ * TODO v2.0 JMX to reload configuration.
+ * <p>
+ * TODO v2.0 JMX to stop the application
+ * <p>
+ * TODO v2.0 JMX to reload the configuration.
+ * <p>
+ * TODO v2.0 jmx to lock a user (continue but no more activations)
+ * <p>
+ * TODO v2.0 jmx to lock a tape
+ * <p>
+ * TODO v2.0 jmx to lock a file
+ * <p>
+ * TODO v2.0 jmx to lock a user completely (cancel all related queues)
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -217,8 +227,6 @@ public final class Starter {
     public void process(final String[] arguments) throws Exception {
         LOGGER.trace("> process");
 
-        // TODO check that there are not two appl instances running.
-
         assert arguments != null;
 
         LOGGER.info("Starting Server");
@@ -309,7 +317,7 @@ public final class Starter {
     void toStart() throws TReqSException {
         LOGGER.trace("> toStart");
 
-        // TODO Check the PID of a same process to prevent two TReqS.
+        // TODO v1.5 Check the PID of a same process to prevent two TReqS.
 
         // Initialize the database if necessary.
         AbstractDAOFactory.getDAOFactoryInstance().initialize();

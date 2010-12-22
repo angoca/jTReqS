@@ -38,8 +38,7 @@ package fr.in2p3.cc.storage.treqs.model;
 
 /**
  * The strange values are put here to conform to the old statuses. The client
- * still understand the old statuses. TODO v1.0 rename this to RequestStatus or
- * ReadingStatus.
+ * still understand the old statuses.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -55,7 +54,9 @@ public enum RequestStatus {
     FAILED((short) 160),
     /**
      * File could not be processed. There are not enough parameters to process
-     * the requests. TODO revisar si se usa, ya que hay columnas not null.
+     * the requests.
+     * <p>
+     * TODO v1.5 revisar si se usa, ya que hay columnas not null.
      */
     INVALID((short) 180),
     /**

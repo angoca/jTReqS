@@ -192,7 +192,6 @@ public final class UsersController extends AbstractController {
 
         User user = new User(userName);
         super.add(userName, user);
-        // TODO AngocA Later use the uid, group and gid will.
 
         LOGGER.trace("< create");
 

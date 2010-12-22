@@ -68,9 +68,6 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * <p>
  * It is recommended to have a configuration with the maxStager as multiple of
  * the maxStagersPerQueue.
- * <p>
- * TODO Asegurarse que una queue activated que tenia una created va a ser la
- * próxima en ser activada (para no desmontar la cinta del drive)
  *
  * @author Jonathan Schaeffer
  * @since 1.0

@@ -85,8 +85,9 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <li>The second parameter is the name of the file to stage.</li>
  * <li>The name of the script should be 'hsmStageFile.sh'</li>
  * </ul>
- * The stage script does not have output, it could be anything. TODO process the
- * output.
+ * The stage script does not have output, it could be anything.
+ * <p>
+ * TODO v2.0 process the output.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -205,6 +206,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String)
@@ -344,6 +346,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(fr.in2p3.cc.storage
      * .treqs.model.File)
@@ -367,7 +370,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         try {
             // Wait for the process.
-            // TODO in a parallel thread check if the thread is not hung.
+            // TODO v2.0 in a parallel thread check if the thread is not hung.
             process.waitFor();
         } catch (InterruptedException e) {
             throw new HSMStatException(e);
@@ -414,8 +417,9 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Prints a output stream (error or standard). TODO analyze this output if
-     * there is a problem in the HSM.
+     * Prints a output stream (error or standard).
+     * <p>
+     * TODO analyze this output if there is a problem in the HSM.
      *
      * @param inputStream
      *            Script output.

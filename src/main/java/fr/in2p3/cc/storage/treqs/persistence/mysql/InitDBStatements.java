@@ -271,8 +271,9 @@ final class InitDBStatements {
 
     /**
      * Structure of the table queues. The columns were sorted in order to have
-     * the primary key at first, followed by the more volatile columns. TODO
-     * validate the precision of the DB columns with Java types.
+     * the primary key at first, followed by the more volatile columns.
+     * <p>
+     * TODO v1.5 validate the precision of the DB columns with Java types.
      */
     static final String STRUCTURE_TABLE_QUEUES = "(" + QUEUES_ID
             + " int not null auto_increment, " + QUEUES_NAME
@@ -291,8 +292,9 @@ final class InitDBStatements {
 
     /**
      * Structure of the table requests. The columns were sorted in order to have
-     * the primary at first, followed by the more volatile columns. TODO
-     * validate the precision of the DB columns with Java types.
+     * the primary at first, followed by the more volatile columns.
+     * <p>
+     * TODO v1.5 validate the precision of the DB columns with Java types.
      */
     static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
             + " int not null auto_increment, " + REQUESTS_FILE

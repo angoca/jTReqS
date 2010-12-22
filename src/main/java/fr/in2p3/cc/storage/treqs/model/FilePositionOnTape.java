@@ -186,7 +186,9 @@ public final class FilePositionOnTape {
     /**
      * Getter for tape member. The information retrieved could eventually be
      * outdated. It's a good practice to call this method after a
-     * isMetadataOutdated. TODO check it the metadata is verified before.
+     * isMetadataOutdated.
+     * <p>
+     * TODO check it the metadata is verified before.
      *
      * @return Tape where the file is stored.
      */
@@ -305,6 +307,7 @@ public final class FilePositionOnTape {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override

@@ -169,7 +169,7 @@ public final class MediaTypesController extends AbstractController {
      * <p>
      * In version 1.0, this was done by a query using the 'like' operator.
      * <p>
-     * TODO This should be an external component, such as the ACSLS. Or
+     * TODO v2.0 This should be an external component, such as the ACSLS. Or
      * something with regular expressions.
      *
      * @param storageName

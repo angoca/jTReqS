@@ -81,7 +81,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * all, but this kind of problems appear when there is a problem with the
  * database, so the application has to be restarted.
  * <p>
- * TODO this class has to use threads. La implementación sería así. Se leen
+ * TODO v2.0 this class has to use threads. La implementación sería así. Se leen
  * todos los nuevos objetos de la base de datos y se ponen en una lista. Los
  * objetos se deben pedir ordenados por propietario. Después se toman los datos
  * de un propietario y se pasan a una segunda lista, y así hasta desocupa. Cada
@@ -314,8 +314,6 @@ public final class Dispatcher extends
         List<PersistenceHelperFileRequest> listRequests = null;
 
         LOGGER.info("Looking for new requests");
-        // TODO This should be done several times till there are not more
-        // requests in the database.
         try {
             listRequests = AbstractDAOFactory.getDAOFactoryInstance()
                     .getReadingDAO().getNewRequests(this.getMaxRequests());
@@ -415,8 +413,8 @@ public final class Dispatcher extends
     /**
      * Processes the new requests and then put them in queues.
      * <p>
-     * TODO This should be multithreaded in order to ask several file properties
-     * to the server simultaneously.
+     * TODO v2.0 This should be multithreaded in order to ask several file
+     * properties to the server simultaneously.
      *
      * @param newRequests
      *            Map of new requests.

@@ -162,7 +162,6 @@ public final class QueuesController {
         LOGGER.trace("< create QueuesController");
     }
 
-    // TODO (jschaeff) Also use a retry number to register to a queue
     /**
      * Adds a file in the correct queue. Based on the tape referenced by the
      * fpot, the correct queue is found. Based on the file's position, insert
@@ -239,10 +238,10 @@ public final class QueuesController {
             // Or there is one in activated state, but the head position is
             // after the file position.
             queue = this.create(fpot, retry);
-            // TODO create a special flag in the queue, indicating that there is
-            // an activated queue for the same tape, so this new queue has to be
-            // activated once the other has finished. This prevents to unmount
-            // an already mounted tape.
+            // TODO v1.5 create a special flag in the queue, indicating that
+            // there is an activated queue for the same tape, so this new queue
+            // has to be activated once the other has finished. This prevents to
+            // unmount an already mounted tape.
         }
 
         LOGGER.trace("< addFilePositionOnTape");

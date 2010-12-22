@@ -45,8 +45,8 @@ import org.slf4j.LoggerFactory;
  * This object does not take in account if the file is modified and its size is
  * changed, or if the file is renamed.
  * <p>
- * TODO Take the id (ns_object) of the file instead of the name, because the
- * file could be renamed.
+ * TODO v2.0 Take the id (ns_object) of the file instead of the name, because
+ * the file could be renamed.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -128,6 +128,7 @@ public final class File {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override

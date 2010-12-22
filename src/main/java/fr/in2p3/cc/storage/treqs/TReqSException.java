@@ -40,9 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Basic exception. All other are derived from this class. TODO create specific
- * exceptions with punctual messages instead of passing the message as
- * parameter.
+ * Basic exception. All other are derived from this class.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

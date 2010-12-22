@@ -320,8 +320,8 @@ public final class MySQLStatements {
 
     /**
      * SQL statement to retrieve the new requests registered in the database.
-     * TODO This query should add this condition "AND retries < MAX_RETRIES" or
-     * "AND retries != -1"
+     * TODO v1.5 This query should add this condition
+     * "AND retries < MAX_RETRIES" or "AND retries != -1"
      * <p>
      * Requests 1.
      */
@@ -333,10 +333,11 @@ public final class MySQLStatements {
 
     /**
      * SQL statement to update the unprocessed requests of a previous execution.
-     * It changes all the requests to created. TODO this could be changed:
-     * compare the date of the metadata, if its still valid then process the
-     * request directly to a queue. This could reduces the getAttr after a
-     * crash.
+     * It changes all the requests to created.
+     * <p>
+     * TODO v2.0 this could be changed: compare the date of the metadata, if it
+     * is still valid then process the request directly to a queue. This could
+     * reduces the getAttr after a crash.
      * <p>
      * Requests 0.
      */

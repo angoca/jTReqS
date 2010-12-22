@@ -88,7 +88,8 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * It can not be any queue in <i>temporarily suspended state</i>; when an
  * <i>activated</i> queue is suspended, and if exists a <i>created</i> queue for
  * the same tape, then the two queues will be merged in the <i>temporarily
- * suspended</i> one TODO verificar si se hace esto.<br>
+ * suspended</i> one <br>
+ * TODO v1.5 verificar si se hace esto.<br>
  * Also it could be many queues in <i>ended state</i> for the same queue; that
  * means that the tape has been already used before, but in a long lapse of
  * time. However, when a queue passes to ended state, it is be deleted from the
@@ -113,11 +114,13 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * before suspension. At the moment of the suspension, if there was a
  * <i>created</i> queue, the files from the created one will be inserted in the
  * <i>temporarily suspended</i> and the <i>created</i> one will be passed as
- * <i>ended</i>. TODO verificar si es verdad.<br>
+ * <i>ended</i>. <br>
+ * TODO v1.5 verificar si es verdad.<br>
  * The head position is 0, because a tape is rewound when not used after a few
- * seconds. It means, that this queue will received new files. TODO poner un
- * método sincronizado para asegurar que cuando se está desocupando una cola
- * (merging), no se van a adicionar nuevos requests por otro lado .<br>
+ * seconds. It means, that this queue will received new files. <br>
+ * TODO v1.5 poner un método sincronizado para asegurar que cuando se está
+ * desocupando una cola (merging), no se van a adicionar nuevos requests por
+ * otro lado .<br>
  * There cannot be any queue in <i>created state</i> nor in <i>activated
  * stated.</i><br>
  * However, there could be many queues in <i>ended state</i> meaning that the
@@ -144,8 +147,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * current head's position. If the file is currently located before the head's
  * position, another queue in <i>created</i> state for the same tape will be
  * created (if necessary). Then, it is responsibility of the Dispatcher to
- * select immediately that new queue after the current activated one. TODO hacer
- * que se active despues de terminada esta queue</li>
+ * select immediately that new queue after the current activated one.</li>
  * <li><b>To a ended queue</b>. A file cannot be added once the queue is done.</li>
  * </ul>
  * <p>
@@ -471,7 +473,9 @@ public final class Queue implements Comparable<Queue> {
     /**
      * Change the state to activated and change the activation time. This is the
      * time when the queue was activated, then its files went sent to the HSM
-     * for staging. TODO change to private
+     * for staging.
+     * <p>
+     * TODO v1.5 change to private
      *
      * @throws TReqSException
      *             If there is a problem changing the states.
@@ -1159,8 +1163,8 @@ public final class Queue implements Comparable<Queue> {
 
         assert newQueueStatus != null;
 
-        // Verification. TODO AngocA Later To change when merge will be
-        // available. More tests.
+        // Verification.
+        // TODO v1.5 To change when merge will be available. More tests.
 
         if (this.numberSuspensions >= this.maxSuspendRetries) {
             throw new MaximalSuspensionTriesException();
@@ -1274,7 +1278,7 @@ public final class Queue implements Comparable<Queue> {
      * queue is ended. Sets the status to TEMPORARILY_SUSPENDED, and writes this
      * new status through DAO. The Activator will ignore such queues and
      * reschedule them when the suspension duration is over (suspension time is
-     * up.) TODO Merge with the created one if existing.
+     * up.) TODO v1.5 Merge with the created one if existing.
      *
      * @throws TReqSException
      *             If there is a problem changing the state or the time.
@@ -1346,7 +1350,9 @@ public final class Queue implements Comparable<Queue> {
 
     /**
      * Remove the suspended status from the queue. Puts the queue in CREATED
-     * state. TODO reactivar la queue desde el activator.
+     * state.
+     * <p>
+     * TODO v1.5 reactivar la queue desde el activator.
      *
      * @throws TReqSException
      *             If the queue has been suspended too many times.

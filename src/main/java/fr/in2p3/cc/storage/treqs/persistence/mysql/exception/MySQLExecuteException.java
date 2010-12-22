@@ -42,7 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exception while executing a query. TODO To make it abstract
+ * Exception while executing a query.
+ * <p>
+ * TODO v1.5 To make it abstract
  *
  * @author Andrés Gómez
  * @since 1.5

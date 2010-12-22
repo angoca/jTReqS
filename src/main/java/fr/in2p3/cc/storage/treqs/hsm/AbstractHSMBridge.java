@@ -87,15 +87,6 @@ public abstract class AbstractHSMBridge {
         return keytabPath;
     }
 
-    /*
-     * Find out if the tape is locked or unlocked. TODO Version 2 This feature
-     * has not been implemented. Ask HPSS database (DB2) for the status of a
-     * tape or with an external module.
-     * @param t the tape name
-     * @return the tape status
-     */
-    // TapeStatus getTapeProperties(string t);
-
     /**
      * Setter for the keytab path.
      *
