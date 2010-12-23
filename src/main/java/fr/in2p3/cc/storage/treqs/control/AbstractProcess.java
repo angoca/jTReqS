@@ -100,15 +100,18 @@ public abstract class AbstractProcess extends Thread {
     /**
      * Begins to finish the process.
      * <p>
-     * It does not check the current status, because it is not thread safe.
+     * The process should be in starting or started status.
      */
     public final void conclude() {
         LOGGER.trace("> conclude");
 
-        if (this.getProcessStatus() == ProcessStatus.CREATED) {
+        assert this.getProcessStatus() == ProcessStatus.STARTING
+                || this.getProcessStatus() == ProcessStatus.STARTED;
+
+        // The process cannot be in created status, because this state is
+        // assigned when the object is being created.
+        if (this.getProcessStatus() == ProcessStatus.STARTING) {
             this.setStatus(ProcessStatus.STOPPED);
-        } else if (this.getProcessStatus() == ProcessStatus.STARTING) {
-            this.setStatus(ProcessStatus.STOPPING);
         } else if (this.getProcessStatus() == ProcessStatus.STARTED) {
             this.setStatus(ProcessStatus.STOPPING);
             // } else {
@@ -132,13 +135,16 @@ public abstract class AbstractProcess extends Thread {
     /**
      * Tests if the process can continue.
      * <p>
-     * It does not check the current status, because it is not thread safe.
+     * The process status should be started or stopping.
      *
      * @return true if the process is in a state that permits it to continue.
      *         False, if the process has to stop.
      */
     protected final boolean keepOn() {
         LOGGER.trace("> keepOn");
+
+        assert this.getProcessStatus() == ProcessStatus.STARTED
+                || this.getProcessStatus() == ProcessStatus.STOPPING;
 
         boolean ret = false;
         if (this.getProcessStatus() == ProcessStatus.STARTED) {
@@ -153,6 +159,8 @@ public abstract class AbstractProcess extends Thread {
     /**
      * Change the status of the process to starting. It means that the process
      * is ready to start.
+     * <p>
+     * The process should be in created state.
      */
     protected final void kickStart() {
         LOGGER.trace("> kickStart");
@@ -167,19 +175,22 @@ public abstract class AbstractProcess extends Thread {
     /**
      * This execute the same of run+toStart but just once, not in an infinite
      * loop.
+     * <p>
+     * The process should be in starting state only.
      */
     public abstract void oneLoop();
 
     /**
      * This method will be called by the start method, but the process has to be
      * in created state of starting state.
+     * <p>
+     * The process should be in starting status only.
      */
     @Override
     public final void run() {
         LOGGER.trace("> run");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTING
-                || this.getProcessStatus() == ProcessStatus.CREATED;
+        assert this.getProcessStatus() == ProcessStatus.STARTING;
 
         this.setStatus(ProcessStatus.STARTED);
 
@@ -211,12 +222,21 @@ public abstract class AbstractProcess extends Thread {
 
         synchronized (this.status) {
             ProcessStatus currentStatus = this.getProcessStatus();
-            if ((currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTING)
-                    || (currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTED)
+            if (
+            // For kickstart.
+            (currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTING)
+                    // For oneLoop or run
                     || (currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STARTED)
+                    // For conclude
                     || (currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPING)
-                    || (currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STOPPED)
-                    || (currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPED)) {
+                    // For run
+                    || (currentStatus == ProcessStatus.STOPPING && processStatus == ProcessStatus.STOPPED)
+                    // For oneLoop
+                    || (currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPED)
+                    // For conclude
+                    || (currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STOPPED)
+                    // For restart
+                    || (currentStatus == ProcessStatus.STOPPED && processStatus == ProcessStatus.STARTING)) {
                 this.status = processStatus;
             } else {
                 LOGGER.error("Invalid transition to change the process "
@@ -238,6 +258,8 @@ public abstract class AbstractProcess extends Thread {
     /**
      * When the process are finishing, this method waits the threads to change
      * to STOPPED status.
+     * <p>
+     * The process should be in stopping or stopped status.
      */
     public final void waitToFinish() {
         LOGGER.trace("> waitToFinish");

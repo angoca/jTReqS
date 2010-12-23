@@ -397,6 +397,8 @@ public final class Dispatcher extends
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
+        assert this.getProcessStatus() == ProcessStatus.STARTING;
+
         this.setStatus(ProcessStatus.STARTED);
 
         try {
@@ -622,11 +624,17 @@ public final class Dispatcher extends
 
     /**
      * This method is just for tests, because it reinitializes the dispatcher.
+     * <p>
+     * The process should be in stopped status.
      */
     public void restart() {
-        LOGGER.trace(">< restart");
+        LOGGER.trace("> restart");
+
+        assert this.getProcessStatus() == ProcessStatus.STOPPED;
 
         super.setStatus(ProcessStatus.STARTING);
+
+        LOGGER.trace("< restart");
     }
 
     /**
@@ -780,6 +788,7 @@ public final class Dispatcher extends
                 LOGGER.error("Stopping", t);
             } catch (ProblematicConfiguationFileException e) {
                 LOGGER.error("Error", e);
+                System.exit(Constants.DISPATCHER_PROBLEM);
             }
         }
 

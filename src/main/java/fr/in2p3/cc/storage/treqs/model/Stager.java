@@ -130,7 +130,9 @@ public final class Stager extends AbstractProcess {
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
-        // The stager is already in started state thanks to the kickstart.
+        assert this.getProcessStatus() == ProcessStatus.STARTING;
+
+        this.setStatus(ProcessStatus.STARTED);
 
         this.action();
 

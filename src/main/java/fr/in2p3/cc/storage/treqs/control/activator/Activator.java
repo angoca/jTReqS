@@ -210,8 +210,9 @@ public final class Activator extends
         LOGGER.info("Still {} active stagers.", this.activeStagers);
 
         // If necessary, refresh the resources allocations
-        if (this.allocations.size() == 0
-                || this.allocations.get(0).getAge() > this.getMetadataTimeout()) {
+        if (this.keepOn()
+                && (this.allocations.size() == 0 || this.allocations.get(0)
+                        .getAge() > this.getMetadataTimeout())) {
             try {
                 this.refreshAllocations();
             } catch (TReqSException e) {
@@ -374,12 +375,16 @@ public final class Activator extends
         return this.millisBetweenStagers;
     }
 
-    /**
-     * Makes the process of the activator.
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#oneLoop()
      */
     @Override
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
+
+        assert this.getProcessStatus() == ProcessStatus.STARTING;
 
         this.setStatus(ProcessStatus.STARTED);
 
@@ -501,9 +506,13 @@ public final class Activator extends
 
     /**
      * This method is just for tests, because it reinitializes the activator.
+     * <p>
+     * The process should be in stopped status.
      */
     public void restart() {
         LOGGER.trace("> restart");
+
+        assert this.getProcessStatus() == ProcessStatus.STOPPED;
 
         super.setStatus(ProcessStatus.STARTING);
 
@@ -638,6 +647,7 @@ public final class Activator extends
                 LOGGER.error("Stopping", t);
             } catch (ProblematicConfiguationFileException e) {
                 LOGGER.error("Error", e);
+                System.exit(Constants.ACTIVATOR_PROBLEM);
             }
         }
 
