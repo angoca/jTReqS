@@ -199,6 +199,14 @@ public final class Constants {
      * Interval for the watchdog.
      */
     public static final String WATCHDOG_INTERVAL = "WATCHDOG_INTERVAL";
+    /**
+     * There was a problem with the dispatcher.
+     */
+    public static final int DISPATCHER_PROBLEM = -1;
+    /**
+     * There was a problem with the activator.
+     */
+    public static final int ACTIVATOR_PROBLEM = -2;
 
     /**
      * Invisible constructor.
