@@ -326,7 +326,7 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> Creating queue with tape and a request");
 
         assert fpot != null;
-        assert retries > 0;
+        assert retries >= 0;
 
         this.byteSize = 0;
         this.readingList = new TreeMap<Short, Reading>();
