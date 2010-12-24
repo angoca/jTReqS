@@ -48,7 +48,8 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 /**
  * Controller for media types.
  * <p>
- * The key is the name of the media type.
+ * The key is the name of the media type in the controller, however the id is
+ * the primary key in the data source.
  *
  * @author Andres Gomez
  * @since 1.5
