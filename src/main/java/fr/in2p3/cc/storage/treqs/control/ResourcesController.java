@@ -52,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAll
 
 /**
  * Processes all the interactions related to resources.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5
  */
@@ -70,7 +70,7 @@ public final class ResourcesController {
 
     /**
      * Access the singleton instance.
-     *
+     * 
      * @return Unique instance of this class.
      */
     public static ResourcesController getInstance() {
@@ -100,43 +100,59 @@ public final class ResourcesController {
      * Creates the unique instance of this object.
      */
     private ResourcesController() {
-        // Nothing.
+        LOGGER.trace(">< create instance");
     }
 
     /**
      * Returns the list of media allocations defined in the database.
-     *
+     * 
      * @return The list of resources.
      * @throws TReqSException
      *             If there is a problem retrieving the media allocations.
      */
     public List<Resource> getMediaAllocations() throws TReqSException {
+        LOGGER.trace("> getMediaAllocations");
+
         this.resources = AbstractDAOFactory.getDAOFactoryInstance()
                 .getConfigurationDAO().getMediaAllocations();
+
+        LOGGER.trace("< getMediaAllocations");
+
         return this.resources;
     }
 
     /**
      * Returns the drive reservation per user.
-     *
+     * 
      * @return Map that contains the reservation of drives per user.
      * @throws TReqSException
      *             If there is a problem acceding the data source.
      */
     public MultiMap getResourceAllocation() throws TReqSException {
+        LOGGER.trace("> getResourceAllocation");
+
         this.share = AbstractDAOFactory.getDAOFactoryInstance()
                 .getConfigurationDAO().getResourceAllocation();
+
+        assert this.share != null;
+
+        LOGGER.trace("< getResourceAllocation");
+
         return this.share;
     }
 
     /**
      * Tests if the given user is defined in the list.
-     *
+     * 
      * @param user
      *            User to search.
      * @return true if the user is defined in the lists. false otherwise.
      */
     protected boolean exist(final User user) {
+        LOGGER.trace("> exist");
+
+        assert user != null;
+
         boolean found = false;
         Iterator<Resource> iter = this.resources.iterator();
         while (iter.hasNext() && !found) {
@@ -162,7 +178,9 @@ public final class ResourcesController {
                 }
             }
         }
+
+        LOGGER.trace("< exist");
+
         return found;
     }
-
 }
