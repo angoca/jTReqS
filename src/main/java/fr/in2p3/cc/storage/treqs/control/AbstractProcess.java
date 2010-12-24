@@ -126,7 +126,7 @@ public abstract class AbstractProcess extends Thread {
      *
      * @return Current state.
      */
-    public final ProcessStatus getProcessStatus() {
+    public final synchronized ProcessStatus getProcessStatus() {
         LOGGER.trace(">< getProcessStatus");
 
         return this.status;
@@ -238,6 +238,10 @@ public abstract class AbstractProcess extends Thread {
                     // For restart
                     || (currentStatus == ProcessStatus.STOPPED && processStatus == ProcessStatus.STARTING)) {
                 this.status = processStatus;
+            } else if (currentStatus == ProcessStatus.STOPPING
+                    && processStatus == ProcessStatus.STOPPING) {
+                // Concurrent access.
+                LOGGER.info("Concrrent change to same state");
             } else {
                 LOGGER.error("Invalid transition to change the process "
                         + "status from {} to {}", currentStatus.name(),
