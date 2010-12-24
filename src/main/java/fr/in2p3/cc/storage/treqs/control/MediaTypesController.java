@@ -178,12 +178,13 @@ public final class MediaTypesController extends AbstractController {
      *            Storage name that will be queried.
      * @return Returns the related media type that accords with the storage
      *         name.
-     * @throws NotMediaTypeDefinedException
-     *             If the media type cannot be retrieved.
+     * @throws TReqSException
+     *             If there is a problem retrieving the media types or if there
+     *             are not a corresponding media type.
      * @since 1.5
      */
     public MediaType getMediaType(final String storageName)
-            throws NotMediaTypeDefinedException {
+            throws TReqSException {
         LOGGER.trace("> getMediaType");
 
         assert storageName != null && !storageName.equals("");
