@@ -106,7 +106,8 @@ public abstract class AbstractProcess extends Thread {
         LOGGER.trace("> conclude");
 
         assert this.getProcessStatus() == ProcessStatus.STARTING
-                || this.getProcessStatus() == ProcessStatus.STARTED;
+                || this.getProcessStatus() == ProcessStatus.STARTED : this
+                .getProcessStatus();
 
         // The process cannot be in created status, because this state is
         // assigned when the object is being created.
@@ -190,13 +191,18 @@ public abstract class AbstractProcess extends Thread {
     public final void run() {
         LOGGER.trace("> run");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTING;
+        // The process was created or stopped because of a general failure.
+        assert this.getProcessStatus() == ProcessStatus.STARTING
+                || this.getProcessStatus() == ProcessStatus.STOPPED : this
+                .getProcessStatus();
 
-        this.setStatus(ProcessStatus.STARTED);
+        if (this.getProcessStatus() == ProcessStatus.STARTING) {
+            this.setStatus(ProcessStatus.STARTED);
 
-        this.toStart();
+            this.toStart();
 
-        this.setStatus(ProcessStatus.STOPPED);
+            this.setStatus(ProcessStatus.STOPPED);
+        }
 
         LOGGER.trace("< run");
     }
@@ -269,7 +275,8 @@ public abstract class AbstractProcess extends Thread {
         LOGGER.trace("> waitToFinish");
 
         assert this.getProcessStatus() == ProcessStatus.STOPPING
-                || this.getProcessStatus() == ProcessStatus.STOPPED;
+                || this.getProcessStatus() == ProcessStatus.STOPPED : this
+                .getProcessStatus();
 
         while (this.getProcessStatus() != ProcessStatus.STOPPED) {
             int wait = Constants.MILLISECONDS;
