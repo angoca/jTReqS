@@ -400,7 +400,7 @@ public final class QueuesController {
         LOGGER.trace("> create");
 
         assert fpot != null;
-        assert retries < 0;
+        assert retries >= 0;
 
         Queue retQueue = this.exists(fpot.getTape().getName(),
                 QueueStatus.CREATED);
