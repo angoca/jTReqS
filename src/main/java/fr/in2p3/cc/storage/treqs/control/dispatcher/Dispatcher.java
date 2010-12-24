@@ -53,6 +53,7 @@ import fr.in2p3.cc.storage.treqs.control.FilesController;
 import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
 import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.ResourcesController;
 import fr.in2p3.cc.storage.treqs.control.TapesController;
 import fr.in2p3.cc.storage.treqs.control.UsersController;
 import fr.in2p3.cc.storage.treqs.control.starter.Starter;
@@ -767,6 +768,9 @@ public final class Dispatcher extends
         LOGGER.trace("> toStart");
 
         try {
+            // This permits to know the drives.
+            ResourcesController.getInstance().getMediaAllocations();
+
             while (this.keepOn()) {
 
                 this.action();
