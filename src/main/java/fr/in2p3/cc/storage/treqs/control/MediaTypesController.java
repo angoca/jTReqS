@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.exception.NotMediaTypeDefinedException;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 
 /**
@@ -176,21 +177,30 @@ public final class MediaTypesController extends AbstractController {
      *            Storage name that will be queried.
      * @return Returns the related media type that accords with the storage
      *         name.
+     * @throws NotMediaTypeDefinedException
+     *             If the media type cannot be retrieved.
      * @since 1.5
      */
-    public MediaType getMediaType(final String storageName) {
+    public MediaType getMediaType(final String storageName)
+            throws NotMediaTypeDefinedException {
         LOGGER.trace("> getMediaType");
 
         assert storageName != null && !storageName.equals("");
 
         MediaType ret = null;
-        if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
-            ret = (MediaType) this.objectMap.get("T10K-A");
-        } else if (storageName.startsWith("JT")) {
-            ret = (MediaType) this.objectMap.get("T10K-B");
-        } else {
-            LOGGER.error("Unknown media type");
-            assert false;
+        synchronized (this.objectMap) {
+            if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
+                ret = (MediaType) this.objectMap.get("T10K-A");
+            } else if (storageName.startsWith("JT")) {
+                ret = (MediaType) this.objectMap.get("T10K-B");
+            } else {
+                LOGGER.error("Unknown media type");
+                assert false;
+            }
+        }
+
+        if (ret == null) {
+            throw new NotMediaTypeDefinedException();
         }
 
         assert ret != null;
