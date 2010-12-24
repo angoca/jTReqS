@@ -50,6 +50,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStatusTransitionException;
+import fr.in2p3.cc.storage.treqs.model.exception.StagerException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
@@ -275,16 +276,17 @@ public final class Reading {
                 // We report this problem to the caller.
                 throw e;
             } else if (e instanceof HSMOpenException) {
-                logsException("Error opening. Retrying " + filename, e,
+                this.logsException("Error opening. Retrying " + filename, e,
                         RequestStatus.CREATED);
             } else if (e instanceof HSMStageException) {
-                logsException("Error staging. Retrying " + filename, e,
+                this.logsException("Error staging. Retrying " + filename, e,
                         RequestStatus.CREATED);
             }
         } catch (Exception e) {
             String mess = "Unexpected error while staging " + filename + ":"
                     + e.getMessage();
-            logsException(mess, e, RequestStatus.FAILED);
+            this.logsException(mess, e, RequestStatus.FAILED);
+            throw new StagerException(e);
         }
 
         LOGGER.trace("< realStage");
