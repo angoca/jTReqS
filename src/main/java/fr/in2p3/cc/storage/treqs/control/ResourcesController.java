@@ -52,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAll
 
 /**
  * Processes all the interactions related to resources.
- * 
+ *
  * @author Andres Gomez
  * @since 1.5
  */
@@ -70,7 +70,7 @@ public final class ResourcesController {
 
     /**
      * Access the singleton instance.
-     * 
+     *
      * @return Unique instance of this class.
      */
     public static ResourcesController getInstance() {
@@ -105,12 +105,13 @@ public final class ResourcesController {
 
     /**
      * Returns the list of media allocations defined in the database.
-     * 
+     *
      * @return The list of resources.
      * @throws TReqSException
      *             If there is a problem retrieving the media allocations.
      */
-    public List<Resource> getMediaAllocations() throws TReqSException {
+    public synchronized List<Resource> getMediaAllocations()
+            throws TReqSException {
         LOGGER.trace("> getMediaAllocations");
 
         this.resources = AbstractDAOFactory.getDAOFactoryInstance()
@@ -123,7 +124,7 @@ public final class ResourcesController {
 
     /**
      * Returns the drive reservation per user.
-     * 
+     *
      * @return Map that contains the reservation of drives per user.
      * @throws TReqSException
      *             If there is a problem acceding the data source.
@@ -143,7 +144,7 @@ public final class ResourcesController {
 
     /**
      * Tests if the given user is defined in the list.
-     * 
+     *
      * @param user
      *            User to search.
      * @return true if the user is defined in the lists. false otherwise.
