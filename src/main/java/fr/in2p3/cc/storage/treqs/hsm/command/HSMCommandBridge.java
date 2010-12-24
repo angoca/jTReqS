@@ -237,10 +237,10 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         final BufferedReader bfStreamError = new BufferedReader(readerError);
 
         String current = null;
-        current = processOutput(bfStreamError);
-        LOGGER.debug(current);
-        current = processOutput(bfStreamOut);
-        LOGGER.debug(current);
+        current = processOutput(bfStreamError, true);
+        LOGGER.debug("Error: {}", current);
+        current = processOutput(bfStreamOut, false);
+        LOGGER.debug("Output: {}", current);
         HSMHelperFileProperties ret = null;
         if (current != null) {
             // AbstractProcess the output.
@@ -261,12 +261,14 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      *
      * @param bfStream
      *            Buffer where is the stream.
-     * @return The processed output.
+     * @param error
+     *            If the output is error or not.
+     * @return The processed output. It could be null.
      * @throws HSMStatException
      *             If there is a problem processing the output.
      */
-    private String processOutput(final BufferedReader bfStream)
-            throws HSMStatException {
+    private String processOutput(final BufferedReader bfStream,
+            final boolean error) throws HSMStatException {
         LOGGER.trace("> processOutput");
 
         assert bfStream != null;
@@ -275,14 +277,14 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         try {
             // Process the error output.
             current = bfStream.readLine();
-            if (current != null) {
+            if (error && current != null) {
                 throw new HSMStatException(current);
+            } else if (!error && current == null) {
+                throw new HSMStatException();
             }
         } catch (IOException e) {
             throw new HSMStatException(e);
         }
-
-        assert current != null;
 
         LOGGER.trace("< processOutput");
 
