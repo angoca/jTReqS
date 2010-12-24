@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
  * @author Andrés Gómez
  * @since 1.5
  */
-class CannotReadKeytabException extends AbstractHSMInitException {
+final class CannotReadKeytabException extends AbstractHSMInitException {
     /**
      * Logger.
      */

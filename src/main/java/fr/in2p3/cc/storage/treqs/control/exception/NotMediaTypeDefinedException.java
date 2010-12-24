@@ -12,7 +12,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class NotMediaTypeDefinedException extends TReqSException {
+public final class NotMediaTypeDefinedException extends TReqSException {
 
 	/**
 	 * Logger.

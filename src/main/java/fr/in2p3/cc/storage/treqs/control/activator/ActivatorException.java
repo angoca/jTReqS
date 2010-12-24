@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * @author Andrés Gómez
  * @since 1.5
  */
-public class ActivatorException extends TReqSException {
+public final class ActivatorException extends TReqSException {
 
     /**
      * Generated ID.
