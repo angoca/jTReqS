@@ -338,6 +338,7 @@ public final class Queue implements Comparable<Queue> {
         // Then, it will be calculated.
         this.owner = null;
 
+        this.status = QueueStatus.CREATED;
         this.setCreationTime(new GregorianCalendar());
         this.endTime = null;
         this.activationTime = null;
@@ -981,8 +982,9 @@ public final class Queue implements Comparable<Queue> {
 
         LOGGER.info(
                 "Queue {} - {} now contains {} elements and is owned by {}",
-                new Object[] { this.getTape().getName(), this.status.name(),
-                        this.readingList.size(), this.getOwner().getName() });
+                new Object[] { this.getTape().getName(),
+                        this.getStatus().name(), this.readingList.size(),
+                        this.getOwner().getName() });
         // Inserts file in any position, because the queue is in CREATED
         // state.
         if (this.getStatus() == QueueStatus.CREATED) {
@@ -1070,8 +1072,8 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> setCreationTime");
 
         assert time != null;
-        assert this.status == QueueStatus.CREATED;
-        assert this.activationTime == null;
+        assert this.getStatus() == QueueStatus.CREATED : this.getStatus();
+        assert this.activationTime == null : this.toString();
         assert this.suspensionTime == null;
         assert this.endTime == null;
 
@@ -1095,7 +1097,7 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> setEndTime");
 
         assert time != null;
-        assert this.status == QueueStatus.ENDED;
+        assert this.getStatus() == QueueStatus.ENDED : this.getStatus();
         assert this.creationTime != null;
         assert this.activationTime != null;
         assert this.suspensionTime == null;
@@ -1212,7 +1214,7 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> setActivationTime");
 
         assert time != null;
-        assert this.status == QueueStatus.ACTIVATED;
+        assert this.getStatus() == QueueStatus.ACTIVATED : this.getStatus();
         assert this.creationTime != null;
         assert this.suspensionTime == null;
         assert this.endTime == null;
@@ -1259,7 +1261,8 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> setSuspensionTime");
 
         assert time != null;
-        assert this.getStatus() == QueueStatus.TEMPORARILY_SUSPENDED;
+        assert this.getStatus() == QueueStatus.TEMPORARILY_SUSPENDED : this
+                .getStatus();
         assert this.creationTime != null;
         assert this.activationTime != null;
         assert this.endTime == null;
