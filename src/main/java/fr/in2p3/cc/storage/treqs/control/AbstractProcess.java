@@ -202,6 +202,8 @@ public abstract class AbstractProcess extends Thread {
             this.toStart();
 
             this.setStatus(ProcessStatus.STOPPED);
+        } else {
+            LOGGER.info("Process already stopped");
         }
 
         LOGGER.trace("< run");
