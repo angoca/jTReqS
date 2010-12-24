@@ -397,7 +397,8 @@ public final class Dispatcher extends
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTING;
+        assert this.getProcessStatus() == ProcessStatus.STARTING : this
+                .getProcessStatus();
 
         this.setStatus(ProcessStatus.STARTED);
 
@@ -630,7 +631,8 @@ public final class Dispatcher extends
     public void restart() {
         LOGGER.trace("> restart");
 
-        assert this.getProcessStatus() == ProcessStatus.STOPPED;
+        assert this.getProcessStatus() == ProcessStatus.STOPPED : this
+                .getProcessStatus();
 
         super.setStatus(ProcessStatus.STARTING);
 

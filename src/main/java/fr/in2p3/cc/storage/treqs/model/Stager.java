@@ -130,7 +130,8 @@ public final class Stager extends AbstractProcess {
     public void oneLoop() {
         LOGGER.trace("> oneLoop");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTING;
+        assert this.getProcessStatus() == ProcessStatus.STARTING : this
+                .getProcessStatus();
 
         this.setStatus(ProcessStatus.STARTED);
 
