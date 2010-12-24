@@ -36,6 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence.mysql.dao;
 
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -70,6 +71,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
      */
     @Override
@@ -90,6 +92,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#insert(fr.in2p3.cc.storage
      * .treqs.model.Queue)
@@ -105,8 +108,8 @@ public final class MySQLQueueDAO implements QueueDAO {
         final int size = queue.getRequestsSize();
         final byte mediaTypeId = queue.getTape().getMediaType().getId();
         final long byteSize = queue.getByteSize();
-        final long creationTimeMillis = queue.getCreationTime()
-                .getTimeInMillis();
+        final Date creationTime = new Date(queue.getCreationTime()
+                .getTimeInMillis());
 
         int id = 0;
         PreparedStatement statement = MySQLBroker.getInstance()
@@ -126,7 +129,7 @@ public final class MySQLQueueDAO implements QueueDAO {
             // Insert size.
             statement.setLong(index++, byteSize);
             // Insert time.
-            statement.setLong(index++, creationTimeMillis);
+            statement.setDate(index++, creationTime);
 
             statement.execute();
 
@@ -152,6 +155,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateAddRequest(fr.in2p3
      * .cc.storage.treqs.model.Queue)
@@ -202,6 +206,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateState(fr.in2p3.cc.
      * storage.treqs.model.Queue, java.util.Calendar, short, short)
@@ -223,27 +228,27 @@ public final class MySQLQueueDAO implements QueueDAO {
 
         try {
             switch (status) {
-                case ACTIVATED:
-                    statement = MySQLBroker.getInstance().getPreparedStatement(
-                            MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
-                    // Insert activation time
-                    statement.setLong(index++, time.getTimeInMillis());
-                    break;
-                case CREATED:
-                    // This call could be done when the queue is unsuspended.
-                    LOGGER.error("This is an invalid state call.");
-                    assert false;
-                    break;
-                case ENDED:
-                    // This should be ENDED or ABORTED or
-                    // TEMPORARILY_SUSPENDED
-                    statement = MySQLBroker.getInstance().getPreparedStatement(
-                            MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
-                    // Insert end time.
-                    statement.setLong(index++, time.getTimeInMillis());
-                    break;
-                default:
-                    assert false;
+            case ACTIVATED:
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
+                // Insert activation time
+                statement.setDate(index++, new Date(time.getTimeInMillis()));
+                break;
+            case CREATED:
+                // This call could be done when the queue is unsuspended.
+                LOGGER.error("This is an invalid state call.");
+                assert false;
+                break;
+            case ENDED:
+                // This should be ENDED or ABORTED or
+                // TEMPORARILY_SUSPENDED
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
+                // Insert end time.
+                statement.setDate(index++, new Date(time.getTimeInMillis()));
+                break;
+            default:
+                assert false;
             }
         } catch (SQLException e) {
             throw new MySQLExecuteException(e);

@@ -266,7 +266,7 @@ public final class MySQLStatements {
             + QUEUES + "(" + QUEUES_STATUS + ", " + QUEUES_NAME + ", "
             + QUEUES_NB_REQS + ", " + QUEUES_MEDIATYPE_ID + ", " + QUEUES_OWNER
             + ", " + QUEUES_BYTE_SIZE + ", " + QUEUES_CREATION_TIME
-            + ") VALUES (?, ?, ?, ?, ?, ?, FROM_UNIXTIME(?))";
+            + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
 
     /**
      * SQL statement to update a queue, putting the current time as activation
@@ -275,11 +275,11 @@ public final class MySQLStatements {
      * Queues 3.
      */
     public static final String SQL_QUEUES_UPDATE_QUEUE_ACTIVATED = "UPDATE "
-            + QUEUES + " SET " + QUEUES_ACTIVATION_TIME
-            + " = FROM_UNIXTIME(?), " + QUEUES_STATUS + " = ?, "
-            + QUEUES_NB_REQS + " = ?, " + QUEUES_NB_REQS_DONE + " = ?, "
-            + QUEUES_NB_REQS_FAILED + " = ?, " + QUEUES_OWNER + " = ?, "
-            + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID + " = ? ";
+            + QUEUES + " SET " + QUEUES_ACTIVATION_TIME + " = ?, "
+            + QUEUES_STATUS + " = ?, " + QUEUES_NB_REQS + " = ?, "
+            + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
+            + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
+            + QUEUES_ID + " = ? ";
 
     /**
      * SQL statement to update the quantity of requests for a given queue. This
@@ -299,11 +299,11 @@ public final class MySQLStatements {
      * Queues 4.
      */
     public static final String SQL_QUEUES_UPDATE_QUEUE_ENDED = "UPDATE "
-            + QUEUES + " SET " + QUEUES_END_TIME + " = FROM_UNIXTIME(?), "
-            + QUEUES_STATUS + " = ?, " + QUEUES_NB_REQS + " = ?, "
-            + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
-            + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
-            + QUEUES_ID + " = ?";
+            + QUEUES + " SET " + QUEUES_END_TIME + " = ?, " + QUEUES_STATUS
+            + " = ?, " + QUEUES_NB_REQS + " = ?, " + QUEUES_NB_REQS_DONE
+            + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, " + QUEUES_OWNER
+            + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID
+            + " = ?";
 
     /**
      * SQL statement to change the state of the pending queues at startup time.
@@ -357,8 +357,7 @@ public final class MySQLStatements {
     public static final String SQL_REQUESTS_UPDATE_FINAL_REQUEST_ID = "UPDATE "
             + REQUESTS + " SET " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_ERRORCODE + " = ?, " + REQUESTS_MESSAGE + " = ?, "
-            + REQUESTS_END_TIME + " = FROM_UNIXTIME(?) WHERE " + REQUESTS_ID
-            + " = ?";
+            + REQUESTS_END_TIME + " = ? WHERE " + REQUESTS_ID + " = ?";
 
     /**
      * SQL statement to update as processed a request. The file has been staged
@@ -367,7 +366,7 @@ public final class MySQLStatements {
      * Requests 7.
      */
     public static final String SQL_REQUESTS_UPDATE_REQUEST_ENDED = "UPDATE "
-            + REQUESTS + " SET " + REQUESTS_END_TIME + " = FROM_UNIXTIME(?), "
+            + REQUESTS + " SET " + REQUESTS_END_TIME + " = ?, "
             + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE + " = ?, "
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
@@ -381,12 +380,12 @@ public final class MySQLStatements {
      * Requests 4.
      */
     public static final String SQL_REQUESTS_UPDATE_REQUEST_QUEUED = "UPDATE "
-            + REQUESTS + " SET " + REQUESTS_QUEUED_TIME
-            + " = FROM_UNIXTIME(?), " + REQUESTS_QUEUE_ID + " = ?, "
-            + REQUESTS_TAPE + " = ?, " + REQUESTS_POSITION + " = ?, "
-            + REQUESTS_ERRORCODE + " = ?, " + REQUESTS_TRIES + " = ?, "
-            + REQUESTS_STATUS + " = ?, " + REQUESTS_MESSAGE + " = ? WHERE "
-            + REQUESTS_FILE + " = ? AND " + REQUESTS_END_TIME + " IS null";
+            + REQUESTS + " SET " + REQUESTS_QUEUED_TIME + " = ?, "
+            + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE + " = ?, "
+            + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
+            + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
+            + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
+            + REQUESTS_END_TIME + " IS null";
 
     /**
      * SQL statement to update a request that could not have been staged due to
@@ -427,8 +426,8 @@ public final class MySQLStatements {
             + REQUESTS_TAPE + " = ?, " + REQUESTS_POSITION + " = ?, "
             + REQUESTS_LEVEL + " = ?, " + REQUESTS_SIZE + " = ?, "
             + REQUESTS_ERRORCODE + " = 0, " + REQUESTS_SUBMISSION_TIME
-            + " = FROM_UNIXTIME(?) WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + " = ? WHERE " + REQUESTS_FILE + " = ? AND " + REQUESTS_END_TIME
+            + " IS null";
 
     /**
      * SQL statement to retrieve the allocation per user per media type.
