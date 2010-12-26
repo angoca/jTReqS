@@ -90,12 +90,12 @@ public final class JonathanSelector implements Selector {
             // otherwise, it is doomed to infinite loop
             LOGGER.error("There is not Best User. "
                     + "This should never happen - 3.");
-            assert false;
+            assert false : "Not best user";
         } else {
             ret = this.selectBestQueue(queues, resource, bestUser);
         }
 
-        assert ret != null;
+        assert ret != null : "No queue selected";
 
         LOGGER.trace("< selectBestQueue");
 
@@ -150,7 +150,7 @@ public final class JonathanSelector implements Selector {
             LOGGER.info("No queue could be selected");
         }
 
-        assert ret != null;
+        assert ret != null : "No best queue";
 
         LOGGER.trace("< selectBestQueue");
 
@@ -165,24 +165,25 @@ public final class JonathanSelector implements Selector {
      * @param user
      *            User that owns the queue.
      * @param currentlySelected
-     *            Queue currently selected.
+     *            Queue currently selected. The first time is null.
      * @param tapename
      *            Name of the analyzed queue.
      * @param queue
      *            Currently analyzed queue.
      * @return Selected queue or null if the queue does not correspond to the
      *         criteria.
+     *         <p>
+     *         TODO Now, I think that there should be always a not null return.
      * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
-    private Queue/* ? */checkQueue(final Resource resource, final User user,
-            final Queue currentlySelected, final String tapename,
+    private Queue/* ! */checkQueue(final Resource resource, final User user,
+            final Queue currentlySelected/* ? */, final String tapename,
             final Queue queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null;
         assert user != null;
-        assert currentlySelected != null;
         assert tapename != null && !tapename.equals(null);
         assert queue != null;
 
@@ -190,29 +191,73 @@ public final class JonathanSelector implements Selector {
 
         // The queue belong to this user, it concerns the given resource
         // and it is in created state.
-        if (queue.getOwner().equals(user)
-                && (queue.getTape().getMediaType().equals(resource
-                        .getMediaType()))
-                && queue.getStatus() == QueueStatus.CREATED) {
-            // Check if the tape for this queue is not already used by another
-            // active queue.
-            if (QueuesController.getInstance().exists(tapename,
-                    QueueStatus.ACTIVATED) != null) {
-                // There is another active queue for this tape. Just
-                // pick another one.
-                LOGGER.debug("Another queue on this tape is already active. "
-                        + "Trying next queue.");
+        if (queue.getOwner().equals(user)) {
+            if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
+                if (queue.getStatus() == QueueStatus.CREATED) {
+                    // Check if the tape for this queue is not already used by
+                    // another active queue.
+                    if (QueuesController.getInstance().exists(tapename,
+                            QueueStatus.ACTIVATED) != null) {
+                        // There is another active queue for this tape. Just
+                        // pick another one.
+                        LOGGER.debug("Another queue on this tape is already "
+                                + "active. Trying next queue.");
+                    } else {
+                        // Select the oldest queue.
+                        if (currentlySelected == null) {
+                            LOGGER.debug("Current null");
+                            ret = queue;
+                        } else if (currentlySelected.getCreationTime()
+                                .getTimeInMillis() >= queue.getCreationTime()
+                                .getTimeInMillis()) {
+                            LOGGER.debug(
+                                    "It is better the new one {} than the "
+                                            + "selected one {}", queue
+                                            .getTape().getName(),
+                                    currentlySelected.getTape().getName());
+                            ret = queue;
+                        } else if (currentlySelected.getCreationTime()
+                                .getTimeInMillis() < queue.getCreationTime()
+                                .getTimeInMillis()) {
+                            LOGGER.debug(
+                                    "It is better the already selected {} "
+                                            + "than the new one {}", queue
+                                            .getTape().getName(),
+                                    currentlySelected.getTape().getName());
+                            ret = currentlySelected;
+                        } else {
+                            LOGGER.warn("This is weird");
+                            assert false : "No queue selected, mmm?";
+                        }
+                        LOGGER.debug("Selected: {}", ret.getTape().getName());
+                    }
+                }
             } else {
-                // Select the oldest queue.
+                LOGGER.debug("Different media type: current queue {} "
+                        + "searched {}", queue.getTape().getMediaType()
+                        .getName(), resource.getMediaType().getName());
+            }
+        } else {
+            LOGGER.debug("Different owner: current queue {} searched {}", queue
+                    .getOwner().getName(), user.getName());
+        }
+
+        if (ret == null) {
+            LOGGER.debug("No queue selected.");
+            if (queue != null) {
+                LOGGER.info("Actual {}", queue.getTape().getName());
                 if (currentlySelected == null) {
                     ret = queue;
-                } else if (currentlySelected.getCreationTime()
-                        .getTimeInMillis() < queue.getCreationTime()
-                        .getTimeInMillis()) {
-                    ret = currentlySelected;
                 }
             }
+            if (currentlySelected != null) {
+                LOGGER.info("Selected {}", currentlySelected.getTape()
+                        .getName());
+                ret = currentlySelected;
+            }
         }
+
+        assert ret != null : "Ret null";
 
         LOGGER.trace("< checkQueue");
 
@@ -233,7 +278,7 @@ public final class JonathanSelector implements Selector {
             final Resource resource) {
         LOGGER.trace("> selectBestUser");
 
-        assert resource != null;
+        assert resource != null : "resource null";
 
         Map<User, Float> usersScores = new HashMap<User, Float>();
 
@@ -277,6 +322,10 @@ public final class JonathanSelector implements Selector {
                     + "here.", bestUser.getName());
         }
 
+        LOGGER.debug("Best user: {}", bestUser.getName());
+
+        assert bestUser != null : "bestUser null";
+
         LOGGER.trace("< selectBestUser");
 
         return bestUser;
@@ -318,7 +367,7 @@ public final class JonathanSelector implements Selector {
             } else {
                 LOGGER.info("The queue does not have an owner: {}. This "
                         + "should never happen - 3.", queue.getTape().getName());
-                assert false;
+                assert false : "Queue without owner";
             }
 
         }
