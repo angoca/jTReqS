@@ -192,8 +192,10 @@ public final class MediaTypesController extends AbstractController {
         MediaType ret = null;
         synchronized (this.objectMap) {
             if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
+                LOGGER.debug("T10K-A");
                 ret = (MediaType) this.objectMap.get("T10K-A");
             } else if (storageName.startsWith("JT")) {
+                LOGGER.debug("T10K-B");
                 ret = (MediaType) this.objectMap.get("T10K-B");
             } else {
                 LOGGER.error("Unknown media type");
@@ -202,7 +204,7 @@ public final class MediaTypesController extends AbstractController {
         }
 
         if (ret == null) {
-            throw new NotMediaTypeDefinedException();
+            throw new NotMediaTypeDefinedException(storageName);
         }
 
         assert ret != null;
