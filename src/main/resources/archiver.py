@@ -1,5 +1,12 @@
 #!/usr/local/bin/python
 
+# It does the process of request archiving by inserting the old requests in another database, and then, delete them in the source database.
+# It does the same procedure for the queues
+#
+# Error code returned.
+# -1 If there is a problem archiving the requests.
+# -2 If there is a problem archiving the queues.
+
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Table, Column, Integer, String, DateTime
@@ -30,7 +37,7 @@ parser.add_option("--archost", dest="archost", action="store", default="localhos
               help="hostname of the archive database (default:localhost)")
 parser.add_option("--arcsock", dest="arcsock", action="store", default="/var/lib/mysql/mysql.sock",
               help="unix socket file for database connection (default: /var/lib/mysql/mysql.sock)")
-parser.add_option("--days", dest="days", action="store", default="7",
+parser.add_option("--days", dest="days", action="store", default="1",
               help="How many days should be kept in the volatile database")
 parser.add_option("--maxrow", dest="maxrow", action="store", default=1000, type="int",
               help="Number of rows simultaneously copied (default 1000)")
@@ -51,47 +58,48 @@ class Request(Base):
   """
   __tablename__ = 'requests'
   id = Column(Integer, primary_key=True)
-  email = Column(String(length=128))
-  user = Column(String(length=23))
-  hpss_file = Column(String(length=256))
-  client = Column(String(length=128))
+  file = Column(String(length=1024))
   creation_time = Column(DateTime)
-  expiration_time = Column(DateTime)
-  status = Column(Integer)
-  message = Column(String(length=128))
+  user = Column(String(length=32))
+  client = Column(String(length=32))
+  version = Column(String(length=32))
+  email = Column(String(length=64))
+  queue_id = Column(Integer)
+  tape = Column(String(length=8))
+  position = Column(Integer)
+  level = Column(Integer)
+  size = Column(Integer)
   tries = Column(Integer)
   errorcode = Column(Integer)
   submission_time = Column(DateTime)
   queued_time = Column(DateTime)
   end_time = Column(DateTime)
-  cartridge = Column(String(length=8))
-  position = Column(Integer)
-  cos = Column(Integer)
-  size = Column(Integer)
-  queue_id = Column(Integer)
+  status = Column(Integer)
+  message = Column(String(length=254))
 
-  def __init__(self, id, email, user, hpss_file, client, creation_time, expiration_time, status, message, tries, errorcode, submission_time, queued_time, end_time, cartridge, position, cos, size, queue_id):
+  def __init__(self, id, file, creation_time, user, client, version, email, queue_id, tape, position, level, size, tries, errorcode, submission_time, queued_time, end_time, status, message):
     self.id = id
-    self.email = email
-    self.user = user
-    self.hpss_file = hpss_file
-    self.client = client
+    self.file = file
     self.creation_time = creation_time
-    self.expiration_time = expiration_time
-    self.status = status
-    self.message = message
+    self.user = user
+    self.client = client
+    self.version = version
+    self.email = email
+    self.queue_id = queue_id
+    self.tape = tape
+    self.position = position
+    self.level = level
+    self.size = size
     self.tries = tries
     self.errorcode = errorcode
     self.submission_time = submission_time
     self.queued_time = queued_time
     self.end_time = end_time
-    self.cartridge = cartridge
-    self.position = position
-    self.cos = cos
-    self.size = size
-    self.queue_id = queue_id
+    self.status = status
+    self.message = message
+
   def __repr__(self):
-    return "<Request('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id,self.email,self.user,self.hpss_file,self.client,self.creation_time,self.expiration_time,self.status,self.message,self.tries,self.errorcode,self.submission_time,self.queued_time,self.end_time,self.cartridge,self.position,self.cos,self.size,self.queue_id)
+    return "<Request('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id, self.file, self.creation_time, self.user, self.client, self.version, self.email, self.queue_id, self.tape, self.position, self.level, self.size, self.tries, self.errorcode, self.submission_time, self.queued_time, self.end_time, self.status, self.message)
 
 
 class Queue(Base):
@@ -100,33 +108,33 @@ class Queue(Base):
   __tablename__ = 'queues'
   id = Column(Integer, primary_key=True)
   name = Column(String(length=12))
-  nbjobs = Column(Integer)
-  nbdone = Column(Integer)
-  nbfailed = Column(Integer)
-  status = Column(Integer)
-  master_queue = Column(Integer)
-  owner = Column(String(length=20))
   creation_time = Column(DateTime)
+  mediatype_id = Column(Integer)
+  nb_reqs_failed = Column(Integer)
   activation_time = Column(DateTime)
   end_time = Column(DateTime)
+  status = Column(Integer)
+  nb_reqs = Column(Integer)
+  owner = Column(String(length=32))
   byte_size = Column(Integer)
+  nb_reqs_done = Column(Integer)
 
-  def __init__(self, id, name, nbjobs, nbdone, nbfailed, status, master_queue, owner, creation_time, activation_time, end_time, byte_size):
+  def __init__(self, id, name, creation_time, mediatype_id, nb_reqs_failed, activation_time, end_time, status, nb_reqs, owner, byte_size, nb_reqs_done):
     self.id = id
     self.name = name
-    self.nbjobs = nbjobs
-    self.nbdone = nbdone
-    self.nbfailed = nbfailed
-    self.status = status
-    self.master_queue = master_queue
-    self.owner = owner
     self.creation_time = creation_time
+    self.mediatype_id = mediatype_id
+    self.nb_reqs_failed = nb_reqs_failed
     self.activation_time = activation_time
     self.end_time = end_time
+    self.status = status
+    self.nb_reqs = nb_reqs
+    self.owner = owner
     self.byte_size = byte_size
+    self.nb_reqs_done = nb_reqs_done
 
   def __repr__(self):
-    return "<Queue('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id, self.name, self.nbjobs, self.nbdone, self.nbfailed, self.status, self.master_queue, self.owner, self.creation_time, self.activation_time, self.end_time, self.byte_size)
+    return "<Queue('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id, self.name, self.creation_time, self.mediatype_id, self.nb_reqs_failed, self.activation_time, self.end_time, self.status, self.nb_reqs, self.owner, self.byte_size, self.nb_reqs_done)
 
 # The archived objects
 
@@ -135,69 +143,69 @@ class RequestArch(Base):
   """
   __tablename__ = 'requests_history'
   id = Column(Integer, primary_key=True, autoincrement=False)
-  email = Column(String(length=128))
-  user = Column(String(length=32))
-  hpss_file = Column(String(length=256))
-  client = Column(String(length=128))
+  file = Column(String(length=1024))
   creation_time = Column(DateTime)
-  expiration_time = Column(DateTime)
-  status = Column(Integer)
-  message = Column(String(length=128))
+  user = Column(String(length=32))
+  client = Column(String(length=32))
+  version = Column(String(length=32))
+  email = Column(String(length=64))
+  queue_id = Column(Integer)
+  tape = Column(String(length=8))
+  position = Column(Integer)
+  level = Column(Integer)
+  size = Column(Integer)
   tries = Column(Integer)
   errorcode = Column(Integer)
   submission_time = Column(DateTime)
   queued_time = Column(DateTime)
   end_time = Column(DateTime)
-  cartridge = Column(String(length=8))
-  position = Column(Integer)
-  cos = Column(Integer)
-  size = Column(Integer)
-  queue_id = Column(Integer)
+  status = Column(Integer)
+  message = Column(String(length=254))
 
-  def __init__(self, id, email, user, hpss_file, client, creation_time, expiration_time, status, message, tries, errorcode, submission_time, queued_time, end_time, cartridge, position, cos, size, queue_id):
+  def __init__(self, id, file, creation_time, user, client, version, email, queue_id, tape, position, level, size, tries, errorcode, submission_time, queued_time, end_time, status, message):
     self.id = id
-    self.email = email
-    self.user = user
-    self.hpss_file = hpss_file
-    self.client = client
+    self.file = file
     self.creation_time = creation_time
-    self.expiration_time = expiration_time
-    self.status = status
-    self.message = message
+    self.user = user
+    self.client = client
+    self.version = version
+    self.email = email
+    self.queue_id = queue_id
+    self.tape = tape
+    self.position = position
+    self.level = level
+    self.size = size
     self.tries = tries
     self.errorcode = errorcode
     self.submission_time = submission_time
     self.queued_time = queued_time
     self.end_time = end_time
-    self.cartridge = cartridge
-    self.position = position
-    self.cos = cos
-    self.size = size
-    self.queue_id = queue_id
+    self.status = status
+    self.message = message
 
   def __init__(self, r):
     self.id = r.id
-    self.email = r.email
-    self.user = r.user
-    self.hpss_file = r.hpss_file
-    self.client = r.client
+    self.file = r.file
     self.creation_time = r.creation_time
-    self.expiration_time = r.expiration_time
-    self.status = r.status
-    self.message = r.message
+    self.user = r.user
+    self.client = r.client
+    self.version = r.version
+    self.email = r.email
+    self.queue_id = r.queue_id
+    self.tape = r.tape
+    self.position = r.position
+    self.size = r.size
     self.tries = r.tries
+    self.level = r.level
     self.errorcode = r.errorcode
     self.submission_time = r.submission_time
     self.queued_time = r.queued_time
     self.end_time = r.end_time
-    self.cartridge = r.cartridge
-    self.position = r.position
-    self.cos = r.cos
-    self.size = r.size
-    self.queue_id = r.queue_id
+    self.status = r.status
+    self.message = r.message
 
   def __repr__(self):
-    return "<Request('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id,self.email,self.user,self.hpss_file,self.client,self.creation_time,self.expiration_time,self.status,self.message,self.tries,self.errorcode,self.submission_time,self.queued_time,self.end_time,self.cartridge,self.position,self.cos,self.size,self.queue_id)
+    return "<Request('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id, self.file, self.creation_time, self.user, self.client, self.version, self.email, self.queue_id, self.tape, self.position, self.level, self.size, self.tries, self.errorcode, self.submission_time, self.queued_time, self.end_time, self.status, self.message)
 
 class QueueArch(Base):
   """A queue as describe in the archive table
@@ -205,52 +213,52 @@ class QueueArch(Base):
   __tablename__ = 'queues_history'
   id = Column(Integer, primary_key=True, autoincrement=False)
   name = Column(String(length=12))
-  nbjobs = Column(Integer)
-  nbdone = Column(Integer)
-  nbfailed = Column(Integer)
-  status = Column(Integer)
-  master_queue = Column(Integer)
-  owner = Column(String(length=20))
   creation_time = Column(DateTime)
+  mediatype_id = Column(Integer)
+  nb_reqs_failed = Column(Integer)
   activation_time = Column(DateTime)
   end_time = Column(DateTime)
+  status = Column(Integer)
+  nb_reqs = Column(Integer)
+  owner = Column(String(length=32))
   byte_size = Column(Integer)
+  nb_reqs_done = Column(Integer)
 
-  def __init__(self, id, name, nbjobs, nbdone, nbfailed, status, master_queue, owner, creation_time, activation_time, end_time, byte_size):
+  def __init__(self, id, name, creation_time, mediatype_id, nb_reqs_failed, activation_time, end_time, status, nb_reqs, owner, byte_size, nb_reqs_done):
     self.id = id
     self.name = name
-    self.nbjobs = nbjobs
-    self.nbdone = nbdone
-    self.nbfailed = nbfailed
-    self.status = status
-    self.master_queue = master_queue
-    self.owner = owner
     self.creation_time = creation_time
+    self.mediatype_id = mediatype_id
+    self.nb_reqs_failed = nb_reqs_failed
     self.activation_time = activation_time
     self.end_time = end_time
+    self.status = status
+    self.nb_reqs = nb_reqs
+    self.owner = owner
     self.byte_size = byte_size
+    self.nb_reqs_done = nb_reqs_done
 
   def __init__(self, Queue):
     self.id = Queue.id
     self.name = Queue.name
-    self.nbjobs = Queue.nbjobs
-    self.nbdone = Queue.nbdone
-    self.nbfailed = Queue.nbfailed
-    self.status = Queue.status
-    self.master_queue = Queue.master_queue
-    self.owner = Queue.owner
     self.creation_time = Queue.creation_time
+    self.mediatype_id = Queue.mediatype_id
+    self.nb_reqs_failed = Queue.nb_reqs_failed
     self.activation_time = Queue.activation_time
     self.end_time = Queue.end_time
+    self.status = Queue.status
+    self.nb_reqs = Queue.nb_reqs
+    self.owner = Queue.owner
     self.byte_size = Queue.byte_size
+    self.nb_reqs_done = Queue.nb_reqs_done
 
   def __repr__(self):
-    return "<Queue('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id, self.name, self.nbjobs, self.nbdone, self.nbfailed, self.status, self.master_queue, self.owner, self.creation_time, self.activation_time, self.end_time, self.byte_size)
+    return "<Queue('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s')" %(self.id, self.name, self.creation_time, self.mediatype_id, self.nb_reqs_failed, self.activation_time, self.end_time, self.status, self.nb_reqs, self.owner, self.byte_size, self.nb_reqs_done)
 
 ####
 #
 # End of Class declaration
-# 
+#
 ####
 
 def main():
@@ -258,7 +266,7 @@ def main():
   # Create a Session for archiving
   Arch_Session = sqlalchemy.orm.sessionmaker()
   # Create an Engine for archiving
-  arch_engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s?unix_socket=%s"%(opt.arcuser,opt.arcpwd,opt.archost,opt.arcdb,opt.arcsock))
+  arch_engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s?unix_socket=%s"%(opt.arcuser, opt.arcpwd, opt.archost, opt.arcdb, opt.arcsock))
   # Bind the session to the engine
   Arch_Session.configure(bind=arch_engine)
 
@@ -266,7 +274,7 @@ def main():
   # Create a Session
   Src_Session = sqlalchemy.orm.sessionmaker()
   # Create an Engine
-  src_engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s?unix_socket=%s"%(opt.srcuser,opt.srcpwd,opt.srchost,opt.srcdb,opt.srcsock))
+  src_engine = sqlalchemy.create_engine("mysql://%s:%s@%s/%s?unix_socket=%s"%(opt.srcuser, opt.srcpwd, opt.srchost, opt.srcdb, opt.srcsock))
   # Bind the session to the engine
   Src_Session.configure(bind=src_engine)
 
@@ -281,7 +289,14 @@ def main():
   arch_queues = []
   # Get the data from Src
   srcsession = Src_Session()
-  reqs = srcsession.query(Request).filter(and_(Request.status.in_(['14','16','18','-11']), Request.end_time < timelimit))
+  # 100 Created
+  # 110 Submitted
+  # 120 Queued
+  # 140 Staged
+  # 150 On disk
+  # 160 Failed
+  # 180 Invalid
+  reqs = srcsession.query(Request).filter(and_(Request.status.in_(['140', '150', '160', '180']), Request.end_time < timelimit))
   print ":: %s requests to archive out of %s"%(reqs.count(), srcsession.query(Request).count())
 
   for r in reqs:
@@ -302,7 +317,7 @@ def main():
   print ":: %s requests left"%( srcsession.query(Request).count())
   srcsession.commit()
 
-  queues = srcsession.query(Queue).filter(and_(Queue.status == 23, Queue.end_time < timelimit))
+  queues = srcsession.query(Queue).filter(and_(Queue.status == 230, Queue.end_time < timelimit))
   print ":: %s queues to archive out of %s"%(queues.count(), srcsession.query(Queue).count())
   for q in queues:
     arch_queues.append(QueueArch(q))
@@ -313,7 +328,7 @@ def main():
     archsession.close()
   except sqlalchemy.exc.IntegrityError, e:
     print e
-    exit(-1)
+    exit(-2)
   # Remove the archived queues from src table
   for q in queues:
     srcsession.delete(q)
