@@ -291,7 +291,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         } catch (SQLException e) {
             throw new MySQLExecuteException(e);
         }
-        processUpdate(reading, status, statement, index);
+        this.processUpdate(reading, status, statement, index);
 
         LOGGER.trace("< update");
     }
