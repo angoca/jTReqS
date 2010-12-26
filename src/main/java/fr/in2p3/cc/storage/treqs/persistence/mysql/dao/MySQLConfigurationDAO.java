@@ -152,7 +152,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
         }
         if (allocations.size() == 0) {
             // No entry in table, something wrong with configuration.
-            LOGGER.error("No media type allocations found. Please define them "
+            LOGGER.warn("No media type allocations found. Please define them "
                     + "in the database.");
         }
 
