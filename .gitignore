@@ -3,4 +3,4 @@
 bin
 .settings
 target/
-
+jtreqs-test.log
