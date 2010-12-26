@@ -115,7 +115,8 @@ public final class Stager extends AbstractProcess {
             LOGGER.debug("Staging process finished.");
         } else {
             LOGGER.info("Cannot work on a non-activated queue or queue "
-                    + "already processed ({}).", queue.getStatus());
+                    + "already processed ({}). Probably the queue has been "
+                    + "finished", queue.getStatus());
         }
 
         LOGGER.trace("< action");
