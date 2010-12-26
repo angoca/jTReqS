@@ -36,7 +36,7 @@
     <file>jtreqs-test.log</file>
     <append>false</append>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-      <level>debug</level>
+      <level>trace</level>
     </filter>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <charset>ISO-8859-1</charset>
@@ -57,8 +57,10 @@
     </encoder>
   </appender>
 
+  <!--logger name="fr.in2p3.cc.storage.treqs.control.selector" level="TRACE" /-->
+
   <root>
-    <level value="debug" />
+    <level value="trace" />
     <appender-ref ref="Console" />
     <appender-ref ref="LogFile" />
   </root>
