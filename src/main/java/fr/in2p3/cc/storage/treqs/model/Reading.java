@@ -139,7 +139,7 @@ public final class Reading {
 
         // Registers this reading in the database.
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .firstUpdate(this, "Registered to Queue");
+                .firstUpdate(this, "Registered in a Queue.");
 
         LOGGER.trace("< Creating reading with parameters.");
     }
@@ -249,6 +249,7 @@ public final class Reading {
         this.startTime = new GregorianCalendar();
         final String filename = this.getMetaData().getFile().getName();
 
+        this.setErrorMessage("Staging.");
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
                 .update(this, this.getRequestStatus(), this.startTime);
         LOGGER.info("File {} in tape {} at, position {}: Started.",
@@ -257,7 +258,13 @@ public final class Reading {
 
         try {
             HSMFactory.getHSMBridge().stage(this.getMetaData().getFile());
+            this.setErrorMessage("Succesfully staged.");
             this.setFileRequestStatus(RequestStatus.STAGED);
+            // Register the state in the database. TODO Que el metodo setStage haga esto.
+            AbstractDAOFactory
+                    .getDAOFactoryInstance()
+                    .getReadingDAO()
+                    .update(this, RequestStatus.STAGED, new GregorianCalendar());
             LOGGER.info("File {} successfully staged.", filename);
         } catch (AbstractHSMException e) {
             LOGGER.warn("Error processing this file: {} {}", filename,
