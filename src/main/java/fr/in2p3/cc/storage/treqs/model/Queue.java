@@ -538,18 +538,21 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        @SuppressWarnings("rawtypes")
-        Iterator keys = this.readingList.keySet().iterator();
-        while (keys.hasNext()) {
-            short position = (Short) keys.next();
-            Reading reading = this.readingList.get(position);
-            String filename = reading.getMetaData().getFile().getName();
+        // FIXME concurrent problem
+        synchronized (this.readingList) {
+            @SuppressWarnings("rawtypes")
+            Iterator keys = this.readingList.keySet().iterator();
+            while (keys.hasNext()) {
+                short position = (Short) keys.next();
+                Reading reading = this.readingList.get(position);
+                String filename = reading.getMetaData().getFile().getName();
 
-            // Removes the file position on tape.
-            FilePositionOnTapesController.getInstance().remove(filename);
-            // Removes the file from the controller.
-            FilesController.getInstance().remove(filename);
-            this.readingList.remove(position);
+                // Removes the file position on tape.
+                FilePositionOnTapesController.getInstance().remove(filename);
+                // Removes the file from the controller.
+                FilesController.getInstance().remove(filename);
+                this.readingList.remove(position);
+            }
         }
         String tapename = this.getTape().getName();
         // Removes the tape if there are not any Queue in created state for this
