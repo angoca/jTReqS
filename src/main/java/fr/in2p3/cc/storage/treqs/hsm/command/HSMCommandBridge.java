@@ -177,9 +177,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
-            LOGGER.debug("Creating instance.");
-
             instance = new HSMCommandBridge();
+            LOGGER.info("Command bridge created.");
         }
 
         assert instance != null;
