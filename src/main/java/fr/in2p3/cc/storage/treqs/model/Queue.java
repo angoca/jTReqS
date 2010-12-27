@@ -931,7 +931,7 @@ public final class Queue implements Comparable<Queue> {
         assert fpot != null;
         assert retries >= 0;
 
-        this.regiterFileValidation(fpot);
+        this.registerFileValidation(fpot);
 
         // Register the reading.
         Reading reading = new Reading(fpot, retries, this);
@@ -1027,7 +1027,7 @@ public final class Queue implements Comparable<Queue> {
      * @throws InvalidParameterException
      *             If the current head's position is after the file.
      */
-    private void regiterFileValidation(final FilePositionOnTape fpot)
+    private void registerFileValidation(final FilePositionOnTape fpot)
             throws InvalidStateException, InvalidParameterException {
         LOGGER.trace("> regiterFileValidation");
 
