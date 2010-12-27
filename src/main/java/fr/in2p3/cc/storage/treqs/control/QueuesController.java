@@ -390,8 +390,7 @@ public final class QueuesController {
      *            Metadata of the file.
      * @param retries
      *            Quantity of retries for the requests.
-     * @return The new queue (or the already existing queue.) addFile(File*)
-     *         does all the Job
+     * @return The new queue (or the already existing queue.)
      * @throws TReqSException
      *             If there is a problem building the queue.
      */

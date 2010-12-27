@@ -120,7 +120,7 @@ public final class MySQLQueueDAO implements QueueDAO {
             statement.setInt(index++, statusId);
             // Insert name.
             statement.setString(index++, tapeName);
-            // Insert number of jobs.
+            // Insert number of requests.
             statement.setInt(index++, size);
             // Insert media type id.
             statement.setByte(index++, mediaTypeId);

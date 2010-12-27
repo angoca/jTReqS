@@ -628,7 +628,7 @@ public final class Queue implements Comparable<Queue> {
                 LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE.");
                 nbDone++;
             default:
-                // Count jobs is called only when a Queue is in ACTIVATED
+                // Count requests is called only when a Queue is in ACTIVATED
                 // state and all its files must be in QUEUED state or a
                 // final state.
                 LOGGER.error("Invalid state for a file in an activate"
@@ -646,7 +646,8 @@ public final class Queue implements Comparable<Queue> {
 
     /**
      * Sets the queue in a final state if appropriate. It counts the fpots in
-     * different states, and it calculates if all stagers have done their job
+     * different states, and it calculates if all stagers have done their
+     * requests.
      *
      * @throws TReqSException
      *             If the queue is in an invalid state. If the time is invalid.
@@ -764,8 +765,8 @@ public final class Queue implements Comparable<Queue> {
      * <p>
      * This function also updates the HeadPosition.
      * <p>
-     * <b>Issue:</b> Context: When all stagers but one have finished their jobs,
-     * and the only one still works in the last file.<br>
+     * <b>Issue:</b> Context: When all stagers but one have finished their
+     * requests, and the only one still works in the last file.<br>
      * Problem: There could be one or several new Readings (new FileRequests) at
      * the end of the queue because the queue is in active state and their
      * positions are after the head. In this case, all these new Readings will
@@ -1322,7 +1323,7 @@ public final class Queue implements Comparable<Queue> {
         ret += "{ byte size: " + this.byteSize;
         ret += ", id: " + this.getId();
         ret += ", name: " + this.getTape().getName();
-        ret += ", number of jobs: " + this.readingList.size();
+        ret += ", number of requests: " + this.readingList.size();
         ret += ", number of done: " + this.numberDone;
         ret += ", number of failed: " + this.numberFailed;
         ret += ", number of suspended: " + this.numberSuspensions;

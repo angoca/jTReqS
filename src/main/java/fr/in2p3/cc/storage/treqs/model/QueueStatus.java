@@ -52,8 +52,8 @@ public enum QueueStatus {
      * the queue is being processed, and the corresponding tape should be
      * mounted in a drive and being read, or the tape is in transit.
      * <p>
-     * If there are many jobs in the HSM, probably the tape is queued, however,
-     * at the application side, it is being processed.
+     * If there are many requests in the HSM, probably the tape is queued,
+     * however, at the application side, it is being processed.
      */
     ACTIVATED((short) 210),
     /**

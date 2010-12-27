@@ -345,20 +345,20 @@ public final class Dispatcher extends
      *
      * @param newRequests
      *            Map of new requests.
-     * @param newJobs
-     *            List of new jobs.
+     * @param listNewRequests
+     *            List of new requests.
      * @throws TReqSException
      *             If there a problem retrieving the objects.
      */
     private void getNewRequestsInner(final MultiMap newRequests,
-            final List<PersistenceHelperFileRequest> newJobs)
+            final List<PersistenceHelperFileRequest> listNewRequests)
             throws TReqSException {
         LOGGER.trace("> getNewRequestsInner");
 
         assert newRequests != null;
-        assert newJobs != null;
+        assert listNewRequests != null;
 
-        Iterator<PersistenceHelperFileRequest> iterator = newJobs.iterator();
+        Iterator<PersistenceHelperFileRequest> iterator = listNewRequests.iterator();
         while (iterator.hasNext()) {
             PersistenceHelperFileRequest dbFileRequest = iterator.next();
             LOGGER.debug(
