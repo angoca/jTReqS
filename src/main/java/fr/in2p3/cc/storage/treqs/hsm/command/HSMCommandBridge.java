@@ -143,7 +143,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     /**
      * Command to get the properties for a given file.
      */
-    private static final String HSM_GET_PROPERTIES_COMMAND = "sh hsmGetProperties.sh";
+    private static final String HSM_GET_PROPERTIES_COMMAND = "sh "
+            + "hsmGetProperties.sh";
     /**
      * Command to stage a given file.
      */
@@ -217,7 +218,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert name != null && !name.equals("");
 
-        String command = buildCommandGetProperties(name);
+        String command = this.buildCommandGetProperties(name);
 
         LOGGER.debug(command);
         Process process = null;
