@@ -50,7 +50,7 @@ public final class DefaultProperties {
     /**
      * Default properties file name.
      */
-    public static final String CONFIGURATION_PROPERTIES = "treqs.conf."
+    public static final String CONFIGURATION_PROPERTIES = "jtreqs.conf."
             + "properties";
     /**
      * Default DAO factory.
