@@ -30,7 +30,7 @@ for HPSS. This implementation is in Java.
 (With Maven)
 
  - Compile the project with Maven.
-   $ maven clean install
+   $ mvn clean install
  - Copy/Move the target/appassembler directory to a proper location.
 
 (Without Maven)
