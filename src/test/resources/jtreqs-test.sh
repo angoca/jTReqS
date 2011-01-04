@@ -21,7 +21,7 @@ MAIN="fr.in2p3.cc.storage.treqs.main.Main"
 
 ASSERTIONS="-ea"
 
-CMD="java -cp ${CLASSPATH} ${ASSERTIONS} ${LOGBACK_CONF} ${MAIN} ${CONF_FILE} $1"
+CMD="exec -a jtreqs java -cp ${CLASSPATH} ${ASSERTIONS} ${LOGBACK_CONF} ${MAIN} ${CONF_FILE} $1"
 
 echo sudo /etc/init.d/mysqld start
 echo ${CMD}
