@@ -72,7 +72,7 @@ public final class PersistenceHelperFileRequest {
     /**
      * Owner of the file.
      */
-    private final String ownerName;
+    private final String userName;
 
     /**
      * Creates a helper with the necessary information for the dispatcher.
@@ -83,22 +83,24 @@ public final class PersistenceHelperFileRequest {
      *            Name of the requested file.
      * @param nbTries
      *            quantity of tries.
-     * @param owner
-     *            Owner of the file.
+     * @param user
+     *            Owner of the request.
      */
     public PersistenceHelperFileRequest(final short requestId,
-            final String file, final byte nbTries, final String owner) {
+            final String file, final byte nbTries, final String user) {
         LOGGER.trace("> create instance");
 
         assert requestId > 0;
-        assert file != null && !file.equals("");
+        assert file != null && !file.equals("") : "File cannot be '" + file
+                + "'";
         assert nbTries >= 0;
-        assert owner != null && !owner.equals("");
+        assert user != null && !user.equals("") : "User cannot be '" + user
+        + "'";
 
         this.id = requestId;
         this.fileName = file;
         this.numberTries = nbTries;
-        this.ownerName = owner;
+        this.userName = user;
 
         LOGGER.trace("< create instance");
     }
@@ -144,7 +146,7 @@ public final class PersistenceHelperFileRequest {
     public String getOwnerName() {
         LOGGER.trace(">< getOwnerName");
 
-        return this.ownerName;
+        return this.userName;
     }
 
 }
