@@ -40,9 +40,11 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
@@ -50,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  *
  * @author Andrés Gómez
  */
-// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class ConfiguratorTest {
 
     /**
