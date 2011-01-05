@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,21 +34,18 @@ package fr.in2p3.cc.storage.treqs;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import fr.in2p3.cc.storage.treqs.persistance.mysql.InitDBTest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBrokerTest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLConfigurationDAOTest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLQueueDAOTest;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLReadingDAOTest;
-
+/**
+ * Tests at database level.
+ *
+ * @author Andrés Gómez
+ */
 @RunWith(Suite.class)
-@SuiteClasses( { MySQLBrokerTest.class, InitDBTest.class,
-        MySQLConfigurationDAOTest.class, MySQLQueueDAOTest.class,
-        MySQLReadingDAOTest.class })
-public class DatabaseTests {
-
+@SuiteClasses({ MySQLTests.class })
+public final class DatabaseTests {
 }

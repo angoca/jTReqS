@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,13 +34,19 @@ package fr.in2p3.cc.storage.treqs;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+/**
+ * Main class that get together all tests.
+ *
+ * @author Andrés Gómez
+ */
 @RunWith(Suite.class)
-@SuiteClasses( { UnitTests.class, DatabaseTests.class, IntegrationTests.class,
+@SuiteClasses({ UnitTests.class, DatabaseTests.class, IntegrationTests.class,
         SystemTests.class })
-public class MainTests {
+public final class MainTests {
 }

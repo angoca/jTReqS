@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -43,8 +42,13 @@ import org.junit.runners.Suite.SuiteClasses;
 
 import fr.in2p3.cc.storage.treqs.control.starter.StarterTest;
 
+/**
+ * System tests. This tests are at a global level that checks if the behavious
+ * is the desired.
+ *
+ * @author Andrés Gómez
+ */
 @RunWith(Suite.class)
-@SuiteClasses( { StarterTest.class, TReqSTest.class })
-public class SystemTests {
-
+@SuiteClasses({ StarterTest.class, TReqSTest.class })
+public final class SystemTests {
 }

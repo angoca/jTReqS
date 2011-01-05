@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,13 +34,14 @@ package fr.in2p3.cc.storage.treqs;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import fr.in2p3.cc.storage.treqs.control.dispatcher.FileRequestTest;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTapeTest;
-import fr.in2p3.cc.storage.treqs.model.FileRequestTest;
 import fr.in2p3.cc.storage.treqs.model.FileTest;
 import fr.in2p3.cc.storage.treqs.model.MediaTypeTest;
 import fr.in2p3.cc.storage.treqs.model.QueueUnitTest;
@@ -53,11 +52,15 @@ import fr.in2p3.cc.storage.treqs.model.TapeTest;
 import fr.in2p3.cc.storage.treqs.model.UserTest;
 import fr.in2p3.cc.storage.treqs.tools.ConfiguratorTest;
 
+/**
+ * Unit tests. White box test.
+ *
+ * @author Andrés Gómez
+ */
 @RunWith(Suite.class)
-@SuiteClasses( { MediaTypeTest.class, FileRequestTest.class, FileTest.class,
+@SuiteClasses({ MediaTypeTest.class, FileRequestTest.class, FileTest.class,
         TapeTest.class, ResourceTest.class, UserTest.class,
         FilePositionOnTapeTest.class, ReadingTest.class, QueueUnitTest.class,
         StagerTest.class, ConfiguratorTest.class })
-public class UnitTests {
-
+public final class UnitTests {
 }
