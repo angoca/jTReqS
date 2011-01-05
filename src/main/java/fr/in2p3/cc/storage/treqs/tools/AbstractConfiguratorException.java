@@ -83,7 +83,13 @@ public abstract class AbstractConfiguratorException extends TReqSException {
             final Exception exception) {
         super(exception);
 
+        LOGGER.trace("> Exception created");
+
+        assert file != null && !file.equals("");
+
         this.filename = file;
+
+        LOGGER.trace("< Exception created");
     }
 
     /**
@@ -98,19 +104,33 @@ public abstract class AbstractConfiguratorException extends TReqSException {
             final String keyValue) {
         super();
 
+        LOGGER.trace("> Exception created");
+
+        assert sectionValue != null && !sectionValue.equals("");
+        assert keyValue != null && !keyValue.equals("");
+
         this.section = sectionValue;
         this.key = keyValue;
+
+        LOGGER.trace("< Exception created");
     }
 
     /*
      * (non-Javadoc)
+     *
      * @see fr.in2p3.cc.storage.treqs.TReqSException#getMessage()
      */
     @Override
     public final String getMessage() {
-        LOGGER.trace(">< getMessage");
+        LOGGER.trace("> getMessage");
+        String ret = "Problem in this file " + this.filename;
+        if (this.section != null) {
+            ret += ": Configuration item not found. " + this.section + "::"
+                    + this.key;
+        } else {
+            ret += ". " + super.getMessage();
+        }
 
-        return this.section + "::" + this.key
-                + ": Configuration item not found. - " + this.filename;
+        return ret;
     }
 }

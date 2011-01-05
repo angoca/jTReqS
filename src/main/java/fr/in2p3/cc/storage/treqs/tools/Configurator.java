@@ -44,6 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 
 /**
  * Reads the configuration from the properties file and then, keep that
@@ -115,6 +116,10 @@ public final class Configurator {
         this.properties = new CompositeConfiguration();
         this.properties.addConfiguration(new SystemConfiguration());
         try {
+            if (System.getProperty(Constants.CONFIGURATION_FILE) == null) {
+                System.setProperty(Constants.CONFIGURATION_FILE,
+                        DefaultProperties.CONFIGURATION_PROPERTIES);
+            }
             this.properties.addConfiguration(new HierarchicalINIConfiguration(
                     System.getProperty(Constants.CONFIGURATION_FILE)));
         } catch (ConfigurationException e) {
