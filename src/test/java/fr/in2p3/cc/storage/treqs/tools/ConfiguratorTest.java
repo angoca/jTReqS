@@ -61,6 +61,7 @@ public final class ConfiguratorTest {
     @After
     public void tearDown() {
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
