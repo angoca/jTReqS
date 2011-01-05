@@ -107,9 +107,9 @@ abstract class AbstractController {
         Object ret = this.objectMap.get(key);
 
         if (ret != null) {
-            LOGGER.debug("Object {} already exists", key);
+            LOGGER.debug("Object '{}' already exists", key);
         } else {
-            LOGGER.debug("Object {} does not exist", key);
+            LOGGER.debug("Object '{}' does not exist", key);
         }
 
         LOGGER.trace("< exists");
