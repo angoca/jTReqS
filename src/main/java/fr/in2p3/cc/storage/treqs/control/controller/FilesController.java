@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,52 +44,51 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
-import fr.in2p3.cc.storage.treqs.model.MediaType;
-import fr.in2p3.cc.storage.treqs.model.Tape;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 
 /**
- * Provides interface to create new Tapes and access Tape Objects.
+ * Controller of the object File. This class permits to create and to manipulate
+ * this kind of object.
  * <p>
- * The key is the name of the tape.
+ * The key is the name of the file.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class TapesController extends AbstractController {
+public final class FilesController extends AbstractController {
     /**
-     * The singleton instance.
+     * Instance of the singleton.
      */
-    private static TapesController instance = null;
+    private static FilesController instance = null;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(TapesController.class);
+            .getLogger(FilesController.class);
 
     /**
      * Destroys the unique instance. This is useful only for testing purposes.
      */
     public static void destroyInstance() {
-        LOGGER.debug("> destroyInstance");
+        LOGGER.debug(">< destroyInstance");
 
         instance = null;
-
-        LOGGER.debug("< destroyInstance");
     }
 
     /**
-     * Access the singleton instance.
+     * Provides the singleton instance.
      *
      * @return The singleton instance.
      */
-    public static TapesController getInstance() {
+    public static FilesController getInstance() {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            instance = new TapesController();
+            instance = new FilesController();
         }
 
         assert instance != null;
@@ -100,78 +99,76 @@ public final class TapesController extends AbstractController {
     }
 
     /**
-     * Constructor where the map is initialized.
+     * Builds the instance initializing the objects.
      */
-    private TapesController() {
-        LOGGER.trace("> create instance");
+    private FilesController() {
+        LOGGER.trace("> FilesController");
 
         super.objectMap = new HashMap<String, Object>();
 
-        LOGGER.trace("< create instance");
+        LOGGER.trace("< FilesController");
     }
 
     /**
-     * Adds a tape to the list.
+     * Adds a file to the controller.
      *
      * @param name
-     *            Name of the tape.
-     * @param media
-     *            Type of media.
-     * @return The instance that has been created or the existing one.
-     * @throws ControllerInsertException
-     *             If there is a problem retrieving the instance.
+     *            Name of the file.
+     * @param size
+     *            Size of the file.
+     * @return Instance of file.
+     * @throws TReqSException
+     *             If there is a problem creation or adding the instance.
      */
-    public Tape add(final String name, final MediaType media)
-            throws ControllerInsertException {
+    public File add(final String name, final long size) throws TReqSException {
         LOGGER.trace("> add");
 
         assert name != null && !name.equals("");
-        assert media != null;
+        assert size >= 0;
 
-        Tape tape = (Tape) this.exists(name);
-        if (tape == null) {
-            tape = create(name, media);
+        File file = (File) this.exists(name);
+        if (file == null) {
+            file = create(name, size);
         }
-
-        assert tape != null;
 
         LOGGER.trace("< add");
 
-        return tape;
+        return file;
     }
 
     /**
-     * Create a new tape. The following parameters are needed.
+     * Creates a new file and populates the parameters. The created file is
+     * stored in the Files map.
      *
      * @param name
-     *            Name of the tape.
-     * @param media
-     *            Media type.
-     * @return Instantiated Tape.
-     * @throws ControllerInsertException
-     *             If there is an object that already exists with the same name.
+     *            File Name.
+     * @param size
+     *            Size of the file.`
+     * @return The created File.
+     * @throws TReqSException
+     *             If there is a problem creating the file.
      */
-    Tape create(final String name, final MediaType media)
-            throws ControllerInsertException {
+    File create(final String name, final long size) throws TReqSException {
         LOGGER.trace("> create");
 
         assert name != null && !name.equals("");
-        assert media != null;
+        assert size >= 0;
 
-        Tape tape = new Tape(name, media);
-        super.add(name, tape);
+        File file = new File(name, size);
+        super.add(name, file);
 
-        assert tape != null;
+        assert file != null;
 
         LOGGER.trace("< create");
 
-        return tape;
+        return file;
     }
 
     /**
-     * Removes the tapes that are not associated to any fpot.
+     * Removes the references of files that do not have any file position on
+     * tape associated.
      *
-     * @return Quantity of tapes were removed.
+     * @return Quantity of references deleted.
      */
     public int cleanup() {
         LOGGER.trace("> cleanup");
@@ -179,19 +176,19 @@ public final class TapesController extends AbstractController {
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
         synchronized (objectMap) {
-
             // Checks the references without fpots.
             Iterator<String> iter = this.objectMap.keySet().iterator();
             while (iter.hasNext()) {
-                String name = iter.next();
-                Tape tape = (Tape) this.objectMap.get(name);
-                boolean exist = FilePositionOnTapesController.getInstance()
-                        .exists(tape);
-                if (!exist) {
-                    toRemove.add(name);
+                String key = iter.next();
+                File file = (File) this.objectMap.get(key);
+                String filename = file.getName();
+                FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+                        .getInstance().exists(filename);
+                if (fpot == null) {
+                    toRemove.add(filename);
                 }
             }
-            // Delete the tapes.
+            // Delete the files.
             size = toRemove.size();
             for (int i = 0; i < size; i++) {
                 LOGGER.debug("Deleting {}", toRemove.get(i));

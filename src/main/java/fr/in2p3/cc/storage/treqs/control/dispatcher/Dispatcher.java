@@ -48,14 +48,15 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.FilePositionOnTapesController;
-import fr.in2p3.cc.storage.treqs.control.FilesController;
-import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
-import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.ResourcesController;
-import fr.in2p3.cc.storage.treqs.control.TapesController;
-import fr.in2p3.cc.storage.treqs.control.UsersController;
+import fr.in2p3.cc.storage.treqs.control.controller.FilePositionOnTapesController;
+import fr.in2p3.cc.storage.treqs.control.controller.FilesController;
+import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesController;
+import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.controller.ResourcesController;
+import fr.in2p3.cc.storage.treqs.control.controller.TapesController;
+import fr.in2p3.cc.storage.treqs.control.controller.UsersController;
+import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
+import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.starter.Starter;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
@@ -93,8 +94,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class Dispatcher extends
-        fr.in2p3.cc.storage.treqs.control.AbstractProcess {
+public final class Dispatcher extends AbstractProcess {
 
     /**
      * The singleton instance.
@@ -358,7 +358,8 @@ public final class Dispatcher extends
         assert newRequests != null;
         assert listNewRequests != null;
 
-        Iterator<PersistenceHelperFileRequest> iterator = listNewRequests.iterator();
+        Iterator<PersistenceHelperFileRequest> iterator = listNewRequests
+                .iterator();
         while (iterator.hasNext()) {
             PersistenceHelperFileRequest dbFileRequest = iterator.next();
             LOGGER.debug(

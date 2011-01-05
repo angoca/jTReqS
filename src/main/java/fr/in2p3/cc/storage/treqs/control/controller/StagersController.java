@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.controller;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 

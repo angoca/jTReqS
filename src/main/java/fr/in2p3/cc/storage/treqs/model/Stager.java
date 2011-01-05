@@ -40,8 +40,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.AbstractProcess;
-import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
+import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
+import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 
 /**
@@ -177,7 +177,7 @@ public final class Stager extends AbstractProcess {
      * This method asks the queue for the next file to stage, until the queue is
      * completely browsed.
      *
-     * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#toStart()
+     * @see fr.in2p3.cc.storage.treqs.control.process.AbstractProcess#toStart()
      */
     @Override
     public void toStart() {

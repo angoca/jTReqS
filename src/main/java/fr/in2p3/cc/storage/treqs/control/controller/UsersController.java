@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,51 +44,52 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.File;
-import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
+import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
+import fr.in2p3.cc.storage.treqs.model.User;
 
 /**
- * Controller of the object File. This class permits to create and to manipulate
- * this kind of object.
+ * Specialization of the AbstractController template to manage users.
  * <p>
- * The key is the name of the file.
+ * The key is the user name.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class FilesController extends AbstractController {
+public final class UsersController extends AbstractController {
     /**
-     * Instance of the singleton.
+     * Singleton instance.
      */
-    private static FilesController instance = null;
+    private static UsersController instance = null;
+
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(FilesController.class);
+            .getLogger(UsersController.class);
 
     /**
      * Destroys the unique instance. This is useful only for testing purposes.
      */
-    public static void destroyInstance() {
-        LOGGER.debug(">< destroyInstance");
+    static void destroyInstance() {
+        LOGGER.debug("> destroyInstance");
 
         instance = null;
+
+        LOGGER.debug("< destroyInstance");
     }
 
     /**
-     * Provides the singleton instance.
+     * To get an instance to this singleton.
      *
      * @return The singleton instance.
      */
-    public static FilesController getInstance() {
+    public static UsersController getInstance() {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            instance = new FilesController();
+            instance = new UsersController();
         }
 
         assert instance != null;
@@ -99,76 +100,45 @@ public final class FilesController extends AbstractController {
     }
 
     /**
-     * Builds the instance initializing the objects.
+     * Creates the instance initializing the map.
      */
-    private FilesController() {
-        LOGGER.trace("> FilesController");
+    private UsersController() {
+        LOGGER.trace("> create instance");
 
         super.objectMap = new HashMap<String, Object>();
 
-        LOGGER.trace("< FilesController");
+        LOGGER.trace("< create instance");
     }
 
     /**
-     * Adds a file to the controller.
+     * Adds a user to the list. If the user does not exist, create it and return
+     * it. Else, return the already existing instance.
      *
-     * @param name
-     *            Name of the file.
-     * @param size
-     *            Size of the file.
-     * @return Instance of file.
-     * @throws TReqSException
-     *             If there is a problem creation or adding the instance.
+     * @param userName
+     *            Name of the user.
+     * @return The user named after userName.
+     * @throws ControllerInsertException
+     *             If there is a problem adding the instance.
      */
-    public File add(final String name, final long size) throws TReqSException {
+    public User add(final String userName) throws ControllerInsertException {
         LOGGER.trace("> add");
 
-        assert name != null && !name.equals("");
-        assert size >= 0;
+        assert userName != null;
 
-        File file = (File) this.exists(name);
-        if (file == null) {
-            file = create(name, size);
+        User user = (User) this.exists(userName);
+        if (user == null) {
+            user = create(userName);
         }
 
         LOGGER.trace("< add");
 
-        return file;
+        return user;
     }
 
     /**
-     * Creates a new file and populates the parameters. The created file is
-     * stored in the Files map.
+     * Cleans up the references that are not longer used.
      *
-     * @param name
-     *            File Name.
-     * @param size
-     *            Size of the file.`
-     * @return The created File.
-     * @throws TReqSException
-     *             If there is a problem creating the file.
-     */
-    File create(final String name, final long size) throws TReqSException {
-        LOGGER.trace("> create");
-
-        assert name != null && !name.equals("");
-        assert size >= 0;
-
-        File file = new File(name, size);
-        super.add(name, file);
-
-        assert file != null;
-
-        LOGGER.trace("< create");
-
-        return file;
-    }
-
-    /**
-     * Removes the references of files that do not have any file position on
-     * tape associated.
-     *
-     * @return Quantity of references deleted.
+     * @return Quantity of deleted references.
      */
     public int cleanup() {
         LOGGER.trace("> cleanup");
@@ -176,19 +146,22 @@ public final class FilesController extends AbstractController {
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
         synchronized (objectMap) {
-            // Checks the references without fpots.
+
+            // Checks the references of users.
             Iterator<String> iter = this.objectMap.keySet().iterator();
             while (iter.hasNext()) {
-                String key = iter.next();
-                File file = (File) this.objectMap.get(key);
-                String filename = file.getName();
-                FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
-                        .getInstance().exists(filename);
-                if (fpot == null) {
-                    toRemove.add(filename);
+                String name = iter.next();
+                User user = (User) this.objectMap.get(name);
+                boolean exist = FilePositionOnTapesController.getInstance()
+                        .exists(user);
+                if (!exist) {
+                    exist = ResourcesController.getInstance().exist(user);
+                }
+                if (!exist) {
+                    toRemove.add(name);
                 }
             }
-            // Delete the files.
+            // Delete the tapes.
             size = toRemove.size();
             for (int i = 0; i < size; i++) {
                 LOGGER.debug("Deleting {}", toRemove.get(i));
@@ -196,8 +169,32 @@ public final class FilesController extends AbstractController {
             }
         }
 
+        assert size >= 0;
+
         LOGGER.trace("< cleanup");
 
         return size;
+    }
+
+    /**
+     * Creates a new instance of user.
+     *
+     * @param userName
+     *            Name of the user to add.
+     * @return The instance of that user.
+     * @throws ControllerInsertException
+     *             If there is problem creating the instance.
+     */
+    User create(final String userName) throws ControllerInsertException {
+        LOGGER.trace("> create");
+
+        assert userName != null;
+
+        User user = new User(userName);
+        super.add(userName, user);
+
+        LOGGER.trace("< create");
+
+        return user;
     }
 }

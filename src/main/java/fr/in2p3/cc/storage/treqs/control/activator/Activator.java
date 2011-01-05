@@ -49,11 +49,12 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.ProcessStatus;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
-import fr.in2p3.cc.storage.treqs.control.ResourcesController;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
-import fr.in2p3.cc.storage.treqs.control.UsersController;
+import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.controller.ResourcesController;
+import fr.in2p3.cc.storage.treqs.control.controller.StagersController;
+import fr.in2p3.cc.storage.treqs.control.controller.UsersController;
+import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
+import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.starter.Starter;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Resource;
@@ -72,8 +73,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class Activator extends
-        fr.in2p3.cc.storage.treqs.control.AbstractProcess {
+public final class Activator extends AbstractProcess {
     /**
      * The singleton instance.
      */

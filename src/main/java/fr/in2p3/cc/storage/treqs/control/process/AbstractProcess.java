@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.process;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

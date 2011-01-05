@@ -35,10 +35,10 @@
  *
  */
 /**
- * This is the Controller part in the MVC pattern.
+ * Controllers for all objects.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.controller;
 

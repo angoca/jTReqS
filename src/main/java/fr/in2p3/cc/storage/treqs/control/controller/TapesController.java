@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
+package fr.in2p3.cc.storage.treqs.control.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,32 +45,32 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
-import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.model.MediaType;
+import fr.in2p3.cc.storage.treqs.model.Tape;
 
 /**
- * Specialization of the AbstractController template to manage users.
+ * Provides interface to create new Tapes and access Tape Objects.
  * <p>
- * The key is the user name.
+ * The key is the name of the tape.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
  */
-public final class UsersController extends AbstractController {
+public final class TapesController extends AbstractController {
     /**
-     * Singleton instance.
+     * The singleton instance.
      */
-    private static UsersController instance = null;
-
+    private static TapesController instance = null;
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(UsersController.class);
+            .getLogger(TapesController.class);
 
     /**
      * Destroys the unique instance. This is useful only for testing purposes.
      */
-    static void destroyInstance() {
+    public static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
         instance = null;
@@ -79,17 +79,17 @@ public final class UsersController extends AbstractController {
     }
 
     /**
-     * To get an instance to this singleton.
+     * Access the singleton instance.
      *
      * @return The singleton instance.
      */
-    public static UsersController getInstance() {
+    public static TapesController getInstance() {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            instance = new UsersController();
+            instance = new TapesController();
         }
 
         assert instance != null;
@@ -100,9 +100,9 @@ public final class UsersController extends AbstractController {
     }
 
     /**
-     * Creates the instance initializing the map.
+     * Constructor where the map is initialized.
      */
-    private UsersController() {
+    private TapesController() {
         LOGGER.trace("> create instance");
 
         super.objectMap = new HashMap<String, Object>();
@@ -111,34 +111,67 @@ public final class UsersController extends AbstractController {
     }
 
     /**
-     * Adds a user to the list. If the user does not exist, create it and return
-     * it. Else, return the already existing instance.
+     * Adds a tape to the list.
      *
-     * @param userName
-     *            Name of the user.
-     * @return The user named after userName.
+     * @param name
+     *            Name of the tape.
+     * @param media
+     *            Type of media.
+     * @return The instance that has been created or the existing one.
      * @throws ControllerInsertException
-     *             If there is a problem adding the instance.
+     *             If there is a problem retrieving the instance.
      */
-    public User add(final String userName) throws ControllerInsertException {
+    public Tape add(final String name, final MediaType media)
+            throws ControllerInsertException {
         LOGGER.trace("> add");
 
-        assert userName != null;
+        assert name != null && !name.equals("");
+        assert media != null;
 
-        User user = (User) this.exists(userName);
-        if (user == null) {
-            user = create(userName);
+        Tape tape = (Tape) this.exists(name);
+        if (tape == null) {
+            tape = create(name, media);
         }
+
+        assert tape != null;
 
         LOGGER.trace("< add");
 
-        return user;
+        return tape;
     }
 
     /**
-     * Cleans up the references that are not longer used.
+     * Create a new tape. The following parameters are needed.
      *
-     * @return Quantity of deleted references.
+     * @param name
+     *            Name of the tape.
+     * @param media
+     *            Media type.
+     * @return Instantiated Tape.
+     * @throws ControllerInsertException
+     *             If there is an object that already exists with the same name.
+     */
+    Tape create(final String name, final MediaType media)
+            throws ControllerInsertException {
+        LOGGER.trace("> create");
+
+        assert name != null && !name.equals("");
+        assert media != null;
+
+        Tape tape = new Tape(name, media);
+        super.add(name, tape);
+
+        assert tape != null;
+
+        LOGGER.trace("< create");
+
+        return tape;
+    }
+
+    /**
+     * Removes the tapes that are not associated to any fpot.
+     *
+     * @return Quantity of tapes were removed.
      */
     public int cleanup() {
         LOGGER.trace("> cleanup");
@@ -147,16 +180,13 @@ public final class UsersController extends AbstractController {
         List<String> toRemove = new ArrayList<String>();
         synchronized (objectMap) {
 
-            // Checks the references of users.
+            // Checks the references without fpots.
             Iterator<String> iter = this.objectMap.keySet().iterator();
             while (iter.hasNext()) {
                 String name = iter.next();
-                User user = (User) this.objectMap.get(name);
+                Tape tape = (Tape) this.objectMap.get(name);
                 boolean exist = FilePositionOnTapesController.getInstance()
-                        .exists(user);
-                if (!exist) {
-                    exist = ResourcesController.getInstance().exist(user);
-                }
+                        .exists(tape);
                 if (!exist) {
                     toRemove.add(name);
                 }
@@ -169,32 +199,8 @@ public final class UsersController extends AbstractController {
             }
         }
 
-        assert size >= 0;
-
         LOGGER.trace("< cleanup");
 
         return size;
-    }
-
-    /**
-     * Creates a new instance of user.
-     *
-     * @param userName
-     *            Name of the user to add.
-     * @return The instance of that user.
-     * @throws ControllerInsertException
-     *             If there is problem creating the instance.
-     */
-    User create(final String userName) throws ControllerInsertException {
-        LOGGER.trace("> create");
-
-        assert userName != null;
-
-        User user = new User(userName);
-        super.add(userName, user);
-
-        LOGGER.trace("< create");
-
-        return user;
     }
 }

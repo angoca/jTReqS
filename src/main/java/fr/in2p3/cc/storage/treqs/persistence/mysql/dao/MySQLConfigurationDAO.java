@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
+import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesController;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;

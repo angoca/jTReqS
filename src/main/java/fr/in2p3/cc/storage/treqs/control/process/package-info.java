@@ -34,34 +34,11 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.control;
-
 /**
- * States for a process.
+ * Objects that are part of the process mechanism.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-public enum ProcessStatus {
-    /**
-     * The process has just been created.
-     */
-    CREATED,
-    /**
-     * The process is waiting to be started. It is between the method create and
-     * run. This state is more used in tests.
-     */
-    STARTING,
-    /**
-     * The process has been started.
-     */
-    STARTED,
-    /**
-     * The process is being stopped. The execution has to be finished.
-     */
-    STOPPING,
-    /**
-     * The process has been stopped, all activity has been finished correctly.
-     */
-    STOPPED
-}
+package fr.in2p3.cc.storage.treqs.control.process;
+
