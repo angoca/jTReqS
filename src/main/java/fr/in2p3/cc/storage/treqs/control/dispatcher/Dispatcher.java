@@ -363,7 +363,7 @@ public final class Dispatcher extends AbstractProcess {
         while (iterator.hasNext()) {
             PersistenceHelperFileRequest dbFileRequest = iterator.next();
             LOGGER.debug(
-                    "New request [{}] for file '{}' from user: {}",
+                    "New request [{}] for file '{}' from user: '{}'",
                     new Object[] { dbFileRequest.getId(),
                             dbFileRequest.getFileName(),
                             dbFileRequest.getOwnerName() });
@@ -488,6 +488,7 @@ public final class Dispatcher extends AbstractProcess {
         if (file == null) {
             // The object file has to be created.
 
+            // TODO The next lines are repeted.
             // Get the file properties from HSM.
             try {
                 fileProperties = HSMFactory.getHSMBridge().getFileProperties(
@@ -503,16 +504,17 @@ public final class Dispatcher extends AbstractProcess {
             // The file is not registered in the application and it is not in
             // disk.
             if (cont) {
-                // We have all information to create a new file object.
-                file = FilesController.getInstance().add(fileRequest.getName(),
-                        fileProperties.getSize());
-
                 // Now, try to find out the media type.
                 media = MediaTypesController.getInstance().getMediaType(
                         fileProperties.getTapeName());
                 if (media == null) {
                     cont = false;
                 }
+            }
+            if (cont){
+                // We have all information to create a new file object.
+                file = FilesController.getInstance().add(fileRequest.getName(),
+                        fileProperties.getSize());
             }
         } else {
             // The file is already registered in the application.
@@ -529,6 +531,7 @@ public final class Dispatcher extends AbstractProcess {
                 if (fpot.isMetadataOutdated()) {
                     LOGGER.info("Refreshing metadata of file {}",
                             fileRequest.getName());
+                 // TODO The next lines are repeted.
                     try {
                         fileProperties = HSMFactory.getHSMBridge()
                                 .getFileProperties(fileRequest.getName());
@@ -542,12 +545,14 @@ public final class Dispatcher extends AbstractProcess {
                         cont = false;
                     }
                     if (cont) {
-                        fpot.getFile().setSize(fileProperties.getSize());
                         media = MediaTypesController.getInstance()
                                 .getMediaType(fileProperties.getTapeName());
                         if (media == null) {
                             cont = false;
                         }
+                    }
+                    if (cont){
+                        fpot.getFile().setSize(fileProperties.getSize());
                     }
                 } else {
                     fileProperties = new HSMHelperFileProperties(fpot.getTape()
