@@ -183,6 +183,7 @@ public final class Instantiator {
 
         Class<?> clazz = null;
         try {
+            LOGGER.info("Class to instantiate {}", classname);
             clazz = Class.forName(classname);
 
         } catch (ClassNotFoundException e) {
