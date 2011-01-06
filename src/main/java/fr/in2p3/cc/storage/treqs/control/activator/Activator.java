@@ -90,8 +90,11 @@ public final class Activator extends AbstractProcess {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        instance.conclude();
-        instance.waitToFinish();
+        if (instance.getProcessStatus() == ProcessStatus.STOPPING
+                || instance.getProcessStatus() != ProcessStatus.STOPPED) {
+            instance.conclude();
+            instance.waitToFinish();
+        }
 
         instance = null;
 
@@ -597,6 +600,7 @@ public final class Activator extends AbstractProcess {
         assert seconds > 0;
 
         this.millisBetweenLoops = seconds * Constants.MILLISECONDS;
+        LOGGER.info("Seconds between loops {}", this.millisBetweenLoops);
 
         LOGGER.trace("< setSecondsBetweenLoops");
     }

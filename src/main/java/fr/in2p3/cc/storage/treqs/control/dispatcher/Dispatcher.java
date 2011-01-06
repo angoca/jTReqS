@@ -112,8 +112,11 @@ public final class Dispatcher extends AbstractProcess {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        instance.conclude();
-        instance.waitToFinish();
+        if (instance.getProcessStatus() == ProcessStatus.STOPPING
+                || instance.getProcessStatus() != ProcessStatus.STOPPED) {
+            instance.conclude();
+            instance.waitToFinish();
+        }
 
         instance = null;
 
@@ -511,7 +514,7 @@ public final class Dispatcher extends AbstractProcess {
                     cont = false;
                 }
             }
-            if (cont){
+            if (cont) {
                 // We have all information to create a new file object.
                 file = FilesController.getInstance().add(fileRequest.getName(),
                         fileProperties.getSize());
@@ -531,7 +534,7 @@ public final class Dispatcher extends AbstractProcess {
                 if (fpot.isMetadataOutdated()) {
                     LOGGER.info("Refreshing metadata of file {}",
                             fileRequest.getName());
-                 // TODO The next lines are repeted.
+                    // TODO The next lines are repeted.
                     try {
                         fileProperties = HSMFactory.getHSMBridge()
                                 .getFileProperties(fileRequest.getName());
@@ -551,7 +554,7 @@ public final class Dispatcher extends AbstractProcess {
                             cont = false;
                         }
                     }
-                    if (cont){
+                    if (cont) {
                         fpot.getFile().setSize(fileProperties.getSize());
                     }
                 } else {
@@ -722,6 +725,7 @@ public final class Dispatcher extends AbstractProcess {
         assert seconds > 0;
 
         this.millisBetweenLoops = seconds * Constants.MILLISECONDS;
+        LOGGER.info("Seconds between loops {}", this.millisBetweenLoops);
 
         LOGGER.trace("< setSecondsBetweenLoops");
     }
