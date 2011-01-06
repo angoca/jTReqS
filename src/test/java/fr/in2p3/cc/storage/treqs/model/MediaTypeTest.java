@@ -55,14 +55,37 @@ public final class MediaTypeTest {
      * Creates a media with null name.
      */
     @Test
-    public void test01Constructor() {
+    public void testConstructor01() {
+        boolean failed = false;
         try {
             new MediaType((byte) 1, null);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Creates a media with a negative id.
+     */
+    @Test
+    public void testConstructor02() {
+        boolean failed = false;
+        try {
+            new MediaType((byte) -1, "type");
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
@@ -70,23 +93,8 @@ public final class MediaTypeTest {
      * Creates a media.
      */
     @Test
-    public void test01toString() {
+    public void testToString01() {
         MediaType media = new MediaType((byte) 1, "media");
         media.toString();
-    }
-
-    /**
-     * Creates a media with a negative id.
-     */
-    @Test
-    public void test02Constructor() {
-        try {
-            new MediaType((byte) -1, "type");
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
     }
 }

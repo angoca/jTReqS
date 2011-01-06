@@ -92,13 +92,17 @@ public final class FileTest {
 
         File file = new File(filename, size);
 
+        boolean failed = false;
         try {
             file.setSize(-50);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 

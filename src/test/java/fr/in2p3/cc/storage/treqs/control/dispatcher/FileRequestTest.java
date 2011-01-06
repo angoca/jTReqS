@@ -61,8 +61,52 @@ public final class FileRequestTest {
      *             Never
      */
     @Test(expected = AssertionError.class)
-    public void test01Contructor() throws InvalidParameterException {
+    public void testContructor01() throws InvalidParameterException {
         new FileRequest(-10, "file", new User("username"), (byte) 10);
+    }
+
+    /**
+     * Tests a constructor with null file.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void testContructor02() throws InvalidParameterException {
+        new FileRequest(10, null, new User("username"), (byte) 10);
+    }
+
+    /**
+     * Tests a constructor with empty file.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void testContructor03() throws InvalidParameterException {
+        new FileRequest(10, "", new User("username"), (byte) 10);
+    }
+
+    /**
+     * Tests a constructor with null client.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void testContructor04() throws InvalidParameterException {
+        new FileRequest(10, "file", null, (byte) 10);
+    }
+
+    /**
+     * Tests a constructor with negative tries.
+     *
+     * @throws InvalidParameterException
+     *             Never
+     */
+    @Test(expected = AssertionError.class)
+    public void testContructor05() throws InvalidParameterException {
+        new FileRequest(10, "file", new User("username"), (byte) -10);
     }
 
     /**
@@ -72,7 +116,7 @@ public final class FileRequestTest {
      *             Never.
      */
     @Test
-    public void test01toString() throws InvalidParameterException {
+    public void testToString01() throws InvalidParameterException {
         int id = 1;
         String filename = "fileName";
         String username = "Username";
@@ -87,50 +131,6 @@ public final class FileRequestTest {
                 + "}";
 
         Assert.assertEquals("toString", expected, actual);
-    }
-
-    /**
-     * Tests a constructor with null file.
-     *
-     * @throws InvalidParameterException
-     *             Never
-     */
-    @Test(expected = AssertionError.class)
-    public void test02Contructor() throws InvalidParameterException {
-        new FileRequest(10, null, new User("username"), (byte) 10);
-    }
-
-    /**
-     * Tests a constructor with empty file.
-     *
-     * @throws InvalidParameterException
-     *             Never
-     */
-    @Test(expected = AssertionError.class)
-    public void test03Contructor() throws InvalidParameterException {
-        new FileRequest(10, "", new User("username"), (byte) 10);
-    }
-
-    /**
-     * Tests a constructor with null client.
-     *
-     * @throws InvalidParameterException
-     *             Never
-     */
-    @Test(expected = AssertionError.class)
-    public void test04Contructor() throws InvalidParameterException {
-        new FileRequest(10, "file", null, (byte) 10);
-    }
-
-    /**
-     * Tests a constructor with negative tries.
-     *
-     * @throws InvalidParameterException
-     *             Never
-     */
-    @Test(expected = AssertionError.class)
-    public void test05Contructor() throws InvalidParameterException {
-        new FileRequest(10, "file", new User("username"), (byte) -10);
     }
 
 }
