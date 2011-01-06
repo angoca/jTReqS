@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import junit.framework.Assert;
 
@@ -45,14 +44,17 @@ import org.junit.runner.RunWith;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 
 /**
- *MediaTypeTest.cpp
- * 
+ * MediaTypeTest.cpp.
+ *
  * @version 2010-07-16
- * @author gomez
+ * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class MediaTypeTest {
+public final class MediaTypeTest {
 
+    /**
+     * Creates a media with null name.
+     */
     @Test
     public void test01Constructor() {
         try {
@@ -65,12 +67,18 @@ public class MediaTypeTest {
         }
     }
 
+    /**
+     * Creates a media.
+     */
     @Test
     public void test01toString() {
         MediaType media = new MediaType((byte) 1, "media");
         media.toString();
     }
 
+    /**
+     * Creates a media with a negative id.
+     */
     @Test
     public void test02Constructor() {
         try {
