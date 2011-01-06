@@ -278,17 +278,6 @@ public final class Resource {
     }
 
     /**
-     * Sets timestamp to 'now'.
-     */
-    void resetTimestamp() {
-        LOGGER.trace("> resetTimestamp");
-
-        this.timestamp = new GregorianCalendar();
-
-        LOGGER.trace("< resetTimestamp");
-    }
-
-    /**
      * Sets all used resources to 0.
      */
     public void resetUsedResources() {
@@ -309,7 +298,7 @@ public final class Resource {
      * @param media
      *            Media type.
      */
-    public void setMediaType(final MediaType media) {
+    protected void setMediaType(final MediaType media) {
         LOGGER.trace("> setMediaType");
 
         assert media != null;
