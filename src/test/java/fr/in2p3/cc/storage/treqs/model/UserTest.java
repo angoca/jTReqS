@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,135 +43,31 @@ import org.junit.runner.RunWith;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 
 /**
- * UserTest.java
- * 
- * @version 2010-03-09
- * @author gomez
- */
+ * Tests for User.
+ *
+ * @author Andrés Gómez
+ * */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class UserTest {
-    /**
-     * Tests a negative gid.
-     */
-    @Test
-    public void test01constructor() {
-        short gid = -5;
-        String group = "group";
-        String name = "user";
-        short uid = 15;
-
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests the constructors.
-     */
-    @Test
-    public void test01ConstructorUser() {
-        short gid = 12;
-        String group = "group";
-        String name = "user";
-        short uid = 15;
-
-        User user1 = new User(name);
-        user1.setGid(gid);
-        user1.setGroup(group);
-        user1.setUid(uid);
-
-        User user2 = new User(name, uid, group, gid);
-
-        Assert.assertTrue("First second gid", user1.getGid() == user2.getGid());
-        Assert.assertTrue("First second group", user1.getGroup() == user2
-                .getGroup());
-        Assert.assertTrue("First second name", user1.getName() == user2
-                .getName());
-        Assert.assertTrue("First second uid", user1.getUid() == user2.getUid());
-    }
-
-    /**
-     * Tests the output of toString.
-     */
-    @Test
-    public void test01toString() {
-        short gid = 12;
-        String group = "group";
-        String name = "user";
-        short uid = 15;
-
-        User user = new User(name, uid, group, gid);
-
-        String actual = user.toString();
-
-        String expected = "User{ name: " + name + ", uid: " + uid + ", group: "
-                + group + ", gid: " + gid + "}";
-
-        Assert.assertEquals("toString", expected, actual);
-    }
-
-    /**
-     * Tests a null group.
-     */
-    @Test
-    public void test02constructor() {
-        short gid = 12;
-        String group = null;
-        String name = "user";
-        short uid = 15;
-
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests a empty group.
-     */
-    @Test
-    public void test03constructor() {
-        short gid = 12;
-        String group = "";
-        String name = "user";
-        short uid = 15;
-
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
+public final class UserTest {
 
     /**
      * Tests a null name.
      */
     @Test
-    public void test04constructor() {
-        short gid = 12;
-        String group = "group";
+    public void testConstructor01() {
         String name = null;
-        short uid = 15;
 
+        boolean failed = false;
         try {
-            new User(name, uid, group, gid);
-            Assert.fail();
+            new User(name);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
@@ -180,39 +75,51 @@ public class UserTest {
      * Tests a empty name.
      */
     @Test
-    public void test05constructor() {
-        short gid = 12;
-        String group = "group";
+    public void testConstructor02() {
         String name = "";
-        short uid = 15;
 
+        boolean failed = false;
         try {
-            new User(name, uid, group, gid);
-            Assert.fail();
+            new User(name);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
     /**
-     * Tests a negative uid.
+     * Tests the constructors.
      */
     @Test
-    public void test06constructor() {
-        short gid = 12;
-        String group = "group";
+    public void testConstructorUser01() {
         String name = "user";
-        short uid = -8;
 
-        try {
-            new User(name, uid, group, gid);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
+        User user1 = new User(name);
+
+        User user2 = new User(name);
+
+        Assert.assertTrue("First second name",
+                user1.getName() == user2.getName());
+    }
+
+    /**
+     * Tests the output of toString.
+     */
+    @Test
+    public void testToString01() {
+        String name = "user";
+
+        User user = new User(name);
+
+        String actual = user.toString();
+
+        String expected = "User{ name: " + name + "}";
+
+        Assert.assertEquals("toString", expected, actual);
     }
 }
