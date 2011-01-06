@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -48,193 +47,71 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.NullParameterException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
- * FilePositionOnTapeTest.cpp
- * 
- * @version Nov 10, 2009
- * @author gomez
+ * Tests fot FilePositionOnTape.
+ *
+ * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class FilePositionOnTapeTest {
+public final class FilePositionOnTapeTest {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FilePositionOnTapeTest.class);
-    private File file = null;
-    private String fileName = "filename";
-    private Tape tape = null;
-    private String tapeName = "tapename";
+    /**
+     * File.
+     */
+    private final File file;
+    /**
+     * Filename.
+     */
+    private final String fileName;
+    /**
+     * Tape.
+     */
+    private final Tape tape;
+    /**
+     * Tapename.
+     */
+    private final String tapeName;
 
+    /**
+     * Initializes the objects.
+     */
+    public FilePositionOnTapeTest() {
+        fileName = "filename";
+        tapeName = "tapename";
+        this.file = new File(fileName, 400);
+        this.tape = new Tape(tapeName, new MediaType((byte) 1, "media"));
+    }
+
+    /**
+     * Destroys all.
+     */
     @After
     public void tearDown() {
         Configurator.destroyInstance();
-    }
-
-    public FilePositionOnTapeTest() {
-        this.file = new File(fileName, new User("username"), 400);
-        this.tape = new Tape(tapeName, new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
     }
 
     /**
      * Tests a fpot with a null file.
      */
     @Test
-    public void test01Constructor() {
+    public void testConstructor01() {
         int position = 100;
-        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
+        User user = new User("username");
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(null, timestamp, position, tape);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests a valid timestamp for metadata.
-     * 
-     * @throws ProblematicConfiguationFileException
-     * @throws NullParameterException
-     *             Never.
-     */
-    @Test
-    public void test01MetadataNotOutdated()
-            throws ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "100");
-
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), 100, tape);
-        fpot.setMetadataTimestamp(new GregorianCalendar());
-
-        boolean outdated = fpot.isMetadataOutdated();
-
-        Assert.assertTrue("No outdated metadata", !outdated);
-    }
-
-    /**
-     * Tests the method setTapeRef giving a null value.
-     * 
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
-     * @throws NullParameterException
-     *             Never
-     */
-    @Test
-    public void test01nullTapeRef() throws ProblematicConfiguationFileException {
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), 100, tape);
-
-        boolean failed = false;
-        try {
-            fpot.setTape(null);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests the toString.
-     * 
-     * @throws ProblematicConfiguationFileException
-     * @throws NumberFormatException
-     */
-    @Test
-    public void test01toString() throws ProblematicConfiguationFileException {
-        int position = 100;
-        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, timestamp,
-                position, tape);
-
-        String actual = fpot.toString();
-
-        String expected = "FilePositionOnTape{ MAX_METADATA_AGE: "
-                + FilePositionOnTape.MAX_METADATA_AGE + ", file: " + fileName
-                + ", metadataAge: " + timestamp.getTimeInMillis()
-                + ", position: " + position + ", tape: " + tapeName + "}";
-
-        Assert.assertEquals("toString", expected, actual);
-    }
-
-    /**
-     * Tests a fpot with a null timestamp.
-     */
-    @Test
-    public void test02Constructor() {
-        int position = 100;
-
-        boolean failed = false;
-        try {
-            new FilePositionOnTape(file, null, position, tape);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Test an outdated timestamp for metadata.
-     * 
-     * @throws InterruptedException
-     *             Never.
-     * @throws ProblematicConfiguationFileException
-     */
-    @Test
-    public void test02MetadataOutdated() throws InterruptedException,
-            ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue("MAIN", "MAX_METADATA_AGE", "1");
-
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), 100, tape);
-        fpot.setMetadataTimestamp(new GregorianCalendar());
-        LOGGER.info("Sleeping thread for 2 seconds");
-        Thread.sleep(2000);
-
-        boolean outdated = fpot.isMetadataOutdated();
-
-        Assert.assertTrue("Outdated metadata", outdated);
-
-    }
-
-    /**
-     * Tests the method setFileRef giving a null value.
-     * 
-     * @throws ProblematicConfiguationFileException
-     *             Never
-     */
-    @Test
-    public void test02nullFileRef() throws ProblematicConfiguationFileException {
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                new GregorianCalendar(), 100, tape);
-
-        boolean failed = false;
-        try {
-            fpot.setFile(null);
+            new FilePositionOnTape(null, position, tape, user);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -250,13 +127,13 @@ public class FilePositionOnTapeTest {
      * Tests a fpot with a negative position.
      */
     @Test
-    public void test03Constructor() {
+    public void testConstructor02() {
         int position = -100;
-        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
+        User user = new User("username");
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(file, timestamp, position, tape);
+            new FilePositionOnTape(file, position, tape, user);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -272,13 +149,35 @@ public class FilePositionOnTapeTest {
      * Tests a fpot witha null tape.
      */
     @Test
-    public void test04Constructor() {
+    public void testConstructor03() {
         int position = 100;
-        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
+        User user = new User("username");
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(file, timestamp, position, null);
+            new FilePositionOnTape(file, position, null, user);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests a fpot with a null user.
+     */
+    @Test
+    public void testConstructor04() {
+        int position = 100;
+        User user = null;
+
+        boolean failed = false;
+        try {
+            new FilePositionOnTape(file, position, tape, user);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -292,19 +191,98 @@ public class FilePositionOnTapeTest {
 
     /**
      * Tests no configuration value.
-     * 
-     * @throws ConfigNotFoundException
+     *
+     * @throws KeyNotFoundException
      *             Never.
      * @throws ProblematicConfiguationFileException
+     *             Never.
      */
     @Test
-    public void test05Constructor() throws ConfigNotFoundException,
+    public void testConstructor05() throws KeyNotFoundException,
             ProblematicConfiguationFileException {
-        Configurator.getInstance().deleteValue("MAIN", "MAX_METADATA_AGE");
+        Configurator.getInstance().deleteValue(
+                Constants.SECTION_FILE_POSITION_ON_TAPE,
+                Constants.MAX_METADATA_AGE);
 
         int position = 100;
-        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
 
-        new FilePositionOnTape(file, timestamp, position, tape);
+        new FilePositionOnTape(file, position, tape, new User("username"));
+    }
+
+    /**
+     * Tests a valid timestamp for metadata.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             Never.
+     */
+    @Test
+    public void testMetadataNotOutdated01()
+            throws ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue(
+                Constants.SECTION_FILE_POSITION_ON_TAPE,
+                Constants.MAX_METADATA_AGE, "100");
+
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 100, tape,
+                new User("username"));
+
+        boolean outdated = fpot.isMetadataOutdated();
+
+        Assert.assertTrue("No outdated metadata", !outdated);
+    }
+
+    /**
+     * Test an outdated timestamp for metadata.
+     *
+     * @throws InterruptedException
+     *             Never.
+     * @throws ProblematicConfiguationFileException
+     *             Never.
+     */
+    @Test
+    public void testMetadataOutdated02() throws InterruptedException,
+            ProblematicConfiguationFileException {
+        Configurator.getInstance().setValue(
+                Constants.SECTION_FILE_POSITION_ON_TAPE,
+                Constants.MAX_METADATA_AGE, "1");
+
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 100, tape,
+                new User("username"));
+        LOGGER.info("Sleeping thread for 2 seconds");
+        Thread.sleep(2000);
+
+        boolean outdated = fpot.isMetadataOutdated();
+
+        Assert.assertTrue("Outdated metadata", outdated);
+
+    }
+
+    /**
+     * Tests the toString.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             Never.
+     */
+    @Test
+    public void testToString01() throws ProblematicConfiguationFileException {
+        int position = 100;
+        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
+        String username = "username";
+        User user = new User(username);
+
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                user);
+
+        String actual = fpot.toString();
+
+        String expectedPrefix = "FilePositionOnTape{ "
+                + Constants.MAX_METADATA_AGE + ": "
+                + DefaultProperties.MAX_METADATA_AGE + ", file: " + fileName
+                + ", metadataAge: ";
+        String expectedSuffix = ", position: " + position + ", requester: "
+                + username + ", tape: " + tapeName + "}";
+
+        Assert.assertTrue("toString prefix",
+                actual.startsWith(expectedPrefix));
+        Assert.assertTrue("toString sufix", actual.endsWith(expectedSuffix));
     }
 }
