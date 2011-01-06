@@ -54,7 +54,7 @@ public final class MockWatchDogDAO implements WatchDogDAO {
      */
     @Override
     public void start(final int pid) {
-        // TODO Auto-generated method stub
+        // Nothing.
     }
 
     /*
@@ -64,7 +64,7 @@ public final class MockWatchDogDAO implements WatchDogDAO {
      */
     @Override
     public void heartBeat() {
-        // TODO Auto-generated method stub
+        // Nothing.
     }
 
 }

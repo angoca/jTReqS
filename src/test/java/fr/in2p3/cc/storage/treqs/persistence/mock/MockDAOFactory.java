@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.persistence.mock;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.persistence.mock;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistence.mock;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +52,8 @@ import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockWatchDogDAO;
 /**
  * DAO factory. This is the implementation of the Factory method for the Mock
  * data source access.
+ *
+ * @author Andrés Gómez
  */
 public final class MockDAOFactory extends AbstractDAOFactory {
 
@@ -123,7 +124,6 @@ public final class MockDAOFactory extends AbstractDAOFactory {
      */
     @Override
     public void initialize() {
-
     }
 
     /*

@@ -47,6 +47,8 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 
 /**
  * Managing Queues object updates to database.
+ *
+ * @author Andrés Gómez
  */
 public final class MockQueueDAO implements QueueDAO {
 
@@ -56,6 +58,11 @@ public final class MockQueueDAO implements QueueDAO {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockQueueDAO.class);
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
+     */
     @Override
     public int abortPendingQueues() throws AbstractPersistanceException {
         LOGGER.trace(">< abortPendingQueues");
@@ -63,6 +70,13 @@ public final class MockQueueDAO implements QueueDAO {
         return 0;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#insert(fr.in2p3.cc.storage
+     * .treqs.model.Queue)
+     */
     @Override
     public int insert(final Queue queue) {
         LOGGER.trace(">< insert");
@@ -70,11 +84,25 @@ public final class MockQueueDAO implements QueueDAO {
         return 0;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateAddRequest(fr.in2p3
+     * .cc.storage.treqs.model.Queue)
+     */
     @Override
     public void updateAddRequest(final Queue queue) {
         LOGGER.trace(">< updateAddRequest");
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateState(fr.in2p3.cc.
+     * storage.treqs.model.Queue, java.util.Calendar, short, short)
+     */
     @Override
     public void updateState(final Queue queue, final Calendar time,
             final short nbDone, final short nbFailed) {

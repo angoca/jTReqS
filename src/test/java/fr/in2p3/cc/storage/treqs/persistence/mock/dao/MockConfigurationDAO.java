@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.MediaTypesController;
+import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesController;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
@@ -17,6 +17,11 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
 import fr.in2p3.cc.storage.treqs.persistence.mock.exception.MockPersistanceException;
 
+/**
+ * Configuration DAO mock.
+ *
+ * @author Andrés Gómez
+ */
 public final class MockConfigurationDAO implements ConfigurationDAO {
 
     /**
@@ -30,6 +35,9 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      */
     private MockPersistanceException exception;
 
+    /**
+     * Default constructor.
+     */
     public MockConfigurationDAO() {
         this.exception = null;
     }
@@ -43,7 +51,10 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      * T10KB  8
      * </code>
      *
-     * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations()
+     * @link
+     *       fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
+     *       ()
+     * @return The list of mock allocations.
      * @throws TReqSException
      *             Never.
      */
@@ -81,7 +92,9 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      *    T10KC                         1     1     2
      * </code>
      *
-     * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation()
+     * @link fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#
+     *       getResourceAllocation()
+     * @return Allocation per mock users.
      * @throws AbstractPersistanceException
      *             Never.
      */
@@ -139,6 +152,12 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
         return values;
     }
 
+    /**
+     * Sets an exception when asking for the media types.
+     *
+     * @param excep
+     *            Exception to throw.
+     */
     public void setMediaTypeException(final MockPersistanceException excep) {
         this.exception = excep;
     }

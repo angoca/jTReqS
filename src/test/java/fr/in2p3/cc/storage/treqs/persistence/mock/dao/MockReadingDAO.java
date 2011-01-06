@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,6 +43,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
@@ -53,6 +53,8 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
 
 /**
  * Managing Reading object updates to database.
+ *
+ * @author Andrés Gómez
  */
 public final class MockReadingDAO implements ReadingDAO {
     /**
@@ -61,80 +63,123 @@ public final class MockReadingDAO implements ReadingDAO {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockReadingDAO.class);
 
-    private List<PersistenceHelperFileRequest> newJobs;
+    /**
+     * List of new requests.
+     */
+    private List<PersistenceHelperFileRequest> newRequests;
 
-    private AbstractPersistanceException newJobsException;
+    /**
+     * Exception to throw as new request.
+     */
+    private AbstractPersistanceException newRequestException;
+    /**
+     * Exception to throw.
+     */
     private AbstractPersistanceException requestStatusByIdException;
 
+    /**
+     * Starts the mock reading.
+     */
     public MockReadingDAO() {
         this.requestStatusByIdException = null;
-        this.newJobs = createJobs();
+        this.newRequests = this.createRequests();
     }
 
     /**
-     * @return
+     * @return A created list of requests.
      */
-    private List<PersistenceHelperFileRequest> createJobs() {
-        List<PersistenceHelperFileRequest> jobs = new ArrayList<PersistenceHelperFileRequest>();
+    private List<PersistenceHelperFileRequest> createRequests() {
+        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
         int qty = (int) (Math.random() * 10) - 2;
         for (int i = 0; i < qty; i++) {
-            createRequest(jobs);
+            createRequest(requests);
         }
-        return jobs;
+        return requests;
     }
 
     /**
-     * @param jobs
+     * @param requests
+     *            Given list of requests.
      */
-    private void createRequest(final List<PersistenceHelperFileRequest> jobs) {
-        short id = (short) (Math.random() * 1000 + 1);
+    private void createRequest(final List<PersistenceHelperFileRequest> requests) {
+        short id = (short) (Math.random() * Constants.MILLISECONDS + 1);
         String filename = "path" + (int) (Math.random() * 10) + "/file"
                 + (int) (Math.random() * 100);
         byte nbTries = (byte) ((int) (Math.random() * 10) - 9);
         if (nbTries <= 0) {
             nbTries = 1;
         }
-        String owner = "user" + (int) (Math.random() * 10);
+        String user = "user" + (int) (Math.random() * 10);
         PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-                id, filename, nbTries, owner);
-        jobs.add(request);
+                id, filename, nbTries, user);
+        requests.add(request);
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#firstUpdate(fr.in2p3.cc
+     * .storage.treqs.model.Reading, java.lang.String)
+     */
     @Override
     public void firstUpdate(final Reading reading, final String message)
             throws MySQLExecuteException {
         LOGGER.trace(">< firstUpdate");
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#getNewRequests(int)
+     */
     @Override
     public List<PersistenceHelperFileRequest> getNewRequests(final int l)
             throws AbstractPersistanceException {
-        LOGGER.trace("> getNewJobs");
+        LOGGER.trace("> getNewRequests");
 
-        if (this.newJobsException != null) {
-            AbstractPersistanceException toThrow = this.newJobsException;
-            this.newJobsException = null;
+        if (this.newRequestException != null) {
+            AbstractPersistanceException toThrow = this.newRequestException;
+            this.newRequestException = null;
             throw toThrow;
         }
 
-        List<PersistenceHelperFileRequest> ret = this.newJobs;
-        this.newJobs = createJobs();
+        List<PersistenceHelperFileRequest> ret = this.newRequests;
+        this.newRequests = createRequests();
 
-        LOGGER.trace("< getNewJobs");
+        LOGGER.trace("< getNewRequests");
 
         return ret;
     }
 
-    public void setNewJobs(final List<PersistenceHelperFileRequest> jobs) {
-        this.newJobs = jobs;
+    /**
+     * @param requests
+     *            List of requests.
+     */
+    public void setNewRequests(final List<PersistenceHelperFileRequest> requests) {
+        this.newRequests = requests;
     }
 
-    public void setNewJobsException(final AbstractPersistanceException exception) {
-        this.newJobsException = exception;
+    /**
+     * @param exception
+     *            Exception to throw.
+     */
+    public void setNewRequesusException(
+            final AbstractPersistanceException exception) {
+        this.newRequestException = exception;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#setRequestStatusById(int,
+     * fr.in2p3.cc.storage.treqs.model.RequestStatus, int, java.lang.String)
+     */
+    @Override
     public void setRequestStatusById(final int r, final RequestStatus fs,
-            final int errcode, final String m) throws AbstractPersistanceException {
+            final int errcode, final String m)
+            throws AbstractPersistanceException {
         LOGGER.trace("> setRequestStatusById-code");
 
         if (this.requestStatusByIdException != null) {
@@ -146,9 +191,18 @@ public final class MockReadingDAO implements ReadingDAO {
         LOGGER.trace("< setRequestStatusById-code");
     }
 
-    public void setRequestStatusById(final int id,
-            final RequestStatus status, final String message)
-            throws AbstractPersistanceException {
+    /**
+     * @param id
+     *            Id of the request.
+     * @param status
+     *            Status of the request.
+     * @param message
+     *            Message of the request.
+     * @throws AbstractPersistanceException
+     *             Never.
+     */
+    public void setRequestStatusById(final int id, final RequestStatus status,
+            final String message) throws AbstractPersistanceException {
         if (this.requestStatusByIdException != null) {
             AbstractPersistanceException toThrow = this.requestStatusByIdException;
             this.requestStatusByIdException = null;
@@ -156,17 +210,35 @@ public final class MockReadingDAO implements ReadingDAO {
         }
     }
 
+    /**
+     * @param exception
+     *            Sets the exception to throw.
+     */
     public void setRequestStatusByIdException(
             final AbstractPersistanceException exception) {
         this.requestStatusByIdException = exception;
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#update(fr.in2p3.cc.storage
+     * .treqs.model.Reading, fr.in2p3.cc.storage.treqs.model.RequestStatus,
+     * java.util.Calendar)
+     */
     @Override
     public void update(final Reading reading, final RequestStatus status,
             final Calendar time) throws AbstractPersistanceException {
         LOGGER.trace(">< update");
     }
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#updateUnfinishedRequests()
+     */
     @Override
     public int updateUnfinishedRequests() throws AbstractPersistanceException {
         LOGGER.trace(">< updateUnfinishedRequests");
