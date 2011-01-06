@@ -39,10 +39,11 @@ package fr.in2p3.cc.storage.treqs.hsm.mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
-import fr.in2p3.cc.storage.treqs.model.Constants;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.model.File;
 
 /**
  * This is a mock bridge. This does not returns real values, all are random.
@@ -97,9 +98,8 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
-            LOGGER.debug("Creating instance.");
-
             instance = new HSMMockBridge();
+            LOGGER.info("Mock Bridge created");
         }
 
         LOGGER.trace("< getInstance");
@@ -114,11 +114,11 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     /**
      * Exception to throw in the next call of get metadata.
      */
-    private HSMException filePropertiesException;
+    private AbstractHSMException filePropertiesException;
     /**
      * Exception to throw in the next call of stage.
      */
-    private HSMException stageException;
+    private AbstractHSMException stageException;
     /**
      * Time of the stage.
      */
@@ -134,7 +134,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     private HSMMockBridge() {
         LOGGER.trace("> create instance");
 
-        this.fileProperties = generateTape();
+        this.fileProperties = this.generateTape();
         this.filePropertiesException = null;
         this.stageException = null;
         this.stageMillis = 0;
@@ -156,17 +156,17 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         String tape = "";
         int randomized = (int) (Math.random() * TAPE_TYPES);
         switch (randomized) {
-            case 0:
-                tape += "IT";
-                break;
-            case 1:
-                tape += "JT";
-                break;
-            case 2:
-                tape += "IS";
-                break;
-            default:
-                tape += "JT";
+        case 0:
+            tape += "IT";
+            break;
+        case 1:
+            tape += "JT";
+            break;
+        case 2:
+            tape += "IS";
+            break;
+        default:
+            tape += "JT";
         }
         tape += "000";
         tape += (int) (Math.random() * TAPE_NUMBER);
@@ -185,13 +185,14 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String)
      */
     @Override
     public HSMHelperFileProperties getFileProperties(final String name)
-            throws HSMException {
+            throws AbstractHSMException {
         LOGGER.trace("> getFileProperties");
 
         assert name != null && !name.equals("");
@@ -204,7 +205,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         if (this.filePropertiesException != null) {
             // Takes the exception.
-            HSMException toThrow = this.filePropertiesException;
+            AbstractHSMException toThrow = this.filePropertiesException;
             // Clears the exception
             this.filePropertiesException = null;
             // Throw the predefined exception.
@@ -213,7 +214,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         LOGGER.info(
                 "Faked file properties generated for '{}' "
-                        + "(size {}, position {}, tape{})",
+                        + "(size {}, position {}, tape {})",
                 new String[] { name, Long.toString(ret.getSize()),
                         ret.getPosition() + "", ret.getTapeName() });
 
@@ -242,7 +243,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
      * @param exception
      *            Exception for get metadata.
      */
-    public void setFilePropertiesException(final HSMException exception) {
+    public void setFilePropertiesException(final AbstractHSMException exception) {
         this.filePropertiesException = exception;
     }
 
@@ -252,7 +253,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
      * @param exception
      *            Exception for the staging.
      */
-    public void setStageException(final HSMException exception) {
+    public void setStageException(final AbstractHSMException exception) {
         this.stageException = exception;
     }
 
@@ -268,16 +269,17 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
     /*
      * (non-Javadoc)
+     *
      * @see
-     * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(java.lang.String,
-     * long)
+     * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#stage(fr.in2p3.cc.storage
+     * .treqs.model.File)
      */
     @Override
-    public void stage(final String name, final long size) throws HSMException {
+    public void stage(final File name) throws AbstractHSMException {
         LOGGER.trace("> stage");
 
         if (this.stageException != null) {
-            HSMException toThrow = this.stageException;
+            AbstractHSMException toThrow = this.stageException;
             this.stageException = null;
             throw toThrow;
         }
@@ -318,6 +320,10 @@ public final class HSMMockBridge extends AbstractHSMBridge {
      *            Object to synchronize threads.
      */
     public void waitStage(final Object notifier) {
+        LOGGER.trace("> waitStage");
+
         this.notifyObject = notifier;
+
+        LOGGER.trace("< waitStage");
     }
 }
