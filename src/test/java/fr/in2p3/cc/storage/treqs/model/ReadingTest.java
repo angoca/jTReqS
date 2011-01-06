@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,8 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-
-import java.util.GregorianCalendar;
+package fr.in2p3.cc.storage.treqs.model;
 
 import junit.framework.Assert;
 
@@ -46,86 +43,112 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMCloseException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
-import fr.in2p3.cc.storage.treqs.model.exception.NullParameterException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
+import fr.in2p3.cc.storage.treqs.model.exception.InvalidStatusTransitionException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
- * ReadingTest.cpp
+ * Tests for Reading.
  *
- * @version 2010-03-23
- * @author gomez
+ * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class ReadingTest {
+public final class ReadingTest {
 
+    /**
+     * Establishes the configuration.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Before
     public void setUp() throws TReqSException {
-        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-        Configurator
-                .getInstance()
-                .setValue("MAIN", "READING_DAO",
-                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
-        Configurator.getInstance().setValue("MAIN", "HSM_BRIDGE",
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY,
+                "fr.in2p3.cc.storage.treqs.persistence.mock.MockDAOFactory");
+        Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
+                Constants.HSM_BRIDGE,
                 "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge");
     }
 
+    /**
+     * Destroys the objects.
+     */
     @After
     public void tearDown() {
         Configurator.destroyInstance();
         HSMMockBridge.destroyInstance();
     }
 
+    /**
+     * Retrieves the queue of a reading.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test01getQueue() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
+    public void testGetQueue01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 1);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 100, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
 
         Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+                "filename", 1), 10, tape, new User("username")), (byte) 1,
+                queue);
 
         Queue actual = reading.getQueue();
         Queue expected = queue;
         Assert.assertEquals(expected, actual);
     }
 
+    /**
+     * Tries to stage a file that already arrived to the maximum of tries.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test01maxRetries() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
+    public void testMaxRetries01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 1);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 100, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
         Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+                "filename", 1), 100, tape, new User("username")), (byte) 1,
+                queue);
 
-        reading.setMaxTries((byte) 2);
         reading.setNumberOfTries((byte) 2);
+
+        HSMMockBridge.getInstance().setStageTime(100);
         reading.stage();
     }
 
+    /**
+     * Tries to set a negative error code.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test01OtherMethods() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+    public void testOtherMethods01() throws TReqSException {
+        File file = new File("filename", 1);
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 100, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 3);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
@@ -142,111 +165,19 @@ public class ReadingTest {
     }
 
     /**
-     * Tests to created a reading with null metadata.
+     * Tries to set a null error message.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test01ReadingConstructor() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-
-        boolean failed = false;
-        try {
-            new Reading(null, (byte) 1, queue);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof NullParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to stage a file already queued.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test01StageQueued() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        reading.stage();
-    }
-
-    @Test
-    public void test01StateSetStagedAfterSubmitted() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        boolean failed = false;
-        try {
-            reading.setFileRequestStatus(FileStatus.FS_STAGED);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void test01toString() throws TReqSException {
-        String filename = "filename";
-        String tapename = "tapename";
-        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        FilePositionOnTape fpot = new FilePositionOnTape(new File(filename,
-                new User("username", (short) 1, "groupname", (short) 10), 100),
-                new GregorianCalendar(), 1, tape);
-        int qid = 0;
-        byte nbtries = 1;
-        Reading reading = new Reading(fpot, nbtries, queue);
-
-        String actual = reading.toString();
-
-        String expected = "Reading{ Starttime: null, Error code: 0, Error message: , File state: FS_SUBMITTED, Max retries: 3, Number of tries: "
-                + nbtries
-                + ", Queue id: "
-                + qid
-                + ", File: "
-                + filename
-                + ", Tape: " + tapename + "}";
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test02OtherMethods() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+    public void testOtherMethods02() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
@@ -262,77 +193,20 @@ public class ReadingTest {
         }
     }
 
-    @Test
-    public void test02ReadingConstructor() throws TReqSException {
-        Configurator.getInstance().deleteValue("MAIN", "MAX_READ_RETRIES");
-
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-
-        new Reading(new FilePositionOnTape(new File("filename", new User(
-                "username", (short) 1, "groupname", (short) 10), 100),
-                new GregorianCalendar(), 1, tape), (byte) 1, queue);
-    }
-
     /**
-     * Tests to stage a file with max retries.
+     * Tries to set an empty error message.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test02StageMaxRetries() throws TReqSException {
-        byte max = Constants.MAX_READ_RETRIES;
-        try {
-            max = Byte.parseByte(Configurator.getInstance().getValue("MAIN",
-                    "MAX_READ_RETRIES"));
-        } catch (ConfigNotFoundException e) {
-        }
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) max, queue);
-
-        reading.stage();
-    }
-
-    @Test
-    public void test02StateSetFailedAfterSubmitted() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        boolean failed = false;
-        try {
-            reading.setFileRequestStatus(FileStatus.FS_FAILED);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void test03OtherMethods() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+    public void testOtherMethods03() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
@@ -349,196 +223,19 @@ public class ReadingTest {
     }
 
     /**
-     * Tests to stage a file already staged.
+     * Tries to set a negative number of tries.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test03StageMaxRetries() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
-
-        reading.stage();
-    }
-
-    @Test
-    public void test03StateSetCreatedAfterSubmitted() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        boolean failed = false;
-        try {
-            reading.setFileRequestStatus(FileStatus.FS_CREATED);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void test04OtherMethods() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        boolean failed = false;
-        try {
-            reading.setMaxTries((byte) -1);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to stage a file marked as unreadable.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test04StageFailed() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
-
-        reading.stage();
-    }
-
-    @Test
-    public void test04StateSetSubmittedAfterSubmitted() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        boolean failed = false;
-        try {
-            reading.setFileRequestStatus(FileStatus.FS_SUBMITTED);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void test05OtherMethods() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        boolean failed = false;
-        try {
-            reading.setMetaData(null);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to stage a file.
-     *
-     * @throws TReqSException
-     */
-    @Test
-    public void test05Stage() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        HSMMockBridge.getInstance().setStageTime(100);
-
-        reading.stage();
-    }
-
-    @Test
-    public void test05StateSetCreatedAfterQueued() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        boolean failed = false;
-        try {
-            reading.setFileRequestStatus(FileStatus.FS_CREATED);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void test06OtherMethods() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+    public void testOtherMethods04() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
@@ -555,105 +252,43 @@ public class ReadingTest {
     }
 
     /**
-     * Tests to stage a file, but generates an HSMClose exception.
+     * Sets correctly the code and the message.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test06Stage() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        HSMException exception = new HSMCloseException((short) 1);
-        HSMMockBridge.getInstance().setStageException(exception);
-
-        reading.stage();
-    }
-
-    @Test
-    public void test06StateSetQueuedAfterQueued() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        boolean failed = false;
-        try {
-            reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void test07OtherMethods() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+    public void testOtherMethods05() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
         reading.setErrorCode((short) 2);
         reading.setErrorMessage("message");
-        reading.setMaxTries((byte) 2);
     }
 
     /**
-     * Tests to stage a file, but generates an HSMOpen exception.
+     * Tests to create a reading with null metadata.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test07Stage() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-
-        HSMException exception = new HSMOpenException((short) 1);
-        HSMMockBridge.getInstance().setStageException(exception);
-
-        reading.stage();
-    }
-
-    @Test
-    public void test07StateSetCreatedAfterStaged() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
+    public void testReadingConstructor01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        Queue queue = new Queue(new FilePositionOnTape(
+                new File("filename", 100), 50, tape, new User("username")),
+                (byte) 2);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_CREATED);
+            new Reading(null, (byte) 1, queue);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof AssertionError)) {
                 failed = true;
             }
         }
@@ -663,67 +298,106 @@ public class ReadingTest {
     }
 
     /**
-     * Tests to stage a file, but generates an HSMStage exception.
+     * Test to create a reading without max read retries.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test08Stage() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+    public void testReadingConstructor02() throws TReqSException {
+        Configurator.getInstance().deleteValue(Constants.SECTION_QUEUE,
+                Constants.MAX_READ_RETRIES);
 
-        HSMException exception = new HSMStageException((short) 1);
-        HSMMockBridge.getInstance().setStageException(exception);
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+
+        new Reading(fpot, (byte) 1, queue);
+    }
+
+    /**
+     * Tests to stage a file.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStage01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+
+        HSMMockBridge.getInstance().setStageTime(100);
+
         reading.stage();
     }
 
+    /**
+     * Tests to stage a file, but generates an HSMOpen exception. However, the
+     * process changes the requests as submitted because the reading can be
+     * redone.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test08StateSetSubmittedAfterStaged() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
+    public void testStage02() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        boolean failed = false;
-        try {
-            reading.setFileRequestStatus(FileStatus.FS_SUBMITTED);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
+        AbstractHSMException exception = new HSMOpenException((short) 1);
+        HSMMockBridge.getInstance().setStageException(exception);
+
+        reading.stage();
+    }
+
+    /**
+     * Tests to stage a file, but generates an HSMStage exception. However the
+     * exception is treated before and the file is changed to submitted.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStage03() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+
+        AbstractHSMException exception = new HSMStageException((short) 1);
+        HSMMockBridge.getInstance().setStageException(exception);
+
+        reading.stage();
     }
 
     /**
      * Tests to stage a file, but generates an HSMResource exception.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test09Stage() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
+    public void testStage04() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        HSMException exception = new HSMResourceException((short) 1);
+        AbstractHSMException exception = new HSMResourceException((short) 1);
         HSMMockBridge.getInstance().setStageException(exception);
 
         boolean failed = false;
@@ -740,24 +414,111 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Tests to stage a file marked as unreadable.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test09StateSetQueueAfterStaged() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
+    public void testStageFailed01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+
+        reading.stage();
+    }
+
+    /**
+     * Tests to stage a file with max retries.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStageMaxRetries01() throws TReqSException {
+        byte max = Configurator.getInstance().getByteValue(
+                Constants.SECTION_READING, Constants.MAX_READ_RETRIES,
+                DefaultProperties.MAX_READ_RETRIES);
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) max, queue);
+
+        reading.stage();
+    }
+
+    /**
+     * Tests to stage a file already staged.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStageMaxRetries02() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
+
+        reading.stage();
+    }
+
+    /**
+     * Tests to stage a file already queued.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStageQueued01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        reading.stage();
+    }
+
+    /**
+     * Invalid change status from failed to created.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetCreatedAfterFailed01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.FAILED);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+            reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -766,24 +527,31 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from queued to created.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+
     @Test
-    public void test10StateSetFailedAfterStaged() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
+    public void testStateSetCreatedAfterQueued01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_FAILED);
+            reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -792,24 +560,31 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from staged to created.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test11StateSetStagedAfterStaged() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
+    public void testStateSetCreatedAfterStaged01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_STAGED);
+            reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -818,24 +593,29 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from submitted to created.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test12StateSetCreatedAfterFailed() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
+    public void testStateSetCreatedAfterSubmitted01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_CREATED);
+            reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -844,24 +624,31 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from failed to failed.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test13StateSetSubmittedAfterFailed() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
+    public void testStateSetFailedAfterFailed01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.FAILED);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_SUBMITTED);
+            reading.setFileRequestStatus(RequestStatus.FAILED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -870,24 +657,31 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from staged to failed.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test14StateSetQueuedAfterFailed() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
+    public void testStateSetFailedAfterStaged01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_QUEUED);
+            reading.setFileRequestStatus(RequestStatus.FAILED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -896,24 +690,29 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from submitted to failed.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test15StateSetStagedAfterFailed() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
+    public void testStateSetFailedAfterSubmitted01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_STAGED);
+            reading.setFileRequestStatus(RequestStatus.FAILED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -922,24 +721,31 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from staged to queued.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test16StateSetFailedAfterFailed() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        Reading reading = new Reading(new FilePositionOnTape(new File(
-                "filename", new User("username", (short) 1, "groupname",
-                        (short) 10), 100), new GregorianCalendar(), 1, tape),
-                (byte) 1, queue);
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
+    public void testStateSetQueueAfterStaged01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
 
         boolean failed = false;
         try {
-            reading.setFileRequestStatus(FileStatus.FS_FAILED);
+            reading.setFileRequestStatus(RequestStatus.QUEUED);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
         }
@@ -948,4 +754,291 @@ public class ReadingTest {
         }
     }
 
+    /**
+     * Invalid change status from failed to queued.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetQueuedAfterFailed01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.QUEUED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Invalid change status from queued to queued.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetQueuedAfterQueued01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.QUEUED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Invalid change status from failed to staged.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetStagedAfterFailed01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.STAGED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Invalid change status from staged to staged.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetStagedAfterStaged01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.STAGED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Invalid change status from submitted to staged.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetStagedAfterSubmitted01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.STAGED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Invalid change status from failed to submitted.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetSubmittedAfterFailed01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.SUBMITTED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Invalid change status from staged to submitted.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetSubmittedAfterStaged01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.SUBMITTED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Invalid change status from submitted to submitted.
+     * <p>
+     * created -> ((submitted -> queued -> (staged | failed) ) | on_disk)
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateSetSubmittedAfterSubmitted01() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        Reading reading = new Reading(fpot, (byte) 1, queue);
+
+        boolean failed = false;
+        try {
+            reading.setFileRequestStatus(RequestStatus.SUBMITTED);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStatusTransitionException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests the to string.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testToString01() throws TReqSException {
+        String filename = "filename";
+        String tapename = "tapename";
+        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
+        File file = new File("filename", 100);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+                new User("username"));
+        Queue queue = new Queue(fpot, (byte) 10);
+        int qid = 0;
+        byte nbtries = 1;
+        Reading reading = new Reading(fpot, nbtries, queue);
+
+        String actual = reading.toString();
+
+        String expected = "Reading{ Starttime: null, Error code: 0, "
+                + "Error message: , File state: SUBMITTED, Max retries: 3, "
+                + "Number of tries: " + nbtries + ", Queue id: " + qid
+                + ", File: " + filename + ", Tape: " + tapename + "}";
+
+        Assert.assertEquals(expected, actual);
+    }
 }
