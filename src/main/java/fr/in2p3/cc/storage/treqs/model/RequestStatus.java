@@ -53,13 +53,6 @@ public enum RequestStatus {
      */
     FAILED((short) 160),
     /**
-     * File could not be processed. There are not enough parameters to process
-     * the requests.
-     * <p>
-     * TODO v1.5 revisar si se usa, ya que hay columnas not null.
-     */
-    INVALID((short) 180),
-    /**
      * File is submitted to HPSS for staging.
      */
     QUEUED((short) 120),
