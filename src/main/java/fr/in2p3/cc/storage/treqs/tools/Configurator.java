@@ -232,14 +232,14 @@ public final class Configurator {
     public short getShortValue(final String sec, final String key,
             final short defaultValue)
             throws ProblematicConfiguationFileException {
-        LOGGER.trace("> getByteValue");
+        LOGGER.trace("> getShortValue");
 
         assert sec != null && !sec.equals("");
         assert key != null && !key.equals("");
 
         short value = this.properties.getShort(sec + "." + key, defaultValue);
 
-        LOGGER.trace("< getByteValue");
+        LOGGER.trace("< getShortValue");
 
         return value;
     }
