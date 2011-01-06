@@ -44,9 +44,8 @@ import org.junit.runner.RunWith;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 
 /**
- * MediaTypeTest.cpp.
+ * Tests for MediaType.
  *
- * @version 2010-07-16
  * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
