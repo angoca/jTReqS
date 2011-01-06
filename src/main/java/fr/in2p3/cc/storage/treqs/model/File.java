@@ -80,7 +80,7 @@ public final class File {
     public File(final String filename, final long fileSize) {
         LOGGER.trace("> Creating file.");
 
-        assert filename != null;
+        assert filename != null && !filename.equals("");
 
         this.name = filename;
         this.setSize(fileSize);

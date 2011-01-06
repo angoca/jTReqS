@@ -179,8 +179,7 @@ public final class Tape {
     private void setName(final String tapeName) {
         LOGGER.trace("> setName");
 
-        assert tapeName != null;
-        assert !tapeName.equals("");
+        assert tapeName != null && !tapeName.equals("");
 
         this.name = tapeName;
 
