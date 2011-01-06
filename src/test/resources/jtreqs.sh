@@ -15,7 +15,7 @@ SLF4J=${REPOSITORY}/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar
 CLASSPATH=.:${COMMONS_CLI}:${COMMONS_CONFIGURATION}:${COMMONS_LANG}:${COMMONS_LOGGING}:${COMMONS_COLLECTIONS}:${LOGBACK_CLASSIC}:${LOGBACK_CORE}:${MYSQL}:${SLF4J}
 
 LOGBACK_CONF="-Dlogback.configurationFile=logback.xml"
-CONF_FILE="-c treqs.conf.properties"
+CONF_FILE=
 
 MAIN="fr.in2p3.cc.storage.treqs.main.Main"
 
