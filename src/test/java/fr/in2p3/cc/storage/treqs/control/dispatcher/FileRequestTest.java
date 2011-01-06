@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.control.dispatcher;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,8 @@ package fr.in2p3.cc.storage.treqs.control.dispatcher;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control.dispatcher;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -47,10 +47,9 @@ import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
- * FileRequestTest.java.
+ * Tests for FileRequest.
  *
- * @version 2010-03-09
- * @author gomez
+ * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class FileRequestTest {
@@ -91,7 +90,7 @@ public final class FileRequestTest {
     }
 
     /**
-     * Tests a constructor with null client.
+     * Tests a constructor with null file.
      *
      * @throws InvalidParameterException
      *             Never
@@ -102,7 +101,7 @@ public final class FileRequestTest {
     }
 
     /**
-     * Tests a constructor with null client.
+     * Tests a constructor with empty file.
      *
      * @throws InvalidParameterException
      *             Never
@@ -124,7 +123,7 @@ public final class FileRequestTest {
     }
 
     /**
-     * Tests a constructor with null client.
+     * Tests a constructor with negative tries.
      *
      * @throws InvalidParameterException
      *             Never
