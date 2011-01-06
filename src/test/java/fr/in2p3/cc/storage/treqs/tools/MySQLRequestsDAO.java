@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.tools;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,76 +34,120 @@ package fr.in2p3.cc.storage.treqs.tools;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.tools;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.AbstractMySQLException;
 
 /**
- * RequestsDAO.cpp
- * 
- * @version Feb 25, 2010
- * @author gomez
+ * MySQLRequestsDAO.cpp.
+ *
+ * @author Andrés Gómez
  */
-public class RequestsDAO {
+public final class MySQLRequestsDAO {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(RequestsDAO.class);
+            .getLogger(MySQLRequestsDAO.class);
 
-    public static void deleteAll() {
+    /**
+     * Deletes all from the requests table.
+     *
+     * @throws TReqSException
+     *             If there is a problem while deleting.
+     */
+    public static void deleteAll() throws TReqSException {
         String sqlstatement = "delete from requests";
         LOGGER.debug("The statement is: {}", sqlstatement);
         try {
             int nrows = MySQLBroker.getInstance().executeModification(
                     sqlstatement);
             LOGGER.info("Updated {} requests for file ", nrows);
-        } catch (MySQLException e) {
-            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        } catch (AbstractMySQLException e) {
+            LOGGER.error("MySQL error: {}", e.getMessage());
         }
     }
 
-    public static void deleteRow(String fileName) {
-        String sqlstatement = "delete from requests where hpss_file ='"
-                + fileName + "'";
+    /**
+     * Deletes a specific row of the database.
+     *
+     * @param fileName
+     *            File to delete.
+     * @throws TReqSException
+     *             If there is a problem while deleting.
+     */
+    public static void deleteRow(final String fileName) throws TReqSException {
+        String sqlstatement = "delete from requests where file ='" + fileName
+                + "'";
         LOGGER.debug("The statement is: {}", sqlstatement);
         try {
             int nrows = MySQLBroker.getInstance().executeModification(
                     sqlstatement);
             LOGGER.info("Updated {} requests for file ", nrows);
-        } catch (MySQLException e) {
-            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        } catch (AbstractMySQLException e) {
+            LOGGER.error("MySQL error: {}", e.getMessage());
         }
     }
 
-    public static void insertRow(String fileName) {
-        String sqlstatement = "insert into requests (hpss_file) values ('"
+    /**
+     * Inserts a row in the database.
+     *
+     * @param fileName
+     *            File to delete.
+     * @throws TReqSException
+     *             If there is a problem while deleting the row.
+     */
+    public static void insertRow(final String fileName) throws TReqSException {
+        String sqlstatement = "insert into requests (file) values ('"
                 + fileName + "')";
         LOGGER.debug("The statement is: {}", sqlstatement);
         try {
             int nrows = MySQLBroker.getInstance().executeModification(
                     sqlstatement);
             LOGGER.info("Updated {} requests for file ", nrows);
-        } catch (MySQLException e) {
-            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        } catch (AbstractMySQLException e) {
+            LOGGER.error("MySQL error: {}", e.getMessage());
         }
     }
 
-    public static void insertRow(String fileName, String userName,
-            FileStatus status) {
-        String sqlstatement = "insert into requests (hpss_file, user, status) values ('"
-                + fileName + "','" + userName + "'," + status.getId() + ")";
+    /**
+     * Inserts a row with all the information.
+     *
+     * @param fileName
+     *            File to stage.
+     * @param userName
+     *            User owning the request.
+     * @param status
+     *            Status of the requests.
+     * @throws TReqSException
+     *             If there is a problem inserting the row.
+     */
+    public static void insertRow(final String fileName, final String userName,
+            final RequestStatus status) throws TReqSException {
+        String sqlstatement = "insert into requests (file, user, status, "
+                + "creation_time, client, version) values ('" + fileName
+                + "','" + userName + "'," + status.getId()
+                + ", now(), 'localhost', '1.5')";
         LOGGER.debug("The statement is: {}", sqlstatement);
         try {
             int nrows = MySQLBroker.getInstance().executeModification(
                     sqlstatement);
             LOGGER.info("Updated {} requests for file ", nrows);
-        } catch (MySQLException e) {
-            LOGGER.error("MySQL error [{}]: {}", e.getCode(), e.getMessage());
+        } catch (AbstractMySQLException e) {
+            LOGGER.error("MySQL error: {}", e.getMessage());
         }
+    }
+
+    /**
+     * Default constructor hidden.
+     */
+    private MySQLRequestsDAO() {
+        // Nothing.
     }
 }
