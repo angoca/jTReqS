@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,7 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-import java.util.Calendar;
+package fr.in2p3.cc.storage.treqs.model;
 
 import junit.framework.Assert;
 
@@ -46,127 +44,103 @@ import org.junit.runner.RunWith;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 
 /**
- * TapeTest.java
- * 
- * @version 2010-03-09
- * @author gomez
+ * Tests for Tape.
+ *
+ * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class TapeTest {
+public final class TapeTest {
     /**
      * Tests to create a tape with all attributes passed as parameters.
      */
     @Test
-    public void test01Constructor() {
+    public void testConstructor01() {
         String tapename = "tapename";
         MediaType mediatype = new MediaType((byte) 1, "T10K");
-        Tape tape = new Tape(tapename, mediatype, TapeStatus.TS_UNLOCKED);
+        Tape tape = new Tape(tapename, mediatype);
 
-        Assert.assertEquals("Complete constructor", mediatype, tape
-                .getMediaType());
+        Assert.assertEquals("Complete constructor", mediatype,
+                tape.getMediaType());
     }
 
+    /**
+     * Null tape name.
+     */
     @Test
-    public void test01StatusUpdateTime() {
-        String tapename = "tapename";
+    public void testConstructor02() {
         MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
 
+        boolean failed = false;
         try {
-            tape.setStatusUpdateTime(null);
-            Assert.fail();
+            new Tape(null, mediatype);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
+    /**
+     * Empty tape name.
+     */
     @Test
-    public void test01toString() {
+    public void testConstructor03() {
+        String tapename = "";
+        MediaType mediatype = new MediaType((byte) 1, "T10K");
+
+        boolean failed = false;
+        try {
+            new Tape(tapename, mediatype);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Null media type.
+     */
+    @Test
+    public void testConstructor04() {
+        String tapename = "tapename";
+
+        boolean failed = false;
+        try {
+            new Tape(tapename, null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests toString.
+     */
+    @Test
+    public void testToString01() {
         String tapename = "tapename";
         MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
+        Tape tape = new Tape(tapename, mediatype);
 
         String actual = tape.toString();
 
         String expected = "Tape{ media type: " + mediatype.getName()
-                + ", name: " + tapename + ", status: " + status + "}";
+                + ", name: " + tapename + "}";
         Assert.assertEquals("toString", expected, actual);
-    }
-
-    @Test
-    public void test02Constructor() {
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-
-        try {
-            new Tape(null, mediatype, TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02StatusUpdateTime() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        TapeStatus status = TapeStatus.TS_UNLOCKED;
-        Tape tape = new Tape(tapename, mediatype, status);
-
-        tape.setStatusUpdateTimeNow();
-
-        Calendar time = tape.getStatusUpdateTime();
-
-        Assert.assertTrue(time != null);
-    }
-
-    @Test
-    public void test03Constructor() {
-        String tapename = "";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-
-        try {
-            new Tape(tapename, mediatype, TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test04Constructor() {
-        String tapename = "tapename";
-
-        try {
-            new Tape(tapename, null, TapeStatus.TS_UNLOCKED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test05Constructor() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-
-        try {
-            new Tape(tapename, mediatype, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
     }
 
 }
