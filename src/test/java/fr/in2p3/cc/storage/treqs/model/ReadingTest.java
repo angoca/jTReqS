@@ -45,6 +45,7 @@ import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
@@ -72,11 +73,9 @@ public final class ReadingTest {
     @Before
     public void setUp() throws TReqSException {
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
-                Constants.PESISTENCE_FACTORY,
-                "fr.in2p3.cc.storage.treqs.persistence.mock.MockDAOFactory");
+                Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
-                Constants.HSM_BRIDGE,
-                "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge");
+                Constants.HSM_BRIDGE, MainTests.MOCK_PERSISTANCE);
     }
 
     /**

@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
@@ -78,11 +79,8 @@ public final class StagerTest {
     @BeforeClass
     public static void oneTimeSetUp()
             throws ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE,
-                Constants.PESISTENCE_FACTORY,
-                "fr.in2p3.cc.storage.treqs.persistence."
-                        + "mock.MockDAOFactory");
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
     }
 
     /**
