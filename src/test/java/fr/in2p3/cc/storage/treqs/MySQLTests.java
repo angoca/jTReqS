@@ -48,6 +48,9 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLReadingDAOTest;
 
 /**
  * Tests at mysql level.
+ * <p>
+ * For all these test it is necessary to have an existing database called
+ * jtreqs.
  *
  * @author Andrés Gómez
  */
