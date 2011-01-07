@@ -59,4 +59,15 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLReadingDAOTest;
         MySQLConfigurationDAOTest.class, MySQLQueueDAOTest.class,
         MySQLReadingDAOTest.class })
 public final class MySQLTests {
+
+    public static final String MYSQL_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
+            + "persistence.mysql.MySQLDAOFactory";
+
+    /**
+     * Default constructor hidden.
+     */
+    private MySQLTests() {
+        // Hidden
+    }
+
 }
