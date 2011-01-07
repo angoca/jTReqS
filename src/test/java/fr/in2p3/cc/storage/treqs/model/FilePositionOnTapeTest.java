@@ -36,9 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.model;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import junit.framework.Assert;
 
 import org.junit.After;
@@ -55,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
- * Tests fot FilePositionOnTape.
+ * Tests for FilePositionOnTape.
  *
  * @author Andrés Gómez
  */
@@ -265,7 +262,6 @@ public final class FilePositionOnTapeTest {
     @Test
     public void testToString01() throws ProblematicConfiguationFileException {
         int position = 100;
-        Calendar timestamp = new GregorianCalendar(2010, 07, 01, 10, 30, 05);
         String username = "username";
         User user = new User(username);
 
@@ -281,8 +277,7 @@ public final class FilePositionOnTapeTest {
         String expectedSuffix = ", position: " + position + ", requester: "
                 + username + ", tape: " + tapeName + "}";
 
-        Assert.assertTrue("toString prefix",
-                actual.startsWith(expectedPrefix));
+        Assert.assertTrue("toString prefix", actual.startsWith(expectedPrefix));
         Assert.assertTrue("toString sufix", actual.endsWith(expectedSuffix));
     }
 }
