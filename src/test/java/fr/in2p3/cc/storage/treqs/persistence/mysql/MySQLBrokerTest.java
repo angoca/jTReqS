@@ -57,10 +57,9 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
- * Test for mysql.
+ * Test for mysql broker.
  *
  * @author Andrés Gómez
- *
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class MySQLBrokerTest {
