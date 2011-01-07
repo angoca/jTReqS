@@ -244,7 +244,7 @@ public final class Reading {
         // has to reflect it but in case of retry, the DAO should be notified
         // that the status is back to CREATED.
 
-        this.requestStatus = RequestStatus.QUEUED;
+        this.setFileRequestStatus(RequestStatus.QUEUED);
         this.tries++;
         this.startTime = new GregorianCalendar();
         final String filename = this.getMetaData().getFile().getName();
