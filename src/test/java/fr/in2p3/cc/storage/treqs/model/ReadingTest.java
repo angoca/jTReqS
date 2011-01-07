@@ -75,7 +75,7 @@ public final class ReadingTest {
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
-                Constants.HSM_BRIDGE, MainTests.MOCK_PERSISTANCE);
+                Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
     }
 
     /**
