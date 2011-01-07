@@ -43,6 +43,7 @@ import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -539,11 +540,13 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> cleanReferences");
 
         // FIXME concurrent problem
+        List<Short> positions = new ArrayList<Short>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
             Iterator keys = this.readingList.keySet().iterator();
             while (keys.hasNext()) {
                 short position = (Short) keys.next();
+                positions.add(position);
                 Reading reading = this.readingList.get(position);
                 String filename = reading.getMetaData().getFile().getName();
 
@@ -551,7 +554,10 @@ public final class Queue implements Comparable<Queue> {
                 FilePositionOnTapesController.getInstance().remove(filename);
                 // Removes the file from the controller.
                 FilesController.getInstance().remove(filename);
-                this.readingList.remove(position);
+            }
+            // Removes the objects of the list.
+            for (int i = 0; i < positions.size(); i++) {
+                this.readingList.remove(positions.get(i));
             }
         }
         String tapename = this.getTape().getName();
@@ -1091,6 +1097,9 @@ public final class Queue implements Comparable<Queue> {
      * <p>
      * The visibility is default for the tests. However, it should not be used
      * from the outside.
+     * <p>
+     * Activation time could be null if this queue was merged with a suspended
+     * one.
      *
      * @param time
      *            Time when the queue has finished to be processed.
@@ -1103,11 +1112,8 @@ public final class Queue implements Comparable<Queue> {
         assert time != null;
         assert this.getStatus() == QueueStatus.ENDED : this.getStatus();
         assert this.creationTime != null;
-        assert this.activationTime != null;
         assert this.suspensionTime == null;
         assert time.getTimeInMillis() >= this.getCreationTime()
-                .getTimeInMillis();
-        assert time.getTimeInMillis() >= this.getActivationTime()
                 .getTimeInMillis();
 
         this.endTime = time;
@@ -1328,7 +1334,7 @@ public final class Queue implements Comparable<Queue> {
         ret += ", number of failed: " + this.numberFailed;
         ret += ", number of suspended: " + this.numberSuspensions;
         ret += ", max suspend retries: " + this.maxSuspendRetries;
-        ret += ", head oosition: " + this.getHeadPosition();
+        ret += ", head position: " + this.getHeadPosition();
         if (this.getOwner() != null) {
             ret += ", owner: " + this.getOwner().getName();
         }
