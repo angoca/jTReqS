@@ -52,7 +52,6 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
-import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStatusTransitionException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 

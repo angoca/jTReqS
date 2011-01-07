@@ -44,11 +44,13 @@ import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
@@ -61,13 +63,16 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  *
  * @author Andrés Gómez
  */
-// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class QueueUnitTest {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(QueueUnitTest.class);
+    /**
+     * Three thousands.
+     */
     private static final int NUMBER_3000 = 3000;
 
     /**
@@ -2078,7 +2083,6 @@ public final class QueueUnitTest {
         queue.changeToEnded();
 
         String actual = queue.toString();
-        String expected = ", activation time: 1294342905819, end time: 1294342905820}";
         String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
                 + tapename + ", number of requests: 1, number of done: 0, "
                 + "number of failed: 0, number of suspended: 0, "
