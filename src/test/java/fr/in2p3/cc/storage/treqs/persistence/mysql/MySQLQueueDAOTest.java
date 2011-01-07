@@ -551,4 +551,31 @@ public final class MySQLQueueDAOTest {
         }
     }
 
+    /**
+     * Tries to updates a null queue.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testUpdateState06() throws TReqSException {
+        Calendar time = new GregorianCalendar();
+        short nbDone = 0;
+        short nbFailed = -90;
+
+        Queue queue = null;
+
+        boolean failed = false;
+        try {
+            new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
 }
