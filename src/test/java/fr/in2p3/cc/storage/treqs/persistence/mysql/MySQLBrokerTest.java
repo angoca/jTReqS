@@ -47,9 +47,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
@@ -64,20 +65,43 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class MySQLBrokerTest {
 
-    private static final String TABLE = "t1";
+    /**
+     * Driver.
+     */
     private static final String DRIVER = "com.mysql.jdbc.Driver";
+    /**
+     * Password.
+     */
     private static final String PASSWORD = "jtreqs";
-    private static final String URL = "jdbc:mysql://localhost/jtreqs";
-    private static final String USER = "jtreqs";
+    /**
+     * Table for tests.
+     */
+    private static final String TABLE = "t1";
+    /**
+     * Table structure.
+     */
     private static final String TABLE_STRUCTURE = "(user char(32))";
+    /**
+     * URL.
+     */
+    private static final String URL = "jdbc:mysql://localhost/jtreqs";
+    /**
+     * User.
+     */
+    private static final String USER = "jtreqs";
 
+    /**
+     * Setup the env for the tests.
+     *
+     * @throws TReqSException
+     *             Problem setting the value.
+     */
     @Before
     public void setUp() throws TReqSException {
         System.setProperty(Constants.CONFIGURATION_FILE,
-                "jtreqs.conf.test.properties");
+                MainTests.PROPERTIES_FILE);
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
-                Constants.PESISTENCE_FACTORY,
-                "fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLDAOFactory");
+                Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
     }
 
     /**
