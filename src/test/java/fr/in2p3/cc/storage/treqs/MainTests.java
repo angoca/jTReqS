@@ -49,4 +49,25 @@ import org.junit.runners.Suite.SuiteClasses;
 @SuiteClasses({ UnitTests.class, DatabaseTests.class, IntegrationTests.class,
         SystemTests.class })
 public final class MainTests {
+    /**
+     * Mock persistence.
+     */
+    public static final String MOCK_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
+            + "persistence.mock.MockDAOFactory";
+    /**
+     * Mock bridge.
+     */
+    public static final String MOCK_BRIDGE = "fr.in2p3.cc.storage.treqs."
+            + "hsm.mock.HSMMockBridge";
+    /**
+     * Properties file.
+     */
+    public static final String PROPERTIES_FILE = "jtreqs.conf.test.properties";
+
+    /**
+     * Default constructor hidden.
+     */
+    private MainTests() {
+        // Hidden
+    }
 }
