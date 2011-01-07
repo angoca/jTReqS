@@ -283,7 +283,7 @@ public final class MySQLBroker {
 
         // The Broker can process just one query at a time.
         synchronized (instance) {
-            validConnection();
+            this.validConnection();
             try {
                 statement = (Statement) connection.createStatement();
                 LOGGER.debug("Query: '{}'", query);
@@ -321,8 +321,7 @@ public final class MySQLBroker {
     public Object[] executeSelect(final String query) throws TReqSException {
         LOGGER.trace("> executeSelect");
 
-        assert query != null;
-        assert !query.equals("");
+        assert query != null && !query.equals("");
 
         ResultSet rs;
         Statement stmt;
@@ -332,7 +331,7 @@ public final class MySQLBroker {
         synchronized (instance) {
             rs = null;
             stmt = null;
-            validConnection();
+            this.validConnection();
             try {
                 stmt = (Statement) this.connection.createStatement();
                 LOGGER.debug("Query: '{}'", query);
@@ -371,7 +370,7 @@ public final class MySQLBroker {
         assert query != null;
         assert !query.equals("");
 
-        validConnection();
+        this.validConnection();
         PreparedStatement ret;
 
         // The Broker can process just one query at a time.
