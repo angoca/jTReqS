@@ -45,7 +45,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.AbstractMySQLException;
 
 /**
- * MySQLRequestsDAO.cpp.
+ * MySQLRequestsDAO.
  *
  * @author Andrés Gómez
  */
