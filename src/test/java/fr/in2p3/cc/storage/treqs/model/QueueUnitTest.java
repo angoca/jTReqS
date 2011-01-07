@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.model;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.model;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.model;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -45,45 +44,51 @@ import junit.framework.Assert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.MaximalSuspensionTriesException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
- * QueueUnitTest.cpp
+ * Unit test for Queue.
  *
- * @version Nov 13, 2009
- * @author gomez
+ * @author Andrés Gómez
  */
-@RunWith(RandomBlockJUnit4ClassRunner.class)
-public class QueueUnitTest {
+// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
+public final class QueueUnitTest {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(QueueUnitTest.class);
+    private static final int NUMBER_3000 = 3000;
 
+    /**
+     * Sets everything.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             There is a problem getting the configuration.
+     */
     @BeforeClass
     public static void oneTimeSetUp()
             throws ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-        Configurator
-                .getInstance()
-                .setValue("MAIN", "READING_DAO",
-                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+        Configurator.getInstance().setValue(
+                Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY,
+                "fr.in2p3.cc.storage.treqs.persistence."
+                        + "mock.MockDAOFactory");
     }
 
+    /**
+     * Destroys everything at the end.
+     */
     @AfterClass
     public static void oneTimeTearDown() {
         Configurator.destroyInstance();
@@ -96,60 +101,156 @@ public class QueueUnitTest {
      *             Never.
      */
     @Test
-    public void test01Constructor() throws TReqSException {
+    public void testConstructor01() throws TReqSException {
+        boolean failed = false;
         try {
-            new Queue(null);
-            Assert.fail();
+            new Queue(null, (byte) 1);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
     /**
-     * Tests that a just created queue does not have an owner.
+     * Test the value from the configuration.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test01OwnerGetNothing() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testConstructor02() throws TReqSException {
+        Configurator.getInstance().setValue(Constants.SECTION_QUEUE,
+                Constants.MAX_SUSPEND_RETRIES, "5");
+        Configurator.getInstance().setValue(Constants.SECTION_QUEUE,
+                Constants.SUSPEND_DURATION, "4");
 
-        User user = queue.getOwner();
+        new Queue(new FilePositionOnTape(new File("filename", 100), 10,
+                new Tape("tapename", new MediaType((byte) 1, "media")),
+                new User("username")), (byte) 3);
 
-        Assert.assertTrue("Null reading", user == null);
+        // This could change the default configuration.
+        Configurator.getInstance().deleteValue(Constants.SECTION_QUEUE,
+                Constants.MAX_SUSPEND_RETRIES);
+        Configurator.getInstance().deleteValue(Constants.SECTION_QUEUE,
+                Constants.SUSPEND_DURATION);
+    }
+
+    /**
+     * Sets a null status.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testOtherMethods01() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        boolean failed = false;
+        try {
+            queue.setStatus(null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Sets a null activation time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testOtherMethods02() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        boolean failed = false;
+        try {
+            queue.setActivationTime(null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests that a just created queue has as owner the user that ask the first
+     * request.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testOwnerGetNothing01() throws TReqSException {
+        User expected = new User("username");
+        Queue queue = new Queue(new FilePositionOnTape(
+                new File("filename", 100), 10, new Tape("tapename",
+                        new MediaType((byte) 1, "media")), expected), (byte) 3);
+
+        User actual = queue.getOwner();
+
+        Assert.assertEquals("Null reading", expected, actual);
     }
 
     /**
      * Tests that the new position has to be after the current position.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test01PositionBefore() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testPositionBefore01() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         short position = 1000;
         queue.setHeadPosition(position);
 
         position = 500;
 
+        boolean failed = false;
         try {
             queue.setHeadPosition(position);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
     /**
      * Tests to activate a queue once it has been suspended.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test01ReActivateQueueAfterSuspended() throws TReqSException {
+    public void testReActivateQueueAfterSuspended01() throws TReqSException {
         String filename1 = "testReactivate1";
         String filename2 = "testReactivate2";
         int position1 = 50;
@@ -158,32 +259,27 @@ public class QueueUnitTest {
         MediaType mediaType = new MediaType((byte) 1, "mediaType");
         String username = "user";
 
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        User owner = new User(username, (short) 11, "group", (short) 13);
+        Tape tape = new Tape(tapename, mediaType);
+        User owner = new User(username);
 
         // Sets the first file.
-        File file1 = new File(filename1, owner, 10);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
-                new GregorianCalendar(), position1, tape);
+        File file1 = new File(filename1, 10);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
+                tape, owner);
         Queue queue = new Queue(fpot1, (byte) 1);
 
         // Sets the second file.
-        File file2 = new File(filename2, owner, 10);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
-                new GregorianCalendar(), position2, tape);
-        queue.registerFile(fpot2, (byte) 1);
+        File file2 = new File(filename2, 10);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
+                tape, owner);
+        queue.registerFPOT(fpot2, (byte) 1);
 
         queue.changeToActivated();
 
         // Retrieves the first file from the queue.
         Reading reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
         queue.suspend();
         // Reactivates the queue.
         queue.unsuspend();
@@ -192,50 +288,871 @@ public class QueueUnitTest {
 
         Assert.assertEquals("Queue reactivated", filename2, reading
                 .getMetaData().getFile().getName());
-        Assert.assertEquals("Queue reactivated", QueueStatus.QS_ACTIVATED,
+        Assert.assertEquals("Queue reactivated", QueueStatus.ACTIVATED,
                 queue.getStatus());
     }
 
     /**
-     * Tests that a just created queue can only retrieve a null reading.
+     * Tests that a just created queue can only retrieve the unique registered
+     * reading.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test01ReadingGetNull() throws TReqSException {
-        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
-                new User("username"), 10), new GregorianCalendar(), 1,
-                new Tape("tapename", new MediaType((byte) 1, "media"),
-                        TapeStatus.TS_UNLOCKED));
+    public void testReading01GetNull() throws TReqSException {
+        String filename = "filename2";
+        FilePositionOnTape fpot = new FilePositionOnTape(
+                new File(filename, 10), 1, new Tape("tapename", new MediaType(
+                        (byte) 1, "media")), new User("username"));
         Queue queue = new Queue(fpot, (byte) 1);
+
+        String actual = queue.getNextReading().getMetaData().getFile()
+                .getName();
+
+        String expected = filename;
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    /**
+     * Tests a queue with two files passing over several states.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testReading02AllStaged() throws TReqSException {
+        String filename1 = "testReading1";
+        String filename2 = "testReading2";
+        int position1 = 50;
+        int position2 = 150;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username = "user";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner = new User(username);
+
+        File file1 = new File(filename1, 10);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
+                tape, owner);
+        File file2 = new File(filename2, 10);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
+                tape, owner);
+
+        // The queue is just created.
+        Queue queue = new Queue(fpot1, (byte) 1);
+        queue.registerFPOT(fpot2, (byte) 1);
 
         Reading reading = queue.getNextReading();
 
-        Assert.assertTrue("Null reading", null != reading);
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.CREATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
+
+        // Queue activated
+        queue.changeToActivated();
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
+
+        // First file staged
+        reading.setFileRequestStatus(RequestStatus.STAGED);
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("One file staged, next reading", filename2, reading
+                .getMetaData().getFile().getName());
+        Assert.assertTrue("One file staged, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("One file staged, position", position2,
+                queue.getHeadPosition());
+
+        // Second file staged
+        reading.setFileRequestStatus(RequestStatus.STAGED);
+        reading = queue.getNextReading();
+
+        Assert.assertTrue("All files staged, next reading", null == reading);
+        Assert.assertTrue("All files staged, queue state",
+                QueueStatus.ENDED == queue.getStatus());
+        Assert.assertEquals("All files staged, position", position2,
+                queue.getHeadPosition());
+    }
+
+    /**
+     * Tests a queue that has files in STAGED and FAILED states (Final state).
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testReading03StageFailed() throws TReqSException {
+        String filename1 = "testReading1";
+        String filename2 = "testReading2";
+        int position1 = 50;
+        int position2 = 150;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username = "user";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner = new User(username);
+
+        File file1 = new File(filename1, 10);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
+                tape, owner);
+        File file2 = new File(filename2, 10);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
+                tape, owner);
+
+        // The queue is just created.
+        Queue queue = new Queue(fpot1, (byte) 3);
+        queue.registerFPOT(fpot2, (byte) 1);
+
+        Reading reading = queue.getNextReading();
+
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.CREATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
+
+        // Queue activated
+        queue.changeToActivated();
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
+
+        // First file staged
+        reading.setFileRequestStatus(RequestStatus.STAGED);
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("One file staged, next reading", filename2, reading
+                .getMetaData().getFile().getName());
+        Assert.assertTrue("One file staged, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("One file staged, position", position2,
+                queue.getHeadPosition());
+
+        // Second file failed
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+        reading = queue.getNextReading();
+
+        Assert.assertTrue("All files staged or failed, next reading",
+                null == reading);
+        Assert.assertTrue("All files staged or failed, queue state",
+                QueueStatus.ENDED == queue.getStatus());
+        Assert.assertEquals("All files staged or failed, position", position2,
+                queue.getHeadPosition());
+    }
+
+    /**
+     * Tests a queue that has files in FAILED and STAGED states (Final state).
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testReading04FailedStage() throws TReqSException {
+        String filename1 = "testReading1";
+        String filename2 = "testReading2";
+        int position1 = 50;
+        int position2 = 150;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username = "user";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner = new User(username);
+
+        File file1 = new File(filename1, 10);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
+                tape, owner);
+        File file2 = new File(filename2, 10);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
+                tape, owner);
+
+        // The queue is just created.
+        Queue queue = new Queue(fpot1, (byte) 3);
+        queue.registerFPOT(fpot2, (byte) 1);
+
+        Reading reading = queue.getNextReading();
+
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.CREATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
+
+        // Queue activated
+        queue.changeToActivated();
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
+
+        // First file failed
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("One file failed, next reading", filename2, reading
+                .getMetaData().getFile().getName());
+        Assert.assertTrue("One file failed, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("One file failed, position", position2,
+                queue.getHeadPosition());
+
+        // Second file failed
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+        reading = queue.getNextReading();
+
+        Assert.assertTrue("All files staged or failed, next reading",
+                null == reading);
+        Assert.assertTrue("All files staged or failed, queue state",
+                QueueStatus.ENDED == queue.getStatus());
+        Assert.assertEquals("All files staged or failed, position", position2,
+                queue.getHeadPosition());
+    }
+
+    /**
+     * Tests a queue that has all its files in FAILED state.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testReading05AllFailed() throws TReqSException {
+        String filename1 = "testReading1";
+        String filename2 = "testReading2";
+        int position1 = 50;
+        int position2 = 150;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username = "user";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner = new User(username);
+
+        File file1 = new File(filename1, 10);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
+                tape, owner);
+        File file2 = new File(filename2, 10);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
+                tape, owner);
+
+        // The queue is just created.
+        Queue queue = new Queue(fpot1, (byte) 1);
+        queue.registerFPOT(fpot2, (byte) 1);
+
+        Reading reading = queue.getNextReading();
+
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.CREATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", 0,
+                queue.getHeadPosition());
+
+        // Queue activated
+        queue.changeToActivated();
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("All queued files, next reading", filename1,
+                reading.getMetaData().getFile().getName());
+        Assert.assertTrue("All queued files, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("All queued files, position", position1,
+                queue.getHeadPosition());
+
+        // First file failed
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+        reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+
+        Assert.assertEquals("One file failed, next reading", filename2, reading
+                .getMetaData().getFile().getName());
+        Assert.assertTrue("One file failed, queue state",
+                QueueStatus.ACTIVATED == queue.getStatus());
+        Assert.assertEquals("One file failed, position", position2,
+                queue.getHeadPosition());
+
+        // Second file staged
+        reading.setFileRequestStatus(RequestStatus.FAILED);
+        reading = queue.getNextReading();
+
+        Assert.assertTrue("All files failed, next reading", null == reading);
+        Assert.assertTrue("All files failed, queue state",
+                QueueStatus.ENDED == queue.getStatus());
+        Assert.assertEquals("All files failed, position", position2,
+                queue.getHeadPosition());
     }
 
     /**
      * Tests that it cannot be possible to register a null FilePositionOnTape.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test01RegisterFileNull() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testRegisterFile01Null() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
 
         FilePositionOnTape file = null;
 
+        boolean failed = false;
         try {
-            queue.registerFile(file, (byte) 0);
-            Assert.fail();
+            queue.registerFPOT(file, (byte) 0);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
+    /**
+     * Tests that it is not possible to register a file in an ended queue.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test01SetCreationTime() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testRegisterFile02InEndedQueue() throws TReqSException {
+        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
+                100), 100, tape, new User("username"));
+
+        Queue queue = new Queue(fpot1, (byte) 1);
+        queue.changeToActivated();
+        queue.changeToEnded();
+
+        boolean failed = false;
+        try {
+            queue.registerFPOT(fpot1, (byte) 0);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStateException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests that it is possible to register a file in an suspended queue.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile03InSuspendedQueue() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.suspend();
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                100), 100, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User("username"));
+
+        queue.registerFPOT(fpot, (byte) 1);
+    }
+
+    /**
+     * Tests that it is not possible to register a file in an activated queue
+     * with the file position before the head.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile04InActivatedQueueBefore()
+            throws TReqSException {
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+
+        Queue queue = new Queue(new FilePositionOnTape(
+                new File("filename", 100), 10, new Tape("tapename", mediaType),
+                new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.setHeadPosition((short) 100);
+
+        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
+                10), 50, new Tape(tapename, mediaType), new User("owner"));
+
+        boolean failed = false;
+        try {
+            queue.registerFPOT(fpot, (byte) 0);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidParameterException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to register a file in an activated queue after the current
+     * position.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile05InActivatedQueueAfter() throws TReqSException {
+        String filename = "testTwice";
+        int position = 50;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+
+        Queue queue = new Queue(new FilePositionOnTape(
+                new File("filename", 100), 10, new Tape("tapename", mediaType),
+                new User("username")), (byte) 3);
+        queue.changeToActivated();
+        User owner = new User("user");
+
+        FilePositionOnTape fpot = new FilePositionOnTape(
+                new File(filename, 10), position,
+                new Tape(tapename, mediaType), owner);
+
+        Assert.assertFalse("Registering file in an activated queue after head",
+                queue.registerFPOT(fpot, (byte) 1));
+    }
+
+    /**
+     * Tests to register twice a file in the same position.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile06Twice() throws TReqSException {
+        String filename = "testTwice";
+        int position = 50;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+
+        Tape tape = new Tape(tapename, mediaType);
+        Queue queue = new Queue(new FilePositionOnTape(
+                new File("filename", 100), 10, tape, new User("username")),
+                (byte) 3);
+        User owner = new User("user");
+
+        FilePositionOnTape fpot1 = new FilePositionOnTape(
+                new File(filename, 10), position, tape, owner);
+        queue.registerFPOT(fpot1, (byte) 1);
+
+        FilePositionOnTape fpot2 = new FilePositionOnTape(
+                new File(filename, 10), position, tape, owner);
+
+        Assert.assertTrue("Registering twice a file in the same position",
+                queue.registerFPOT(fpot2, (byte) 1));
+    }
+
+    /**
+     * Tests the owner of a queue when several owners have the same quantity of
+     * files.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile07SameQuantityPerUsers() throws TReqSException {
+        String filename1 = "testSameQuantity1";
+        String filename2 = "testSameQuantity2";
+        String filename3 = "testSameQuantity3";
+        String filename4 = "testSameQuantity4";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        int position4 = 450;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+        String username2 = "user2";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User user1 = new User(username1);
+        User user2 = new User(username2);
+
+        // User 1
+        Queue queue = new Queue(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, user1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, user1), (byte) 1);
+
+        // User 2
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, user2), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename4, 10),
+                position4, tape, user2), (byte) 1);
+
+        Assert.assertEquals("Last owner when same quantity", username2, queue
+                .getOwner().getName());
+    }
+
+    /**
+     * Tests to calculates the queue's owner when their files are at the
+     * beginning.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile08DifferentQuantityPerUsersBeginning()
+            throws TReqSException {
+        String filename1 = "testDifferentQuantity1";
+        String filename2 = "testDifferentQuantity2";
+        String filename3 = "testDifferentQuantity3";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+        String username2 = "user2";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner1 = new User(username1);
+        User owner2 = new User(username2);
+        Queue queue = new Queue(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, owner2), (byte) 1);
+
+        Assert.assertEquals("Owner at beginning", username1, queue.getOwner()
+                .getName());
+    }
+
+    /**
+     * Tests the owner of a queue the files of the owner users are in several
+     * positions.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile09DifferentQuantityPerUsersMiddle()
+            throws TReqSException {
+        String filename1 = "testDifferentQuantity1";
+        String filename2 = "testDifferentQuantity2";
+        String filename3 = "testDifferentQuantity3";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+        String username2 = "user2";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner1 = new User(username1);
+        User owner2 = new User(username2);
+        Queue queue = new Queue(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, owner2), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, owner1), (byte) 1);
+
+        Assert.assertEquals("Owner with several files", username1, queue
+                .getOwner().getName());
+    }
+
+    /**
+     * Tests to calculates the queue's owner when their files are at the end.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile10DifferentQuantityPerUsersEnd()
+            throws TReqSException {
+        String filename1 = "testDifferentQuantity1";
+        String filename2 = "testDifferentQuantity2";
+        String filename3 = "testDifferentQuantity3";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+        String username2 = "user2";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner1 = new User(username1);
+        User owner2 = new User(username2);
+        Queue queue = new Queue(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, owner2), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, owner2), (byte) 1);
+
+        Assert.assertEquals("Owner at the end", username2, queue.getOwner()
+                .getName());
+    }
+
+    /**
+     * Tests the owner of a queue when it has more than 50% of the files.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile11SameOwnerMore50Percent()
+            throws TReqSException {
+        String filename1 = "testOwner50%1";
+        String filename2 = "testOwner50%2";
+        String filename3 = "testOwner50%3";
+        String filename4 = "testOwner50%4";
+        String filename5 = "testOwner50%5";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        int position4 = 450;
+        int position5 = 550;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+        String username2 = "user2";
+        String username3 = "user3";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner1 = new User(username1);
+        User owner2 = new User(username2);
+        User owner3 = new User(username3);
+        Queue queue = new Queue(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename4, 10),
+                position4, tape, owner2), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename5, 10),
+                position5, tape, owner3), (byte) 1);
+
+        Assert.assertEquals("Owner with more than 50%", username1, queue
+                .getOwner().getName());
+    }
+
+    /**
+     * Tests the owner of a queue when each user has one file.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile12AllUserHaveOne() throws TReqSException {
+        String filename1 = "testOneFile1";
+        String filename2 = "testOneFile2";
+        String filename3 = "testOneFile3";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+        String username2 = "user2";
+        String username3 = "user3";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner1 = new User(username1);
+        User owner2 = new User(username2);
+        User owner3 = new User(username3);
+        Queue queue = new Queue(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, owner2), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, owner3), (byte) 1);
+
+        Assert.assertEquals("Users with one file each one", username3, queue
+                .getOwner().getName());
+    }
+
+    /**
+     * Tests to calculates the queue's owner when all files are from one user.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile13OneUser() throws TReqSException {
+        String filename1 = "testOneUser1";
+        String filename2 = "testOneUser2";
+        String filename3 = "testOneUser3";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+
+        Tape tape = new Tape(tapename, mediaType);
+        Queue queue = new Queue(new FilePositionOnTape(
+                new File("filename", 100), 10, tape, new User("username")),
+                (byte) 3);
+        User owner1 = new User(username1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, owner1), (byte) 1);
+
+        Assert.assertEquals("One user", username1, queue.getOwner().getName());
+    }
+
+    /**
+     * Tests the owner of a queue and the list file decides the owner.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile14LastFileDecides() throws TReqSException {
+        String filename1 = "testOwner50%1";
+        String filename2 = "testOwner50%2";
+        String filename3 = "testOwner50%3";
+        String filename4 = "testOwner50%4";
+        String filename5 = "testOwner50%5";
+        int position1 = 150;
+        int position2 = 250;
+        int position3 = 350;
+        int position4 = 450;
+        int position5 = 550;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        String username1 = "user1";
+        String username2 = "user2";
+
+        Tape tape = new Tape(tapename, mediaType);
+        User owner1 = new User(username1);
+        User owner2 = new User(username2);
+        Queue queue = new Queue(new FilePositionOnTape(new File(filename1, 10),
+                position1, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename2, 10),
+                position2, tape, owner2), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename3, 10),
+                position3, tape, owner2), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename4, 10),
+                position4, tape, owner1), (byte) 1);
+
+        queue.registerFPOT(new FilePositionOnTape(new File(filename5, 10),
+                position5, tape, owner1), (byte) 1);
+
+        Assert.assertEquals("Last file decides", username1, queue.getOwner()
+                .getName());
+    }
+
+    /**
+     * Tries to set a negative retry.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile15NegativeRetry() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.changeToEnded();
+
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
+                100), 100, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User("username"));
+
+        boolean failed = false;
+        try {
+            queue.registerFPOT(fpot1, (byte) -5);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tries to set a negative creation time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testSetCreationTime01() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
 
         boolean failed = false;
         try {
@@ -251,21 +1168,61 @@ public class QueueUnitTest {
         }
     }
 
+    /**
+     * Tries to set an already passed end time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test01setEndTime() throws TReqSException {
+    public void testSetEndTime01() throws TReqSException {
         Calendar endime = new GregorianCalendar(2008, 5, 11);
 
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
 
+        boolean failed = false;
         try {
             queue.setEndTime(endime);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tries to set a null end time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testSetEndTime02() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+
+        boolean failed = false;
+        try {
+            queue.setEndTime(null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
@@ -276,17 +1233,81 @@ public class QueueUnitTest {
      *             Never.
      */
     @Test
-    public void test01setPosition() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testSetPosition01() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
 
+        boolean failed = false;
         try {
             queue.setHeadPosition((short) -5);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to set a position in a non activated state.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testSetPosition02() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.changeToEnded();
+
+        boolean failed = false;
+        try {
+            queue.setHeadPosition((short) 5);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to set a position before the current one in an activated queue.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testSetPosition03() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.setHeadPosition((short) 50);
+
+        boolean failed = false;
+        try {
+            queue.setHeadPosition((short) 25);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidParameterException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
@@ -297,31 +1318,75 @@ public class QueueUnitTest {
      *             Never.
      */
     @Test
-    public void test01setSuspendDuration() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testSetSuspendDuration01() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
 
+        boolean failed = false;
         try {
             queue.setSuspendDuration((short) -5);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
+    /**
+     * Tries to set suspension time in a non suspended queue.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test01setsuspendedtime() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testSetSuspendedtime01() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        boolean failed = false;
         try {
             queue.setSuspensionTime(new GregorianCalendar());
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tries to set a null suspension time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testSetSuspendedtime02() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        boolean failed = false;
+        try {
+            queue.setSuspensionTime(null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
@@ -332,1383 +1397,348 @@ public class QueueUnitTest {
      *             Never.
      */
     @Test
-    public void test01StateActivatedActivated() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateActivatedActivated01() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
 
+        boolean failed = false;
         try {
             queue.changeToActivated();
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests setting the activation time before the creation time.
-     *
-     * @throws TReqSException
-     */
-    @Test
-    public void test01TimeActivationBeforeCreation() throws TReqSException {
-        Calendar activationTime = new GregorianCalendar(2008, 5, 14);
-
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.setStatus(QueueStatus.QS_ACTIVATED);
-
-        try {
-            queue.setActivationTime(activationTime);
+        if (failed) {
             Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests the toString method.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test01toString() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-
-        queue.toString();
-    }
-
-    /**
-     * Test the value from the coniguration.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test02Constructor() throws TReqSException {
-        Configurator.getInstance().setValue("MAIN", "MAX_SUSPEND_RETRIES", "5");
-        Configurator.getInstance().setValue("MAIN", "SUSPEND_DURATION", "4");
-
-        new Queue(new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED));
-
-        // This could change the default configuration.
-        Configurator.getInstance().deleteValue("MAIN", "MAX_SUSPEND_RETRIES");
-        Configurator.getInstance().deleteValue("MAIN", "SUSPEND_DURATION");
-    }
-
-    @Test
-    public void test02otherMethods() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        try {
-            queue.setStatus(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests a queue with two files passing over several states.
-     */
-    @Test
-    public void test02ReadingAllStaged() throws TReqSException {
-        String filename1 = "testReading1";
-        String filename2 = "testReading2";
-        int position1 = 50;
-        int position2 = 150;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username = "user";
-        // TODO se esta conectando a la base de datos? NO, PERO copiarlos a los
-        // tests de integracion
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        User owner = new User(username, (short) 11, "group", (short) 13);
-
-        File file1 = new File(filename1, owner, 10);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
-                new GregorianCalendar(), position1, tape);
-        Queue queue = new Queue(fpot1, (byte) 1);
-
-        File file2 = new File(filename2, owner, 10);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
-                new GregorianCalendar(), position2, tape);
-        queue.registerFile(fpot2, (byte) 1);
-
-        // The queue is just created.
-        Reading reading = queue.getNextReading();
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0,
-                queue.getHeadPosition());
-
-        // Queue activated
-        queue.changeToActivated();
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1,
-                queue.getHeadPosition());
-
-        // First file staged
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("One file staged, next reading", filename2, reading
-                .getMetaData().getFile().getName());
-        Assert.assertTrue("One file staged, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file staged, position", position2,
-                queue.getHeadPosition());
-
-        // Second file staged
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
-        reading = queue.getNextReading();
-
-        Assert.assertTrue("All files staged, next reading", null == reading);
-        Assert.assertTrue("All files staged, queue state",
-                QueueStatus.QS_ENDED == queue.getStatus());
-        Assert.assertEquals("All files staged, position", position2,
-                queue.getHeadPosition());
-    }
-
-    /**
-     * Tests that it is not possible to register a file in an ended queue.
-     */
-    @Test
-    public void test02RegisterFileInEndedQueue() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"),
-                TapeStatus.TS_UNLOCKED);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                new User("username"), 100), new GregorianCalendar(), 100, tape);
-
-        Queue queue = new Queue(fpot1, (byte) 1);
-        queue.changeToActivated();
-        queue.changeToEnded();
-
-        try {
-            queue.registerFile(fpot1, (byte) 0);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidStateException)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02setEndTime() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-
-        try {
-            queue.setEndTime(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests to set a position in a non activated state
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test02setPosition() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.changeToEnded();
-
-        try {
-            queue.setHeadPosition((short) 5);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test02setsuspendedtime() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        try {
-            queue.setSuspensionTime(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
         }
     }
 
     /**
      * Tests to set the state as created after being activated.
-     */
-    @Test
-    public void test02StateActivatedCreated() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-
-        try {
-            queue.setStatus(QueueStatus.QS_CREATED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests setting the activation time after the end time. This is
-     * unnecessary, it checks the state before the date values.
-     *
-     * @throws InvalidParameterException
-     *             Never.
-     */
-    @Test
-    public void test02TimeActivationAfterEnd() throws TReqSException {
-        Calendar activationTime = new GregorianCalendar(3000, 5, 13);
-
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.changeToEnded();
-
-        try {
-            queue.setActivationTime(activationTime);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests the toString method with activation.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test02toString() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateActivatedCreated02() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
 
-        queue.toString();
-    }
-
-    @Test
-    public void test03otherMethods() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+        boolean failed = false;
         try {
-            queue.setActivationTime(null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests a queue that has files in FS_STAGED and FS_FAILED states (Final
-     * state.)
-     */
-    @Test
-    public void test03ReadingStageFailed() throws TReqSException {
-        String filename1 = "testReading1";
-        String filename2 = "testReading2";
-        int position1 = 50;
-        int position2 = 150;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username = "user";
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner = new User(username, (short) 11, "group", (short) 13);
-
-        File file1 = new File(filename1, owner, 10);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
-                new GregorianCalendar(), position1, tape);
-        queue.registerFile(fpot1, (byte) 1);
-
-        File file2 = new File(filename2, owner, 10);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
-                new GregorianCalendar(), position2, tape);
-        queue.registerFile(fpot2, (byte) 1);
-
-        // The queue is just created.
-        Reading reading = queue.getNextReading();
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0,
-                queue.getHeadPosition());
-
-        // Queue activated
-        queue.changeToActivated();
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1,
-                queue.getHeadPosition());
-
-        // First file staged
-        reading.setFileRequestStatus(FileStatus.FS_STAGED);
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("One file staged, next reading", filename2, reading
-                .getMetaData().getFile().getName());
-        Assert.assertTrue("One file staged, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file staged, position", position2,
-                queue.getHeadPosition());
-
-        // Second file failed
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
-        reading = queue.getNextReading();
-
-        Assert.assertTrue("All files staged or failed, next reading",
-                null == reading);
-        Assert.assertTrue("All files staged or failed, queue state",
-                QueueStatus.QS_ENDED == queue.getStatus());
-        Assert.assertEquals("All files staged or failed, position", position2,
-                queue.getHeadPosition());
-    }
-
-    /**
-     * Tests that it is not possible to register a file in an suspended queue.
-     */
-    @Test
-    public void test03RegisterFileInSuspendedQueue() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.suspend();
-
-        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
-                new User("username"), 100), new GregorianCalendar(), 100,
-                new Tape("tapename", new MediaType((byte) 1, "mediatype"),
-                        TapeStatus.TS_UNLOCKED));
-
-        queue.registerFile(fpot, (byte) 1);
-    }
-
-    /**
-     * Tests to set a position before the current one.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test03setPosition() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.setHeadPosition((short) 50);
-
-        try {
-            queue.setHeadPosition((short) 25);
-            Assert.fail();
+            queue.setStatus(QueueStatus.CREATED);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
+        if (failed) {
+            Assert.fail();
+        }
     }
-
-    /*
-     * ATTENTION: RegisterFile tests have to be before getNextReading.
-     */
 
     /**
      * Tests to set the state as created once the queue has already been
      * created.
      *
      * @throws TReqSException
-     * @throws InvalidParameterException
-     */
-    @Test
-    public void test03StateCreatedCreatedState() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-
-        try {
-            queue.setStatus(QueueStatus.QS_CREATED);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests setting the end time before the creation time.
-     *
-     * @throws InvalidParameterException
      *             Never.
      */
     @Test
-    public void test03TimeEndBeforeCreation() throws TReqSException {
-        Calendar endime = new GregorianCalendar(2008, 5, 11);
+    public void testStateCreatedCreatedState03() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
 
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.setStatus(QueueStatus.QS_ENDED);
-
+        boolean failed = false;
         try {
-            queue.setEndTime(endime);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests the toString method with suspension.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test03toString() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.suspend();
-
-        queue.toString();
-    }
-
-    /**
-     * Tests a queue that has files in FS_FAILED and FS_STAGED states (Final
-     * state.)
-     */
-    @Test
-    public void test04ReadingStageFailedStage() throws TReqSException {
-        String filename1 = "testReading1";
-        String filename2 = "testReading2";
-        int position1 = 50;
-        int position2 = 150;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username = "user";
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner = new User(username, (short) 11, "group", (short) 13);
-
-        File file1 = new File(filename1, owner, 10);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
-                new GregorianCalendar(), position1, tape);
-        queue.registerFile(fpot1, (byte) 1);
-
-        File file2 = new File(filename2, owner, 10);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
-                new GregorianCalendar(), position2, tape);
-        queue.registerFile(fpot2, (byte) 1);
-
-        // The queue is just created.
-        Reading reading = queue.getNextReading();
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0,
-                queue.getHeadPosition());
-
-        // Queue activated
-        queue.changeToActivated();
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1,
-                queue.getHeadPosition());
-
-        // First file failed
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("One file failed, next reading", filename2, reading
-                .getMetaData().getFile().getName());
-        Assert.assertTrue("One file failed, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file failed, position", position2,
-                queue.getHeadPosition());
-
-        // Second file failed
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
-        reading = queue.getNextReading();
-
-        Assert.assertTrue("All files staged or failed, next reading",
-                null == reading);
-        Assert.assertTrue("All files staged or failed, queue state",
-                QueueStatus.QS_ENDED == queue.getStatus());
-        Assert.assertEquals("All files staged or failed, position", position2,
-                queue.getHeadPosition());
-    }
-
-    /**
-     * Tests that it is not possible to register a file in an activated queue
-     * with the file position before the head.
-     */
-    @Test
-    public void test04RegisterFileInActivatedQueueBefore()
-            throws TReqSException {
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-
-        Queue queue = new Queue(new Tape("tapename", mediaType,
-                TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.setHeadPosition((short) 100);
-
-        FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
-                new User("owner", (short) 11, "group", (short) 13), 10),
-                new GregorianCalendar(), 50, new Tape(tapename, mediaType,
-                        TapeStatus.TS_UNLOCKED));
-
-        try {
-            queue.registerFile(fpot, (byte) 0);
-            Assert.fail();
+            queue.setStatus(QueueStatus.CREATED);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
     /**
      * Tests to set the state as ended without passing by the activated state.
-     *
-     * @throws InvalidParameterException
-     */
-    @Test
-    public void test04StateCreatedEndedState() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-
-        try {
-            queue.changeToEnded();
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests setting the end time before the activation time.
-     *
-     * @throws InvalidParameterException
-     *             Never.
-     */
-    @Test
-    public void test04TimeEndBeforeActivation() throws TReqSException {
-        Calendar activationTime = new GregorianCalendar(3000, 6, 15);
-
-        Calendar endime = new GregorianCalendar(2500, 5, 11);
-
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.setStatus(QueueStatus.QS_ACTIVATED);
-        queue.setActivationTime(activationTime);
-        queue.setStatus(QueueStatus.QS_ENDED);
-
-        try {
-            queue.setEndTime(endime);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests the toString method with end time.
+     * This happens when an activated one is suspended, and the created one is
+     * merged with the suspended.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test04toString() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
+    public void testStateCreatedEndedState04() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+
         queue.changeToEnded();
-
-        queue.toString();
-    }
-
-    /**
-     * Tests a queue that has all its files in FS_FAILED state.
-     */
-    @Test
-    public void test05ReadingAllFailed() throws TReqSException {
-        String filename1 = "testReading1";
-        String filename2 = "testReading2";
-        int position1 = 50;
-        int position2 = 150;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username = "user";
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner = new User(username, (short) 11, "group", (short) 13);
-
-        File file1 = new File(filename1, owner, 10);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
-                new GregorianCalendar(), position1, tape);
-        queue.registerFile(fpot1, (byte) 1);
-
-        File file2 = new File(filename2, owner, 10);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
-                new GregorianCalendar(), position2, tape);
-        queue.registerFile(fpot2, (byte) 1);
-
-        // The queue is just created.
-        Reading reading = queue.getNextReading();
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_CREATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", 0,
-                queue.getHeadPosition());
-
-        // Queue activated
-        queue.changeToActivated();
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("All queued files, next reading", filename1,
-                reading.getMetaData().getFile().getName());
-        Assert.assertTrue("All queued files, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("All queued files, position", position1,
-                queue.getHeadPosition());
-
-        // First file failed
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
-        reading = queue.getNextReading();
-        reading.setFileRequestStatus(FileStatus.FS_QUEUED);
-
-        Assert.assertEquals("One file failed, next reading", filename2, reading
-                .getMetaData().getFile().getName());
-        Assert.assertTrue("One file failed, queue state",
-                QueueStatus.QS_ACTIVATED == queue.getStatus());
-        Assert.assertEquals("One file failed, position", position2,
-                queue.getHeadPosition());
-
-        // Second file staged
-        reading.setFileRequestStatus(FileStatus.FS_FAILED);
-        reading = queue.getNextReading();
-
-        Assert.assertTrue("All files failed, next reading", null == reading);
-        Assert.assertTrue("All files failed, queue state",
-                QueueStatus.QS_ENDED == queue.getStatus());
-        Assert.assertEquals("All files failed, position", position2,
-                queue.getHeadPosition());
-    }
-
-    /**
-     * Tests to register a file in an activated queue after the current
-     * position.
-     */
-    @Test
-    public void test05RegisterFileInActivatedQueueAfter() throws TReqSException {
-        String filename = "testTwice";
-        int position = 50;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-
-        RequestsDAO.deleteRow(filename);
-        RequestsDAO.insertRow(filename);
-
-        Queue queue = new Queue(new Tape("tapename", mediaType,
-                TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        User owner = new User("user", (short) 11, "group", (short) 13);
-
-        FilePositionOnTape fpot = new FilePositionOnTape(new File(filename,
-                owner, 10), new GregorianCalendar(), position, new Tape(
-                tapename, mediaType, TapeStatus.TS_UNLOCKED));
-
-        Assert.assertTrue("Registering file in an activated queue after head",
-                queue.registerFile(fpot, (byte) 1));
     }
 
     /**
      * Tests to set the state as temporary suspended without being activated.
-     */
-    @Test
-    public void test05StateCreatedSuspendedState() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-
-        try {
-            queue.suspend();
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests setting the creation time after the activation time. This is
-     * unnecessary, the state is checked before the date values.
      *
-     * @throws InvalidParameterException
+     * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test05TimeCreationAfterActivation() throws TReqSException {
-        Calendar creationTime = new GregorianCalendar(3000, 8, 18);
+    public void testStateCreatedSuspendedState05() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
 
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-
+        boolean failed = false;
         try {
-            queue.setCreationTime(creationTime);
-            Assert.fail();
+            queue.suspend();
+            failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
+            if (!(e instanceof InvalidParameterException)) {
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests to register twice a file in the same position.
-     */
-    @Test
-    public void test06RegisterFileTwice() throws TReqSException {
-        String filename = "testTwice";
-        int position = 50;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-
-        RequestsDAO.deleteRow(filename);
-        RequestsDAO.insertRow(filename);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner = new User("user", (short) 11, "group", (short) 13);
-
-        FilePositionOnTape fpot1 = new FilePositionOnTape(new File(filename,
-                owner, 10), new GregorianCalendar(), position, tape);
-        queue.registerFile(fpot1, (byte) 1);
-
-        FilePositionOnTape fpot2 = new FilePositionOnTape(new File(filename,
-                owner, 10), new GregorianCalendar(), position, tape);
-
-        Assert.assertTrue("Registering twice a file in the same position",
-                !queue.registerFile(fpot2, (byte) 1));
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state as activated once the state is ended.
-     */
-    @Test
-    public void test06StateEndedActivated() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        queue.changeToActivated();
-        queue.changeToEnded();
-
-        try {
-            queue.changeToActivated();
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    /**
-     * Tests setting the creation time after the end time. This is unnecessary,
-     * the state is checked before the date values.
      *
-     * @throws InvalidParameterException
+     * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test06TimeCreationAfterEnd() throws TReqSException {
-        Calendar creationTime = new GregorianCalendar(3000, 11, 21);
-
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateEndedActivated06() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.changeToEnded();
 
+        boolean failed = false;
         try {
-            queue.setCreationTime(creationTime);
-            Assert.fail();
+            queue.changeToActivated();
+            failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
+            if (!(e instanceof InvalidParameterException)) {
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests the owner of a queue when several owners have the same quantity of
-     * files.
-     */
-    @Test
-    public void test07RegisterFileSameQuantityPerUsers() throws TReqSException {
-        String filename1 = "testSameQuantity1";
-        String filename2 = "testSameQuantity2";
-        String filename3 = "testSameQuantity3";
-        String filename4 = "testSameQuantity4";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        int position4 = 450;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-        String username2 = "user2";
-        short uid1 = 11;
-        short uid2 = 12;
-        String group = "group";
-        short gid = 13;
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.deleteRow(filename4);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-        RequestsDAO.insertRow(filename4);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User user1 = new User(username1, uid1, group, gid);
-        User user2 = new User(username2, uid2, group, gid);
-
-        // User 1
-        queue.registerFile(new FilePositionOnTape(
-                new File(filename1, user1, 10), new GregorianCalendar(),
-                position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(
-                new File(filename2, user1, 10), new GregorianCalendar(),
-                position2, tape), (byte) 1);
-
-        // User 2
-        queue.registerFile(new FilePositionOnTape(
-                new File(filename3, user2, 10), new GregorianCalendar(),
-                position3, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(
-                new File(filename4, user2, 10), new GregorianCalendar(),
-                position4, tape), (byte) 1);
-
-        Assert.assertEquals("Last owner when same quantity", username2, queue
-                .getOwner().getName());
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state as created once the state is ended.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test07StateEndedCreated() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateEndedCreated07() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.changeToEnded();
 
+        boolean failed = false;
         try {
-            queue.setStatus(QueueStatus.QS_CREATED);
-            Assert.fail();
+            queue.setStatus(QueueStatus.CREATED);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests to calculates the queue's owner when their files are at the
-     * beginning.
-     */
-    @Test
-    public void test08RegisterFileDifferentQuantityPerUsersBeginning()
-            throws TReqSException {
-        String filename1 = "testDifferentQuantity1";
-        String filename2 = "testDifferentQuantity2";
-        String filename3 = "testDifferentQuantity3";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-        String username2 = "user2";
-        short uid1 = 11;
-        short uid2 = 12;
-        String group = "group";
-        short gid = 13;
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner1 = new User(username1, uid1, group, gid);
-        User owner2 = new User(username2, uid2, group, gid);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename1, owner1,
-                10), new GregorianCalendar(), position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename2, owner1,
-                10), new GregorianCalendar(), position2, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename3, owner2,
-                10), new GregorianCalendar(), position3, tape), (byte) 1);
-
-        Assert.assertEquals("Owner at beginning", username1, queue.getOwner()
-                .getName());
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state as ended once the queue is already in this state.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test08StateEndedEnded() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateEndedEnded08() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.changeToEnded();
 
+        boolean failed = false;
         try {
             queue.changeToEnded();
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests the owner of a queue the files of the owner users are in several
-     * positions.
-     */
-    @Test
-    public void test09RegisterFileDifferentQuantityPerUsersMiddle()
-            throws TReqSException {
-        String filename1 = "testDifferentQuantity1";
-        String filename2 = "testDifferentQuantity2";
-        String filename3 = "testDifferentQuantity3";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-        String username2 = "user2";
-        short uid1 = 11;
-        short uid2 = 12;
-        String group = "group";
-        short gid = 13;
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner1 = new User(username1, uid1, group, gid);
-        User owner2 = new User(username2, uid2, group, gid);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename1, owner1,
-                10), new GregorianCalendar(), position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename2, owner2,
-                10), new GregorianCalendar(), position2, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename3, owner1,
-                10), new GregorianCalendar(), position3, tape), (byte) 1);
-
-        Assert.assertEquals("Owner with several files", username1, queue
-                .getOwner().getName());
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state as temporary suspended once the state is ended.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test09StateEndedSuspended() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateEndedSuspended09() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.changeToEnded();
 
+        boolean failed = false;
         try {
             queue.suspend();
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests to calculates the queue's owner when their files are at the end.
-     */
-    @Test
-    public void test10RegisterFileDifferentQuantityPerUsersEnd()
-            throws TReqSException {
-        String filename1 = "testDifferentQuantity1";
-        String filename2 = "testDifferentQuantity2";
-        String filename3 = "testDifferentQuantity3";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-        String username2 = "user2";
-        short uid1 = 11;
-        short uid2 = 12;
-        String group = "group";
-        short gid = 13;
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner1 = new User(username1, uid1, group, gid);
-        User owner2 = new User(username2, uid2, group, gid);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename1, owner1,
-                10), new GregorianCalendar(), position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename2, owner2,
-                10), new GregorianCalendar(), position2, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename3, owner2,
-                10), new GregorianCalendar(), position3, tape), (byte) 1);
-
-        Assert.assertEquals("Owner at the end", username2, queue.getOwner()
-                .getName());
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state as activated once the state is temporary
      * suspended.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test10StateSuspendedActivated() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateSuspendedActivated10() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.suspend();
 
+        boolean failed = false;
         try {
             queue.changeToActivated();
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests the owner of a queue when it has more than 50% of the files.
-     */
-    @Test
-    public void test11RegisterFileSameOwnerMore50Percent()
-            throws TReqSException {
-        String filename1 = "testOwner50%1";
-        String filename2 = "testOwner50%2";
-        String filename3 = "testOwner50%3";
-        String filename4 = "testOwner50%4";
-        String filename5 = "testOwner50%5";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        int position4 = 450;
-        int position5 = 550;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-        String username2 = "user2";
-        String username3 = "user3";
-        short uid1 = 11;
-        short uid2 = 12;
-        short uid3 = 13;
-        String group = "group";
-        short gid = 14;
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.deleteRow(filename4);
-        RequestsDAO.deleteRow(filename5);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-        RequestsDAO.insertRow(filename4);
-        RequestsDAO.insertRow(filename5);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner1 = new User(username1, uid1, group, gid);
-        User owner2 = new User(username2, uid2, group, gid);
-        User owner3 = new User(username3, uid3, group, gid);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename1, owner1,
-                10), new GregorianCalendar(), position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename2, owner1,
-                10), new GregorianCalendar(), position2, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename3, owner1,
-                10), new GregorianCalendar(), position3, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename4, owner2,
-                10), new GregorianCalendar(), position4, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename5, owner3,
-                10), new GregorianCalendar(), position5, tape), (byte) 1);
-
-        Assert.assertEquals("Owner with more than 50%", username1, queue
-                .getOwner().getName());
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state as ended once the state is temporary suspended.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test11StateSuspendedEnded() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateSuspendedEnded11() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.suspend();
 
+        boolean failed = false;
         try {
             queue.changeToEnded();
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests the owner of a queue when each user has one file.
-     */
-    @Test
-    public void test12RegisterFileAllUserHaveOne() throws TReqSException {
-        String filename1 = "testOneFile1";
-        String filename2 = "testOneFile2";
-        String filename3 = "testOneFile3";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-        String username2 = "user2";
-        String username3 = "user3";
-        short uid1 = 11;
-        short uid2 = 12;
-        short uid3 = 13;
-        String group = "group";
-        short gid = 14;
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner1 = new User(username1, uid1, group, gid);
-        User owner2 = new User(username2, uid2, group, gid);
-        User owner3 = new User(username3, uid3, group, gid);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename1, owner1,
-                10), new GregorianCalendar(), position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename2, owner2,
-                10), new GregorianCalendar(), position2, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename3, owner3,
-                10), new GregorianCalendar(), position3, tape), (byte) 1);
-
-        Assert.assertEquals("Users with one file each one", username3, queue
-                .getOwner().getName());
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state as temporary suspended once the queue is already
      * in this state.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test12StateSuspendedSuspended() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testStateSuspendedSuspended12() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.suspend();
 
+        boolean failed = false;
         try {
             queue.suspend();
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof InvalidParameterException)) {
-                Assert.fail();
+                failed = true;
             }
         }
-    }
-
-    /**
-     * Tests to calculates the queue's owner when all files are from one user.
-     */
-    @Test
-    public void test13RegisterFileOneUser() throws TReqSException {
-        String filename1 = "testOneUser1";
-        String filename2 = "testOneUser2";
-        String filename3 = "testOneUser3";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner1 = new User(username1, (short) 11, "group", (short) 12);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename1, owner1,
-                10), new GregorianCalendar(), position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename2, owner1,
-                10), new GregorianCalendar(), position2, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename3, owner1,
-                10), new GregorianCalendar(), position3, tape), (byte) 1);
-
-        Assert.assertEquals("One user", username1, queue.getOwner().getName());
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Tests to set the state three times as created passing by suspended.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test13StateSuspendeSuspendedSuspended() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
-        short max = Constants.MAX_SUSPEND_RETRIES;
-        try {
-            max = Short.parseShort(Configurator.getInstance().getValue("MAIN",
-                    "MAX_SUSPEND_RETRIES"));
-        } catch (ConfigNotFoundException e) {
-        }
+    public void testStateSuspendedSuspendedSuspended13() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        short max = Configurator.getInstance().getShortValue(
+                Constants.SECTION_QUEUE, Constants.MAX_SUSPEND_RETRIES,
+                DefaultProperties.MAX_SUSPEND_RETRIES);
 
         for (int var = 0; var < max; var++) {
             queue.changeToActivated();
@@ -1720,94 +1750,351 @@ public class QueueUnitTest {
 
         LOGGER.info("Queue state cannot be recreated more than " + max
                 + " times");
+        boolean failed = false;
         try {
             queue.unsuspend();
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof MaximalSuspensionTriesException)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
     /**
-     * Tests the owner of a queue and the list file decides the owner.
+     * Tests to set the queue as activated - suspended - created - activate -
+     * ended.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test14RegisterLastFileDecides() throws TReqSException {
-        String filename1 = "testOwner50%1";
-        String filename2 = "testOwner50%2";
-        String filename3 = "testOwner50%3";
-        String filename4 = "testOwner50%4";
-        String filename5 = "testOwner50%5";
-        int position1 = 150;
-        int position2 = 250;
-        int position3 = 350;
-        int position4 = 450;
-        int position5 = 550;
-        String tapename = "tapename";
-        MediaType mediaType = new MediaType((byte) 1, "mediaType");
-        String username1 = "user1";
-        String username2 = "user2";
-        short uid1 = 11;
-        short uid2 = 12;
-        String group = "group";
-        short gid = 14;
-
-        RequestsDAO.deleteRow(filename1);
-        RequestsDAO.deleteRow(filename2);
-        RequestsDAO.deleteRow(filename3);
-        RequestsDAO.deleteRow(filename4);
-        RequestsDAO.deleteRow(filename5);
-        RequestsDAO.insertRow(filename1);
-        RequestsDAO.insertRow(filename2);
-        RequestsDAO.insertRow(filename3);
-        RequestsDAO.insertRow(filename4);
-        RequestsDAO.insertRow(filename5);
-
-        Tape tape = new Tape(tapename, mediaType, TapeStatus.TS_UNLOCKED);
-        Queue queue = new Queue(tape);
-        User owner1 = new User(username1, uid1, group, gid);
-        User owner2 = new User(username2, uid2, group, gid);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename1, owner1,
-                10), new GregorianCalendar(), position1, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename2, owner2,
-                10), new GregorianCalendar(), position2, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename3, owner2,
-                10), new GregorianCalendar(), position3, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename4, owner1,
-                10), new GregorianCalendar(), position4, tape), (byte) 1);
-
-        queue.registerFile(new FilePositionOnTape(new File(filename5, owner1,
-                10), new GregorianCalendar(), position5, tape), (byte) 1);
-
-        Assert.assertEquals("Last file decides", username1, queue.getOwner()
-                .getName());
+    public void testStateNormal14() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.suspend();
+        queue.unsuspend();
+        queue.changeToActivated();
+        queue.changeToEnded();
     }
 
+    /**
+     * Tests setting the activation time after the end time. This is
+     * unnecessary, it checks the state before the date values.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test15RegisterFileNegativeRetry() throws TReqSException {
-        Queue queue = new Queue(new Tape("tapename", new MediaType((byte) 1,
-                "media"), TapeStatus.TS_UNLOCKED));
+    public void testTime01ActivationAfterEnd() throws TReqSException {
+        Calendar activationTime = new GregorianCalendar(NUMBER_3000, 5, 13);
+
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
         queue.changeToActivated();
         queue.changeToEnded();
 
-        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                new User("username"), 100), new GregorianCalendar(), 100,
-                new Tape("tapename", new MediaType((byte) 1, "mediatype"),
-                        TapeStatus.TS_UNLOCKED));
-
+        boolean failed = false;
         try {
-            queue.registerFile(fpot1, (byte) -5);
-            Assert.fail();
+            queue.setActivationTime(activationTime);
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
         }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests setting the activation time before the creation time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testTime02ActivationBeforeCreation() throws TReqSException {
+        Calendar activationTime = new GregorianCalendar(2008, 5, 14);
+
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.setStatus(QueueStatus.ACTIVATED);
+
+        boolean failed = false;
+        try {
+            queue.setActivationTime(activationTime);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests setting the creation time after the activation time. This is
+     * unnecessary, the state is checked before the date values.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testTime03CreationAfterActivation() throws TReqSException {
+        Calendar creationTime = new GregorianCalendar(NUMBER_3000, 8, 18);
+
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+
+        boolean failed = false;
+        try {
+            queue.setCreationTime(creationTime);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests setting the creation time after the end time. This is unnecessary,
+     * the state is checked before the date values.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testTime04CreationAfterEnd() throws TReqSException {
+        Calendar creationTime = new GregorianCalendar(NUMBER_3000, 11, 21);
+
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.changeToEnded();
+
+        boolean failed = false;
+        try {
+            queue.setCreationTime(creationTime);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests setting the end time before the creation time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testTime05EndBeforeCreation() throws TReqSException {
+        Calendar endime = new GregorianCalendar(2008, 5, 11);
+
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.setStatus(QueueStatus.ENDED);
+
+        boolean failed = false;
+        try {
+            queue.setEndTime(endime);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests the toString method.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testToString01() throws TReqSException {
+        long size = 100;
+        String tapename = "tapename";
+        byte retries = 3;
+        String username = "username";
+
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                size), 10,
+                new Tape(tapename, new MediaType((byte) 1, "media")), new User(
+                        username)), retries);
+
+        String actual = queue.toString();
+        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
+                + tapename + ", number of requests: 1, number of done: 0, "
+                + "number of failed: 0, number of suspended: 0, "
+                + "max suspend retries: " + retries
+                + ", head position: 0, owner: " + username + ", status: "
+                + QueueStatus.CREATED
+                + ", suspend duration: 600, creation time: ";
+        String notExpectedContains1 = "activation time: ";
+        String notExpectedContains2 = "suspension time: ";
+        String notExpectedContains3 = "end time: ";
+        LOGGER.info(actual);
+        LOGGER.info(expectedPrefix);
+
+        Assert.assertTrue(actual.startsWith(expectedPrefix));
+        Assert.assertFalse(actual.contains(notExpectedContains1));
+        Assert.assertFalse(actual.contains(notExpectedContains2));
+        Assert.assertFalse(actual.contains(notExpectedContains3));
+    }
+
+    /**
+     * Tests the toString method with activation.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testToString02() throws TReqSException {
+        long size = 100;
+        String tapename = "tapename";
+        byte retries = 3;
+        String username = "username";
+
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                size), 10,
+                new Tape(tapename, new MediaType((byte) 1, "media")), new User(
+                        username)), (byte) retries);
+        queue.changeToActivated();
+
+        String actual = queue.toString();
+        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
+                + tapename + ", number of requests: 1, number of done: 0, "
+                + "number of failed: 0, number of suspended: 0, "
+                + "max suspend retries: " + retries
+                + ", head position: 0, owner: " + username + ", status: "
+                + QueueStatus.ACTIVATED
+                + ", suspend duration: 600, creation time: ";
+        String expectedContains1 = "activation time: ";
+        String notExpectedContains2 = "suspension time: ";
+        String notExpectedContains3 = "end time: ";
+        LOGGER.info(actual);
+        LOGGER.info(expectedPrefix);
+
+        Assert.assertTrue(actual.startsWith(expectedPrefix));
+        Assert.assertTrue(actual.contains(expectedContains1));
+        Assert.assertFalse(actual.contains(notExpectedContains2));
+        Assert.assertFalse(actual.contains(notExpectedContains3));
+    }
+
+    /**
+     * Tests the toString method with suspension.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testToString03() throws TReqSException {
+        long size = 100;
+        String tapename = "tapename";
+        byte retries = 3;
+        String username = "username";
+
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                size), 10,
+                new Tape(tapename, new MediaType((byte) 1, "media")), new User(
+                        username)), retries);
+        queue.changeToActivated();
+        queue.suspend();
+
+        String actual = queue.toString();
+        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
+                + tapename + ", number of requests: 1, number of done: 0, "
+                + "number of failed: 0, number of suspended: 1, "
+                + "max suspend retries: " + retries
+                + ", head position: 0, owner: " + username + ", status: "
+                + QueueStatus.TEMPORARILY_SUSPENDED
+                + ", suspend duration: 600, creation time: ";
+        String expectedContains1 = "activation time: ";
+        String expectedContains2 = "suspension time: ";
+        String notExpectedContains3 = "end time: ";
+        LOGGER.info(actual);
+        LOGGER.info(expectedPrefix);
+
+        Assert.assertTrue(actual.startsWith(expectedPrefix));
+        Assert.assertTrue(actual.contains(expectedContains1));
+        Assert.assertTrue(actual.contains(expectedContains2));
+        Assert.assertFalse(actual.contains(notExpectedContains3));
+    }
+
+    /**
+     * Tests the toString method with end time.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testToString04() throws TReqSException {
+        long size = 100;
+        String tapename = "tapename";
+        byte retries = 3;
+        String username = "username";
+
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                size), 10,
+                new Tape(tapename, new MediaType((byte) 1, "media")), new User(
+                        username)), retries);
+        queue.changeToActivated();
+        queue.changeToEnded();
+
+        String actual = queue.toString();
+        String expected = ", activation time: 1294342905819, end time: 1294342905820}";
+        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
+                + tapename + ", number of requests: 1, number of done: 0, "
+                + "number of failed: 0, number of suspended: 0, "
+                + "max suspend retries: " + retries
+                + ", head position: 0, owner: " + username + ", status: "
+                + QueueStatus.ENDED
+                + ", suspend duration: 600, creation time: ";
+        String expectedContains1 = "activation time: ";
+        String notExpectedContains2 = "suspension time: ";
+        String expectedContains3 = "end time: ";
+        LOGGER.info(actual);
+        LOGGER.info(expectedPrefix);
+
+        Assert.assertTrue(actual.startsWith(expectedPrefix));
+        Assert.assertTrue(actual.contains(expectedContains1));
+        Assert.assertFalse(actual.contains(notExpectedContains2));
+        Assert.assertTrue(actual.contains(expectedContains3));
     }
 }
