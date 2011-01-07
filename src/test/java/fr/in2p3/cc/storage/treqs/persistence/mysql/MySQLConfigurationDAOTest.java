@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.persistence.mysql;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,34 +34,77 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 import java.util.List;
 
 import org.apache.commons.collections.MultiMap;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Resource;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
+/**
+ * Test for mysql configuration.
+ *
+ * @author Andrés Gómez
+ */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class MySQLConfigurationDAOTest {
+    /**
+     * Init the test.
+     *
+     * @throws TReqSException
+     *             If there is a problem deleting the tables.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
+     * Destroys all after tests.
+     */
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
     }
 
-    @Test
-    public void test01getMediaAllocation() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM mediatype ";
+    /**
+     * Setup the env for the tests.
+     *
+     * @throws TReqSException
+     *             Problem setting the value.
+     */
+    @Before
+    public void setUp() throws TReqSException {
+        String query = "DELETE FROM " + MySQLStatements.QUEUES;
         MySQLBroker.getInstance().executeModification(query);
+        query = "DELETE FROM " + MySQLStatements.ALLOCATIONS;
+        MySQLBroker.getInstance().executeModification(query);
+        query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
+        MySQLBroker.getInstance().executeModification(query);
+    }
+
+    /**
+     * Gets 0 media type.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetMediatypes01() throws TReqSException {
+        MySQLBroker.getInstance().connect();
 
         List<Resource> actual = new MySQLConfigurationDAO()
                 .getMediaAllocations();
@@ -71,11 +112,62 @@ public final class MySQLConfigurationDAOTest {
         Assert.assertTrue(actual.size() == 0);
     }
 
+    /**
+     * Gets 1 media type.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test01getResourceAllocation() throws TReqSException {
+    public void testGetMediatypes02() throws TReqSException {
         MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM allocation";
+
+        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+                + " VALUES (1, \"T10K-A\", 5)";
         MySQLBroker.getInstance().executeModification(query);
+
+        List<Resource> actual = new MySQLConfigurationDAO()
+                .getMediaAllocations();
+
+        Assert.assertTrue(actual.size() == 1);
+
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    /**
+     * Gets 2 media type.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetMediatypes03() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+
+        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+                + " VALUES (2, \"T10K-B\", 7)";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+                + " VALUES (3, \"T10K-C\", 8)";
+        MySQLBroker.getInstance().executeModification(query);
+
+        List<Resource> actual = new MySQLConfigurationDAO()
+                .getMediaAllocations();
+
+        Assert.assertTrue(actual.size() == 2);
+
+        MySQLBroker.getInstance().disconnect();
+    }
+
+    /**
+     * Gets 0 allocations.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetResourceAllocation01() throws TReqSException {
+        MySQLBroker.getInstance().connect();
 
         MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
 
@@ -87,29 +179,22 @@ public final class MySQLConfigurationDAOTest {
         MySQLBroker.getInstance().disconnect();
     }
 
+    /**
+     * Gets 1 allocation.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test02getMediaAllocation() throws TReqSException {
+    public void testGetResourceAllocation02() throws TReqSException {
         MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM mediatype ";
+
+        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+                + " VALUES (2, \"T10K-B\", 7)";
         MySQLBroker.getInstance().executeModification(query);
 
-        query = "INSERT INTO mediatype VALUES (1, \"T10K-A\", 5, \"??\", \"JT\")";
-        MySQLBroker.getInstance().executeModification(query);
-
-        List<Resource> actual = new MySQLConfigurationDAO()
-                .getMediaAllocations();
-
-        Assert.assertTrue(actual.size() == 1);
-
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void test02getResourceAllocation() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM allocation";
-        MySQLBroker.getInstance().executeModification(query);
-        query = "INSERT INTO allocation VALUES (\"user1\", 2, 0.5, 0.6, 8, 5, \"\", \"\", \"\")";
+        query = "INSERT INTO " + MySQLStatements.ALLOCATIONS
+                + " VALUES (2, \"user1\", 0.5)";
         MySQLBroker.getInstance().executeModification(query);
 
         MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
@@ -122,33 +207,28 @@ public final class MySQLConfigurationDAOTest {
         MySQLBroker.getInstance().disconnect();
     }
 
+    /**
+     * Gets two allocations.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test03getMediaAllocation() throws TReqSException {
+    public void testGetResourceAllocation03() throws TReqSException {
         MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM mediatype";
+
+        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+                + " VALUES (2, \"T10K-B\", 7)";
+        MySQLBroker.getInstance().executeModification(query);
+        query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+                + " VALUES (3, \"T10K-C\", 8)";
         MySQLBroker.getInstance().executeModification(query);
 
-        query = "INSERT INTO mediatype VALUES (2, \"T10K-B\", 7, \"??\", \"IT\")";
+        query = "INSERT INTO " + MySQLStatements.ALLOCATIONS
+                + " VALUES (3, \"user2\", 0.6)";
         MySQLBroker.getInstance().executeModification(query);
-        query = "INSERT INTO mediatype VALUES (3, \"T10K-C\", 8, \"??\", \"JS\")";
-        MySQLBroker.getInstance().executeModification(query);
-
-        List<Resource> actual = new MySQLConfigurationDAO()
-                .getMediaAllocations();
-
-        Assert.assertTrue(actual.size() == 2);
-
-        MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void test03getResourceAllocation() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        String query = "DELETE FROM allocation";
-        MySQLBroker.getInstance().executeModification(query);
-        query = "INSERT INTO allocation VALUES (\"user2\", 3, 0.5, 0.6, 8, 5, \"\", \"\", \"\")";
-        MySQLBroker.getInstance().executeModification(query);
-        query = "INSERT INTO allocation VALUES (\"user3\", 4, 0.5, 0.6, 8, 5, \"\", \"\", \"\")";
+        query = "INSERT INTO " + MySQLStatements.ALLOCATIONS
+                + " VALUES (2, \"user3\", 0.5)";
         MySQLBroker.getInstance().executeModification(query);
 
         MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
@@ -159,21 +239,5 @@ public final class MySQLConfigurationDAOTest {
 
         Assert.assertEquals(expected, actual);
         MySQLBroker.getInstance().disconnect();
-    }
-
-    @Test
-    public void test04getMediaAllocation() throws TReqSException {
-        boolean failed = false;
-        try {
-            new MySQLConfigurationDAO().getMediaAllocations();
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof MySQLExecuteException)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
     }
 }
