@@ -254,7 +254,7 @@ public final class MySQLQueueDAO implements QueueDAO {
             throw new MySQLExecuteException(e);
         }
 
-        processUpdate(queue, nbDone, nbFailed, statement, index);
+        this.processUpdate(queue, nbDone, nbFailed, statement, index);
 
         LOGGER.trace("< updateState");
     }
