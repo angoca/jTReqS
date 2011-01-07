@@ -55,17 +55,21 @@ public final class MySQLStatements {
      */
     static final String ALLOCATIONS_ID = "media_id";
     /**
-     * Allocations table: Allocation for a given user.
-     */
-    static final String ALLOCATIONS_USER = "user";
-    /**
      * Allocations table: Quantity of allocation for a user.
      */
     static final String ALLOCATIONS_SHARE = "share";
     /**
+     * Allocations table: Allocation for a given user.
+     */
+    static final String ALLOCATIONS_USER = "user";
+    /**
      * Heart beat table.
      */
     static final String HEART_BEAT = "heart_beat";
+    /**
+     * Heart beat table: Most recent beat.
+     */
+    static final String HEART_BEAT_LAST_TIME = "last_time";
     /**
      * Heart beat table: Process id.
      */
@@ -75,13 +79,13 @@ public final class MySQLStatements {
      */
     static final String HEART_BEAT_START_TIME = "start_time";
     /**
-     * Heart beat table: Most recent beat.
-     */
-    static final String HEART_BEAT_LAST_TIME = "last_time";
-    /**
      * Media type table name.
      */
     static final String MEDIATYPES = "mediatypes";
+    /**
+     * Media types table: Quantity of drives for the media type.
+     */
+    static final String MEDIATYPES_DRIVES = "drives";
     /**
      * Media types table: Id of the media type.
      */
@@ -90,10 +94,6 @@ public final class MySQLStatements {
      * Media types table: Name of the media type.
      */
     static final String MEDIATYPES_NAME = "name";
-    /**
-     * Media types table: Quantity of drives for the media type.
-     */
-    static final String MEDIATYPES_DRIVES = "drives";
     /**
      * Queues table name.
      */
@@ -128,6 +128,10 @@ public final class MySQLStatements {
      */
     static final String QUEUES_NAME = "name";
     /**
+     * Queues table: Quantity of requests for the queue.
+     */
+    static final String QUEUES_NB_REQS = "nb_reqs";
+    /**
      * Queues table: Quantity of requests already done.
      */
     static final String QUEUES_NB_REQS_DONE = "nb_reqs_done";
@@ -135,10 +139,6 @@ public final class MySQLStatements {
      * Queues table: Quantity of requests that have failed.
      */
     static final String QUEUES_NB_REQS_FAILED = "nb_reqs_failed";
-    /**
-     * Queues table: Quantity of requests for the queue.
-     */
-    static final String QUEUES_NB_REQS = "nb_reqs";
     /**
      * Queues table: User with more associated requests.
      */
@@ -152,18 +152,10 @@ public final class MySQLStatements {
      */
     static final String REQUESTS = "requests";
     /**
-     * Requests table: Name of the tape where the file is currently stored.
-     */
-    static final String REQUESTS_TAPE = "tape";
-    /**
      * Requests table: Name or IP of the client that is demanding the file. It's
      * only used by the client.
      */
     static final String REQUESTS_CLIENT = "client";
-    /**
-     * Requests table: Level where the file can be found.
-     */
-    static final String REQUESTS_LEVEL = "level";
     /**
      * Requests table: When the request was created. It's only used by the
      * client.
@@ -190,6 +182,10 @@ public final class MySQLStatements {
      * Requests table: Id of the request.
      */
     static final String REQUESTS_ID = "id";
+    /**
+     * Requests table: Level where the file can be found.
+     */
+    static final String REQUESTS_LEVEL = "level";
     /**
      * Requests table: Message of the last operation.
      */
@@ -220,6 +216,10 @@ public final class MySQLStatements {
      */
     static final String REQUESTS_SUBMISSION_TIME = "submission_time";
     /**
+     * Requests table: Name of the tape where the file is currently stored.
+     */
+    static final String REQUESTS_TAPE = "tape";
+    /**
      * Requests table: How many retries have been done for this request.
      */
     static final String REQUESTS_TRIES = "tries";
@@ -228,17 +228,12 @@ public final class MySQLStatements {
      */
     static final String REQUESTS_USER = "user";
     /**
-     * Word limit to limit the quantity of queries.
-     */
-    public static final String SQL_LIMIT = " LIMIT ";
-    /**
      * Requests table: Version of the client who inserts the request. It's only
      * used by the client.
      *
      * @since 1.5
      */
     static final String REQUESTS_VERSION = "version";
-
     /**
      * Deletes old (all) registers in the heart beat table.
      */
@@ -257,6 +252,11 @@ public final class MySQLStatements {
      */
     public static final String SQL_HEART_BEAT_UPDATE = "UPDATE " + HEART_BEAT
             + " SET " + HEART_BEAT_LAST_TIME + " = NOW()";
+
+    /**
+     * Word limit to limit the quantity of queries.
+     */
+    public static final String SQL_LIMIT = " LIMIT ";
     /**
      * SQL statement to insert a new queue in the database.
      * <p>
@@ -267,43 +267,6 @@ public final class MySQLStatements {
             + QUEUES_NB_REQS + ", " + QUEUES_MEDIATYPE_ID + ", " + QUEUES_OWNER
             + ", " + QUEUES_BYTE_SIZE + ", " + QUEUES_CREATION_TIME
             + ") VALUES (?, ?, ?, ?, ?, ?, ?)";
-
-    /**
-     * SQL statement to update a queue, putting the current time as activation
-     * time. This is used when a queue passes is activated.
-     * <p>
-     * Queues 3.
-     */
-    public static final String SQL_QUEUES_UPDATE_QUEUE_ACTIVATED = "UPDATE "
-            + QUEUES + " SET " + QUEUES_ACTIVATION_TIME + " = ?, "
-            + QUEUES_STATUS + " = ?, " + QUEUES_NB_REQS + " = ?, "
-            + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
-            + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
-            + QUEUES_ID + " = ? ";
-
-    /**
-     * SQL statement to update the quantity of requests for a given queue. This
-     * is used when a queue receives a new request.
-     * <p>
-     * Queues 2.
-     */
-    public static final String SQL_QUEUES_UPDATE_ADD_REQUEST = "UPDATE "
-            + QUEUES + " SET " + QUEUES_NB_REQS + " = ?, " + QUEUES_OWNER
-            + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID
-            + " = ?";
-
-    /**
-     * SQL statement to update a queue, putting the current time as end time.
-     * This is used when a queue has been completely processed.
-     * <p>
-     * Queues 4.
-     */
-    public static final String SQL_QUEUES_UPDATE_QUEUE_ENDED = "UPDATE "
-            + QUEUES + " SET " + QUEUES_END_TIME + " = ?, " + QUEUES_STATUS
-            + " = ?, " + QUEUES_NB_REQS + " = ?, " + QUEUES_NB_REQS_DONE
-            + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, " + QUEUES_OWNER
-            + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID
-            + " = ?";
 
     /**
      * SQL statement to change the state of the pending queues at startup time.
@@ -319,6 +282,43 @@ public final class MySQLStatements {
             + " != " + QueueStatus.ENDED.getId();
 
     /**
+     * SQL statement to update the quantity of requests for a given queue. This
+     * is used when a queue receives a new request.
+     * <p>
+     * Queues 2.
+     */
+    public static final String SQL_QUEUES_UPDATE_ADD_REQUEST = "UPDATE "
+            + QUEUES + " SET " + QUEUES_NB_REQS + " = ?, " + QUEUES_OWNER
+            + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID
+            + " = ?";
+
+    /**
+     * SQL statement to update a queue, putting the current time as activation
+     * time. This is used when a queue passes is activated.
+     * <p>
+     * Queues 3.
+     */
+    public static final String SQL_QUEUES_UPDATE_QUEUE_ACTIVATED = "UPDATE "
+            + QUEUES + " SET " + QUEUES_ACTIVATION_TIME + " = ?, "
+            + QUEUES_STATUS + " = ?, " + QUEUES_NB_REQS + " = ?, "
+            + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
+            + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
+            + QUEUES_ID + " = ? ";
+
+    /**
+     * SQL statement to update a queue, putting the current time as end time.
+     * This is used when a queue has been completely processed.
+     * <p>
+     * Queues 4.
+     */
+    public static final String SQL_QUEUES_UPDATE_QUEUE_ENDED = "UPDATE "
+            + QUEUES + " SET " + QUEUES_END_TIME + " = ?, " + QUEUES_STATUS
+            + " = ?, " + QUEUES_NB_REQS + " = ?, " + QUEUES_NB_REQS_DONE
+            + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, " + QUEUES_OWNER
+            + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID
+            + " = ?";
+
+    /**
      * SQL statement to retrieve the new requests registered in the database.
      * TODO v1.5 This query should add this condition
      * "AND retries < MAX_RETRIES" or "AND retries != -1"
@@ -330,22 +330,6 @@ public final class MySQLStatements {
             + REQUESTS_TRIES + " FROM " + REQUESTS + " WHERE "
             + REQUESTS_STATUS + " = " + RequestStatus.CREATED.getId()
             + " ORDER BY " + REQUESTS_ID;
-
-    /**
-     * SQL statement to update the unprocessed requests of a previous execution.
-     * It changes all the requests to created.
-     * <p>
-     * TODO v2.0 this could be changed: compare the date of the metadata, if it
-     * is still valid then process the request directly to a queue. This could
-     * reduces the getAttr after a crash.
-     * <p>
-     * Requests 0.
-     */
-    public static final String SQL_REQUESTS_UPDATE_UNPROCESSED = "UPDATE "
-            + REQUESTS + " SET " + REQUESTS_STATUS + " = "
-            + RequestStatus.CREATED.getId() + " WHERE " + REQUESTS_STATUS
-            + " BETWEEN " + RequestStatus.SUBMITTED.getId() + " AND "
-            + RequestStatus.QUEUED.getId();
 
     /**
      * SQL statement to update as processed a request. This changes the end
@@ -388,6 +372,19 @@ public final class MySQLStatements {
             + REQUESTS_END_TIME + " IS null";
 
     /**
+     * SQL statement to update a request that had a problem while staging. It
+     * means, the request will be retried.
+     * <p>
+     * Requests 5.
+     */
+    public static final String SQL_REQUESTS_UPDATE_REQUEST_RETRY = "UPDATE "
+            + REQUESTS + " SET " + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE
+            + " = ?, " + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE
+            + " = ?, " + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
+            + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
+            + REQUESTS_END_TIME + " IS null";
+
+    /**
      * SQL statement to update a request that could not have been staged due to
      * space problems.
      * <p>
@@ -398,19 +395,6 @@ public final class MySQLStatements {
             + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE + " = ?, "
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
-            + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
-
-    /**
-     * SQL statement to update a request that had a problem while staging. It
-     * means, the request will be retried.
-     * <p>
-     * Requests 5.
-     */
-    public static final String SQL_REQUESTS_UPDATE_REQUEST_RETRY = "UPDATE "
-            + REQUESTS + " SET " + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE
-            + " = ?, " + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE
-            + " = ?, " + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
             + REQUESTS_END_TIME + " IS null";
 
@@ -428,6 +412,22 @@ public final class MySQLStatements {
             + REQUESTS_ERRORCODE + " = 0, " + REQUESTS_SUBMISSION_TIME
             + " = ? WHERE " + REQUESTS_FILE + " = ? AND " + REQUESTS_END_TIME
             + " IS null";
+
+    /**
+     * SQL statement to update the unprocessed requests of a previous execution.
+     * It changes all the requests to created.
+     * <p>
+     * TODO v2.0 this could be changed: compare the date of the metadata, if it
+     * is still valid then process the request directly to a queue. This could
+     * reduces the getAttr after a crash.
+     * <p>
+     * Requests 0.
+     */
+    public static final String SQL_REQUESTS_UPDATE_UNPROCESSED = "UPDATE "
+            + REQUESTS + " SET " + REQUESTS_STATUS + " = "
+            + RequestStatus.CREATED.getId() + " WHERE " + REQUESTS_STATUS
+            + " BETWEEN " + RequestStatus.SUBMITTED.getId() + " AND "
+            + RequestStatus.QUEUED.getId();
 
     /**
      * SQL statement to retrieve the allocation per user per media type.
