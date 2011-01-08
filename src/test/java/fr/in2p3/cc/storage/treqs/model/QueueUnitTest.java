@@ -100,6 +100,64 @@ public final class QueueUnitTest {
     }
 
     /**
+     * Tests to activate an ended queue.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testActivate01EndedQueue() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 10), 50, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.changeToEnded();
+
+        boolean failed = false;
+        try {
+            queue.activate();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStateException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to activate a suspended queue.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testActivate02SuspendedQueue() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 10), 50, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.suspend();
+
+        boolean failed = false;
+        try {
+            queue.activate();
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof InvalidStateException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
      * Tests the constructor with a null tape.
      *
      * @throws TReqSException
@@ -195,6 +253,26 @@ public final class QueueUnitTest {
         if (failed) {
             Assert.fail();
         }
+    }
+
+    /**
+     * Test to retrieve a file that is being staged.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testOtherMethods03() throws TReqSException {
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
+                100), 100, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User("username"));
+        Queue queue = new Queue(fpot1, (byte) 5);
+
+        queue.activate();
+
+        Reading reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        queue.getNextReading();
     }
 
     /**
@@ -1641,6 +1719,26 @@ public final class QueueUnitTest {
     }
 
     /**
+     * Tests to set the queue as activated - suspended - created - activate -
+     * ended.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStateNormal14() throws TReqSException {
+        Queue queue = new Queue(
+                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
+                        "tapename", new MediaType((byte) 1, "media")),
+                        new User("username")), (byte) 3);
+        queue.changeToActivated();
+        queue.suspend();
+        queue.unsuspend();
+        queue.changeToActivated();
+        queue.changeToEnded();
+    }
+
+    /**
      * Tests to set the state as activated once the state is temporary
      * suspended.
      *
@@ -1770,23 +1868,32 @@ public final class QueueUnitTest {
     }
 
     /**
-     * Tests to set the queue as activated - suspended - created - activate -
-     * ended.
+     * Test to suspend, unsuspend and continue a queue.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void testStateNormal14() throws TReqSException {
-        Queue queue = new Queue(
-                new FilePositionOnTape(new File("filename", 100), 10, new Tape(
-                        "tapename", new MediaType((byte) 1, "media")),
-                        new User("username")), (byte) 3);
-        queue.changeToActivated();
+    public void testSuspension01() throws TReqSException {
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
+                100), 100, new Tape("tapename", new MediaType((byte) 1,
+                "mediatype")), new User("username"));
+        Queue queue = new Queue(fpot1, (byte) 5);
+
+        queue.activate();
+
         queue.suspend();
+
         queue.unsuspend();
-        queue.changeToActivated();
-        queue.changeToEnded();
+        queue.activate();
+
+        Reading reading = queue.getNextReading();
+        reading.setFileRequestStatus(RequestStatus.QUEUED);
+        reading.setFileRequestStatus(RequestStatus.STAGED);
+
+        reading = queue.getNextReading();
+
+        Assert.assertTrue(reading == null);
     }
 
     /**
