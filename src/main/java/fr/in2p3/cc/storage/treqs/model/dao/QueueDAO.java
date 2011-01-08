@@ -84,6 +84,8 @@ public interface QueueDAO {
 
     /**
      * Update a queue entry in the queues table.
+     * <p>
+     * This updates is different according to the current state of the queue.
      *
      * @param queue
      *            The queue to update.
