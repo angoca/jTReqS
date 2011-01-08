@@ -56,6 +56,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 import fr.in2p3.cc.storage.treqs.model.exception.MaximalSuspensionTriesException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -94,6 +95,7 @@ public final class QueueUnitTest {
      */
     @AfterClass
     public static void oneTimeTearDown() {
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 
