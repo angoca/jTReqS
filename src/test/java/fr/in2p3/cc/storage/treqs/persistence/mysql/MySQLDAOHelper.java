@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.persistence.mysql;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,16 +34,25 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.RandomString;
-import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
+/**
+ * This class is to create requests of random files requested from random users.
+ *
+ * @author Andrés Gómez
+ */
 public final class MySQLDAOHelper {
     /**
      * Logger.
@@ -53,6 +60,11 @@ public final class MySQLDAOHelper {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLDAOHelper.class);
 
+    /**
+     * Creates a file name with random values.
+     *
+     * @return Random file.
+     */
     private static String getFileName() {
         String ret = "";
         int size = (int) (Math.random() * 20) + 5;
@@ -60,6 +72,11 @@ public final class MySQLDAOHelper {
         return ret;
     }
 
+    /**
+     * Creates a user name with random values.
+     *
+     * @return Random user name.
+     */
     private static String getUserName() {
         String ret = "";
         ret = new RandomString(1).nextString()
@@ -68,13 +85,24 @@ public final class MySQLDAOHelper {
     }
 
     /**
+     * Main method.
+     *
      * @param args
+     *            Nothing.
      * @throws TReqSException
      *             Never.
      */
     public static void main(final String[] args) throws TReqSException {
+        // Sets the basic configuration
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
+
         MySQLBroker.getInstance().connect();
-        RequestsDAO.deleteAll();
+        // Cleans the database.
+        MySQLRequestsDAO.deleteAll();
+        // Inserts a random quantity of requests (more than 2, less than 7)
         int size = (int) (Math.random() * 5) + 2;
         for (int i = 0; i < size; i++) {
             String fileName = getFileName();
@@ -82,11 +110,14 @@ public final class MySQLDAOHelper {
             RequestStatus status = RequestStatus.CREATED;
             LOGGER.warn("Generated: {} - {}, {}", new String[] { (i + 1) + "",
                     fileName, userName });
-            RequestsDAO.insertRow(fileName, userName, status);
+            MySQLRequestsDAO.insertRow(fileName, userName, status);
         }
         MySQLBroker.getInstance().disconnect();
     }
 
+    /**
+     * Private constructor.
+     */
     private MySQLDAOHelper() {
         // Nothing.
     }
