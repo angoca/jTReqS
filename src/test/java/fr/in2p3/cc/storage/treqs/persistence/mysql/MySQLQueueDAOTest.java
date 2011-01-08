@@ -69,7 +69,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  *
  * @author Andrés Gómez
  */
-// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class MySQLQueueDAOTest {
 
     /**
