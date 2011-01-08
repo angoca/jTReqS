@@ -247,6 +247,13 @@ public final class MySQLQueueDAO implements QueueDAO {
                 // Insert end time.
                 statement.setDate(index++, new Date(time.getTimeInMillis()));
                 break;
+            case TEMPORARILY_SUSPENDED:
+                // In this state the queue is not update in the database.
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_SUSPENDED);
+                // Insert suspension time
+                statement.setDate(index++, new Date(time.getTimeInMillis()));
+                break;
             default:
                 assert false;
             }

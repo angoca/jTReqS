@@ -154,6 +154,10 @@ final class InitDBStatements {
      */
     private static final String QUEUES_STATUS = MySQLStatements.QUEUES_STATUS;
     /**
+     * Queues table: When the queue was suspended.
+     */
+    private static final String QUEUES_SUSPENSION_TIME = MySQLStatements.QUEUES_SUSPENSION_TIME;
+    /**
      * Requests table name.
      */
     static final String REQUESTS = MySQLStatements.REQUESTS;
@@ -279,9 +283,10 @@ final class InitDBStatements {
             + " int not null auto_increment, " + QUEUES_NAME
             + " char(12) not null, " + QUEUES_CREATION_TIME
             + " datetime not null, " + QUEUES_MEDIATYPE_ID
-            + " tinyint not null, " + QUEUES_NB_REQS_FAILED
-            + " int not null default 0, " + QUEUES_ACTIVATION_TIME
-            + " datetime, " + QUEUES_END_TIME + " datetime, " + QUEUES_STATUS
+            + " tinyint not null, " + QUEUES_SUSPENSION_TIME + " datetime, "
+            + QUEUES_NB_REQS_FAILED + " int not null default 0, "
+            + QUEUES_ACTIVATION_TIME + " datetime, " + QUEUES_END_TIME
+            + " datetime, " + QUEUES_STATUS
             + " smallint not null default 200, " + QUEUES_NB_REQS
             + " int not null default 0, " + QUEUES_OWNER + " varchar(32), "
             + QUEUES_BYTE_SIZE + " bigint not null default 0, "

@@ -148,6 +148,10 @@ public final class MySQLStatements {
      */
     static final String QUEUES_STATUS = "status";
     /**
+     * Queues table: When the queue was suspended.
+     */
+    static final String QUEUES_SUSPENSION_TIME = "suspension_time";
+    /**
      * Requests table name.
      */
     static final String REQUESTS = "requests";
@@ -318,6 +322,18 @@ public final class MySQLStatements {
             + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE " + QUEUES_ID
             + " = ?";
 
+    /**
+     * SQL statement to update a queue, putting the current time as suspension
+     * time. This is used when a queue was temporarily suspended.
+     * <p>
+     * Queues 5.
+     */
+    public static final String SQL_QUEUES_UPDATE_QUEUE_SUSPENDED = "UPDATE "
+            + QUEUES + " SET " + QUEUES_SUSPENSION_TIME + " = ?, "
+            + QUEUES_STATUS + " = ?, " + QUEUES_NB_REQS + " = ?, "
+            + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
+            + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
+            + QUEUES_ID + " = ? ";
     /**
      * SQL statement to retrieve the new requests registered in the database.
      * TODO v1.5 This query should add this condition
