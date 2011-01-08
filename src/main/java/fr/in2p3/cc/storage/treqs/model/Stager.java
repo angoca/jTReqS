@@ -105,7 +105,6 @@ public final class Stager extends AbstractProcess {
             } catch (TReqSException e) {
                 LOGGER.error("Error in Staging.", e);
             }
-            this.conclude();
             LOGGER.debug("Staging process finished.");
         } else {
             LOGGER.info("Cannot work on a non-activated queue or queue "
