@@ -66,12 +66,12 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public final class QueueUnitTest {
+public final class QueueTest {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(QueueUnitTest.class);
+            .getLogger(QueueTest.class);
     /**
      * Three thousands.
      */
