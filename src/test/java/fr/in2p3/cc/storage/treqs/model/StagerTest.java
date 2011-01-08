@@ -53,6 +53,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
@@ -81,6 +82,8 @@ public final class StagerTest {
             throws ProblematicConfiguationFileException {
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
+        Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
+                Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
     }
 
     /**
@@ -88,6 +91,7 @@ public final class StagerTest {
      */
     @AfterClass
     public static void oneTimeTearDown() {
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 
@@ -233,18 +237,19 @@ public final class StagerTest {
             public void run() {
                 LOGGER.info("Starting " + getName());
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     // Nothing.
                 }
+                LOGGER.warn("Concluding stager");
                 stager.conclude();
             }
         };
         thread.setName("TestStagerRun");
-        thread.start();
-
         HSMMockBridge.getInstance().setStageTime(100);
 
+        LOGGER.warn("Executing stager and stopper");
+        thread.start();
         stager.run();
     }
 
