@@ -42,6 +42,7 @@ import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLInit;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
@@ -82,6 +83,8 @@ public final class MySQLInitTest {
     public static void oneTimeSetUp() throws TReqSException {
         System.setProperty(Constants.CONFIGURATION_FILE,
                 MainTests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
         MySQLBroker.getInstance().connect();
         dropTable(MySQLStatements.REQUESTS);
         dropTable(MySQLStatements.QUEUES);

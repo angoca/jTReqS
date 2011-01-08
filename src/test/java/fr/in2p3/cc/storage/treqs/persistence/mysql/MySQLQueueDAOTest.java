@@ -50,6 +50,7 @@ import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
@@ -61,13 +62,14 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Test for mysql queue.
  *
  * @author Andrés Gómez
  */
-@RunWith(RandomBlockJUnit4ClassRunner.class)
+// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class MySQLQueueDAOTest {
 
     /**
@@ -86,6 +88,8 @@ public final class MySQLQueueDAOTest {
     public static void oneTimeSetUp() throws TReqSException {
         System.setProperty(Constants.CONFIGURATION_FILE,
                 MainTests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
     }
 
     /**
@@ -122,6 +126,7 @@ public final class MySQLQueueDAOTest {
         query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
         MySQLBroker.getInstance().executeModification(query);
         MySQLBroker.destroyInstance();
+        Configurator.destroyInstance();
     }
 
     /**

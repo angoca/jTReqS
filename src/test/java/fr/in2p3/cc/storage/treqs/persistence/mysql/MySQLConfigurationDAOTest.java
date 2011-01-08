@@ -48,10 +48,12 @@ import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Test for mysql configuration.
@@ -70,6 +72,8 @@ public final class MySQLConfigurationDAOTest {
     public static void oneTimeSetUp() throws TReqSException {
         System.setProperty(Constants.CONFIGURATION_FILE,
                 MainTests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
     }
 
     /**
@@ -78,6 +82,7 @@ public final class MySQLConfigurationDAOTest {
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
+        Configurator.destroyInstance();
     }
 
     /**
