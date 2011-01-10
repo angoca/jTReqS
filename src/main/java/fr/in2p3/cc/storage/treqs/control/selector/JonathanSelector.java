@@ -107,6 +107,8 @@ public final class JonathanSelector implements Selector {
      * <p>
      * Also taking the opportunity to unsuspend the suspended queues.
      *
+     * @param queuesMap
+     *            Set of queues.
      * @param resource
      *            Type of resource to analyze.
      * @param user
@@ -342,7 +344,7 @@ public final class JonathanSelector implements Selector {
      *            Queue to analyze.
      */
     private void calculateUserScore(final Resource resource,
-            Map<User, Float> usersScores, Queue queue) {
+            final Map<User, Float> usersScores, final Queue queue) {
         LOGGER.trace("> checkUser");
 
         assert resource != null;
