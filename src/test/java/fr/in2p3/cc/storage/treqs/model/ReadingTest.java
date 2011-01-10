@@ -56,8 +56,6 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStatusTransitionException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
@@ -93,9 +91,6 @@ public final class ReadingTest {
 
     /**
      * Destroys all after tests.
-     *
-     * @throws TReqSException
-     *             Problem acceding the database.
      */
     @AfterClass
     public static void oneTimeTearDown() {
