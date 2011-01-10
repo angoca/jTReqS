@@ -41,11 +41,14 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.controller.StagersControllerTest;
 
 /**
  * TReqSConfigTest.cpp.
@@ -54,6 +57,11 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class ConfiguratorTest {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(StagersControllerTest.class);
 
     /**
      * Destroys all objects.
@@ -98,7 +106,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().getStringValue(sec, key);
         } catch (KeyNotFoundException e) {
-            // Nothing
+            LOGGER.error("Error sleeping", e);
         }
     }
 
@@ -179,7 +187,7 @@ public final class ConfiguratorTest {
     }
 
     /**
-     * Retrieves a value with null section
+     * Retrieves a value with null section.
      */
     @Test
     public void testGetValue01() {
