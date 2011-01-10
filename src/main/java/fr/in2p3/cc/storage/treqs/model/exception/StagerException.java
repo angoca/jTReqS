@@ -43,7 +43,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
  * Wraps a problem in the stager.
- * 
+ *
  * @author Andres Gomez
  * @since 1.5
  */
@@ -61,11 +61,11 @@ public class StagerException extends TReqSException {
 
     /**
      * Wraps an exception thrown in the stager.
-     * 
+     *
      * @param e
      *            Wrapped exception.
      */
-    public StagerException(Exception e) {
+    public StagerException(final Exception e) {
         super(e);
 
         LOGGER.trace(">< Instance creation");
