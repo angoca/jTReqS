@@ -306,7 +306,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         try {
             Thread.sleep(wait);
         } catch (InterruptedException e) {
-            // Nothing.
+            LOGGER.error("Error sleeping", e);
         }
         LOGGER.info("Fake staging done ;)");
 
