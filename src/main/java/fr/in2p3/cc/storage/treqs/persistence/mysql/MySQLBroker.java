@@ -224,7 +224,7 @@ public final class MySQLBroker {
                     try {
                         this.disconnect();
                     } catch (Exception e) {
-                        // Nothing
+                        LOGGER.error("Problem connecting", e);
                     }
                     // TODO v1.5 Deal with this exception.
                     throw new MySQLOpenException(ex);
