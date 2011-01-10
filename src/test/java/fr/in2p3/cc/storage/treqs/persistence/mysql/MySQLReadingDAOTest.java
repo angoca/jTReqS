@@ -508,6 +508,14 @@ public final class MySQLReadingDAOTest {
         new MySQLReadingDAO().setRequestStatusById(id, status, code, message);
     }
 
+    /**
+     * Tests the update of a reading.
+     *
+     * @throws SQLException
+     *             Never.
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
     public void testSetRequestStatusById07() throws SQLException,
             TReqSException {
