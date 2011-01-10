@@ -239,7 +239,7 @@ public final class StagerTest {
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
-                    // Nothing.
+                    LOGGER.error("Error sleeping", e);
                 }
                 LOGGER.warn("Concluding stager");
                 stager.conclude();
