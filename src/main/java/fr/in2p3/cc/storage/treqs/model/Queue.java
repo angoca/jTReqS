@@ -951,6 +951,8 @@ public final class Queue implements Comparable<Queue> {
         // The insert method ensures that the reading object is inserted
         // in the right place.
 
+        // FIXME In HPSS version 7 the aggregation return the same position for
+        // different files.
         boolean exists = this.readingList.containsKey((short) fpot
                 .getPosition());
         if (!exists) {
@@ -1296,7 +1298,7 @@ public final class Queue implements Comparable<Queue> {
      * @throws TReqSException
      *             If there is a problem changing the state or the time.
      */
-    public void suspend() throws TReqSException {
+    void suspend() throws TReqSException {
         LOGGER.trace("> suspend");
 
         this.changeToSuspended();
