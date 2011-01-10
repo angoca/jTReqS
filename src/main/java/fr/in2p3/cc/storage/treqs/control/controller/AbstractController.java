@@ -44,8 +44,8 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
 
 /**
- * AbstractController template. Helps managing a collection of objects. This object uses
- * the Template pattern.
+ * AbstractController template. Helps managing a collection of objects. This
+ * object uses the Template pattern.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
