@@ -116,7 +116,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
          * @param code
          *            Number of the error code.
          */
-        private ErrorCodes(byte code) {
+        private ErrorCodes(final byte code) {
             LOGGER.trace("> Instance creation");
 
             this.errorCode = code;
