@@ -44,7 +44,7 @@ import fr.in2p3.cc.storage.treqs.control.dispatcher.FileRequestTest;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTapeTest;
 import fr.in2p3.cc.storage.treqs.model.FileTest;
 import fr.in2p3.cc.storage.treqs.model.MediaTypeTest;
-import fr.in2p3.cc.storage.treqs.model.QueueUnitTest;
+import fr.in2p3.cc.storage.treqs.model.QueueTest;
 import fr.in2p3.cc.storage.treqs.model.ReadingTest;
 import fr.in2p3.cc.storage.treqs.model.ResourceTest;
 import fr.in2p3.cc.storage.treqs.model.StagerTest;
@@ -60,7 +60,7 @@ import fr.in2p3.cc.storage.treqs.tools.ConfiguratorTest;
 @RunWith(Suite.class)
 @SuiteClasses({ MediaTypeTest.class, FileRequestTest.class, FileTest.class,
         TapeTest.class, ResourceTest.class, UserTest.class,
-        FilePositionOnTapeTest.class, ReadingTest.class, QueueUnitTest.class,
+        FilePositionOnTapeTest.class, ReadingTest.class, QueueTest.class,
         StagerTest.class, ConfiguratorTest.class })
 public final class UnitTests {
 }

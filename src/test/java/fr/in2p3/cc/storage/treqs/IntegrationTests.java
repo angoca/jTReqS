@@ -44,7 +44,6 @@ import fr.in2p3.cc.storage.treqs.control.activator.ActivatorTest;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.DispatcherTest;
 import fr.in2p3.cc.storage.treqs.control.selector.JonathanSelectorTest;
 import fr.in2p3.cc.storage.treqs.hsm.command.HSMCommandBridgeTest;
-import fr.in2p3.cc.storage.treqs.model.QueueIntegrationTest;
 
 /**
  * Integration tests. Several modules tested together.
@@ -52,8 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.QueueIntegrationTest;
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)
-@SuiteClasses({ QueueIntegrationTest.class, ControllerTests.class,
-        JonathanSelectorTest.class, ActivatorTest.class, DispatcherTest.class,
-        HSMCommandBridgeTest.class })
+@SuiteClasses({ ControllerTests.class, JonathanSelectorTest.class,
+        ActivatorTest.class, DispatcherTest.class, HSMCommandBridgeTest.class })
 public final class IntegrationTests {
 }
