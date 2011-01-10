@@ -20,7 +20,7 @@ public final class NotMediaTypeDefinedException extends TReqSException {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(NotMediaTypeDefinedException.class);
     /**
-     * Generated ID
+     * Generated ID.
      */
     private static final long serialVersionUID = -2897346370815410476L;
 
