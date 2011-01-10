@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control.controller;
 
 import junit.framework.Assert;
 
@@ -44,63 +43,75 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
 
 /**
- * UsersControllerTest.cpp
- * 
- * @version 2010-03-23
- * @author gomez
+ * Tests for UsersController.
+ *
+ * @author Andres Gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class UsersControllerTest {
+public final class UsersControllerTest {
+    /**
+     * Destroys everything.
+     */
     @After
     public void tearDown() {
         UsersController.destroyInstance();
     }
 
+    /**
+     * Tries to add a null user.
+     */
     @Test
-    public void test01add() {
+    public void testAdd01() {
+        boolean failed = false;
         try {
             UsersController.getInstance().add(null);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 
     /**
-     * Tests
-     * 
+     * Adds a user normally.
+     *
      * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test01addUser() throws TReqSException {
+    public void testAddUser01() throws TReqSException {
         String username = "username";
         UsersController.getInstance().add(username);
 
         User user = (User) UsersController.getInstance().exists(username);
 
-        // TODO AngocA the object does not have the other parameters
-        user.setGid((short) 100);
-        user.setGroup("groupname");
-        user.setUid((short) 10);
-
         Assert.assertEquals("add user", username, user.getName());
     }
 
+    /**
+     * Tries to create a null user.
+     */
     @Test
-    public void test01create() {
+    public void testCreate01() {
+        boolean failed = false;
         try {
             UsersController.getInstance().create(null);
-            Assert.fail();
+            failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
-                Assert.fail();
+                failed = true;
             }
+        }
+        if (failed) {
+            Assert.fail();
         }
     }
 }
