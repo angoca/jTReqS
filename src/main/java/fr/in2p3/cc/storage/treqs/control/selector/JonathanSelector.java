@@ -82,10 +82,13 @@ public final class JonathanSelector implements Selector {
             throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
+        assert queues != null : "queues null";
+        assert resource != null : "resource null";
+
         Queue ret = null;
         User bestUser = this.selectBestUser(queues, resource);
         if (bestUser == null) {
-            // There is no non-blocked user among the waiting
+            // There is not non-blocked user among the waiting
             // queues, just do nothing and break the while loop,
             // otherwise, it is doomed to infinite loop
             LOGGER.error("There is not Best User. "
@@ -122,9 +125,9 @@ public final class JonathanSelector implements Selector {
             final User user) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
-        assert queuesMap != null;
-        assert resource != null;
-        assert user != null;
+        assert queuesMap != null : "queuesMap null";
+        assert resource != null : "resource null";
+        assert user != null : "user null";
 
         Queue ret = null;
         // First get the list of queues
@@ -184,10 +187,10 @@ public final class JonathanSelector implements Selector {
             final Queue queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
-        assert resource != null;
-        assert user != null;
-        assert tapename != null && !tapename.equals(null);
-        assert queue != null;
+        assert resource != null : "resource null";
+        assert user != null : "user null";
+        assert tapename != null && !tapename.equals(null) : "invalid tapename";
+        assert queue != null : "queue null";
 
         Queue ret = null;
 
@@ -274,57 +277,68 @@ public final class JonathanSelector implements Selector {
      * @param resource
      *            Type of resource to analyze.
      * @return the user
+     * @throws NoQueuesDefinedException
+     *             When there are not any defined queues.
      */
     @SuppressWarnings("unchecked")
     synchronized User selectBestUser(final MultiMap queuesMap,
-            final Resource resource) {
+            final Resource resource) throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
+        assert queuesMap != null : "queues null";
         assert resource != null : "resource null";
 
-        Map<User, Float> usersScores = new HashMap<User, Float>();
+        User bestUser = null;
+        if (queuesMap.size() == 0) {
+            throw new NoQueuesDefinedException();
+        } else {
 
-        // For each waiting user, get its allocation and its used resources.
+            Map<User, Float> usersScores = new HashMap<User, Float>();
 
-        // First get the list of queues
+            // For each waiting user, get its allocation and its used resources.
 
-        // Browse the list of queues and compute the users scores
-        LOGGER.debug("Computing Score: (total allocation) * (user allocation) "
-                + "- (used resources)");
-        Iterator<String> iterator1 = queuesMap.keySet().iterator();
-        while (iterator1.hasNext()) {
-            String key = iterator1.next();
-            Iterator<Queue> iterator2 = ((Collection<Queue>) queuesMap.get(key))
-                    .iterator();
-            while (iterator2.hasNext()) {
-                Queue queue = iterator2.next();
-                this.calculateUserScore(resource, usersScores, queue);
+            // First get the list of queues
+
+            // Browse the list of queues and compute the users scores
+            LOGGER.debug("Computing Score: (total allocation) "
+                    + "* (user allocation) - (used resources)");
+            Iterator<String> queuesList = queuesMap.keySet().iterator();
+            while (queuesList.hasNext()) {
+                String key = queuesList.next();
+                Iterator<Queue> queues = ((Collection<Queue>) queuesMap
+                        .get(key)).iterator();
+                while (queues.hasNext()) {
+                    Queue queue = queues.next();
+                    this.calculateUserScore(resource, usersScores, queue);
+                }
             }
-        }
 
-        // Catch the best
-        Iterator<User> iterator = usersScores.keySet().iterator();
-        // This assures that bestUser will have a value.
-        User bestUser = iterator.next();
-        while (iterator.hasNext()) {
-            User key = iterator.next();
-            if (resource.getUserAllocation(key) < 0) {
-                // The share for this user has been set to a negative value.
-                // This means that we have to skip this user
-                LOGGER.warn("User {} has a negative share. His queues are "
-                        + "hold.", key.getName());
-            } else if (bestUser != null
-                    && usersScores.get(key) > usersScores.get(bestUser)) {
-                bestUser = key;
+            // Catch the best
+            Iterator<User> users = usersScores.keySet().iterator();
+            // This assures that bestUser will have a value.
+            bestUser = users.next();
+            while (users.hasNext()) {
+                User key = users.next();
+                if (resource.getUserAllocation(key) < 0) {
+                    // The share for this user has been set to a negative
+                    // value.
+                    // This means that we have to skip this user
+                    LOGGER.warn("User {} has a negative share. His queues are "
+                            + "hold.", key.getName());
+                } else if (bestUser != null
+                        && usersScores.get(key) > usersScores.get(bestUser)) {
+                    bestUser = key;
+                }
             }
-        }
-        // We have to check that the best user has positive share
-        if (bestUser != null && resource.getUserAllocation(bestUser) < 0) {
-            LOGGER.warn("User {} has a negative share. We should never get "
-                    + "here.", bestUser.getName());
-        }
+            // We have to check that the best user has positive share
+            if (bestUser != null && resource.getUserAllocation(bestUser) < 0) {
+                LOGGER.warn(
+                        "User {} has a negative share. We should never get "
+                                + "here.", bestUser.getName());
+            }
 
-        LOGGER.debug("Best user: {}", bestUser.getName());
+            LOGGER.debug("Best user: {}", bestUser.getName());
+        }
 
         assert bestUser != null : "bestUser null";
 
@@ -347,9 +361,9 @@ public final class JonathanSelector implements Selector {
             final Map<User, Float> usersScores, final Queue queue) {
         LOGGER.trace("> checkUser");
 
-        assert resource != null;
-        assert usersScores != null;
-        assert queue != null;
+        assert resource != null : "resource null";
+        assert usersScores != null : "usersScore null";
+        assert queue != null : "queue null";
 
         float score;
         if (queue.getStatus() == QueueStatus.CREATED) {
@@ -388,7 +402,7 @@ public final class JonathanSelector implements Selector {
     private List<?> convertSetToList(final Collection<?> queues) {
         LOGGER.trace("> convertSetToList");
 
-        assert queues != null;
+        assert queues != null : "queues null";
 
         List<Object> ret = new ArrayList<Object>();
         Iterator<Object> iterator = (Iterator<Object>) queues.iterator();
@@ -396,7 +410,7 @@ public final class JonathanSelector implements Selector {
             ret.add(iterator.next());
         }
 
-        assert ret != null;
+        assert ret != null : "ret null";
 
         LOGGER.trace("< convertSetToList");
 
