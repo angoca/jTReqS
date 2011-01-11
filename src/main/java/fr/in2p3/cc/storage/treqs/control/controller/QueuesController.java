@@ -37,7 +37,6 @@
 package fr.in2p3.cc.storage.treqs.control.controller;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -217,9 +216,10 @@ public final class QueuesController {
             }
         }
 
+        // There is no activated queue, or the current position is after
+        // file position.
+
         if (!foundQueue) {
-            // There is no activated queue, or the current position is after
-            // file position.
             // But maybe there is a TEMPORILY_SUSPENDED queue.
             queue = this.exists(fpot.getTape().getName(),
                     QueueStatus.TEMPORARILY_SUSPENDED);
@@ -231,17 +231,24 @@ public final class QueuesController {
         }
 
         if (!foundQueue) {
-            // If we get here, try to create (or get if already existing) a
-            // Queue and register the file in it
-            // That means that there is not any queue for that tape in created
-            // state.
-            // Or there is one in activated state, but the head position is
-            // after the file position.
-            queue = this.create(fpot, retry);
-            // TODO v1.5 create a special flag in the queue, indicating that
-            // there is an activated queue for the same tape, so this new queue
-            // has to be activated once the other has finished. This prevents to
-            // unmount an already mounted tape.
+            // If we get here, try to create or get if already existing Queue
+            // and register the file in it.
+            queue = this.exists(fpot.getTape().getName(),
+                    QueueStatus.CREATED);
+            if (queue == null) {
+                // That means that there is not any queue for that tape in
+                // created state.
+                queue = this.create(fpot, retry);
+            } else {
+                // Or there is one in activated state, but the head position is
+                // after the file position.
+                LOGGER.info("A queue with status CREATED already exists.");
+                queue.registerFPOT(fpot, retry);
+                // TODO v1.5 create a special flag in the queue, indicating that
+                // there is an activated queue for the same tape, so this new
+                // queue has to be activated once the other has finished. This
+                // prevents to unmount an already mounted tape.
+            }
         }
 
         LOGGER.trace("< addFilePositionOnTape");
@@ -260,7 +267,7 @@ public final class QueuesController {
         LOGGER.trace("> cleanDoneQueues");
 
         int cleaned = 0;
-        HashMap<String, Queue> toRemove = new HashMap<String, Queue>();
+        MultiMap toRemove = new MultiValueMap();
         synchronized (this.queuesMap) {
             @SuppressWarnings("rawtypes")
             Iterator iterName = this.queuesMap.keySet().iterator();
@@ -288,9 +295,18 @@ public final class QueuesController {
             iterName = toRemove.keySet().iterator();
             while (iterName.hasNext()) {
                 String key = (String) iterName.next();
-                Queue queue = toRemove.get(key);
-                LOGGER.debug("Deleting {} {}", key, queue.toString());
-                this.queuesMap.remove(key, queue);
+
+                @SuppressWarnings("rawtypes")
+                Iterator queues = ((Collection<Queue>) toRemove.get(key))
+                        .iterator();
+                while (queues.hasNext()) {
+                    Queue queue = (Queue) queues.next();
+
+                    LOGGER.debug("Deleting {} {}", key, queue.toString());
+                    this.queuesMap.remove(key, queue);
+
+                }
+
             }
         }
 
@@ -384,7 +400,7 @@ public final class QueuesController {
     /**
      * Queue Creates a new Queue and inserts it in the instance of the multimap.
      * <p>
-     * The queue is created in CREATED state.
+     * The new queue is created in CREATED state.
      *
      * @param fpot
      *            Metadata of the file.
@@ -400,21 +416,16 @@ public final class QueuesController {
 
         assert fpot != null;
         assert retries >= 0;
+        assert this.exists(fpot.getTape().getName(), QueueStatus.CREATED) == null : "A "
+                + "queue with status CREATED already exists.";
 
-        Queue retQueue = this.exists(fpot.getTape().getName(),
-                QueueStatus.CREATED);
-        if (retQueue != null) {
-            LOGGER.info("A queue with status CREATED already exists.");
-        } else {
-            retQueue = new Queue(fpot, retries);
-            LOGGER.debug("Creating new queue on tape {}", fpot.getTape()
-                    .getName());
-            retQueue.setSuspendDuration(this.suspendTimeForQueues);
-            synchronized (this.queuesMap) {
-                this.queuesMap.put(fpot.getTape().getName(), retQueue);
-            }
-            LOGGER.info("Queue created for tape {}", fpot.getTape().getName());
+        Queue retQueue = new Queue(fpot, retries);
+        LOGGER.debug("Creating new queue on tape {}", fpot.getTape().getName());
+        retQueue.setSuspendDuration(this.suspendTimeForQueues);
+        synchronized (this.queuesMap) {
+            this.queuesMap.put(fpot.getTape().getName(), retQueue);
         }
+        LOGGER.info("Queue created for tape {}", fpot.getTape().getName());
 
         LOGGER.trace("< create");
 
@@ -442,6 +453,8 @@ public final class QueuesController {
 
     /**
      * Find the unique queue in a given state for a given tape.
+     * <p>
+     * If the queue is in Ended state it will return just the first one.
      *
      * @param name
      *            the tape name.
