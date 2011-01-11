@@ -45,11 +45,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.selector.NoQueuesDefinedException;
 import fr.in2p3.cc.storage.treqs.model.File;
@@ -70,8 +72,11 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  *
  * @author Andres Gomez
  */
-// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class QueuesControllerTest {
+    /**
+     * One hundred.
+     */
     private static final int HUNDRED = 100;
     /**
      * Logger.
