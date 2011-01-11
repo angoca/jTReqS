@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.control;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,8 +34,7 @@ package fr.in2p3.cc.storage.treqs.control;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-
-import java.util.GregorianCalendar;
+package fr.in2p3.cc.storage.treqs.control.controller;
 
 import junit.framework.Assert;
 
@@ -49,90 +46,113 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
+import fr.in2p3.cc.storage.treqs.model.Helper;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 import fr.in2p3.cc.storage.treqs.model.Tape;
-import fr.in2p3.cc.storage.treqs.model.TapeStatus;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.DAOFactory;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
- * StagersControllerTest.cpp
+ * Test for StagersController.
  *
- * @version 2010-07-07
- * @author gomez
+ * @author Andres Gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class StagersControllerTest {
+public final class StagersControllerTest {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StagersControllerTest.class);
 
+    /**
+     * Configures the environment for the tests.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             Problem setting the configuration.
+     */
     @BeforeClass
     public static void oneTimeSetUp()
             throws ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
+        Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
+                Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
     }
 
+    /**
+     * Destroys all after the tests.
+     */
     @AfterClass
     public static void oneTimeTearDown() {
-        DAOFactory.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 
+    /**
+     * Resets the controllers.
+     */
     @After
     public void tearDown() {
         StagersController.destroyInstance();
     }
 
     /**
-     * Tests // TODO review this tests
+     * Tests. // TODO Tests: review this tests
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
     public void test01createTape() throws TReqSException {
         String tapename = "tapename";
-        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                new User("username"), 10), new GregorianCalendar(), 50,
-                new Tape(tapename, new MediaType((byte) 1, "media"),
-                        TapeStatus.TS_UNLOCKED)), (byte) 3);
+        Queue queue = new Queue(new FilePositionOnTape(
+                new File("filename", 10), 50, new Tape(tapename, new MediaType(
+                        (byte) 1, "media")), new User("username")), (byte) 0);
+        Helper.activate(queue);
+
         Stager stager1 = StagersController.getInstance().create(queue);
         Stager stager2 = StagersController.getInstance().create(queue);
+
+        HSMMockBridge.getInstance().setStageTime(500);
+
         int count = StagersController.getInstance().cleanup();
         Assert.assertEquals("Nothing cleaned", 0, count);
+
+        // Starts the second stager and stage the file.
         stager2.start();
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
-            // Nothing
+            LOGGER.error("Error sleeping", e);
         }
         LOGGER.debug("-------> {}", stager2.toString());
 
         stager2.conclude();
         stager2.waitToFinish();
+
         count = StagersController.getInstance().cleanup();
         Assert.assertEquals("one cleaned", 1, count);
+
+        // Starts the first stager and stops immediately.
         stager1.start();
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {
-            // Nothing
+            LOGGER.error("Error sleeping", e);
         }
-        LOGGER.debug("-------> {}", stager2.toString());
 
-        stager1.conclude();
-        stager1.waitToFinish();
         count = StagersController.getInstance().cleanup();
         Assert.assertEquals("The other cleaned", 1, count);
         count = StagersController.getInstance().cleanup();
