@@ -964,6 +964,10 @@ public final class Queue implements Comparable<Queue> {
             // This case should never happen, because the fpot was checked when
             // created (it does not exists an fpot for the same name)
             LOGGER.error("THIS CASE EXISTS, DELETE THIS LOG FROM THE CODE.");
+            if (!this.readingList.get((short) fpot.getPosition()).getMetaData()
+                    .getFile().getName().equals(fpot.getFile().getName())) {
+                assert false : "Two different files in the same position";
+            }
         }
 
         LOGGER.trace("< registerFPOT");
@@ -1328,9 +1332,10 @@ public final class Queue implements Comparable<Queue> {
 
         String ret = "";
         ret += "Queue";
-        ret += "{ byte size: " + this.byteSize;
+        ret += "{ name: " + this.getTape().getName();
+        ret += ", status: " + this.getStatus();
         ret += ", id: " + this.getId();
-        ret += ", name: " + this.getTape().getName();
+        ret += ", byte size: " + this.byteSize;
         ret += ", number of requests: " + this.readingList.size();
         ret += ", number of done: " + this.numberDone;
         ret += ", number of failed: " + this.numberFailed;
@@ -1340,7 +1345,6 @@ public final class Queue implements Comparable<Queue> {
         if (this.getOwner() != null) {
             ret += ", owner: " + this.getOwner().getName();
         }
-        ret += ", status: " + this.getStatus();
         ret += ", suspend duration: " + this.getSuspendDuration();
         ret += ", creation time: " + this.getCreationTime().getTimeInMillis();
         if (this.getActivationTime() != null) {
