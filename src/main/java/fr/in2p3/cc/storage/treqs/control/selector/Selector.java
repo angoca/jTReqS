@@ -62,7 +62,7 @@ public interface Selector {
      *            iterator to the concerned resource
      * @return The best queue
      * @throws TReqSException
-     *             Problem using the selector.
+     *             Problem using the selector. The queue map could be empty.
      */
     Queue selectBestQueue(final MultiMap queues, final Resource resource)
             throws TReqSException;
