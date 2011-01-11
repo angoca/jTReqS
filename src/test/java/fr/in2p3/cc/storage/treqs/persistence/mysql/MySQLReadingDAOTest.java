@@ -64,6 +64,7 @@ import fr.in2p3.cc.storage.treqs.model.Reading;
 import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
@@ -119,6 +120,7 @@ public final class MySQLReadingDAOTest {
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 

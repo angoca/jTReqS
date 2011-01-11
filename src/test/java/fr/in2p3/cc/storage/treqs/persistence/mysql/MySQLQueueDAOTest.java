@@ -61,6 +61,7 @@ import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
@@ -126,6 +127,7 @@ public final class MySQLQueueDAOTest {
         query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
         MySQLBroker.getInstance().executeModification(query);
         MySQLBroker.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 

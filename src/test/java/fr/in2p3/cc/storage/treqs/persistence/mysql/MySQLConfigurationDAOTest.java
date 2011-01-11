@@ -52,6 +52,7 @@ import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Resource;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
@@ -82,6 +83,7 @@ public final class MySQLConfigurationDAOTest {
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 

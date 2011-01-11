@@ -42,6 +42,7 @@ import java.sql.SQLException;
 import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +52,7 @@ import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
@@ -88,6 +90,19 @@ public final class MySQLBrokerTest {
      * User.
      */
     private static final String USER = "jtreqs";
+
+    /**
+     * Destroys all after tests.
+     *
+     * @throws TReqSException
+     *             Problem acceding the database.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() throws TReqSException {
+        MySQLBroker.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
+        Configurator.destroyInstance();
+    }
 
     /**
      * Setup the env for the tests.

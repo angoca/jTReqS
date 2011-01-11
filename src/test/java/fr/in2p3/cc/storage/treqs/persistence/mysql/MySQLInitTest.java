@@ -44,6 +44,7 @@ import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.AbstractMySQLException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
@@ -98,6 +99,7 @@ public final class MySQLInitTest {
     @AfterClass
     public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
     }
 
