@@ -2071,12 +2071,12 @@ public final class QueueTest {
                         username)), retries);
 
         String actual = queue.toString();
-        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
-                + tapename + ", number of requests: 1, number of done: 0, "
+        String expectedPrefix = "Queue{ name: " + tapename + ", status: "
+                + QueueStatus.CREATED + ", id: 0, byte size: " + size
+                + ", number of requests: 1, number of done: 0, "
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
-                + ", head position: 0, owner: " + username + ", status: "
-                + QueueStatus.CREATED
+                + ", head position: 0, owner: " + username
                 + ", suspend duration: 600, creation time: ";
         String notExpectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
@@ -2110,12 +2110,13 @@ public final class QueueTest {
         queue.changeToActivated();
 
         String actual = queue.toString();
-        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
-                + tapename + ", number of requests: 1, number of done: 0, "
+        String expectedPrefix = "Queue{ name: " + tapename + ", status: "
+                + QueueStatus.ACTIVATED
+                + ", id: 0, byte size: " + size
+                + ", number of requests: 1, number of done: 0, "
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
-                + ", head position: 0, owner: " + username + ", status: "
-                + QueueStatus.ACTIVATED
+                + ", head position: 0, owner: " + username
                 + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
@@ -2150,12 +2151,13 @@ public final class QueueTest {
         queue.suspend();
 
         String actual = queue.toString();
-        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
-                + tapename + ", number of requests: 1, number of done: 0, "
+        String expectedPrefix = "Queue{ name: " + tapename + ", status: "
+                + QueueStatus.TEMPORARILY_SUSPENDED
+                + ", id: 0, byte size: " + size
+                + ", number of requests: 1, number of done: 0, "
                 + "number of failed: 0, number of suspended: 1, "
                 + "max suspend retries: " + retries
-                + ", head position: 0, owner: " + username + ", status: "
-                + QueueStatus.TEMPORARILY_SUSPENDED
+                + ", head position: 0, owner: " + username
                 + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String expectedContains2 = "suspension time: ";
@@ -2190,12 +2192,12 @@ public final class QueueTest {
         queue.changeToEnded();
 
         String actual = queue.toString();
-        String expectedPrefix = "Queue{ byte size: " + size + ", id: 0, name: "
-                + tapename + ", number of requests: 1, number of done: 0, "
+        String expectedPrefix = "Queue{ name: " + tapename + ", status: "
+                + QueueStatus.ENDED + ", id: 0, byte size: " + size
+                + ", number of requests: 1, number of done: 0, "
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
-                + ", head position: 0, owner: " + username + ", status: "
-                + QueueStatus.ENDED
+                + ", head position: 0, owner: " + username
                 + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
