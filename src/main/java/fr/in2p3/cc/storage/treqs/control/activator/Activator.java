@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.activator.InvalidMaxException.InvalidMaxReasons;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.controller.ResourcesController;
 import fr.in2p3.cc.storage.treqs.control.controller.StagersController;
@@ -105,11 +106,10 @@ public final class Activator extends AbstractProcess {
      * Retrieves the singleton instance.
      *
      * @return Unique instance of this class.
-     * @throws ProblematicConfiguationFileException
+     * @throws TReqSException
      *             If there is problem retrieving the configuration.
      */
-    public static Activator getInstance()
-            throws ProblematicConfiguationFileException {
+    public static Activator getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -136,11 +136,11 @@ public final class Activator extends AbstractProcess {
     /**
      * Max number of stagers for overall activity.
      */
-    private short maxStagers;
+    private short maxStagers = 2;
     /**
      * Max number of stager process per active queue.
      */
-    private byte maxStagersPerQueue;
+    private byte maxStagersPerQueue = 1;
     /**
      * Maximum age of the resources metadata.
      */
@@ -157,11 +157,11 @@ public final class Activator extends AbstractProcess {
     /**
      * Creates the activator, establishing all the values.
      *
-     * @throws ProblematicConfiguationFileException
+     * @throws TReqSException
      *             If there is a problem while retrieving the configuration
-     *             file.
+     *             file. (The max could be invalid).
      */
-    private Activator() throws ProblematicConfiguationFileException {
+    private Activator() throws TReqSException {
         super("Activator");
         LOGGER.trace("> create activator");
 
@@ -339,7 +339,7 @@ public final class Activator extends AbstractProcess {
      *
      * @return Maximal quantity of stagers per queue.
      */
-    short getMaxStagersPerQueue() {
+    byte getMaxStagersPerQueue() {
         LOGGER.trace(">< getStagersPerQueue");
 
         return this.maxStagersPerQueue;
@@ -544,11 +544,18 @@ public final class Activator extends AbstractProcess {
      *
      * @param max
      *            Maximal quantity of stagers.
+     * @throws InvalidMaxException
+     *             If the max value is invalid.
      */
-    void setMaxStagers(final short max) {
+    void setMaxStagers(final short max) throws InvalidMaxException {
         LOGGER.trace("> setMaxStagers");
 
         assert max > 0;
+
+        if (max < this.maxStagersPerQueue) {
+            throw new InvalidMaxException(InvalidMaxReasons.STAGERS, max,
+                    this.maxStagers, this.maxStagersPerQueue);
+        }
 
         this.maxStagers = max;
 
@@ -560,11 +567,19 @@ public final class Activator extends AbstractProcess {
      *
      * @param max
      *            Maximal quantity of stagers per queue.
+     * @throws InvalidMaxException
+     *             If the max value is invalid.
      */
-    void setMaxStagersPerQueue(final byte max) {
+    void setMaxStagersPerQueue(final byte max) throws InvalidMaxException {
         LOGGER.trace("> setStagersPerQueue");
 
         assert max > 0;
+
+        if (max > this.maxStagers) {
+            throw new InvalidMaxException(
+                    InvalidMaxReasons.STAGERS_PER_QUEUE, max,
+                    this.maxStagers, this.maxStagersPerQueue);
+        }
 
         this.maxStagersPerQueue = max;
 
@@ -610,7 +625,7 @@ public final class Activator extends AbstractProcess {
      * @param seconds
      *            Quantity of seconds between two stager activation.
      */
-    void setSecondsBetweenStagers(final int seconds) {
+    void setSecondsBetweenStagers(final short seconds) {
         LOGGER.trace("> setSecondsBetweenStagers");
 
         assert seconds >= 0;
@@ -650,7 +665,7 @@ public final class Activator extends AbstractProcess {
             try {
                 Starter.getInstance().toStop();
                 LOGGER.error("Stopping", t);
-            } catch (ProblematicConfiguationFileException e) {
+            } catch (TReqSException e) {
                 LOGGER.error("Error", e);
                 System.exit(Constants.ACTIVATOR_PROBLEM);
             }
