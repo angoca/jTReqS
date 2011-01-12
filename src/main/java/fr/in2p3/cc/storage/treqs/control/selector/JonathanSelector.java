@@ -78,8 +78,8 @@ public final class JonathanSelector implements Selector {
      * .commons.collections.MultiMap, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue selectBestQueue(final MultiMap queues, final Resource resource)
-            throws TReqSException {
+    public Queue/* ? */selectBestQueue(final MultiMap queues,
+            final Resource resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
@@ -98,8 +98,6 @@ public final class JonathanSelector implements Selector {
             ret = this.selectBestQueue(queues, resource, bestUser);
         }
 
-        assert ret != null : "No queue selected";
-
         LOGGER.trace("< selectBestQueue");
 
         return ret;
@@ -116,13 +114,14 @@ public final class JonathanSelector implements Selector {
      *            Type of resource to analyze.
      * @param user
      *            The best user.
-     * @return The best queue for the given user of the given resource.
+     * @return The best queue for the given user of the given resource. or null
+     *         f there are not available queues.
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
     @SuppressWarnings("unchecked")
-    Queue selectBestQueue(final MultiMap queuesMap, final Resource resource,
-            final User user) throws TReqSException {
+    Queue/* ? */selectBestQueue(final MultiMap queuesMap,
+            final Resource resource, final User user) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queuesMap != null : "queuesMap null";
@@ -131,7 +130,6 @@ public final class JonathanSelector implements Selector {
 
         Queue ret = null;
         // First get the list of queues
-
         List<String> keys = (List<String>) this
                 .convertSetToList((Collection<String>) queuesMap.keySet());
         Collections.sort(keys);
@@ -155,8 +153,6 @@ public final class JonathanSelector implements Selector {
             LOGGER.info("No queue could be selected");
         }
 
-        assert ret != null : "No best queue";
-
         LOGGER.trace("< selectBestQueue");
 
         return ret;
@@ -176,14 +172,12 @@ public final class JonathanSelector implements Selector {
      * @param queue
      *            Currently analyzed queue.
      * @return Selected queue or null if the queue does not correspond to the
-     *         criteria.
-     *         <p>
-     *         TODO Now, I think that there should be always a not null return.
+     *         criteria. The returned queue must be in Created state.
      * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
-    private Queue/* ! */checkQueue(final Resource resource, final User user,
-            final Queue currentlySelected/* ? */, final String tapename,
+    private Queue/* ? */checkQueue(final Resource resource, final User user,
+            final Queue/* ? */currentlySelected, final String tapename,
             final Queue queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
@@ -207,12 +201,16 @@ public final class JonathanSelector implements Selector {
                         // pick another one.
                         LOGGER.debug("Another queue on this tape is already "
                                 + "active. Trying next queue.");
+                        // Return the currently selected or null.
                     } else {
-                        // Select the oldest queue.
+                        // This is a created one.
+
+                        // Return this one because there is not selected one.
                         if (currentlySelected == null) {
                             LOGGER.debug("Current null");
                             ret = queue;
                         } else if (currentlySelected.getCreationTime()
+                        // Select the oldest queue.
                                 .getTimeInMillis() >= queue.getCreationTime()
                                 .getTimeInMillis()) {
                             LOGGER.debug(
@@ -236,33 +234,30 @@ public final class JonathanSelector implements Selector {
                         }
                         LOGGER.debug("Selected: {}", ret.getTape().getName());
                     }
+                } else {
+                    LOGGER.info("The analyzed queue is in other state: {}",
+                            queue.getStatus());
+                    // Return the currently selected or null.
+                    ret = currentlySelected;
                 }
             } else {
                 LOGGER.debug("Different media type: current queue {} "
                         + "searched {}", queue.getTape().getMediaType()
                         .getName(), resource.getMediaType().getName());
+                // Return the currently selected or null.
+                ret = currentlySelected;
             }
         } else {
             LOGGER.debug("Different owner: current queue {} searched {}", queue
                     .getOwner().getName(), user.getName());
+            // Return the currently selected or null.
+            ret = currentlySelected;
         }
 
-        if (ret == null) {
-            LOGGER.debug("No queue selected.");
-            if (queue != null) {
-                LOGGER.info("Actual {}", queue.getTape().getName());
-                if (currentlySelected == null) {
-                    ret = queue;
-                }
-            }
-            if (currentlySelected != null) {
-                LOGGER.info("Selected {}", currentlySelected.getTape()
-                        .getName());
-                ret = currentlySelected;
-            }
+        if (ret != null) {
+            assert ret.getStatus() == QueueStatus.CREATED : "Invalid state "
+                    + ret.getStatus();
         }
-
-        assert ret != null : "Ret null";
 
         LOGGER.trace("< checkQueue");
 
