@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.hsm.command;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,6 +34,7 @@ package fr.in2p3.cc.storage.treqs.hsm.command;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.command;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -43,44 +42,37 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMException;
-import fr.in2p3.cc.storage.treqs.model.exception.ConfigNotFoundException;
-import fr.in2p3.cc.storage.treqs.model.exception.ProblematicConfiguationFileException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 
 /**
- * HPSSCommandBridgeTest.cpp
- * 
- * @version 2010-03-23
- * @author gomez
+ * Tests for HSMCommandBridgeTest.
+ *
+ * @author Andres Gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class HSMCommandBridgeTest {
+public final class HSMCommandBridgeTest {
+    /**
+     * Destroys all after each test.
+     */
     @After
     public void tearDown() {
         HSMCommandBridge.destroyInstance();
     }
 
+    /**
+     * Gets a null file properties.
+     *
+     * @throws AbstractHSMException
+     *             Never.
+     */
     @Test
-    public void testGetProperties01() throws HSMException {
+    public void testGetProperties01() throws AbstractHSMException {
         String name = null;
-        boolean failed = false;
-        try {
-            HSMCommandBridge.getInstance().getFileProperties(name);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
 
-    @Test
-    public void testGetProperties02() throws HSMException {
-        String name = "";
         boolean failed = false;
         try {
             HSMCommandBridge.getInstance().getFileProperties(name);
@@ -96,15 +88,40 @@ public class HSMCommandBridgeTest {
     }
 
     /**
-     * Tests
-     * 
-     * @throws HSMException
-     * @throws ProblematicConfiguationFileException
-     * @throws ConfigNotFoundException
+     * Gets a empty file properties.
+     *
+     * @throws AbstractHSMException
+     *             Never.
      */
     @Test
-    public void testGetProperties03() throws HSMException,
-            ConfigNotFoundException, ProblematicConfiguationFileException {
+    public void testGetProperties02() throws AbstractHSMException {
+        String name = "";
+
+        boolean failed = false;
+        try {
+            HSMCommandBridge.getInstance().getFileProperties(name);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests predetermined properties file.
+     *
+     * @throws AbstractHSMException
+     *             Never.
+     * @throws AbstractConfiguratorException
+     *             Never.
+     */
+    @Test
+    public void testGetProperties03() throws AbstractHSMException,
+            AbstractConfiguratorException {
         String name = "/hpss/filename";
         long size = 564;
         int position = 123;
@@ -114,7 +131,7 @@ public class HSMCommandBridgeTest {
 
         long actualSize = helper.getSize();
         int actualPosition = helper.getPosition();
-        String actualStorageName = helper.getStorageName();
+        String actualStorageName = helper.getTapeName();
 
         Assert.assertEquals(size, actualSize);
         Assert.assertEquals(position, actualPosition);
@@ -122,13 +139,16 @@ public class HSMCommandBridgeTest {
 
     }
 
+    /**
+     * Tries to stage a null file.
+     */
     @Test
     public void testStage01() {
-        String name = null;
-        int size = 100;
+        File file = null;
+
         boolean failed = false;
         try {
-            HSMCommandBridge.getInstance().stage(name, size);
+            HSMCommandBridge.getInstance().stage(file);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -140,47 +160,18 @@ public class HSMCommandBridgeTest {
         }
     }
 
+    /**
+     * Stages a file normally.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void testStage02() {
-        String name = "";
-        int size = 100;
-        boolean failed = false;
-        try {
-            HSMCommandBridge.getInstance().stage(name, size);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testStage03() {
-        String name = "name";
-        int size = -100;
-        boolean failed = false;
-        try {
-            HSMCommandBridge.getInstance().stage(name, size);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testStage04() throws HSMException, ConfigNotFoundException,
-            ProblematicConfiguationFileException {
+    public void testStage02() throws TReqSException {
         String name = "name";
         int size = 100;
-        HSMCommandBridge.getInstance().stage(name, size);
+        File file = new File(name, size);
+
+        HSMCommandBridge.getInstance().stage(file);
     }
 }
