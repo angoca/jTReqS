@@ -45,7 +45,7 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
  * wraps an exeption when using the mock.
  *
  * @author Andres Gomez
- *
+ * @since 1.5
  */
 public final class MockPersistanceException extends
         AbstractPersistanceException {
