@@ -42,9 +42,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.HelperControl;
-import fr.in2p3.cc.storage.treqs.control.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.controller.HelperControl;
+import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Helper;
@@ -60,22 +62,36 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 /**
  * SelectorTest.
  *
- * @version 2010-12-15
- * @author gomez
+ * @author Andres Gomez
  */
-public class JonathanSelectorTest {
+public final class JonathanSelectorTest {
+    /**
+     * Number 5.
+     */
     private static final int NUMBER_5 = 5;
+    /**
+     * Media type 1 for tests.
+     */
+    private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
+            "T10K-a");
 
+    /**
+     * Setups the environment.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             If there is any problem.
+     */
     @Before
     public void setUp() throws ProblematicConfiguationFileException {
-        Configurator.getInstance().setValue("MAIN", "QUEUE_DAO",
-                "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockQueueDAO");
-        Configurator
-                .getInstance()
-                .setValue("MAIN", "READING_DAO",
-                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockReadingDAO");
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
+        Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
+                Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
     }
 
+    /**
+     * Destroys all after each test.
+     */
     @After
     public void tearDown() {
         QueuesController.destroyInstance();
@@ -87,18 +103,16 @@ public class JonathanSelectorTest {
      * Tests that there is not best queue.
      *
      * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void test01BestQueue() throws TReqSException {
-
+    public void testBestQueue01() throws TReqSException {
         String username = "username";
         User user = new User(username);
-        MediaType media = new MediaType((byte) 1, "media1");
-        Resource resource = new Resource(media, (byte) NUMBER_5);
-        Queue actual = new JonathanSelector().selectBestQueue(
-                new MultiValueMap(), resource, user);
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
-        Assert.assertTrue(actual == null);
+        new JonathanSelector().selectBestQueue(new MultiValueMap(), resource,
+                user);
     }
 
     /**
@@ -108,34 +122,19 @@ public class JonathanSelectorTest {
      *             Never.
      */
     @Test
-    public void test02BestQueue() throws TReqSException {
-
+    public void testBestQueue02() throws TReqSException {
         String username = "username";
-        MediaType media = new MediaType((byte) 1, "media1");
         User user = new User(username);
-        Resource resource = new Resource(media, (byte) NUMBER_5);
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
         File file = new File("filename", 300);
-        Tape tape = new Tape("tapename", media);
+        Tape tape = new Tape("tapename", MEDIA_TYPE_1);
         FilePositionOnTape fpot = new FilePositionOnTape(file, 20, tape, user);
-        Queue queue = HelperControl.create(fpot, (byte) 1);
+        Queue queue = HelperControl.addFPOT(fpot, (byte) 1);
 
         Queue actual = new JonathanSelector().selectBestQueue(
                 HelperControl.getQueues(), resource, user);
         Queue expected = queue;
 
-        Assert.assertEquals(expected, actual);
-    }
-
-    @Test
-    public void test02BestUser() throws TReqSException {
-
-        User user = new User("username1");
-        MediaType media = new MediaType((byte) 1, "media");
-        Resource resource = new Resource(media, (byte) NUMBER_5);
-
-        User actual = new JonathanSelector().selectBestUser(
-                HelperControl.getQueues(), resource);
-        User expected = user;
         Assert.assertEquals(expected, actual);
     }
 
@@ -146,23 +145,21 @@ public class JonathanSelectorTest {
      *             Never.
      */
     @Test
-    public void test03BestQueue() throws TReqSException {
-
+    public void testBestQueue03() throws TReqSException {
         String username = "username";
-        MediaType media = new MediaType((byte) 1, "media1");
         User user = new User(username);
-        Resource resource = new Resource(media, (byte) NUMBER_5);
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         File file1 = new File("filename1", 300);
-        Tape tape1 = new Tape("tapename1", media);
+        Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
                 user);
-        Queue queue1 = HelperControl.create(fpot1, (byte) 1);
+        Queue queue1 = HelperControl.addFPOT(fpot1, (byte) 1);
 
         File file2 = new File("filename2", 300);
-        Tape tape2 = new Tape("tapename2", media);
+        Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
         FilePositionOnTape fpot = new FilePositionOnTape(file2, 20, tape2, user);
-        HelperControl.create(fpot, (byte) 1);
+        HelperControl.addFPOT(fpot, (byte) 1);
 
         Queue actual = new JonathanSelector().selectBestQueue(
                 HelperControl.getQueues(), resource, user);
@@ -171,57 +168,39 @@ public class JonathanSelectorTest {
         Assert.assertEquals(expected, actual);
     }
 
-    @Test
-    public void test03BestUser() throws TReqSException {
-
-        User user = new User("username1");
-        MediaType media = new MediaType((byte) 1, "media");
-        Resource resource = new Resource(media, (byte) NUMBER_5);
-        File file = new File("filename", 300);
-        Tape tape = new Tape("tapename", media);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 20, tape, user);
-        HelperControl.create(fpot, (byte) 1);
-        resource.setUserAllocation(user, (byte) NUMBER_5);
-        resource.increaseUsedResources(user);
-
-        User actual = new JonathanSelector().selectBestUser(
-                HelperControl.getQueues(), resource);
-        User expected = user;
-        Assert.assertEquals(expected, actual);
-    }
-
     /**
-     * tests that the best queue is the second one, which does not have a
+     * Tests that the best queue is the second one, which does not have an
      * activated queue.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void test04BestQueue() throws TReqSException {
-
+    public void testBestQueue04() throws TReqSException {
         String username = "username";
-        MediaType media = new MediaType((byte) 1, "media1");
         User user = new User(username);
-        Resource resource = new Resource(media, (byte) NUMBER_5);
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
-        Tape tape1 = new Tape("tapename1", media);
+        Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
+        Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
 
         File file1 = new File("filename1", 300);
+        File file2 = new File("filename2", 500);
+        File file3 = new File("filename3", 600);
+
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
                 user);
-        Queue queue1 = HelperControl.create(fpot1, (byte) 1);
-        Helper.changeToActivated(queue1);
-
-        File file3 = new File("filename3", 600);
-        FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 20, tape1,
+        FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 40, tape1,
                 user);
-        HelperControl.create(fpot3, (byte) 1);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape2,
+                user);
 
-        File file2 = new File("filename2", 500);
-        Tape tape2 = new Tape("tapename2", media);
-        FilePositionOnTape fpot = new FilePositionOnTape(file2, 20, tape2, user);
-        Queue queue2 = HelperControl.create(fpot, (byte) 1);
+        // Tape 1
+        Queue queue1 = HelperControl.addFPOT(fpot1, (byte) 1);
+        Helper.activate(queue1);
+        HelperControl.addFPOT(fpot3, (byte) 1);
+        // Tape 2
+        Queue queue2 = HelperControl.addFPOT(fpot2, (byte) 1);
 
         Queue actual = new JonathanSelector().selectBestQueue(
                 HelperControl.getQueues(), resource, user);
@@ -230,25 +209,176 @@ public class JonathanSelectorTest {
         Assert.assertEquals(expected, actual);
     }
 
+    /**
+     * Null queues.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
     @Test
-    public void test04BestUser() throws TReqSException {
+    public void testBestQueue05() throws TReqSException {
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
-        MediaType media = new MediaType((byte) 1, "media");
-        Resource resource = new Resource(media, (byte) NUMBER_5);
+        boolean failed = false;
+        try {
+            new JonathanSelector().selectBestQueue(null, resource, new User(
+                    "username"));
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Null resource.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test(expected = AssertionError.class)
+    public void testBestQueue06() throws TReqSException {
+        new JonathanSelector().selectBestQueue(HelperControl.getQueues(), null,
+                new User("username"));
+
+    }
+
+    /**
+     * Null user.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testBestQueue07() throws TReqSException {
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+
+        boolean failed = false;
+        try {
+            new JonathanSelector().selectBestQueue(HelperControl.getQueues(),
+                    resource, null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Test to evaluate a null set of queues.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testBestUser01() throws TReqSException {
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+
+        boolean failed = false;
+        try {
+            new JonathanSelector().selectBestUser(null, resource);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tries to evaluate a null resource.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test(expected = AssertionError.class)
+    public void testBestUser02() throws TReqSException {
+        new JonathanSelector().selectBestUser(HelperControl.getQueues(), null);
+    }
+
+    /**
+     * No queues defined.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testBestUser03() throws TReqSException {
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+
+        boolean failed = false;
+        try {
+            new JonathanSelector().selectBestUser(HelperControl.getQueues(),
+                    resource);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof NoQueuesDefinedException)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Selects the only user that still have available resources.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testBestUser04() throws TReqSException {
+        User user = new User("username1");
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        File file = new File("filename", 300);
+        Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        FilePositionOnTape fpot = new FilePositionOnTape(file, 20, tape, user);
+        HelperControl.addFPOT(fpot, (byte) 1);
+        resource.setUserAllocation(user, (byte) NUMBER_5);
+        resource.increaseUsedResources(user);
+
+        User actual = new JonathanSelector().selectBestUser(
+                HelperControl.getQueues(), resource);
+        User expected = user;
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    /**
+     * Selects a user when using several drives.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testBestUser05() throws TReqSException {
+        Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         User user1 = new User("username1");
         File file1 = new File("filename1", 300);
-        Tape tape1 = new Tape("tapename1", media);
+        Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
                 user1);
-        HelperControl.create(fpot1, (byte) 1);
+        HelperControl.addFPOT(fpot1, (byte) 1);
 
         User user2 = new User("username2");
         File file2 = new File("filename2", 400);
-        Tape tape2 = new Tape("tapename2", media);
+        Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
         FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape2,
                 user2);
-        HelperControl.create(fpot2, (byte) 1);
+        HelperControl.addFPOT(fpot2, (byte) 1);
 
         resource.setUserAllocation(user1, (byte) 2);
         resource.setUserAllocation(user2, (byte) 2);
@@ -261,62 +391,6 @@ public class JonathanSelectorTest {
                 HelperControl.getQueues(), resource);
         User expected = user2;
         Assert.assertEquals(expected, actual);
-    }
-
-    /**
-     * Null resource.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test(expected = AssertionError.class)
-    public void test05BestQueue() throws TReqSException {
-        new JonathanSelector().selectBestQueue(HelperControl.getQueues(), null,
-                new User("username"));
-    }
-
-    @Test(expected = AssertionError.class)
-    public void test05BestUser() throws TReqSException {
-        new JonathanSelector().selectBestUser(HelperControl.getQueues(), null);
-    }
-
-    /**
-     * Null user.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void test06BestQueue() throws TReqSException {
-        MediaType media = new MediaType((byte) 1, "media1");
-        Resource resource = new Resource(media, (byte) NUMBER_5);
-
-        try {
-            new JonathanSelector().selectBestQueue(HelperControl.getQueues(),
-                    resource, null);
-            Assert.fail();
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
-    }
-
-    @Test
-    public void test07BestQueue() throws TReqSException {
-        String username = "username";
-        User user = new User(username);
-        MediaType media = new MediaType((byte) 1, "media1");
-        Resource resource = new Resource(media, (byte) NUMBER_5);
-
-        try {
-            new JonathanSelector().selectBestQueue(HelperControl.getQueues(),
-                    resource, user);
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                Assert.fail();
-            }
-        }
     }
 
 }
