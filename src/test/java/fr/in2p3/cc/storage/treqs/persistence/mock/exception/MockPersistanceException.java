@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.persistence.mock.exception;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,18 +34,41 @@ package fr.in2p3.cc.storage.treqs.persistence.mock.exception;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.persistence.mock.exception;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 
-public final class MockPersistanceException extends AbstractPersistanceException {
-
+/**
+ * wraps an exeption when using the mock.
+ *
+ * @author Andres Gomez
+ *
+ */
+public final class MockPersistanceException extends
+        AbstractPersistanceException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MockPersistanceException.class);
     /**
      * Generated ID.
      */
     private static final long serialVersionUID = 247769961987947808L;
 
+    /**
+     * Wraps an exception.
+     *
+     * @param e
+     *            Exception to wrap.
+     */
     public MockPersistanceException(final Exception e) {
         super(e);
+
+        LOGGER.trace(">< Instance creation");
     }
 
 }
