@@ -443,8 +443,7 @@ public final class Activator extends AbstractProcess {
                                         e.getMessage() });
                     }
                 } else {
-                    LOGGER.error("Unable to choose a best queue.");
-                    assert false;
+                    LOGGER.warn("Unable to choose a best queue.");
                 }
                 waitingQueues--;
                 freeResources--;
