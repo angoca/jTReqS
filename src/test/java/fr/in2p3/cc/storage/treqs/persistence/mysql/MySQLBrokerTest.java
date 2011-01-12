@@ -44,6 +44,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -92,6 +93,18 @@ public final class MySQLBrokerTest {
     private static final String USER = "jtreqs";
 
     /**
+     * Sets the general environment.
+     *
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
      * Destroys all after tests.
      *
      * @throws TReqSException
@@ -112,8 +125,6 @@ public final class MySQLBrokerTest {
      */
     @Before
     public void setUp() throws TReqSException {
-        System.setProperty(Constants.CONFIGURATION_FILE,
-                MainTests.PROPERTIES_FILE);
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
     }
