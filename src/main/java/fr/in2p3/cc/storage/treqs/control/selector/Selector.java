@@ -60,10 +60,10 @@ public interface Selector {
      *            List of created queues. There are queue in all states.
      * @param resource
      *            iterator to the concerned resource
-     * @return The best queue
+     * @return The best queue or null if nothing could be selected.
      * @throws TReqSException
      *             Problem using the selector. The queue map could be empty.
      */
-    Queue selectBestQueue(final MultiMap queues, final Resource resource)
+    Queue/* ? */selectBestQueue(final MultiMap queues, final Resource resource)
             throws TReqSException;
 }
