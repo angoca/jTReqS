@@ -368,10 +368,10 @@ public final class Starter {
     /**
      * Stops the application calling the stop method of all main components.
      *
-     * @throws ProblematicConfiguationFileException
+     * @throws TReqSException
      *             If there is a problem calling the configuration.
      */
-    public void toStop() throws ProblematicConfiguationFileException {
+    public void toStop() throws TReqSException {
         LOGGER.trace("> toStop");
 
         this.cont = false;
