@@ -802,7 +802,7 @@ public final class Dispatcher extends AbstractProcess {
             try {
                 Starter.getInstance().toStop();
                 LOGGER.error("Stopping", t);
-            } catch (ProblematicConfiguationFileException e) {
+            } catch (TReqSException e) {
                 LOGGER.error("Error", e);
                 System.exit(Constants.DISPATCHER_PROBLEM);
             }
