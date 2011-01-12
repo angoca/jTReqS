@@ -84,7 +84,7 @@ public final class QueuesControllerTest {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(QueuesControllerTest.class);
     /**
-     * Media type 2 for tests.
+     * Media type 1 for tests.
      */
     private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
             "T10K-a");
@@ -110,8 +110,18 @@ public final class QueuesControllerTest {
      */
     private static final User USER_1 = new User("username");
 
-    private void createQueues(String tapename1, String tapename2)
-            throws TReqSException, ProblematicConfiguationFileException {
+    /**
+     * Creates a set of queues.
+     *
+     * @param tapename1
+     *            First name.
+     * @param tapename2
+     *            Second name.
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    private void createQueues(final String tapename1, final String tapename2)
+            throws TReqSException {
         // First queue: tapename1 - ended.
         Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename1", HUNDRED), 10,
@@ -252,9 +262,6 @@ public final class QueuesControllerTest {
         Assert.assertTrue(queue1 == queue2);
     }
 
-    /**
-     * TODO Tests: Add file in the same position.
-     */
     /**
      * Tests to add a file in a new queue, because there is an activated one
      * whose head is forward the file's position.
