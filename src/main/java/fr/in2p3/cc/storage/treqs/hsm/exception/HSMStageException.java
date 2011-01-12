@@ -68,4 +68,16 @@ public final class HSMStageException extends AbstractHSMException {
         LOGGER.trace(">< Instance creation");
     }
 
+    /**
+     * Creates the exception with a message.
+     *
+     * @param message
+     *            Descriptive message.
+     */
+    public HSMStageException(final String message) {
+        super(message);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
 }
