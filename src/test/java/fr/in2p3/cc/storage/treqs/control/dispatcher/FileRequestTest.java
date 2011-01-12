@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
-import fr.in2p3.cc.storage.treqs.control.dispatcher.FileRequest;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
