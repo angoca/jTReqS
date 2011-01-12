@@ -59,8 +59,8 @@ public final class HelperControl {
      * @throws TReqSException
      *             If there is any problem.
      */
-    public static Queue create(final FilePositionOnTape fpot, final byte retries)
-            throws TReqSException {
+    public static Queue addFPOT(final FilePositionOnTape fpot,
+            final byte retries) throws TReqSException {
         return QueuesController.getInstance().addFilePositionOnTape(fpot,
                 retries);
     }
