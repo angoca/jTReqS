@@ -52,6 +52,7 @@ import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
@@ -137,10 +138,6 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Instance of the singleton.
-     */
-    private static HSMCommandBridge instance = null;
-    /**
      * Command to get the properties for a given file.
      */
     private static final String HSM_GET_PROPERTIES_COMMAND = "sh "
@@ -149,6 +146,10 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * Command to stage a given file.
      */
     private static final String HSM_STAGE_COMMAND = "sh hsmStageFile.sh";
+    /**
+     * Instance of the singleton.
+     */
+    private static HSMCommandBridge instance = null;
     /**
      * Logger.
      */
@@ -190,6 +191,37 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
+     * Tester for the command HSM bridge.
+     *
+     * @param args
+     *            Mandatory Java argument for main. The first argument is the
+     *            keytab, the second one is the file. If the first argument is a
+     *            dash, it will take the keytab from the configuration file.
+     * @throws TReqSException
+     *             If there is a problem executing the tester.
+     */
+    public static void main(final String[] args) throws TReqSException {
+        LOGGER.trace("> main");
+
+        LOGGER.warn("Starting HSMCommandBridge");
+
+        LOGGER.info("Keytab: {}, File {}", args);
+        // Processing the configuration file.
+        if (!args[0].equals("-")) {
+            Configurator.getInstance().setValue(Constants.SECTION_KEYTAB,
+                    Constants.KEYTAB_FILE, args[0]);
+        }
+
+        LOGGER.warn("Getting properties");
+        HSMCommandBridge.getInstance().getFileProperties(args[1]);
+        LOGGER.warn("Staging file");
+        HSMCommandBridge.getInstance().stage(new File(args[1], 1));
+        LOGGER.warn(";)");
+
+        LOGGER.trace("< main");
+    }
+
+    /**
      * Constructor of the HSM Command.
      *
      * @throws AbstractConfiguratorException
@@ -202,6 +234,50 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
                 Constants.SECTION_KEYTAB, Constants.KEYTAB_FILE));
 
         LOGGER.trace("< create instance.");
+    }
+
+    /**
+     * Builds the command to execute.
+     *
+     * @param name
+     *            Name of the file to query.
+     * @return The command to execute.
+     */
+    private String buildCommandGetProperties(final String name) {
+        LOGGER.trace("> buildCommandGetProperties");
+
+        assert name != null;
+
+        String command = HSM_GET_PROPERTIES_COMMAND + " "
+                + this.getKeytabPath() + " " + name;
+
+        assert command != null;
+
+        LOGGER.trace("< buildCommandGetProperties");
+
+        return command;
+    }
+
+    /**
+     * Builds the command to stage a given file.
+     *
+     * @param name
+     *            Name of the file to stage.
+     * @return Command to execute to stage a file.
+     */
+    private String buildCommandStage(final String name) {
+        LOGGER.trace("> buildCommandStage");
+
+        assert name != null;
+
+        String command = HSM_STAGE_COMMAND + " " + this.getKeytabPath() + " "
+                + name;
+
+        assert command != null;
+
+        LOGGER.trace("< buildCommandStage");
+
+        return command;
     }
 
     /*
@@ -237,9 +313,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         final BufferedReader bfStreamError = new BufferedReader(readerError);
 
         String current = null;
-        current = processOutput(bfStreamError, true);
-        LOGGER.debug("Error: {}", current);
-        current = processOutput(bfStreamOut, false);
+        current = this.processOutput(bfStreamError, true);
+        current = this.processOutput(bfStreamOut, false);
         LOGGER.debug("Output: {}", current);
         HSMHelperFileProperties ret = null;
         if (current != null) {
@@ -257,9 +332,53 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
+     * Prints a output stream (error or standard).
+     * <p>
+     * TODO analyze this output if there is a problem in the HSM.
+     *
+     * @param inputStream
+     *            Script output.
+     * @param error
+     *            If processing error or standard output.
+     * @throws IOException
+     *             If there is a problem processing the output.
+     * @throws HSMStageException
+     *             Problem detected.
+     */
+    private void printStream(final InputStream/* ! */inputStream,
+            final boolean error) throws IOException, HSMStageException {
+        LOGGER.trace("> printStream");
+
+        assert inputStream != null;
+
+        final Reader reader = new InputStreamReader(inputStream);
+        final BufferedReader stream = new BufferedReader(reader);
+
+        String current;
+        // Prints the output.
+        try {
+            current = stream.readLine();
+            if (error && current != null) {
+                LOGGER.error(current);
+                throw new HSMStageException(current);
+            }
+            while (current != null) {
+                current = stream.readLine();
+            }
+        } finally {
+            reader.close();
+            stream.close();
+        }
+        if (!error) {
+            LOGGER.error(current);
+        }
+        LOGGER.trace("< printStream");
+    }
+
+    /**
      * Processes the output of a stream.
      *
-     * @param bfStream
+     * @param stream
      *            Buffer where is the stream.
      * @param error
      *            If the output is error or not.
@@ -267,50 +386,35 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * @throws HSMStatException
      *             If there is a problem processing the output.
      */
-    private String processOutput(final BufferedReader bfStream,
+    private String processOutput(final BufferedReader stream,
             final boolean error) throws HSMStatException {
         LOGGER.trace("> processOutput");
 
-        assert bfStream != null;
+        assert stream != null;
 
         String current = null;
+        // Process the output.
         try {
-            // Process the error output.
-            current = bfStream.readLine();
+            current = stream.readLine();
             if (error && current != null) {
+                LOGGER.error(current);
                 throw new HSMStatException(current);
             } else if (!error && current == null) {
                 throw new HSMStatException();
             }
         } catch (IOException e) {
             throw new HSMStatException(e);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                throw new HSMStatException(e);
+            }
         }
 
         LOGGER.trace("< processOutput");
 
         return current;
-    }
-
-    /**
-     * Builds the command to execute.
-     *
-     * @param name
-     *            Name of the file to query.
-     * @return The command to execute.
-     */
-    private String buildCommandGetProperties(final String name) {
-        LOGGER.trace("> buildCommandGetProperties");
-
-        assert name != null;
-
-        String command = HSM_GET_PROPERTIES_COMMAND + " "
-                + this.getKeytabPath() + " " + name;
-
-        assert command != null;
-
-        LOGGER.trace("< buildCommandGetProperties");
-
-        return command;
     }
 
     /**
@@ -359,7 +463,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert file != null;
 
-        String command = buildCommandStage(file.getName());
+        String command = this.buildCommandStage(file.getName());
 
         LOGGER.debug(command);
         Process process = null;
@@ -377,13 +481,14 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         } catch (InterruptedException e) {
             throw new HSMStatException(e);
         }
+        LOGGER.debug("Exit code {}", process.exitValue());
         if (process.exitValue() != 0) {
             try {
                 // Prints the output.
                 LOGGER.error("Printin output stream");
-                printStream(process.getInputStream());
-                LOGGER.error("Printin error stream");
-                printStream(process.getErrorStream());
+                this.printStream(process.getInputStream(), false);
+                LOGGER.error("Printing error stream");
+                this.printStream(process.getErrorStream(), true);
                 if (process.exitValue() == ErrorCodes.HSM_ENOSPACE.getId()) {
                     throw new HSMResourceException(
                             ErrorCodes.HSM_ENOSPACE.getId());
@@ -394,92 +499,5 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         }
 
         LOGGER.trace("< stage");
-    }
-
-    /**
-     * Builds the command to stage a given file.
-     *
-     * @param name
-     *            Name of the file to stage.
-     * @return Command to execute to stage a file.
-     */
-    private String buildCommandStage(final String name) {
-        LOGGER.trace("> buildCommandStage");
-
-        assert name != null;
-
-        String command = HSM_STAGE_COMMAND + " " + this.getKeytabPath() + " "
-                + name;
-
-        assert command != null;
-
-        LOGGER.trace("< buildCommandStage");
-
-        return command;
-    }
-
-    /**
-     * Prints a output stream (error or standard).
-     * <p>
-     * TODO analyze this output if there is a problem in the HSM.
-     *
-     * @param inputStream
-     *            Script output.
-     * @throws IOException
-     *             If there is a problem processing the output.
-     */
-    private void printStream(final InputStream/* ! */inputStream)
-            throws IOException {
-        LOGGER.trace("> printStream");
-
-        assert inputStream != null;
-
-        final Reader reader = new InputStreamReader(inputStream);
-        final BufferedReader bfStream = new BufferedReader(reader);
-
-        String current;
-        // Prints the standard output.
-        try {
-            current = bfStream.readLine();
-            while (current != null) {
-                current = bfStream.readLine();
-            }
-        } finally {
-            reader.close();
-            bfStream.close();
-        }
-
-        LOGGER.trace("< printStream");
-    }
-
-    /**
-     * Tester for the command HSM bridge.
-     *
-     * @param args
-     *            Mandatory Java argument for main. The first argument is the
-     *            keytab, the second one is the file. If the first argument is a
-     *            dash, it will take the keytab from the configuration file.
-     * @throws TReqSException
-     *             If there is a problem executing the tester.
-     */
-    public static void main(final String[] args) throws TReqSException {
-        LOGGER.trace("> main");
-
-        LOGGER.warn("Starting HSMCommandBridge");
-
-        LOGGER.info("Keytab: {}, File {}", args);
-        // Processing the configuration file.
-        if (!args[0].equals("-")) {
-            Configurator.getInstance().setValue(Constants.SECTION_KEYTAB,
-                    Constants.KEYTAB_FILE, args[0]);
-        }
-
-        LOGGER.warn("Getting properties");
-        HSMCommandBridge.getInstance().getFileProperties(args[1]);
-        LOGGER.warn("Staging file");
-        HSMCommandBridge.getInstance().stage(new File(args[1], 1));
-        LOGGER.warn(";)");
-
-        LOGGER.trace("< main");
     }
 }
