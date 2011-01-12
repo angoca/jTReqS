@@ -116,7 +116,7 @@ public abstract class AbstractHSMException extends TReqSException {
     public String getMessage() {
         LOGGER.trace(">< getMessage");
 
-        return "Code: " + this.errorcode + super.getMessage();
+        return "Code: " + this.errorcode + " - " + super.getMessage();
     }
 
     /**
