@@ -62,7 +62,6 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.Stager;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Class responsible for activation of the staging queues. This class runs as a
