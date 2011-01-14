@@ -69,14 +69,7 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
     /**
      * Exception to throw.
      */
-    private MockPersistanceException exception;
-
-    /**
-     * Default constructor.
-     */
-    public MockConfigurationDAO() {
-        this.exception = null;
-    }
+    private static MockPersistanceException exception = null;
 
     /**
      * Quantity of drives per type.
@@ -98,9 +91,9 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
     public List<Resource> getMediaAllocations() throws TReqSException {
         LOGGER.trace("> getMediaAllocations");
 
-        if (this.exception != null) {
-            AbstractPersistanceException toThrow = this.exception;
-            this.exception = null;
+        if (exception != null) {
+            AbstractPersistanceException toThrow = exception;
+            exception = null;
             throw toThrow;
         }
         ArrayList<Resource> drives = new ArrayList<Resource>();
@@ -138,9 +131,9 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
     public MultiMap getResourceAllocation() throws AbstractPersistanceException {
         LOGGER.trace("> getResourceAllocation");
 
-        if (this.exception != null) {
-            AbstractPersistanceException toThrow = this.exception;
-            this.exception = null;
+        if (exception != null) {
+            AbstractPersistanceException toThrow = exception;
+            exception = null;
             throw toThrow;
         }
         MultiMap values = new MultiValueMap();
@@ -195,7 +188,7 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      *            Exception to throw.
      */
     public void setMediaTypeException(final MockPersistanceException excep) {
-        this.exception = excep;
+        exception = excep;
     }
 
 }
