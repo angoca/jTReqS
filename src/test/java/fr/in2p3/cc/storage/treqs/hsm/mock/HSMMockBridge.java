@@ -110,23 +110,23 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     /**
      * File properties to return in the next call.
      */
-    private HSMHelperFileProperties fileProperties;
+    private static HSMHelperFileProperties fileProperties;
     /**
      * Exception to throw in the next call of get metadata.
      */
-    private AbstractHSMException filePropertiesException;
+    private static AbstractHSMException filePropertiesException;
     /**
      * Exception to throw in the next call of stage.
      */
-    private AbstractHSMException stageException;
+    private static AbstractHSMException stageException;
     /**
      * Time of the stage.
      */
-    private long stageMillis;
+    private static long stageMillis;
     /**
      * Object for synchronization.
      */
-    private Object notifyObject;
+    private static Object notifyObject;
 
     /**
      * Constructor where the basic elements are defined.
@@ -134,11 +134,11 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     private HSMMockBridge() {
         LOGGER.trace("> create instance");
 
-        this.fileProperties = this.generateTape();
-        this.filePropertiesException = null;
-        this.stageException = null;
-        this.stageMillis = 0;
-        this.notifyObject = null;
+        fileProperties = this.generateTape();
+        filePropertiesException = null;
+        stageException = null;
+        stageMillis = 0;
+        notifyObject = null;
 
         LOGGER.trace("< create instance");
     }
@@ -198,16 +198,16 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         assert name != null && !name.equals("");
 
         // Takes the defined fileProperties that is going to be returned.
-        HSMHelperFileProperties ret = this.fileProperties;
+        HSMHelperFileProperties ret = fileProperties;
 
         // Creates a new fileProperties randomly for the next call.
-        this.fileProperties = generateTape();
+        fileProperties = generateTape();
 
-        if (this.filePropertiesException != null) {
+        if (filePropertiesException != null) {
             // Takes the exception.
-            AbstractHSMException toThrow = this.filePropertiesException;
+            AbstractHSMException toThrow = filePropertiesException;
             // Clears the exception
-            this.filePropertiesException = null;
+            filePropertiesException = null;
             // Throw the predefined exception.
             throw toThrow;
         }
@@ -234,7 +234,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     public void setFileProperties(final HSMHelperFileProperties properties) {
         // Change the fileProperties for the given one. Normally, it is randomly
         // generated.
-        this.fileProperties = properties;
+        fileProperties = properties;
     }
 
     /**
@@ -244,7 +244,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
      *            Exception for get metadata.
      */
     public void setFilePropertiesException(final AbstractHSMException exception) {
-        this.filePropertiesException = exception;
+        filePropertiesException = exception;
     }
 
     /**
@@ -254,7 +254,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
      *            Exception for the staging.
      */
     public void setStageException(final AbstractHSMException exception) {
-        this.stageException = exception;
+        stageException = exception;
     }
 
     /**
@@ -264,7 +264,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
      *            Milliseconds of the mock staging.
      */
     public void setStageTime(final long millis) {
-        this.stageMillis = millis;
+        stageMillis = millis;
     }
 
     /*
@@ -278,29 +278,29 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     public void stage(final File name) throws AbstractHSMException {
         LOGGER.trace("> stage");
 
-        if (this.stageException != null) {
-            AbstractHSMException toThrow = this.stageException;
-            this.stageException = null;
+        if (stageException != null) {
+            AbstractHSMException toThrow = stageException;
+            stageException = null;
             throw toThrow;
         }
-        if (this.notifyObject != null) {
+        if (notifyObject != null) {
             LOGGER.info("Fake staging waiting :p");
-            synchronized (this.notifyObject) {
+            synchronized (notifyObject) {
                 try {
-                    this.notifyObject.wait();
+                    notifyObject.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
-            this.notifyObject = null;
+            notifyObject = null;
             LOGGER.info("Fake staging notified :p");
         }
 
         long wait = 0;
-        if (this.stageMillis == 0) {
+        if (stageMillis == 0) {
             wait = ((long) ((Math.random() * 7) + 2)) * Constants.MILLISECONDS;
         } else {
-            wait = this.stageMillis;
+            wait = stageMillis;
         }
         LOGGER.info("Fake staging starting ;) for {} millis", wait);
         try {
@@ -322,7 +322,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     public void waitStage(final Object notifier) {
         LOGGER.trace("> waitStage");
 
-        this.notifyObject = notifier;
+        notifyObject = notifier;
 
         LOGGER.trace("< waitStage");
     }
