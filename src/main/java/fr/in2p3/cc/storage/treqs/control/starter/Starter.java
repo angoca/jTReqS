@@ -54,7 +54,6 @@ import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 import fr.in2p3.cc.storage.treqs.tools.Watchdog;
 
 /**
