@@ -95,12 +95,7 @@ public final class MySQLConfigurationDAOTest {
      */
     @Before
     public void setUp() throws TReqSException {
-        String query = "DELETE FROM " + MySQLStatements.QUEUES;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.ALLOCATIONS;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
-        MySQLBroker.getInstance().executeModification(query);
+        MySQLHelper.deleteMediaTypes();
     }
 
     /**
