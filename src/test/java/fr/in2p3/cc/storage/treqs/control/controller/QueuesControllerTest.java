@@ -505,7 +505,7 @@ public final class QueuesControllerTest {
             QueuesController.getInstance().getBestQueue(resource);
             failed = true;
         } catch (Throwable e) {
-            if (!(e instanceof NoQueuesDefinedException)) {
+            if (!(e instanceof AssertionError)) {
                 failed = true;
             }
         }
