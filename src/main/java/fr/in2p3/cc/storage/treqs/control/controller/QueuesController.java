@@ -36,6 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.control.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -233,8 +234,7 @@ public final class QueuesController {
         if (!foundQueue) {
             // If we get here, try to create or get if already existing Queue
             // and register the file in it.
-            queue = this.exists(fpot.getTape().getName(),
-                    QueueStatus.CREATED);
+            queue = this.exists(fpot.getTape().getName(), QueueStatus.CREATED);
             if (queue == null) {
                 // That means that there is not any queue for that tape in
                 // created state.
@@ -368,16 +368,17 @@ public final class QueuesController {
      *            Type of the media to analyze.
      * @return Quantity of waiting queues.
      */
-    @SuppressWarnings("unchecked")
     public short countWaitingQueues(final MediaType media) {
         LOGGER.trace("> countWaitingQueues");
 
         assert media != null;
 
         short waiting = 0;
+        @SuppressWarnings("unchecked")
         Iterator<String> iterator = this.queuesMap.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
+            @SuppressWarnings("unchecked")
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
@@ -533,7 +534,24 @@ public final class QueuesController {
             throws TReqSException {
         LOGGER.trace("< getBestQueue");
 
-        Queue ret = this.selector.selectBestQueue(this.queuesMap, resource);
+        List<Queue> queues = new ArrayList<Queue>();
+
+        @SuppressWarnings("unchecked")
+        Iterator<String> iterator = this.queuesMap.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            @SuppressWarnings("unchecked")
+            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
+                    .get(key)).iterator();
+            while (iterator2.hasNext()) {
+                Queue queue = iterator2.next();
+                if (queue.getTape().getMediaType() == resource.getMediaType()) {
+                    queues.add(queue);
+                }
+            }
+        }
+
+        Queue ret = this.selector.selectBestQueue(queues, resource);
 
         LOGGER.trace("< getBestQueue");
 
