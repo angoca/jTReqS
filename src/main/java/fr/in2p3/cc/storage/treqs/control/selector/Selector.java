@@ -36,7 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.control.selector;
 
-import org.apache.commons.collections.MultiMap;
+import java.util.List;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Queue;
@@ -52,18 +52,16 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
  */
 public interface Selector {
     /**
-     * Chooses the best queue candidate for activation for a given user.
-     * <p>
-     * Also taking the opportunity to unsuspend the suspended queues
+     * Chooses the best queue candidate for activation for a given resource.
      *
      * @param queues
      *            List of created queues. There are queue in all states.
      * @param resource
      *            iterator to the concerned resource
-     * @return The best queue or null if nothing could be selected.
+     * @return The best queue.
      * @throws TReqSException
      *             Problem using the selector. The queue map could be empty.
      */
-    Queue/* ? */selectBestQueue(final MultiMap queues, final Resource resource)
-            throws TReqSException;
+    Queue/* ! */selectBestQueue(final List<Queue> queues,
+            final Resource resource) throws TReqSException;
 }
