@@ -38,13 +38,11 @@ package fr.in2p3.cc.storage.treqs.control.selector;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.MultiMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,11 +72,11 @@ public final class JonathanSelector implements Selector {
      * (non-Javadoc)
      *
      * @see
-     * fr.in2p3.cc.storage.treqs.control.Selector#selectBestQueue(org.apache
-     * .commons.collections.MultiMap, fr.in2p3.cc.storage.treqs.model.Resource)
+     * fr.in2p3.cc.storage.treqs.control.selector.Selector#selectBestQueue(java
+     * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ? */selectBestQueue(final MultiMap queues,
+    public Queue/* ! */selectBestQueue(final List<Queue> queues,
             final Resource resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
@@ -95,8 +93,10 @@ public final class JonathanSelector implements Selector {
                     + "This should never happen - 3.");
             assert false : "Not best user";
         } else {
-            ret = this.selectBestQueue(queues, resource, bestUser);
+            ret = this.selectBestQueueForUser(queues, resource, bestUser);
         }
+
+        assert ret != null : "The returned queue is null";
 
         LOGGER.trace("< selectBestQueue");
 
@@ -108,7 +108,7 @@ public final class JonathanSelector implements Selector {
      * <p>
      * Also taking the opportunity to unsuspend the suspended queues.
      *
-     * @param queuesMap
+     * @param queues
      *            Set of queues.
      * @param resource
      *            Type of resource to analyze.
@@ -119,41 +119,30 @@ public final class JonathanSelector implements Selector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    @SuppressWarnings("unchecked")
-    Queue/* ? */selectBestQueue(final MultiMap queuesMap,
+    Queue/* ? */selectBestQueueForUser(final List<Queue> queues,
             final Resource resource, final User user) throws TReqSException {
-        LOGGER.trace("> selectBestQueue");
+        LOGGER.trace("> selectBestQueueForUser");
 
-        assert queuesMap != null : "queuesMap null";
+        assert queues != null : "queues null";
         assert resource != null : "resource null";
         assert user != null : "user null";
 
         Queue ret = null;
         // First get the list of queues
-        List<String> keys = (List<String>) this
-                .convertSetToList((Collection<String>) queuesMap.keySet());
-        Collections.sort(keys);
-        int length = keys.size();
+        int length = queues.size();
         for (int j = 0; j < length; j++) {
-            String key = keys.get(j);
-            List<Queue> queues = (List<Queue>) this
-                    .convertSetToList((Collection<Queue>) queuesMap.get(key));
-            Collections.sort(queues);
-            int length2 = queues.size();
-            for (int i = 0; i < length2; i++) {
-                Queue queue = queues.get(i);
-                ret = this.checkQueue(resource, user, ret, key, queue);
-            }
+            Queue queue = queues.get(j);
+            ret = this.checkQueue(resource, user, ret, queue);
         }
 
         if (ret != null) {
-            LOGGER.info("Best queue for {}  is on tape {}", user.getName(), ret
+            LOGGER.info("Best queue for {} is on tape {}", user.getName(), ret
                     .getTape().getName());
         } else {
             LOGGER.info("No queue could be selected");
         }
 
-        LOGGER.trace("< selectBestQueue");
+        LOGGER.trace("< selectBestQueueForUser");
 
         return ret;
     }
@@ -167,8 +156,6 @@ public final class JonathanSelector implements Selector {
      *            User that owns the queue.
      * @param currentlySelected
      *            Queue currently selected. The first time is null.
-     * @param tapename
-     *            Name of the analyzed queue.
      * @param queue
      *            Currently analyzed queue.
      * @return Selected queue or null if the queue does not correspond to the
@@ -177,13 +164,12 @@ public final class JonathanSelector implements Selector {
      *             If there is a problem getting the configuration.
      */
     private Queue/* ? */checkQueue(final Resource resource, final User user,
-            final Queue/* ? */currentlySelected, final String tapename,
-            final Queue queue) throws TReqSException {
+            final Queue/* ? */currentlySelected, final Queue queue)
+            throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null : "resource null";
         assert user != null : "user null";
-        assert tapename != null && !tapename.equals(null) : "invalid tapename";
         assert queue != null : "queue null";
 
         Queue ret = null;
@@ -195,8 +181,8 @@ public final class JonathanSelector implements Selector {
                 if (queue.getStatus() == QueueStatus.CREATED) {
                     // Check if the tape for this queue is not already used by
                     // another active queue.
-                    if (QueuesController.getInstance().exists(tapename,
-                            QueueStatus.ACTIVATED) != null) {
+                    if (QueuesController.getInstance().exists(
+                            queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
                         // There is another active queue for this tape. Just
                         // pick another one.
                         LOGGER.debug("Another queue on this tape is already "
@@ -207,7 +193,7 @@ public final class JonathanSelector implements Selector {
 
                         // Return this one because there is not selected one.
                         if (currentlySelected == null) {
-                            LOGGER.debug("Current null");
+                            LOGGER.debug("Current queue is null");
                             ret = queue;
                         } else if (currentlySelected.getCreationTime()
                         // Select the oldest queue.
@@ -232,7 +218,8 @@ public final class JonathanSelector implements Selector {
                             LOGGER.warn("This is weird");
                             assert false : "No queue selected, mmm?";
                         }
-                        LOGGER.debug("Selected: {}", ret.getTape().getName());
+                        LOGGER.debug("Selected queue: {}", ret.getTape()
+                                .getName());
                     }
                 } else {
                     LOGGER.info("The analyzed queue is in other state: {}",
@@ -275,8 +262,7 @@ public final class JonathanSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    @SuppressWarnings("unchecked")
-    synchronized User selectBestUser(final MultiMap queuesMap,
+    synchronized User selectBestUser(final List<Queue> queuesMap,
             final Resource resource) throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
@@ -285,6 +271,8 @@ public final class JonathanSelector implements Selector {
 
         User bestUser = null;
         if (queuesMap.size() == 0) {
+            assert false : "No queues, weird";
+
             throw new NoQueuesDefinedException();
         } else {
 
@@ -297,15 +285,10 @@ public final class JonathanSelector implements Selector {
             // Browse the list of queues and compute the users scores
             LOGGER.debug("Computing Score: (total allocation) "
                     + "* (user allocation) - (used resources)");
-            Iterator<String> queuesList = queuesMap.keySet().iterator();
-            while (queuesList.hasNext()) {
-                String key = queuesList.next();
-                Iterator<Queue> queues = ((Collection<Queue>) queuesMap
-                        .get(key)).iterator();
-                while (queues.hasNext()) {
-                    Queue queue = queues.next();
-                    this.calculateUserScore(resource, usersScores, queue);
-                }
+            Iterator<Queue> queues = queuesMap.iterator();
+            while (queues.hasNext()) {
+                Queue queue = queues.next();
+                this.calculateUserScore(resource, usersScores, queue);
             }
 
             // Catch the best
