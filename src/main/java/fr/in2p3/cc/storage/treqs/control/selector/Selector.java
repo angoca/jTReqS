@@ -55,7 +55,9 @@ public interface Selector {
      * Chooses the best queue candidate for activation for a given resource.
      *
      * @param queues
-     *            List of created queues. There are queue in all states.
+     *            List of created queues. There are queues in all states of the
+     *            researched media type. There are not queues for other media
+     *            types.
      * @param resource
      *            iterator to the concerned resource
      * @return The best queue.
