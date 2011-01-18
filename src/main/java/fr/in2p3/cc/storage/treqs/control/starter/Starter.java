@@ -52,6 +52,7 @@ import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.controller.StagersController;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
+import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.Watchdog;
@@ -376,8 +377,14 @@ public final class Starter {
         this.cont = false;
 
         // Starts the process of stopping.
-        Activator.getInstance().conclude();
-        Dispatcher.getInstance().conclude();
+        if (Activator.getInstance().getProcessStatus() == ProcessStatus.STARTING
+                || Activator.getInstance().getProcessStatus() == ProcessStatus.STARTED) {
+            Activator.getInstance().conclude();
+        }
+        if (Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTING
+                || Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTED) {
+            Dispatcher.getInstance().conclude();
+        }
         StagersController.getInstance().conclude();
 
         LOGGER.trace("< toStop");
@@ -390,7 +397,7 @@ public final class Starter {
      * @throws TReqSException
      *             If there is a problem calling the components.
      */
-    void toStopAndWait() throws TReqSException {
+    void toWait() throws TReqSException {
         LOGGER.trace("> toStopAndWait");
 
         this.toStop();
