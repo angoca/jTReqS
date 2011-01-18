@@ -163,6 +163,8 @@ public final class StagersController {
         Iterator<Stager> iterator = this.stagers.iterator();
         while (iterator.hasNext()) {
             Stager stager = iterator.next();
+            LOGGER.debug("Stager {} in status {}", stager.getName(), stager
+                    .getProcessStatus().name());
             if (stager.getProcessStatus() == ProcessStatus.CREATED
                     || stager.getProcessStatus() == ProcessStatus.STARTED
                     || stager.getProcessStatus() == ProcessStatus.STARTING) {
