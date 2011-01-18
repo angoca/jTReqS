@@ -1,5 +1,3 @@
-package fr.in2p3.cc.storage.treqs.control.starter;
-
 /*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -36,9 +34,11 @@ package fr.in2p3.cc.storage.treqs.control.starter;
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.control.starter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -50,96 +50,144 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
-import fr.in2p3.cc.storage.treqs.control.StagersController;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
+import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesController;
+import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
+import fr.in2p3.cc.storage.treqs.control.controller.StagersController;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
-import fr.in2p3.cc.storage.treqs.model.FileStatus;
-import fr.in2p3.cc.storage.treqs.model.exception.TReqSException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.CloseMySQLException;
-import fr.in2p3.cc.storage.treqs.persistance.mysql.exception.MySQLException;
+import fr.in2p3.cc.storage.treqs.model.MediaType;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLHelper;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLRequestsDAO;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.RequestsDAO;
 
+/**
+ * Tests for the starter.
+ *
+ * @author Andres Gomez
+ */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public class StarterTest {
+public final class StarterTest {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StarterTest.class);
 
+    /**
+     * Sets the env for the tests.
+     *
+     * @throws TReqSException
+     *             If there is any problem while setting the env.
+     */
     @BeforeClass
     public static void oneTimeSetUp() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        RequestsDAO.deleteAll();
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
+                Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
+
+        MySQLRequestsDAO.deleteAll();
+        MySQLHelper.deleteMediaTypes();
+        MySQLHelper.insertMediaType(1, "T10K-A", 5);
+        MySQLHelper.insertMediaType(2, "T10K-B", 5);
         MySQLBroker.getInstance().disconnect();
-    }
-
-    @AfterClass
-    public static void oneTimeTearDown() {
-        Configurator.destroyInstance();
-        MySQLBroker.destroyInstance();
-    }
-
-    @Before
-    public void setUp() throws TReqSException {
-        Configurator.getInstance().setValue("MAIN", "HSM_BRIDGE",
-                "fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge");
-        Configurator
-                .getInstance()
-                .setValue("MAIN", "CONFIGURATION_DAO",
-                        "fr.in2p3.cc.storage.treqs.persistance.mock.dao.MockConfigurationDAO");
-        Configurator.getInstance().setValue("MAIN", "ACTIVATOR_INTERVAL", "1");
-        Configurator.getInstance().setValue("MAIN", "DISPATCHER_INTERVAL", "1");
-    }
-
-    @After
-    public void tearDown() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        RequestsDAO.deleteAll();
-        MySQLBroker.getInstance().disconnect();
-        MySQLBroker.destroyInstance();
-        Activator.destroyInstance();
-        Dispatcher.destroyInstance();
-        HSMMockBridge.destroyInstance();
-        StagersController.getInstance().conclude();
-        StagersController.getInstance().waitTofinish();
-        StagersController.destroyInstance();
     }
 
     /**
-     * Tests to insert requests in the database in create state, and then create
-     * the queue and stage the files. This uses the Starter.
+     * Destroys all after the tests.
      *
      * @throws TReqSException
+     *             If there is any problem.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() throws TReqSException {
+        // MySQLRequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+        Configurator.destroyInstance();
+    }
+
+    /**
+     * Sets the env for each tests.
+     *
+     * @throws TReqSException
+     *             Any problem occurred.
+     */
+    @Before
+    public void setUp() throws TReqSException {
+        Configurator.getInstance().setValue(Constants.SECTION_ACTIVATOR,
+                Constants.ACTIVATOR_INTERVAL, "1");
+        Configurator.getInstance().setValue(Constants.SECTION_DISPATCHER,
+                Constants.DISPATCHER_INTERVAL, "1");
+        MySQLRequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+    }
+
+    /**
+     * Clears all after the tests.
+     *
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    @After
+    public void tearDown() throws TReqSException {
+        MySQLBroker.getInstance().connect();
+        // MySQLRequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+        StagersController.getInstance().conclude();
+        StagersController.getInstance().waitToFinish();
+        StagersController.destroyInstance();
+        QueuesController.destroyInstance();
+        Activator.destroyInstance();
+        Dispatcher.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
+        HSMMockBridge.destroyInstance();
+        Starter.destroyInstance();
+    }
+
+    /**
+     * Tests to insert requests in the database in created state, and then
+     * create the queue and stage the files. This uses the Starter.
+     *
+     * @throws TReqSException
+     *             Never.
      * @throws InterruptedException
+     *             Never.
      * @throws SQLException
+     *             Never.
      */
     @Test
-    public void testInsertRequests() throws TReqSException,
+    public void testInsertRequests01Created() throws TReqSException,
             InterruptedException, SQLException {
-        LOGGER.error("Starter TEST ------------");
+        LOGGER.error("Starter TEST ------------ testInsertRequests01Created");
 
         MySQLBroker.getInstance().connect();
 
-        checkDatabaseWithStaged(0, 0);
+        this.checkDatabaseWithStaged(0, 0);
 
-        String fileName = "filename1";
+        String fileName = "filename101Created";
         String userName = "username1";
-        FileStatus status = FileStatus.FS_CREATED;
-        RequestsDAO.insertRow(fileName, userName, status);
+        RequestStatus status = RequestStatus.CREATED;
+        MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        final Starter treqs = new Starter();
+        Starter.getInstance();
 
         Thread thread = new Thread() {
             @Override
             public synchronized void run() {
                 try {
                     LOGGER.error("Starting Starter.");
-                    treqs.toStart();
+                    Starter.getInstance().toStart();
                 } catch (TReqSException e) {
                     e.printStackTrace();
                 }
@@ -148,44 +196,117 @@ public class StarterTest {
 
         HSMMockBridge.getInstance().setStageTime(1);
         thread.start();
-        Thread
-                .sleep(Activator.getInstance().getSecondsBetweenLoops() * 1000 * 2);
+        Thread.sleep(Activator.getInstance().getMillisBetweenLoops() * 2);
         LOGGER.error("Stopping Starter.");
-        treqs.toStop();
+        Starter.getInstance().toStop();
+        Starter.getInstance().toWait();
         Thread.sleep(200);
 
-        checkDatabaseWithStaged(1, 0);
+        this.checkDatabaseWithStaged(1, 0);
     }
 
     /**
-     * @throws MySQLException
-     * @throws SQLException
-     * @throws CloseMySQLException
+     * Inserts requests in the database in submitted and queued state, and then
+     * runs the starter.
+     *
      * @throws TReqSException
+     *             Never.
+     * @throws InterruptedException
+     *             Never.
+     * @throws SQLException
+     *             Never.
      */
-    private void checkDatabaseWithStaged(int staged, int nonStaged)
-            throws MySQLException, SQLException, CloseMySQLException,
-            TReqSException {
-        FileStatus status = FileStatus.FS_STAGED;
-        int actualStaged = countStatusRequest(status, true);
-        int actualNotStaged = countStatusRequest(status, false);
+    @Test
+    public void testInsertRequests02SubmittedAndQueued() throws TReqSException,
+            InterruptedException, SQLException {
+        LOGGER.error("Starter TEST ------------ "
+                + "testInsertRequests02SubmittedAndQueued");
+
+        MySQLBroker.getInstance().connect();
+
+        this.checkDatabaseWithStaged(0, 0);
+
+        String fileName1 = "filename102SubmittedAndQueued";
+        String userName1 = "username1";
+        RequestStatus status1 = RequestStatus.SUBMITTED;
+        MySQLRequestsDAO.insertRow(fileName1, userName1, status1);
+        String fileName2 = "filename202SubmittedAndQueued";
+        String userName2 = "username2";
+        RequestStatus status2 = RequestStatus.QUEUED;
+        MySQLRequestsDAO.insertRow(fileName2, userName2, status2);
+
+        Starter.getInstance();
+
+        Thread thread = new Thread() {
+            @Override
+            public synchronized void run() {
+                try {
+                    LOGGER.error("Starting Starter.");
+                    Starter.getInstance().toStart();
+                } catch (TReqSException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        HSMMockBridge.getInstance().setStageTime(1);
+        thread.start();
+        Thread.sleep(Activator.getInstance().getMillisBetweenLoops() * 2);
+        LOGGER.error("Stopping Starter.");
+        Starter.getInstance().toStop();
+        Starter.getInstance().toWait();
+        Thread.sleep(200);
+
+        this.checkDatabaseWithStaged(2, 0);
+    }
+
+    /**
+     * Makes the asserts against the values in the database.
+     *
+     * @param expectedStaged
+     *            Quantity of expected staged files.
+     * @param expectedNonStaged
+     *            Quantity of expected non staged files.
+     * @throws SQLException
+     *             Never.
+     * @throws TReqSException
+     *             Never.
+     */
+    private void checkDatabaseWithStaged(final int expectedStaged,
+            final int expectedNonStaged) throws SQLException, TReqSException {
+        RequestStatus status = RequestStatus.STAGED;
+        int actualStaged = this.countStatusRequest(status, true);
+        int actualNotStaged = this.countStatusRequest(status, false);
 
         LOGGER.error("Staged {}, Not staged {}", actualStaged, actualNotStaged);
         LOGGER.error("Activator {}, Dispatcher {}", Activator.getInstance()
                 .getProcessStatus().name(), Dispatcher.getInstance()
                 .getProcessStatus().name());
 
-        Assert.assertEquals(nonStaged, actualNotStaged);
-        Assert.assertEquals(staged, actualStaged);
+        Assert.assertEquals(expectedNonStaged, actualNotStaged);
+        Assert.assertEquals(expectedStaged, actualStaged);
     }
 
-    private int countStatusRequest(FileStatus status, boolean equals)
-            throws MySQLException, SQLException, CloseMySQLException {
+    /**
+     * Performs the query against the database to know the quantity of elements.
+     *
+     * @param status
+     *            Status to analyze.
+     * @param equals
+     *            Equals or not equals to the status.
+     * @return Quantity of records that satisfy the given conditions.
+     * @throws SQLException
+     *             If there is a problem in the SQL.
+     * @throws TReqSException
+     *             In there is a problem in application.
+     */
+    private int countStatusRequest(final RequestStatus status,
+            final boolean equals) throws SQLException, TReqSException {
         String compare = "=";
         if (!equals) {
             compare = "!=";
         }
-        String query = "SELECT count(*) FROM requests WHERE status " + compare
+        String query = "SELECT count(1) FROM requests WHERE status " + compare
                 + +status.getId();
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
