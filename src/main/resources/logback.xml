@@ -32,9 +32,27 @@
 
 <configuration debug="false" scan="true">
 
+  <appender name="TraceFile"
+    class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>var/log/treqs/jtreqs-trace.log</file>
+    <append>true</append>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <!-- daily rollover -->
+      <fileNamePattern>treqs-trace.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+      <!-- keep 1 days' worth of history -->
+      <maxHistory>1</maxHistory>
+    </rollingPolicy>
+    <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+      <charset>ISO-8859-1</charset>
+      <pattern>
+        %d{ISO8601} [%thread] %-5level %logger{35} - %msg%n
+      </pattern>
+    </encoder>
+  </appender>
+
   <appender name="LogFile"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>/var/log/treqs/treqs.log</file>
+    <file>var/log/treqs/jtreqs.log</file>
     <append>true</append>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>info</level>
@@ -42,7 +60,7 @@
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- daily rollover -->
       <fileNamePattern>treqs.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-      <!-- keep 30 days' worth of history -->
+      <!-- keep 180 days' worth of history -->
       <maxHistory>180</maxHistory>
     </rollingPolicy>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
@@ -65,8 +83,9 @@
   </appender>
 
   <root>
-    <level value="info" />
+    <level value="trace" />
     <appender-ref ref="Console" />
     <appender-ref ref="LogFile" />
+    <appender-ref ref="TraceFile" />
   </root>
 </configuration>
