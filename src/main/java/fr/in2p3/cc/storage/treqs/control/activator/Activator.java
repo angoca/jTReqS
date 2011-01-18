@@ -445,6 +445,8 @@ public final class Activator extends AbstractProcess {
                     }
                 } else {
                     LOGGER.warn("Unable to choose a best queue.");
+
+                    assert false : "It is impossible to not have a queue.";
                 }
                 waitingQueues--;
                 freeResources--;
@@ -461,7 +463,6 @@ public final class Activator extends AbstractProcess {
      * @throws TReqSException
      *             If there is a problem retrieving the allocations.
      */
-    @SuppressWarnings("unchecked")
     void refreshAllocations() throws TReqSException {
         LOGGER.trace("> refreshAllocations");
 
@@ -480,6 +481,7 @@ public final class Activator extends AbstractProcess {
             Resource resource = resources.next();
             // Find all shares for the current media type.
             byte id = resource.getMediaType().getId();
+            @SuppressWarnings("unchecked")
             Collection<PersistenceHelperResourceAllocation> shareRange = (Collection<PersistenceHelperResourceAllocation>) shares
                     .get(new Byte(id));
             if (shareRange != null) {
@@ -577,9 +579,8 @@ public final class Activator extends AbstractProcess {
         assert max > 0;
 
         if (max > this.maxStagers) {
-            throw new InvalidMaxException(
-                    InvalidMaxReasons.STAGERS_PER_QUEUE, max,
-                    this.maxStagers, this.maxStagersPerQueue);
+            throw new InvalidMaxException(InvalidMaxReasons.STAGERS_PER_QUEUE,
+                    max, this.maxStagers, this.maxStagersPerQueue);
         }
 
         this.maxStagersPerQueue = max;
