@@ -90,9 +90,11 @@ public final class Activator extends AbstractProcess {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        if (instance.getProcessStatus() == ProcessStatus.STOPPING
-                || instance.getProcessStatus() != ProcessStatus.STOPPED) {
+        if (instance.getProcessStatus() == ProcessStatus.STARTING
+                || instance.getProcessStatus() == ProcessStatus.STARTED) {
             instance.conclude();
+        }
+        if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
             instance.waitToFinish();
         }
 
@@ -658,8 +660,6 @@ public final class Activator extends AbstractProcess {
                     }
                 }
             }
-        } catch (TReqSException e) {
-            throw new RuntimeException(e);
         } catch (Throwable t) {
             try {
                 Starter.getInstance().toStop();
