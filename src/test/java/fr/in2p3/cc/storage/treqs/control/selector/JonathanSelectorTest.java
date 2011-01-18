@@ -41,9 +41,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.controller.HelperControl;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
@@ -64,6 +66,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  *
  * @author Andres Gomez
  */
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class JonathanSelectorTest {
     /**
      * Number 5.
