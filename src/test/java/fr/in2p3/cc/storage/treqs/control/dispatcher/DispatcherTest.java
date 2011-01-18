@@ -48,11 +48,13 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.controller.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.controller.FilesController;
@@ -80,7 +82,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  *
  * @author Andres Gomez
  */
-// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class DispatcherTest {
     /**
      * Logger.
