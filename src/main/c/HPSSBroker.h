@@ -65,3 +65,4 @@ int getFileProperties(const char * name, int * position, int * higherStorageLeve
  * @size (in) Size of the file.
  */
 void stage(const char * name, unsigned long * size);
+
