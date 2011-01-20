@@ -4,15 +4,16 @@ sh ./compileBroker.sh
 # HPSS Broker test
 # Create the library
 echo Creating library
-ld -shared -o ./libHPSSBroker.so ./HPSSBroker.o
+ld -o ./libHPSSBroker.so ./HPSSBroker.o -lc -lhpss -L/opt/hpss/lib -shared
+
 # Compile the executable
 echo Compiling executable
-gcc -I /opt/hpss/include -I ./ -lhpss -L /opt/hpss/lib/ -lHPSSBroker -L./ -DLINUX -pthread -o ./brokerTester ../src/test/c/HPSSBrokerTester.c
+export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
+gcc -I /opt/hpss/include -DLINUX -o ./brokerTester -lHPSSBroker -L./ HPSSBrokerTester.c -pthread
 
 
 # Execute.
 echo Executing
-#export HPSS_API_DEBUG=255
-#export TREQS_TRACE=TRACE
-export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
+export HPSS_API_DEBUG=255
+export TREQS_TRACE=TRACE
 ./brokerTester
