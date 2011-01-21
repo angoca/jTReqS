@@ -37,33 +37,38 @@
 #include "HPSSBroker.h"
 
 #define cont (rc == HPSS_E_NOERROR)
+#define trace (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0)
+#define debug (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG")) == 0)
+#define info (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG") || strcmp(LOGGER, "INFO")) == 0)
+#define warn (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG") || strcmp(LOGGER, "INFO") || strcmp(LOGGER, "WARN")) == 0)
 
 char* LOGGER;
 
 int init(const char * authType, const char * keytab, const char * user) {
-	int rc;
+	int rc = -1;
 	hpss_authn_mech_t authMech;
 
-	LOGGER = getenv("TREQS_TRACE");
-	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+	LOGGER = getenv("TREQS_LOG");
+	if (trace) {
 		printf("> init\n");
 	}
 
 	// Establishes the type of authentication mechanism.
 	if (strcmp(authType, "kerberos") == 0) {
-		printf("auth kerb\n");
+		if (debug) {
+			printf("auth kerb\n");
+		}
 		authMech = hpss_authn_mech_krb5;
 	} else {
-		printf("auth unix\n");
+		if (debug) {
+			printf("auth unix\n");
+		}
 		authMech = hpss_authn_mech_unix;
 	}
-	//  rc = hpss_SetLoginCred((char *) user, authMech, hpss_rpc_cred_client,
-	//      hpss_rpc_auth_type_keytab, (void *) keytab);
-	rc = hpss_SetLoginCred((char *) "gomez", hpss_authn_mech_unix,
-			hpss_rpc_cred_client, hpss_rpc_auth_type_keytab,
-			(void *) "/afs/in2p3.fr/home/g/gomez/keytab.gomez");
+	rc = hpss_SetLoginCred((char *) user, authMech, hpss_rpc_cred_client,
+			hpss_rpc_auth_type_keytab, (void *) keytab);
 
-	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+	if (trace) {
 		printf("< init\n");
 	}
 
@@ -71,8 +76,7 @@ int init(const char * authType, const char * keytab, const char * user) {
 }
 
 int processProperties(hpss_xfileattr_t attrOut, int * position,
-		int * higherStorageLevel, char * tape, unsigned long * length) {
-
+		int * higherStorageLevel, char * tape, unsigned long * size) {
 	int rc = 0;
 	hpssoid_t bitFileId;
 	hpssoid_t vvid;
@@ -83,7 +87,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 	int lowestStorageLevelFound = FALSE;
 	int i;
 	int j;
-	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+	if (trace) {
 		printf("> processProperties\n");
 	}
 
@@ -91,10 +95,14 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		if (attrOut.SCAttrib[i].Flags == 0) {
 			if (i == 0) {
 				if (attrOut.Attrs.Type == NS_OBJECT_TYPE_FILE) {
-					printf("No segments exist for this file.\n.");
+					if (warn) {
+						printf("No segments exist for this file.\n.");
+					}
 					rc = -30000;
 				}
-				printf("This seems to be a directory.\n");
+				if (info) {
+					printf("This seems to be a directory.\n");
+				}
 				rc = HPSS_EISDIR;
 			}
 		}
@@ -102,7 +110,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		if (cont && (lowestStorageLevelFound == FALSE)
 				&& (attrOut.SCAttrib[i].Flags & BFS_BFATTRS_DATAEXISTS_AT_LEVEL)) {
 			bitFileId = attrOut.Attrs.BitfileId;
-			*length = attrOut.SCAttrib[i].BytesAtLevel;
+			CONVERT_U64_TO_LONGLONG(attrOut.SCAttrib[i].BytesAtLevel, *size);
 			vvid = attrOut.SCAttrib[i].VVAttrib[0].VVID;
 			*position = attrOut.SCAttrib[i].VVAttrib[0].RelPosition;
 			fileType = attrOut.Attrs.Type;
@@ -130,12 +138,12 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		}
 	}
 
-	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+	if (debug) {
 		printf("File properties %d, %d, %s, %d\n", *position,
-				*higherStorageLevel, tape, *length);
+				*higherStorageLevel, tape, *size);
 	}
 
-	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+	if (trace) {
 		printf("< processProperties\n");
 	}
 
@@ -145,8 +153,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 // TODO review if higherStorageLevel is really necessary.
 int getFileProperties(const char * name, int * position,
 		int * higherStorageLevel, char * tape, unsigned long * size) {
-
-	int rc = 0;
+	int rc = -1;
 
 	// Returns bitfile attributes across all storage class levels.
 	unsigned32 flags = API_GET_STATS_FOR_ALL_LEVELS;
@@ -154,7 +161,7 @@ int getFileProperties(const char * name, int * position,
 	unsigned32 storagelevel = 0;
 	hpss_xfileattr_t attrOut;
 
-	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+	if (trace) {
 		printf("> getFileProperties\n");
 	}
 
@@ -163,17 +170,55 @@ int getFileProperties(const char * name, int * position,
 	if (rc >= 0) {
 		rc = processProperties(attrOut, position, higherStorageLevel, tape,
 				size);
-		if (rc < 0) {
+		if (rc < 0 && warn) {
 			printf("Error in file %s\n", name);
 		}
 	}
 
-	if (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0) {
+	if (trace) {
 		printf("< getFileProperties\n");
 	}
 
 	return rc;
 }
 
-void stage(const char * name, unsigned long * size) {
+int stage(const char * name, unsigned long * size) {
+	int rc = 0;
+	int fid;
+	int oflag = O_RDONLY | O_NONBLOCK;
+	mode_t mode = 0;
+	if (trace) {
+		printf("> stage\n");
+	}
+
+	// Converts the size
+	u_signed64 length;
+	unsigned long size2 = 123;
+	CONVERT_LONGLONG_TO_U64(size2, length);
+
+	// Ask HPSS to open a filehandle
+	fid = hpss_Open((char *) name, oflag, mode, NULL, NULL, NULL);
+	if (fid >= 0) {
+		rc = hpss_Stage(fid, cast64m((unsigned32) 0), length,
+				(unsigned long) 0, BFS_STAGE_ALL);
+		if (rc >= 0) {
+			rc = hpss_Close(fid);
+			if (rc < 0 && warn){
+				printf("Error closing file %s\n", name);
+			}
+		} else {
+			if (warn){
+				printf("Error staging file %s\n", name);
+			}
+			hpss_Close(fid);
+		}
+	} else if (warn){
+		printf("Error opening file %s\n", name);
+	}
+
+	if (trace) {
+		printf("< stage\n");
+	}
+
+	return rc;
 }
