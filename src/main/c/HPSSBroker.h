@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright      Jonathan Schaeffer 2009-2010,
  *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
  * Contributors   Andres Gomez,
@@ -38,10 +38,29 @@
 #include "hpss_api.h"
 
 //! This class interacts directly with HPSS.
+/**
+ * This class offers the necessary methods to access HPSS and to retrieve
+ * information about the files being requested.
+ * <p>
+ * There is an environment variable called TREQS_LOG that keeps the logging
+ * detail of the operation. The current available levels are TRACE, DEBUG, INFO
+ * and WARN. This variable could be set in the shell doing this:
+ * <code>
+ * export TREQS_LOG=DEBUG
+ * </code>
+ * This provides a mechanism to know what is happening in the broker. This
+ * logger plus the HPSS logger variable (HPSS_API_DEBUG) gives a global idea
+ * of the internal function.
+ *
+ * @author Andres Gomez
+ */
 
 //! Initializes the HPSS_API with the given credentials.
 /**
  * Initializes the HPSS_API via hpss_SetLoginCred.
+ * <p>
+ * Initializes the logger with the corresponding level.
+ *
  * @authType (in) Type of authentication "unix", "kerberos"
  * @keytab (in) Complete path of the keytab.
  * @user (in) User that will interact with HPSS.
@@ -55,14 +74,16 @@ int init(const char * authType, const char * keytab, const char * user);
  * @higherStorageLevel (out) Indicates the highest level where the file can be found.
  * @tape (out) Name of the tape where the file is stored.
  * @size (out) Size of the file.
+ * @return 0 if there was no problem, or the corresponding error code
+ * (negative). -30000 means that there are not segments for this file.
  */
-int getFileProperties(const char * name, int * position, int * higherStorageLevel,
-    char * tape, unsigned long * size);
+int getFileProperties(const char * name, int * position,
+		int * higherStorageLevel, char * tape, unsigned long * size);
 
 //! Stages a file stored in HPSS.
 /**
  * @name (in) Name of the file to query.
  * @size (in) Size of the file.
  */
-void stage(const char * name, unsigned long * size);
+int stage(const char * name, unsigned long * size);
 
