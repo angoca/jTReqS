@@ -7,11 +7,11 @@
 #include "HPSSBroker.h"
 
 int main(int argc, char **argv) {
-	int rc = 0;
+	int rc = -1;
 
 	const char * authType = "unix";
-	const char * keytab = "/var/hpss/etc/keytab.treqs";
-	const char * user = "treqs";
+	const char * keytab = "/afs/in2p3.fr/home/g/gomez/keytab.gomez";
+	const char * user = "gomez";
 
 	const char * filename = "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy";
 
