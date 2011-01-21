@@ -1,19 +1,28 @@
 # Calls the HPSS Broker compiler
+#
+# This script should be executed in the 'bin' directory of the project.
+#
+# @author Andres Gomez
+
 sh ./compileBroker.sh
 
 # HPSS Broker test
 # Create the library
 echo Creating library
+rm -f ./libHPSSBroker.so
 ld -o ./libHPSSBroker.so ./HPSSBroker.o -lc -lhpss -L/opt/hpss/lib -shared
 
 # Compile the executable
 echo Compiling executable
 export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
-gcc -I /opt/hpss/include -DLINUX -o ./brokerTester -lHPSSBroker -L./ ../src/test/c/HPSSBrokerTester.c -pthread
+rm -f ./brokerTester
+gcc -I ../src/main/c -I /opt/hpss/include -DLINUX -o ./brokerTester -lHPSSBroker -L./ ../src/test/c/HPSSBrokerTester.c -pthread
 
 
 # Execute.
 echo Executing
-export HPSS_API_DEBUG=255
-export TREQS_TRACE=TRACE
+# This is for HPSS logging (it works from 0 - 7, the three bits)
+export HPSS_API_DEBUG=0
+# This is for the internal logger (WARN, INFO, DEBUG, TRACE)
+export TREQS_LOG=WARN
 ./brokerTester
