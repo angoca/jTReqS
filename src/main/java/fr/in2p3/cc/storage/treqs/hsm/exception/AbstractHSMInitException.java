@@ -55,4 +55,14 @@ public abstract class AbstractHSMInitException extends AbstractHSMException {
         super();
     }
 
+    /**
+     * Creates the exception wrapping another one.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    public AbstractHSMInitException(Exception exception) {
+        super(exception);
+    }
+
 }
