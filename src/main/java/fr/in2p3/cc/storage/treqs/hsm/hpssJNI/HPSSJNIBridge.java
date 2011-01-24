@@ -44,9 +44,10 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
+import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.CannotReadKeytabException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.InitProblemException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
+import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.KeytabNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
@@ -276,7 +277,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         assert file != null;
 
-        NativeBridge.stage(file, size);
+        NativeBridge.stage(file.getName(), file.getSize());
 
         LOGGER.trace("< stage");
     }
