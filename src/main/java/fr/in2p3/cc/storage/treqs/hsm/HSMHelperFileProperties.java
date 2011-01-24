@@ -36,24 +36,18 @@
  */
 package fr.in2p3.cc.storage.treqs.hsm;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Transfer Object between the HSM and the application. this is the reason this
  * object does not have setter, it is not a POJO, the values are set only at
  * creation time.
+ * <p>
+ * This class does not have logger in order to ease the compilation for the
+ * native part.
  *
  * @author Andres Gomez
  * @since 1.5
  */
 public final class HSMHelperFileProperties {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMHelperFileProperties.class);
-
     /**
      * Position of the file in the tape.
      */
@@ -80,8 +74,6 @@ public final class HSMHelperFileProperties {
      */
     public HSMHelperFileProperties(final String storageName,
             final int filePosition, final long fileSize) {
-        LOGGER.trace("> create instance");
-
         assert storageName != null && !storageName.equals("");
         assert filePosition >= 0;
         assert fileSize >= 0;
@@ -89,8 +81,6 @@ public final class HSMHelperFileProperties {
         this.tapeName = storageName;
         this.position = filePosition;
         this.size = fileSize;
-
-        LOGGER.trace("< create instance");
     }
 
     /**
@@ -99,8 +89,6 @@ public final class HSMHelperFileProperties {
      * @return Position of the file in the tape.
      */
     public int getPosition() {
-        LOGGER.trace(">< getPosition");
-
         return this.position;
     }
 
@@ -110,8 +98,6 @@ public final class HSMHelperFileProperties {
      * @return Size of the file in the tape.
      */
     public long getSize() {
-        LOGGER.trace(">< getSize");
-
         return this.size;
     }
 
@@ -121,8 +107,6 @@ public final class HSMHelperFileProperties {
      * @return Name of the tape where the file is stored.
      */
     public String getTapeName() {
-        LOGGER.trace(">< getTapeName");
-
         return this.tapeName;
     }
 }
