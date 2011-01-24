@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
+package fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
  * @author Andrés Gómez
  * @since 1.5
  */
-final class CannotReadKeytabException extends AbstractHSMInitException {
+public final class CannotReadKeytabException extends AbstractHSMInitException {
     /**
      * Logger.
      */
