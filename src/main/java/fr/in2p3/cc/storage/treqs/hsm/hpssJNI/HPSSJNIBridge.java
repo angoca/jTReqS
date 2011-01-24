@@ -45,7 +45,7 @@ import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.CannotReadKeytabException;
-import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.InitProblemException;
+import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIInitProblemException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.KeytabNotFoundException;
 import fr.in2p3.cc.storage.treqs.model.File;
@@ -130,7 +130,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             NativeBridge.init(this.getAuthType(), this.getKeytabPath(),
                     this.getUser());
         } catch (JNIException e) {
-            throw new InitProblemException(e);
+            throw new JNIInitProblemException(e);
         }
 
         // Tests if the keytab could be acceded from HPSS.
