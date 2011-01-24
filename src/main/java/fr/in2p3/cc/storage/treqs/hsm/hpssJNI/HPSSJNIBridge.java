@@ -45,6 +45,8 @@ import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
+import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.InitProblemException;
+import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
@@ -58,7 +60,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * the C library, because it cannot find the exported symbols when importing the
  * authorization library via dlopen.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
 public final class HPSSJNIBridge extends AbstractHSMBridge {
@@ -72,31 +74,6 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HPSSJNIBridge.class);
-
-    // Loads the dynamic library.
-    static {
-        try {
-            LOGGER.info("Loading the HPSS JNI Bridge.");
-            System.loadLibrary(HPSSJNIBridge.HPSS_JNI_BRIDGE_LIBRARY);
-            LOGGER.debug("Load succesfully.");
-        } catch (java.lang.UnsatisfiedLinkError e) {
-            LOGGER.error("Error loading library.", e);
-            throw e;
-        }
-    }
-
-    /**
-     * Queries HPSS for a given file.
-     *
-     * @param filename
-     *            Name of the file to query.
-     * @param helper
-     *            Object that contains the description of the file.
-     * @throws AbstractHSMException
-     *             If there is a problem retrieving the information.
-     */
-    private static native void getFileProperties(final String filename,
-            final HSMHelperFileProperties helper) throws AbstractHSMException;
 
     /**
      * Retrieves the unique instance.
@@ -121,32 +98,6 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Initializes credentials.
-     *
-     * @param authType
-     *            Type of authentication: unix, kerberos.
-     * @param keyTab
-     *            Complete path where the keytab could be found.
-     * @param user
-     *            User to be used in the HPSS login.
-     * @throws AbstractHSMInitException
-     *             If there is a problem initializing the environment.
-     */
-    private static native void hpssInit(final String authType,
-            final String keyTab, final String user)
-            throws AbstractHSMInitException;
-
-    /**
-     * Stages the file with HPSS.
-     *
-     * @param name
-     *            Name of the file to stage.
-     * @param size
-     *            Size of the file.
-     */
-    private static native void stage(final String name, final long size);
-
-    /**
      * The HSM authorization type.
      */
     private String authType;
@@ -155,10 +106,6 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
      * User used to interact with HPSS.
      */
     private String user;
-    /**
-     * Name of the library to load the HPSS JNI bridge.
-     */
-    private static final String HPSS_JNI_BRIDGE_LIBRARY = "HPSSJNIBridge";
 
     /**
      * Creates the java part of the JNI bridge with HPSS.
@@ -178,8 +125,12 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         // Initializes the HPSS environment.
         LOGGER.debug("Passing this params to init: {}, {}, {}", new String[] {
                 this.getAuthType(), this.getKeytabPath(), this.getUser() });
-        HPSSJNIBridge.hpssInit(this.getAuthType(), this.getKeytabPath(),
-                this.getUser());
+        try {
+            NativeBridge.init(this.getAuthType(), this.getKeytabPath(),
+                    this.getUser());
+        } catch (JNIException e) {
+            throw new InitProblemException(e);
+        }
 
         // Tests if the keytab could be acceded from HPSS.
         this.testKeytab();
@@ -214,7 +165,11 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         assert name != null;
 
         HSMHelperFileProperties ret = null;
-        HPSSJNIBridge.getFileProperties(name, ret);
+        try {
+            NativeBridge.getFileProperties(name, ret);
+        } catch (JNIException e) {
+            throw new PropertiesProblemException(e);
+        }
         // Checks if there was a problem while querying the file to HPSS.
         if (LOGGER.isDebugEnabled()) {
             if (ret == null) {
@@ -321,7 +276,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         assert file != null;
 
-        HPSSJNIBridge.stage(file.getName(), file.getSize());
+        NativeBridge.stage(file, size);
 
         LOGGER.trace("< stage");
     }
