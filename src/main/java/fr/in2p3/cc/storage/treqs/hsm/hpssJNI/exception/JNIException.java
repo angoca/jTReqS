@@ -50,11 +50,31 @@ public final class JNIException extends Exception {
      * Generated Id.
      */
     private static final long serialVersionUID = -7672189435704549513L;
+    /**
+     * Identification code.
+     */
+    private final String id;
 
     /**
      * Default exception. Writes in the standard output.
+     *
+     * @param code
+     *            Id of the error.
      */
-    public JNIException() {
+    public JNIException(final String code) {
+        assert code != null && !code.equals("") : "Invalid";
+
+        this.id = code;
         System.out.println("JNIException created");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Throwable#getMessage()
+     */
+    //@Override
+    public String getMessage() {
+        return "Error code '" + this.id + '\'';
     }
 }
