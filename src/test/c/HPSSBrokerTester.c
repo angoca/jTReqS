@@ -87,6 +87,7 @@ int main(int argc, char **argv) {
 					higherStorageLevel, tape, size);
 
 			if (higherStorageLevel > 0) {
+				printf("File ready to stage\n");
 				// Stages the file.
 				rc = stage(filename, &size);
 			} else {
