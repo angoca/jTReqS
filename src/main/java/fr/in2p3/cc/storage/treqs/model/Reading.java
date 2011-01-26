@@ -250,6 +250,7 @@ public final class Reading {
         final String filename = this.getMetaData().getFile().getName();
 
         this.setErrorMessage("Staging.");
+        // Status Queued in the database.
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
                 .update(this, this.getRequestStatus(), this.startTime);
         LOGGER.info("File {} in tape {} at, position {}: Started.",
@@ -260,7 +261,8 @@ public final class Reading {
             HSMFactory.getHSMBridge().stage(this.getMetaData().getFile());
             this.setErrorMessage("Succesfully staged.");
             this.setFileRequestStatus(RequestStatus.STAGED);
-            // Register the state in the database. TODO Que el metodo setStage haga esto.
+            // Register the state in the database with staged status.
+            // TODO Que el metodo setStage haga esto.
             AbstractDAOFactory
                     .getDAOFactoryInstance()
                     .getReadingDAO()
@@ -274,7 +276,8 @@ public final class Reading {
                 // Set the file as submitted in a queue. It will be handled
                 // later with an incremented nbTries
                 this.setFileRequestStatus(RequestStatus.SUBMITTED);
-                // The file state is changed to submitted.
+                // The file state is changed to submitted. With status
+                // submitted.
                 AbstractDAOFactory
                         .getDAOFactoryInstance()
                         .getReadingDAO()
@@ -328,7 +331,7 @@ public final class Reading {
 
         this.setFileRequestStatus(RequestStatus.FAILED);
         // Put the request status as CREATED so that the dispatcher will
-        // reconsider it
+        // reconsider it. Or failed if it is over.
 
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
                 .update(this, daoState, new GregorianCalendar());
@@ -477,7 +480,7 @@ public final class Reading {
                     this.getNumberOfTries());
             this.requestStatus = RequestStatus.FAILED;
 
-            // Send update to the DAO.
+            // Send update to the DAO. Failed status in the database.
             AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
                     .update(this, this.requestStatus, new GregorianCalendar());
         } else if (this.requestStatus == RequestStatus.STAGED) {
