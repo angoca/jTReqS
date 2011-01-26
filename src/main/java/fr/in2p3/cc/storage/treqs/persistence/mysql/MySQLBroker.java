@@ -56,6 +56,16 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Manages the connection to the database and its state.
+ * <p>
+ * The URL connection should have an encoding when using gcj, because it could
+ * appear an error message: <code>
+ * You have an error in your SQL syntax; check the manual that corresponds to
+ * your MySQL server version for the right syntax to use near
+ * '????????????????????????????????' at line 1
+ * </code> In order to solve this problem it is necessary to put this keyword:
+ * <code>"jdbc:mysql://localhost:3306/dbname?useJvmCharsetConverters=true"
+ * </code> This information is in
+ * http://ubuntuforums.org/showthread.php?t=1248907
  *
  * @author Andrés Gómez
  * @since 1.5
