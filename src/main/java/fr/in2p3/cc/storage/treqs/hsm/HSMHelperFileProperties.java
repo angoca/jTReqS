@@ -74,9 +74,9 @@ public final class HSMHelperFileProperties {
      */
     public HSMHelperFileProperties(final String storageName,
             final int filePosition, final long fileSize) {
-        assert storageName != null && !storageName.equals("");
-        assert filePosition >= 0;
-        assert fileSize >= 0;
+        assert storageName != null && !storageName.equals("") : "Invalid name";
+        assert filePosition >= 0 : "Negative position";
+        assert fileSize >= 0 : "Negative size";
 
         this.tapeName = storageName;
         this.position = filePosition;
