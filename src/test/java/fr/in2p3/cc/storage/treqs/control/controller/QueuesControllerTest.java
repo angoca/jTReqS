@@ -53,7 +53,6 @@ import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.selector.NoQueuesDefinedException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Helper;
