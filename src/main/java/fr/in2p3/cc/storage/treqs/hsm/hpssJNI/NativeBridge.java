@@ -42,14 +42,6 @@ import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
 public class NativeBridge {
     // Loads the dynamic library.
     static {
-        // try {
-        // System.out.println("Loading the HPSS JNI Bridge.");
-        // System.loadLibrary("hpssunixauth");
-        // System.out.println("Load succesfully.");
-        // } catch (java.lang.UnsatisfiedLinkError e) {
-        // System.out.println("Error loading library. " + e.getMessage());
-        // throw e;
-        // }
         try {
             System.out.println("Loading the HPSS JNI Bridge.");
             System.loadLibrary(NativeBridge.HPSS_JNI_BRIDGE_LIBRARY);
@@ -65,13 +57,12 @@ public class NativeBridge {
      *
      * @param filename
      *            Name of the file to query.
-     * @param helper
-     *            Object that contains the description of the file.
+     * @return Object that will contain the properties of the file.
      * @throws JNIException
      *             If there is a problem retrieving the information.
      */
-    static native void getFileProperties(final String filename,
-            final HSMHelperFileProperties helper) throws JNIException;
+    static native HSMHelperFileProperties getFileProperties(
+            final String filename) throws JNIException;
 
     /**
      * Initializes credentials.
