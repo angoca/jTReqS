@@ -1,7 +1,21 @@
 # Calls the HPSS JNI Bridge compiler.
+#
+# This script should be executed in the 'bin' directory of the project.
+#
+# @author Andres Gomez
+
 sh ./compileJNIBridge.sh
 
 # HPSS JNI Bridge in Java.
-javac -cp ../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar:. -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridgeTester.java
-java -Djava.library.path=./ -cp ../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar:../vendor/logback/logback-0.9.24/logback-core-0.9.24.jar:../vendor/logback/logback-0.9.24/logback-classic-0.9.24.jar:./ fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester
+echo Compiling tester
+javac -cp . -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridgeTester.java
+
+echo Executing
+# This is for HPSS logging (it works from 0 - 7, the three bits)
+export HPSS_API_DEBUG=7
+# This is for the internal logger (WARN, INFO, DEBUG, TRACE)
+export TREQS_LOG=TRACE
+export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
+
+java -Djava.library.path=./ -cp ./ fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester
 
