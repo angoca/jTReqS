@@ -410,7 +410,15 @@ public final class Queue implements Comparable<Queue> {
         list.addAll(ownersScores.keySet());
 
         Collections.sort(list, new Comparator<User>() {
-            @Override
+            /**
+             * Compares two queues
+             *
+             * @param o1
+             *            First queue.
+             * @param o2
+             *            Second queue.
+             * @return the difference between them, or 0 if they are the same.
+             */
             public int compare(final User o1, final User o2) {
                 return o1.getName().compareTo(o2.getName());
             }
