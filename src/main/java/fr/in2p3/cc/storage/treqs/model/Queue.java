@@ -1001,6 +1001,13 @@ public final class Queue implements Comparable<Queue> {
         this.readingList.put((short) reading.getMetaData().getPosition(),
                 reading);
 
+        // Changes the state of the file requests status in the database.
+        AbstractDAOFactory
+                .getDAOFactoryInstance()
+                .getReadingDAO()
+                .update(reading, reading.getRequestStatus(),
+                        new GregorianCalendar());
+
         this.byteSize += reading.getMetaData().getFile().getSize();
         this.calculateOwner();
 
