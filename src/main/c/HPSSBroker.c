@@ -37,10 +37,12 @@
 #include "HPSSBroker.h"
 
 #define cont (rc == HPSS_E_NOERROR)
+
+// These definition are for a kind of logger.
 #define trace (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0)
-#define debug (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG")) == 0)
-#define info (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG") || strcmp(LOGGER, "INFO")) == 0)
-#define warn (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG") || strcmp(LOGGER, "INFO") || strcmp(LOGGER, "WARN")) == 0)
+#define debug (LOGGER != NULL && (strcmp(LOGGER, "TRACE") == 0 || strcmp(LOGGER, "DEBUG") == 0))
+#define info (LOGGER != NULL && (strcmp(LOGGER, "TRACE") == 0 || strcmp(LOGGER, "DEBUG") == 0 || strcmp(LOGGER, "INFO") == 0))
+#define warn (LOGGER != NULL && (strcmp(LOGGER, "TRACE") == 0 || strcmp(LOGGER, "DEBUG") == 0 || strcmp(LOGGER, "INFO") == 0 || strcmp(LOGGER, "WARN") == 0))
 
 char* LOGGER;
 
@@ -76,7 +78,7 @@ int init(const char * authType, const char * keytab, const char * user) {
 }
 
 int processProperties(hpss_xfileattr_t attrOut, int * position,
-		int * higherStorageLevel, char * tape, unsigned long * size) {
+		int * higherStorageLevel, char * tape, unsigned long long * size) {
 	int rc = 0;
 	hpssoid_t bitFileId;
 	hpssoid_t vvid;
@@ -90,6 +92,11 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 	if (trace) {
 		printf("> processProperties\n");
 	}
+
+	*position = -1;
+	*higherStorageLevel = -1;
+	strcpy(tape, "UNDEFI");
+	*size = -1;
 
 	for (i = 0; i < HPSS_MAX_STORAGE_LEVELS; i++) {
 		if (attrOut.SCAttrib[i].Flags == 0) {
@@ -127,8 +134,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		// Frees the allocated memory.
 		for (j = 0; j < attrOut.SCAttrib[i].NumberOfVVs; j++) {
 			if (attrOut.SCAttrib[i].VVAttrib[j].PVList != NULL) {
-				strcpy(
-						tape,
+				strcpy(tape,
 						attrOut.SCAttrib[i].VVAttrib[j].PVList[0].List.List_val[0].Name);
 				// ??
 				free(attrOut.SCAttrib[i].VVAttrib[j].PVList[0].List.List_val);
@@ -138,21 +144,27 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 		}
 	}
 
+	// FIXME The file is empty, identify in other way.
+	// TODO javadoc about this
+	if (*position == -1) {
+		rc = -30001;
+		strcpy(tape, "EMPTY");
+	}
+
 	if (debug) {
-		printf("File properties %d, %d, %s, %d\n", *position,
+		printf("File properties %d, %d, %s, %lld\n", *position,
 				*higherStorageLevel, tape, *size);
 	}
 
 	if (trace) {
-		printf("< processProperties\n");
+		printf("< processProperties - %d\n", rc);
 	}
 
 	return rc;
 }
 
-// TODO review if higherStorageLevel is really necessary.
 int getFileProperties(const char * name, int * position,
-		int * higherStorageLevel, char * tape, unsigned long * size) {
+		int * higherStorageLevel, char * tape, unsigned long long * size) {
 	int rc = -1;
 
 	// Returns bitfile attributes across all storage class levels.
@@ -162,28 +174,27 @@ int getFileProperties(const char * name, int * position,
 	hpss_xfileattr_t attrOut;
 
 	if (trace) {
-		printf("> getFileProperties\n");
+		printf("> getFileProperties - %s\n", name);
 	}
 
 	rc = hpss_FileGetXAttributes((char *) name, flags, storagelevel, &attrOut);
 
 	if (rc >= 0) {
-		rc = processProperties(attrOut, position, higherStorageLevel, tape,
-				size);
+		rc = processProperties(attrOut, position, higherStorageLevel, tape, size);
 		if (rc < 0 && warn) {
-			printf("Error in file %s\n", name);
+			printf("Error querying file %s\n", name);
 		}
 	}
 
 	if (trace) {
-		printf("< getFileProperties\n");
+		printf("< getFileProperties - %d\n", rc);
 	}
 
 	return rc;
 }
 
-int stage(const char * name, unsigned long * size) {
-	int rc = 0;
+int stage(const char * name, unsigned long long * size) {
+	int rc = -1;
 	int fid;
 	int oflag = O_RDONLY | O_NONBLOCK;
 	mode_t mode = 0;
@@ -193,26 +204,27 @@ int stage(const char * name, unsigned long * size) {
 
 	// Converts the size
 	u_signed64 length;
-	unsigned long size2 = 123;
-	CONVERT_LONGLONG_TO_U64(size2, length);
+	CONVERT_LONGLONG_TO_U64(*size, length);
 
 	// Ask HPSS to open a filehandle
 	fid = hpss_Open((char *) name, oflag, mode, NULL, NULL, NULL);
 	if (fid >= 0) {
-		rc = hpss_Stage(fid, cast64m((unsigned32) 0), length,
-				(unsigned long) 0, BFS_STAGE_ALL);
+		rc = hpss_Stage(fid, cast64m((unsigned32) 0), length, (unsigned32) 0,
+				BFS_STAGE_ALL);
 		if (rc >= 0) {
 			rc = hpss_Close(fid);
-			if (rc < 0 && warn){
+			// Problem while closing.
+			if (rc < 0 && warn) {
 				printf("Error closing file %s\n", name);
 			}
 		} else {
-			if (warn){
+			// Problem while staging, closing anyway but returning the staging code.
+			if (warn) {
 				printf("Error staging file %s\n", name);
 			}
 			hpss_Close(fid);
 		}
-	} else if (warn){
+	} else if (warn) {
 		printf("Error opening file %s\n", name);
 	}
 
