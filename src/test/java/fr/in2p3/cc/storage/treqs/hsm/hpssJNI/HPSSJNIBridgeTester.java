@@ -66,8 +66,8 @@ public final class HPSSJNIBridgeTester {
         System.out.println("> Starting HPSSBridge");
 
         String authType = "unix";
-        String keyTab = "/afs/in2p3.fr/home/g/gomez/keytab.gomez";
-        String user = "gomez";
+        String keyTab = "/var/hpss/etc/keytab.root";
+        String user = "root";
         String filename = "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy";
         HSMHelperFileProperties helper = null;
 
@@ -86,9 +86,9 @@ public final class HPSSJNIBridgeTester {
             System.out.println("Getting properties - " + filename);
             helper = NativeBridge.getFileProperties(filename);
 
-            System.out.println(helper.getTapeName());
-            System.out.println(helper.getSize());
-            System.out.println(helper.getPosition());
+            System.out.println("tape: " + helper.getTapeName());
+            System.out.println("size: " + helper.getSize());
+            System.out.println("pos: " + helper.getPosition());
 
             System.out.println("Staging file");
             NativeBridge.stage(filename, helper.getSize());
