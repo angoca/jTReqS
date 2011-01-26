@@ -245,7 +245,7 @@ public final class Starter {
             if (configurationFile != null) {
                 System.setProperty(Constants.CONFIGURATION_FILE,
                         configurationFile);
-            } else {
+            } else if (System.getProperty(Constants.CONFIGURATION_FILE) == null) {
                 System.setProperty(Constants.CONFIGURATION_FILE,
                         DefaultProperties.CONFIGURATION_PROPERTIES);
             }
