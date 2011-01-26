@@ -16,7 +16,7 @@ ld -o ./libHPSSBroker.so ./HPSSBroker.o -lc -lhpss -L/opt/hpss/lib -shared
 echo Compiling executable
 export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
 rm -f ./brokerTester
-gcc -I ../src/main/c -I /opt/hpss/include -DLINUX -o ./brokerTester -lHPSSBroker -L./ ../src/test/c/HPSSBrokerTester.c -pthread
+gcc -I ../src/main/c -I /opt/hpss/include -DLINUX -Wall -o ./brokerTester -lHPSSBroker -L./ ../src/test/c/HPSSBrokerTester.c -pthread
 
 
 # Execute.
