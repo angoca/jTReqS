@@ -55,6 +55,7 @@ import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.controller.ResourcesController;
 import fr.in2p3.cc.storage.treqs.control.controller.TapesController;
 import fr.in2p3.cc.storage.treqs.control.controller.UsersController;
+import fr.in2p3.cc.storage.treqs.control.exception.NotMediaTypeDefinedException;
 import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.starter.Starter;
@@ -512,8 +513,12 @@ public final class Dispatcher extends AbstractProcess {
             // disk.
             if (cont) {
                 // Now, try to find out the media type.
+                try {
                 media = MediaTypesController.getInstance().getMediaType(
                         fileProperties.getTapeName());
+                } catch (NotMediaTypeDefinedException e) {
+                    this.logReadingException(e, fileRequest);
+                }
                 if (media == null) {
                     cont = false;
                 }
@@ -616,19 +621,25 @@ public final class Dispatcher extends AbstractProcess {
      * @param request
      *            FileRequest that had a problem.
      */
-    private void logReadingException(final AbstractHSMException exception,
+    private void logReadingException(final TReqSException exception,
             final FileRequest request) {
         LOGGER.trace("> logReadingException");
 
         assert exception != null;
         assert request != null;
 
+        short code = 0;
+        if (exception instanceof AbstractHSMException) {
+            AbstractHSMException e = (AbstractHSMException) exception;
+            code = e.getErrorCode();
+        }
+
         try {
             AbstractDAOFactory
                     .getDAOFactoryInstance()
                     .getReadingDAO()
                     .setRequestStatusById(request.getId(),
-                            RequestStatus.FAILED, exception.getErrorCode(),
+                            RequestStatus.FAILED, code,
                             exception.getMessage());
         } catch (TReqSException e1) {
             LOGGER.error("Error trying to update request status", exception);
