@@ -50,7 +50,7 @@ char* LOGGER;
 JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_getFileProperties(
 		JNIEnv* env, jclass js, jstring jFileName) {
 
-	char filename[HPSS_MAX_PATH_NAME + HPSS_MAX_FILE_NAME + 1];
+	const char * filename;
 
 	int position;
 	int storageLevel;
@@ -79,19 +79,12 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 
 	// Release JNI component.
 	(*env)->ReleaseStringUTFChars(env, jFileName, filename);
-	// FIXME how to use file and tape here.
-	printf("file %s\n", filename);
-	printf("POSITION %d\n", position);
-	printf("size %lld\n", size);
-	printf("tape %s\n", tape);
 
 	// Throws an exception if there is a problem.
 	if (rc != HPSS_E_NOERROR) {
 		sprintf(message, "getProperties %d", rc);
-
 		throwJNIException(env, message);
 	}
-
 	if (cont) {
 		if (debug) {
 			printf("Preparing results\n");
@@ -100,7 +93,6 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 		if (storageLevel == 0) {
 			// This is the value of the constant Constants.FILE_ON_DISK
 			strcpy(tape, "DISK");
-			position = -1;
 		}
 
 		// Returns the elements to java and release JNI components.
@@ -133,8 +125,8 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 	}
 	if (cont) {
 		// Creates the object.
-		result
-				= (*env)->NewObject(env, helperClass, cid, jTapeName, position, size);
+		result = (*env)->NewObject(env, helperClass, cid, jTapeName,
+				(jint) position, (jlong) size);
 
 		/* Free local references */
 		(*env)->DeleteLocalRef(env, helperClass);
@@ -188,13 +180,13 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_i
 
 JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_stage(
 		JNIEnv* env, jclass js, jstring jFileName, jlong size) {
-	char * filename;
+	const char * filename;
 
 	int rc = -1;
 	char message[1024];
 
 	if (trace) {
-		printf("> stage\n");
+		printf("> JNI stage\n");
 	}
 
 	// Converts Java Strings in char*;
@@ -214,7 +206,7 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_s
 	}
 
 	if (trace) {
-		printf("< stage\n");
+		printf("< JNI stage\n");
 	}
 }
 
