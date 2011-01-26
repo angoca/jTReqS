@@ -84,7 +84,9 @@ int init(const char * authType, const char * keytab, const char * user);
  * @param tape (out) Name of the tape where the file is stored.
  * @param size (out) Size of the file.
  * @return 0 if there was no problem, or the corresponding error code which is
- * always negative. -30000 means that there are not segments for this file.
+ * always negative.<p>
+ * -30000 means that there are not segments for this file.<br/>
+ * -30001 means that the file is empty.
  */
 int getFileProperties(const char * name, int * position,
     int * higherStorageLevel, char * tape, unsigned long long * size);
