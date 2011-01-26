@@ -38,7 +38,6 @@ package fr.in2p3.cc.storage.treqs.control.starter;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Iterator;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -55,12 +54,10 @@ import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
-import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesController;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.controller.StagersController;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
-import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
@@ -109,7 +106,7 @@ public final class StarterTest {
      */
     @AfterClass
     public static void oneTimeTearDown() throws TReqSException {
-        // MySQLRequestsDAO.deleteAll();
+        MySQLRequestsDAO.deleteAll();
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
         Configurator.destroyInstance();
@@ -140,8 +137,7 @@ public final class StarterTest {
      */
     @After
     public void tearDown() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        // MySQLRequestsDAO.deleteAll();
+        MySQLRequestsDAO.deleteAll();
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
         StagersController.getInstance().conclude();
@@ -306,8 +302,9 @@ public final class StarterTest {
         if (!equals) {
             compare = "!=";
         }
-        String query = "SELECT count(1) FROM requests WHERE status " + compare
-                + +status.getId();
+        String query = "SELECT count(1) FROM " + MySQLRequestsDAO.REQUESTS
+                + " WHERE " + MySQLRequestsDAO.REQUESTS_STATUS + ' ' + compare
+                + status.getId();
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         result.next();
@@ -315,5 +312,4 @@ public final class StarterTest {
         MySQLBroker.getInstance().terminateExecution(objects);
         return actual;
     }
-
 }
