@@ -36,8 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.control.selector;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -367,32 +365,6 @@ public final class JonathanSelector implements Selector {
         }
 
         LOGGER.trace("< checkUser");
-    }
-
-    /**
-     * Converts a set into a list.
-     *
-     * @param queues
-     *            Set of queues to convert.
-     * @return List of queues.
-     */
-    @SuppressWarnings("unchecked")
-    private List<?> convertSetToList(final Collection<?> queues) {
-        LOGGER.trace("> convertSetToList");
-
-        assert queues != null : "queues null";
-
-        List<Object> ret = new ArrayList<Object>();
-        Iterator<Object> iterator = (Iterator<Object>) queues.iterator();
-        while (iterator.hasNext()) {
-            ret.add(iterator.next());
-        }
-
-        assert ret != null : "ret null";
-
-        LOGGER.trace("< convertSetToList");
-
-        return ret;
     }
 
 }
