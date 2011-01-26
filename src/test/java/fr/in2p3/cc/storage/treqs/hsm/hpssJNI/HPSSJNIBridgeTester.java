@@ -36,27 +36,19 @@
  */
 package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.in2p3.cc.storage.treqs.Constants;
-import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.File;
-import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
+import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
 
 /**
  * Test the JNI bridge.
+ * <p>
+ * This tester does not use the logger in order to ease the compilation.
  * <p>
  * TODO convert to tests.
  *
  * @author Andres Gomez
  */
 public final class HPSSJNIBridgeTester {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(HPSSJNIBridge.class);
 
     /**
      * Test that the jni bridge works correctly.
@@ -67,30 +59,45 @@ public final class HPSSJNIBridgeTester {
      *            <li>Keytab complete path.</li>
      *            <li>File to query.</li>
      *            </ol>
-     * @throws TReqSException
+     * @throws JNIException
      *             If there is any error.
      */
-    public static void main(final String[] args) throws TReqSException {
-        LOGGER.error("> Starting HPSSBridge");
+    public static void main(final String[] args) {
+        System.out.println("> Starting HPSSBridge");
 
-        String[] arguments = args;
-        String fileName = "";
-        if (arguments.length == 0) {
-            arguments = new String[] { "/var/hpss/etc/keytab.treqs",
-                    "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy" };
-        } else if (arguments.length > 1 && !arguments[1].equals("")) {
-            fileName = arguments[1];
-        } else {
-            fileName = "/hpss";
+        String authType = "unix";
+        String keyTab = "/afs/in2p3.fr/home/g/gomez/keytab.gomez";
+        String user = "gomez";
+        String filename = "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy";
+        HSMHelperFileProperties helper = null;
+
+        if (args.length == 1) {
+            filename = args[0];
+        } else if (args.length == 2) {
+            keyTab = args[0];
+            filename = args[1];
         }
-        LOGGER.error("Keytab: {}, File {}", arguments);
-        Configurator.getInstance().setValue(Constants.SECTION_KEYTAB,
-                Constants.KEYTAB_FILE, arguments[0]);
-        LOGGER.error("Getting properties");
-        HPSSJNIBridge.getInstance().getFileProperties(fileName);
-        LOGGER.error("Staging file");
-        HPSSJNIBridge.getInstance().stage(new File(fileName, 1));
-        LOGGER.error(";)");
+
+        try {
+            System.out.println("Initializing context - " + user + " - "
+                    + keyTab);
+            NativeBridge.init(authType, keyTab, user);
+
+            System.out.println("Getting properties - " + filename);
+            helper = NativeBridge.getFileProperties(filename);
+
+            System.out.println(helper.getTapeName());
+            System.out.println(helper.getSize());
+            System.out.println(helper.getPosition());
+
+            System.out.println("Staging file");
+            NativeBridge.stage(filename, helper.getSize());
+
+            System.out.println(";)");
+        } catch (JNIException e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     /**
