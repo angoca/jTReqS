@@ -106,7 +106,7 @@ public final class StarterTest {
      */
     @AfterClass
     public static void oneTimeTearDown() throws TReqSException {
-        // MySQLRequestsDAO.deleteAll();
+        MySQLRequestsDAO.deleteAll();
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
         Configurator.destroyInstance();
@@ -137,8 +137,7 @@ public final class StarterTest {
      */
     @After
     public void tearDown() throws TReqSException {
-        MySQLBroker.getInstance().connect();
-        // MySQLRequestsDAO.deleteAll();
+        MySQLRequestsDAO.deleteAll();
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
         StagersController.getInstance().conclude();
@@ -303,8 +302,9 @@ public final class StarterTest {
         if (!equals) {
             compare = "!=";
         }
-        String query = "SELECT count(1) FROM requests WHERE status " + compare
-                + +status.getId();
+        String query = "SELECT count(1) FROM " + MySQLRequestsDAO.REQUESTS
+                + " WHERE " + MySQLRequestsDAO.REQUESTS_STATUS + ' ' + compare
+                + status.getId();
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         result.next();
@@ -312,5 +312,4 @@ public final class StarterTest {
         MySQLBroker.getInstance().terminateExecution(objects);
         return actual;
     }
-
 }

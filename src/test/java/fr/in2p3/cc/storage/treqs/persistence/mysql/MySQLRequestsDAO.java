@@ -49,6 +49,15 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.AbstractMySQLExcept
  * @author Andrés Gómez
  */
 public final class MySQLRequestsDAO {
+
+    /**
+     * Name for requests table.
+     */
+    public static final String REQUESTS = MySQLStatements.REQUESTS;
+    /**
+     * Name for the status column in requests table.
+     */
+    public static final String REQUESTS_STATUS = MySQLStatements.REQUESTS_STATUS;
     /**
      * Logger.
      */

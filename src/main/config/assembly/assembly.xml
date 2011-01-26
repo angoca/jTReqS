@@ -65,21 +65,21 @@
       <outputDirectory>/</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>target/treqs/bin</directory>
+      <directory>target/jtreqs/bin</directory>
       <includes>
         <include>**/*</include>
       </includes>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>target/treqs/etc</directory>
+      <directory>target/jtreqs/etc</directory>
       <includes>
         <include>**/*</include>
       </includes>
       <outputDirectory>etc</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>target/treqs/repo</directory>
+      <directory>target/jtreqs/repo</directory>
       <includes>
         <include>**/*</include>
       </includes>
