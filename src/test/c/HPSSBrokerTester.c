@@ -36,6 +36,18 @@
  */
 #include "HPSSBroker.h"
 
+// These values are hardcoded because this main is used for tests.
+// This works with HPSS 6.2 and 7.3.
+#if !defined (HPSS73)
+#define KEYTAB "/afs/in2p3.fr/home/g/gomez/keytab.gomez"
+#define KEYTAB_USER "gomez"
+#define FILENAME "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy"
+#else
+#define KEYTAB "/var/hpss/etc/keytab.root"
+#define KEYTAB_USER "root"
+#define FILENAME "/hpss/in2p3.fr/group/ccin2p3/pbrinett/run01/ccwl0127.30569_800Mb.dat"
+#endif
+
 /**
  * This is a simple main tester to check if the connection to HPSS could be
  * established. Everything is hardcoded (authentication type, keytab location,
@@ -49,16 +61,16 @@ int main(int argc, char **argv) {
 
 	// Parameters for the initialization.
 	const char * authType = "unix";
-	const char * keytab = "/afs/in2p3.fr/home/g/gomez/keytab.gomez";
-	const char * user = "gomez";
+	const char * keytab = KEYTAB;
+	const char * user = KEYTAB_USER;
 
 	// File to query.
-	const char * filename = "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy";
+	const char * filename = FILENAME;
 
 	int position;
 	int higherStorageLevel;
 	char tape[12];
-	unsigned long size;
+	unsigned long long size;
 
 	printf("> Starting Broker tester\n");
 
@@ -71,7 +83,7 @@ int main(int argc, char **argv) {
 				&size);
 		printf("Code from getFileProps: %d\n", rc);
 		if (rc == 0) {
-			printf("File properties %s, %d, %d, %s, %d\n", filename, position,
+			printf("File properties %s, %d, %d, %s, %lld\n", filename, position,
 					higherStorageLevel, tape, size);
 
 			if (higherStorageLevel > 0) {
