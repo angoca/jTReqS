@@ -114,17 +114,19 @@ public final class Configurator {
         LOGGER.trace("> Create instance");
 
         this.properties = new CompositeConfiguration();
+        String name = null;
         this.properties.addConfiguration(new SystemConfiguration());
         try {
-            if (System.getProperty(Constants.CONFIGURATION_FILE) == null) {
+           name = System.getProperty(Constants.CONFIGURATION_FILE);
+            if (name == null) {
                 System.setProperty(Constants.CONFIGURATION_FILE,
                         DefaultProperties.CONFIGURATION_PROPERTIES);
+                LOGGER.debug("No given file in System property");
             }
             this.properties.addConfiguration(new HierarchicalINIConfiguration(
-                    System.getProperty(Constants.CONFIGURATION_FILE)));
+                    name));
         } catch (ConfigurationException e) {
-            throw new ProblematicConfiguationFileException(
-                    System.getProperty(Constants.CONFIGURATION_FILE), e);
+            throw new ProblematicConfiguationFileException(name, e);
         }
 
         LOGGER.trace("< Create instance");
@@ -181,7 +183,7 @@ public final class Configurator {
 
         assert value != null;
 
-        LOGGER.trace("< getStringValue");
+        LOGGER.trace("< getStringValue - {}", value);
 
         return value;
     }
@@ -210,7 +212,7 @@ public final class Configurator {
 
         byte value = this.properties.getByte(sec + "." + key, defaultValue);
 
-        LOGGER.trace("< getByteValue");
+        LOGGER.trace("< getByteValue - {}", value);
 
         return value;
     }
@@ -239,7 +241,7 @@ public final class Configurator {
 
         short value = this.properties.getShort(sec + "." + key, defaultValue);
 
-        LOGGER.trace("< getShortValue");
+        LOGGER.trace("< getShortValue - {}", value);
 
         return value;
     }
