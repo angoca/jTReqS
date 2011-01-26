@@ -34,9 +34,8 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
+package fr.in2p3.cc.storage.treqs.hsm.exception;
 
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
 
 /**
@@ -45,7 +44,7 @@ import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
  * @author Andres Gomez
  * @since 1.5
  */
-public class PropertiesProblemException extends AbstractHSMException {
+public class HSMPropertiesProblemException extends AbstractHSMException {
 
     /**
      * Generated ID.
@@ -58,7 +57,7 @@ public class PropertiesProblemException extends AbstractHSMException {
      * @param e
      *            Wrapped exception.
      */
-    public PropertiesProblemException(JNIException e) {
+    public HSMPropertiesProblemException(JNIException e) {
         super(e);
     }
 }
