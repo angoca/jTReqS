@@ -169,6 +169,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             ret = NativeBridge.getFileProperties(name);
         } catch (JNIException e) {
+            // TODO take the error code from the exception.
             throw new HSMPropertiesProblemException(e);
         }
         // Checks if there was a problem while querying the file to HPSS.
