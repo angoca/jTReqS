@@ -502,7 +502,9 @@ public final class Dispatcher extends AbstractProcess {
                 this.processException(e, fileRequest);
                 cont = false;
             }
-            if (cont && fileProperties.getTapeName() == Constants.FILE_ON_DISK) {
+            if (cont
+                    && fileProperties.getTapeName().equals(
+                            Constants.FILE_ON_DISK)) {
                 this.fileOnDisk(fileRequest);
                 cont = false;
             }
