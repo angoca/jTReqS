@@ -119,8 +119,7 @@ public final class Configurator {
         try {
            name = System.getProperty(Constants.CONFIGURATION_FILE);
             if (name == null) {
-                System.setProperty(Constants.CONFIGURATION_FILE,
-                        DefaultProperties.CONFIGURATION_PROPERTIES);
+                name = DefaultProperties.CONFIGURATION_PROPERTIES;
                 LOGGER.debug("No given file in System property");
             }
             this.properties.addConfiguration(new HierarchicalINIConfiguration(
