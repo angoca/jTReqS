@@ -44,6 +44,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.exception.HSMPropertiesProblemException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.CannotReadKeytabException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIInitProblemException;
 import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
@@ -157,7 +158,6 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
      * fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge#getFileProperties(java
      * .lang.String)
      */
-    @SuppressWarnings("unused")
     @Override
     public HSMHelperFileProperties getFileProperties(final String name)
             throws AbstractHSMException {
@@ -167,20 +167,16 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         HSMHelperFileProperties ret = null;
         try {
-            NativeBridge.getFileProperties(name, ret);
+            ret = NativeBridge.getFileProperties(name);
         } catch (JNIException e) {
-            throw new PropertiesProblemException(e);
+            throw new HSMPropertiesProblemException(e);
         }
         // Checks if there was a problem while querying the file to HPSS.
         if (LOGGER.isDebugEnabled()) {
-            if (ret == null) {
-                LOGGER.error("No properties from HPSS.");
-            } else {
-                // The ret variable is modified by getFileProperties.
-                LOGGER.error("position {}", ret.getPosition());
-                LOGGER.error("storageName {}", ret.getTapeName());
-                LOGGER.error("size {}", ret.getSize());
-            }
+            // The ret variable is modified by getFileProperties.
+            LOGGER.error("position {}", ret.getPosition());
+            LOGGER.error("storageName {}", ret.getTapeName());
+            LOGGER.error("size {}", ret.getSize());
         }
 
         assert ret != null;
