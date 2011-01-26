@@ -34,7 +34,12 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+#ifndef HPSSBROKER_H_
+#define HPSSBROKER_H_
+
 #include <stdio.h>
+#include "hpss_errno.h"
+#include "hpss_limits.h"
 #include "hpss_api.h"
 
 //! This class interacts directly with HPSS.
@@ -58,32 +63,41 @@
 //! Initializes the HPSS_API with the given credentials.
 /**
  * Initializes the HPSS_API via hpss_SetLoginCred.
- * <p>
- * Initializes the logger with the corresponding level.
  *
- * @authType (in) Type of authentication "unix", "kerberos"
- * @keytab (in) Complete path of the keytab.
- * @user (in) User that will interact with HPSS.
+ * @param authType (in) Type of authentication "unix", "kerberos". If the value
+ * is not recognized, then it will take unix.
+ * @param keytab (in) Complete path to the keytab.
+ * @param user (in) User that will interact with HPSS.
  */
 int init(const char * authType, const char * keytab, const char * user);
 
 //! Retrieves the properties of a file stored in HPSS.
 /**
- * @name (in) Name of the file to query.
- * @position (out) Position of the file in the tape.
- * @higherStorageLevel (out) Indicates the highest level where the file can be found.
- * @tape (out) Name of the tape where the file is stored.
- * @size (out) Size of the file.
- * @return 0 if there was no problem, or the corresponding error code
- * (negative). -30000 means that there are not segments for this file.
+ * Takes the structure of the file, and the scans it taking the information
+ * about tape, position and size. The analyzes is done by the processProperties
+ * method.
+ *
+ * @param name (in) Name of the file to query.
+ * @param position (out) Position of the file in the tape.
+ * @param higherStorageLevel (out) Indicates the highest level where the file
+ * can be found.
+ * @param tape (out) Name of the tape where the file is stored.
+ * @param size (out) Size of the file.
+ * @return 0 if there was no problem, or the corresponding error code which is
+ * always negative. -30000 means that there are not segments for this file.
  */
 int getFileProperties(const char * name, int * position,
-		int * higherStorageLevel, char * tape, unsigned long * size);
+    int * higherStorageLevel, char * tape, unsigned long long * size);
 
 //! Stages a file stored in HPSS.
 /**
- * @name (in) Name of the file to query.
- * @size (in) Size of the file.
+ * The stage process has the flag BFS_STAGE_ALL. It does not use the flag
+ * BFS_ASYNCH_ALL because the application has to have the control of the file
+ * stage order. Without this, the stagings could be disordered.
+ *
+ * @param name (in) Name of the file to query.
+ * @param size (in) Size of the file.
  */
-int stage(const char * name, unsigned long * size);
+int stage(const char * name, unsigned long long * size);
 
+#endif /* HPSSBROKER_H_ */
