@@ -1,11 +1,24 @@
 # JNI Bridge
+#
+# This script should be executed in the 'bin' directory of the project.
+#
+# @author Andres Gomez
 
 # Calls the HPSS broker compiler.
 sh ./compileBroker.sh
 
-#javac -sourcepath src/main/java/fr/in2p3/cc/storage/treqs/*.java -d bin/
-javac -cp ../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar:. -d . ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridge.java ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/*.java ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/exception/*.java ../src/main/java/fr/in2p3/cc/storage/treqs/model/exception/*.java ../src/main/java/fr/in2p3/cc/storage/treqs/model/ErrorCode.java ../src/main/java/fr/in2p3/cc/storage/treqs/tools/Configurator.java ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/exception/HSMInitException.java
-javah -classpath ./ -d ./ -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridge
-gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -fPIC -o HPSSJNIBridge.o -c ../src/main/c/HPSSJNIBridge.c
-ld -shared -lhpss -L/opt/hpss/lib -o ./libHPSSJNIBridge.so ./HPSSBroker.o ./HPSSJNIBridge.o
+echo Generating JNI Bridge - Java
+javac -cp . -d ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/HSMHelperFileProperties.java -encoding UTF8
+javac -cp . -d ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/exception/JNIException.java -encoding UTF8
+javac -cp . -d ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridge.java -encoding UTF8
+rm -f fr_*.h
+javah -classpath ./ -d ./ -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridge
 
+echo Compiling JNI Bridge - c
+rm -f HPSSJNIBridge.o
+gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -Wall -fPIC -o HPSSJNIBridge.o -c ../src/main/c/HPSSJNIBridge.c
+
+rm -f libHPSSJNIBridge.so
+# It is necessary to include the authentication / authorization libraries in
+# order to resolve the symbols.
+ld -shared -L/opt/hpss/lib -lhpss -lhpssunixauth -o ./libHPSSJNIBridge.so ./HPSSBroker.o ./HPSSJNIBridge.o
