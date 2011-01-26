@@ -45,7 +45,7 @@ public class NativeBridge {
         try {
             System.out.println("Loading the HPSS JNI Bridge.");
             System.loadLibrary(NativeBridge.HPSS_JNI_BRIDGE_LIBRARY);
-            System.out.println("Load succesfully.");
+            System.out.println("Library loaded succesfully.");
         } catch (java.lang.UnsatisfiedLinkError e) {
             System.out.println("Error loading library. " + e.getMessage());
             throw e;
