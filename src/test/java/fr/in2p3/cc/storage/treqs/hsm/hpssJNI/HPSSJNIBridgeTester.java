@@ -37,7 +37,6 @@
 package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
 
 /**
  * Test the JNI bridge.
