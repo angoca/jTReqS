@@ -71,7 +71,7 @@ int init(const char * authType, const char * keytab, const char * user) {
 			hpss_rpc_auth_type_keytab, (void *) keytab);
 
 	if (trace) {
-		printf("< init\n");
+		printf("< init - %d\n", rc);
 	}
 
 	return rc;
@@ -146,7 +146,7 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 
 	// FIXME The file is empty, identify in other way.
 	// TODO javadoc about this
-	if (*position == -1) {
+	if (*position == -1 && rc == 0) {
 		rc = -30001;
 		strcpy(tape, "EMPTY");
 	}
@@ -229,7 +229,7 @@ int stage(const char * name, unsigned long long * size) {
 	}
 
 	if (trace) {
-		printf("< stage\n");
+		printf("< stage - %d\n", rc);
 	}
 
 	return rc;
