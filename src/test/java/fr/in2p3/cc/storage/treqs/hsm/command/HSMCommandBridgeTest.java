@@ -43,10 +43,9 @@ import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.model.File;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 
 /**
  * Tests for HSMCommandBridgeTest.
@@ -114,14 +113,11 @@ public final class HSMCommandBridgeTest {
     /**
      * Tests predetermined properties file.
      *
-     * @throws AbstractHSMException
-     *             Never.
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             Never.
      */
     @Test
-    public void testGetProperties03() throws AbstractHSMException,
-            AbstractConfiguratorException {
+    public void testGetProperties03() throws TReqSException {
         String name = "/hpss/filename";
         long size = 564;
         int position = 123;
