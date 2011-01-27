@@ -49,10 +49,10 @@ import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMGeneralPropertiesProblemException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMGeneralStageProblemException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStatusTransitionException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
@@ -363,7 +363,8 @@ public final class ReadingTest {
         Queue queue = new Queue(fpot, (byte) 10);
         Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        AbstractHSMException exception = new HSMOpenException((short) 1);
+        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+                new Exception());
         HSMMockBridge.getInstance().setStageException(exception);
 
         reading.stage();
@@ -385,7 +386,8 @@ public final class ReadingTest {
         Queue queue = new Queue(fpot, (byte) 10);
         Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        AbstractHSMException exception = new HSMStageException((short) 1);
+        AbstractHSMException exception = new HSMGeneralStageProblemException(
+                "General problem");
         HSMMockBridge.getInstance().setStageException(exception);
 
         reading.stage();
