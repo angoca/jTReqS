@@ -61,10 +61,10 @@ import fr.in2p3.cc.storage.treqs.control.controller.FilesController;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.controller.ResourcesController;
 import fr.in2p3.cc.storage.treqs.control.controller.TapesController;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMGeneralPropertiesProblemException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -226,7 +226,7 @@ public final class DispatcherTest {
     }
 
     /**
-     * Tests getFileProperties then catch HSMStatException with
+     * Tests getFileProperties then catch HSMCommandBridgeException with
      * AbstractDAOFactory. When the file does not exist. When the file does not
      * exist. processException method.
      *
@@ -235,8 +235,8 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest03() throws TReqSException {
-        AbstractHSMException exception = new HSMStatException(new IOException(
-                String.valueOf(1)));
+        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+                new IOException(String.valueOf(1)));
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         MockReadingDAO.setQuantityRequests(1);
 
@@ -244,7 +244,7 @@ public final class DispatcherTest {
     }
 
     /**
-     * Tests getFileProperties then catch HSMStatException with
+     * Tests getFileProperties then catch HSMCommandBridgeException with
      * AbstractPersistanceException. When the file does not exist.
      * processException method.
      *
@@ -253,8 +253,8 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest04() throws TReqSException {
-        AbstractHSMException exception = new HSMStatException(new IOException(
-                String.valueOf(1)));
+        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+                new IOException(String.valueOf(1)));
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         AbstractPersistanceException exception2 = new MockPersistanceException(
                 new SQLException());
@@ -301,7 +301,8 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest06() throws TReqSException {
-        AbstractHSMException exception = new HSMOpenException((short) 1);
+        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+                new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         MockReadingDAO.setQuantityRequests(1);
 
@@ -317,7 +318,8 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest07() throws TReqSException {
-        AbstractHSMException exception = new HSMOpenException((short) 1);
+        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+                new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         AbstractPersistanceException exception2 = new MockPersistanceException(
                 new SQLException());
@@ -529,7 +531,8 @@ public final class DispatcherTest {
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
 
-        HSMOpenException exception = new HSMOpenException((short) 1);
+        AbstractHSMPropertiesException exception = new HSMGeneralPropertiesProblemException(
+                new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         MockReadingDAO.setQuantityRequests(1);
         Thread.sleep(1500);
