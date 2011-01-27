@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
