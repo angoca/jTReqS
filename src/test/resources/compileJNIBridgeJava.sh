@@ -1,4 +1,4 @@
-# JNI Bridge
+# JNI Bridge with Java
 #
 # This script should be executed in the 'bin' directory of the project.
 #
