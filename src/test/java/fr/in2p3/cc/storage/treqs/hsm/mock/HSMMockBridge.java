@@ -40,9 +40,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.model.File;
 
 /**
@@ -93,8 +94,10 @@ public final class HSMMockBridge extends AbstractHSMBridge {
      * Retrieves the unique instance.
      *
      * @return The only instance of this object.
+     * @throws TReqSException
+     *             If there was a problem while checking the keytab.
      */
-    public static HSMMockBridge getInstance() {
+    public static HSMMockBridge getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -130,8 +133,13 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
     /**
      * Constructor where the basic elements are defined.
+     *
+     * @throws TReqSException
+     *             If there is a problem while checking the keytab.
      */
-    private HSMMockBridge() {
+    private HSMMockBridge() throws TReqSException {
+        super();
+
         LOGGER.trace("> create instance");
 
         fileProperties = this.generateTape();
