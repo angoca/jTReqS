@@ -37,7 +37,6 @@
 package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
 
 public class NativeBridge {
     // Loads the dynamic library.
@@ -86,8 +85,11 @@ public class NativeBridge {
      *            Name of the file to stage.
      * @param size
      *            Size of the file.
+     * @throws JNIException
+     *             If there is a problem while staging the file.
      */
-    static native void stage(final String name, final long size);
+    static native void stage(final String name, final long size)
+            throws JNIException;
 
     /**
      * Name of the library to load the HPSS JNI bridge.
