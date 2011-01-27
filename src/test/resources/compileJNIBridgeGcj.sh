@@ -26,5 +26,4 @@ rm -f libHPSSJNIBridge.so
 # It is necessary to include the authentication / authorization libraries in
 # order to resolve the symbols.
 ld -shared -L/opt/hpss/lib -lhpss -lhpssunixauth -o ./libHPSSJNIBridge.so ./HPSSBroker.o ./HPSSJNIBridge.o
-gcj -c -Wall -o HPSSJNIBridgeTester.o ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridgeTester.java
-gcj --main=fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester -fno-assert -o tester.uexe HPSSJNIBridgeTester.o NativeBridge.o
+
