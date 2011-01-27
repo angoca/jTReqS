@@ -39,8 +39,12 @@ package fr.in2p3.cc.storage.treqs.hsm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Defines the structure for the interactions with the HSM. This is the
@@ -65,6 +69,23 @@ public abstract class AbstractHSMBridge {
     private String keytabPath;
 
     /**
+     * Checks the keytab.
+     *
+     * @throws TReqSException
+     *             If there is a problem while reading the keytab.
+     */
+    public AbstractHSMBridge() throws TReqSException {
+        LOGGER.trace("> AbstractHSMBridge creating");
+
+        this.initKeytab();
+
+        // Tests if the keytab could be acceded from HPSS.
+        this.testKeytab();
+
+        LOGGER.trace("< AbstractHSMBridge creating");
+    }
+
+    /**
      * Gets file metadata from the HSM.
      *
      * @param name
@@ -85,6 +106,25 @@ public abstract class AbstractHSMBridge {
         LOGGER.trace(">< getKeytabPath");
 
         return keytabPath;
+    }
+
+    /**
+     * Sets the complete path of the keytab.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem retrieving the property.
+     * @throws KeyNotFoundException
+     *             If the keytab parameter was not found.
+     */
+    private void initKeytab() throws ProblematicConfiguationFileException,
+            KeyNotFoundException {
+        LOGGER.trace("> initKeytab");
+
+        final String keytab = Configurator.getInstance().getStringValue(
+                Constants.SECTION_KEYTAB, Constants.KEYTAB_FILE);
+        this.setKeytabPath(keytab);
+
+        LOGGER.trace("< initKeytab");
     }
 
     /**
@@ -111,4 +151,34 @@ public abstract class AbstractHSMBridge {
      *             If there is a problem accessing the HSM.
      */
     public abstract void stage(final File file) throws AbstractHSMException;
+
+    /**
+     * Tests the readability of the keytab file. // TODO this could be part of
+     * the AbstractHSM constructor, and the related exception could be moved to
+     * the right directory.
+     *
+     * @throws AbstractHSMException
+     *             When the keytab cannot be read.
+     */
+    private void testKeytab() throws AbstractHSMException {
+        LOGGER.trace("> testKeytab");
+
+        LOGGER.info("Testing keytab: {}", this.getKeytabPath());
+
+        java.io.File keytab = new java.io.File(this.getKeytabPath());
+        if (keytab.exists()) {
+            LOGGER.debug("Exists.");
+            if (keytab.canRead()) {
+                LOGGER.debug("Can be read.");
+            } else {
+                LOGGER.error("Cannot be read: {}", keytab.getAbsolutePath());
+                throw new HSMCannotReadKeytabException();
+            }
+        } else {
+            LOGGER.error("It does not exist: {}", keytab.getAbsolutePath());
+            throw new HSMKeytabNotFoundException();
+        }
+
+        LOGGER.trace("< testKeytab");
+    }
 }
