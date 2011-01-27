@@ -639,7 +639,7 @@ public final class Queue implements Comparable<Queue> {
                 // The file is waiting for being staged.
                 break;
             case ON_DISK:
-                LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE.");
+                LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE 1.");
                 nbDone++;
             default:
                 // Count requests is called only when a Queue is in ACTIVATED
@@ -971,10 +971,13 @@ public final class Queue implements Comparable<Queue> {
                     .getTape().getName(), fpot.getFile().getName());
             // This case should never happen, because the fpot was checked when
             // created (it does not exists an fpot for the same name)
-            LOGGER.error("THIS CASE EXISTS, DELETE THIS LOG FROM THE CODE.");
+            // TODO this case exists when the same file is asked twice in a
+            // short period. Also, when a queue is suspended.
+            LOGGER.error("THIS CASE EXISTS, DELETE THIS LOG FROM THE CODE 2.");
             if (!this.readingList.get((short) fpot.getPosition()).getMetaData()
                     .getFile().getName().equals(fpot.getFile().getName())) {
                 assert false : "Two different files in the same position";
+                // TODO this will happen when using aggregation.
             }
         }
 
