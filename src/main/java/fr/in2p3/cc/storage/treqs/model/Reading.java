@@ -44,11 +44,11 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMStageException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMOpenException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.model.exception.InvalidStatusTransitionException;
 import fr.in2p3.cc.storage.treqs.model.exception.StagerException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
@@ -70,7 +70,7 @@ public final class Reading {
     /**
      * Error code of the last reading attempt.
      */
-    private short errorCode;
+    private int errorCode;
     /**
      * Error message of the last reading attempt.
      */
@@ -149,7 +149,7 @@ public final class Reading {
      *
      * @return Error code of the last retry.
      */
-    public short getErrorCode() {
+    public int getErrorCode() {
         LOGGER.trace(">< getErrorCode");
 
         return this.errorCode;
@@ -285,10 +285,10 @@ public final class Reading {
                                 new GregorianCalendar());
                 // We report this problem to the caller.
                 throw e;
-            } else if (e instanceof HSMOpenException) {
+            } else if (e instanceof AbstractHSMPropertiesException) {
                 this.logsException("Error opening. Retrying " + filename, e,
                         RequestStatus.CREATED);
-            } else if (e instanceof HSMStageException) {
+            } else if (e instanceof AbstractHSMStageException) {
                 this.logsException("Error staging. Retrying " + filename, e,
                         RequestStatus.CREATED);
             }
@@ -346,7 +346,7 @@ public final class Reading {
      * @param code
      *            Returned error code from the HSM.
      */
-    void setErrorCode(final short code) {
+    void setErrorCode(final int code) {
         LOGGER.trace("> setErrorCode");
 
         assert code >= 0;
