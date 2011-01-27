@@ -190,7 +190,6 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
         assert id >= 0;
         assert status != null;
-        assert code >= 0;
         assert message != null && !message.equals("");
 
         final short statusId = status.getId();
@@ -326,10 +325,14 @@ public final class MySQLReadingDAO implements ReadingDAO {
             final String filename = reading.getMetaData().getFile().getName();
             final byte nbTries = reading.getNumberOfTries();
             final String errorMessage = reading.getErrorMessage();
-            final short errorCode = reading.getErrorCode();
+            final int errorCode = reading.getErrorCode();
 
             int index = i;
 
+            LOGGER.debug("ID {} TAPE {} POS {} CODE {} TRIES {} STATUS {} "
+                    + "MESS {} FILE {}", new Object[] { queueId, tapename,
+                    position, errorCode, nbTries, statusId, errorMessage,
+                    filename });
             // Insert queue id
             statement.setInt(index++, queueId);
             // Insert cartridge
@@ -337,7 +340,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
             // Insert position.
             statement.setInt(index++, position);
             // Insert Error code
-            statement.setShort(index++, errorCode);
+            statement.setInt(index++, errorCode);
             // Insert number of tries
             statement.setByte(index++, nbTries);
             // Insert File request Status
