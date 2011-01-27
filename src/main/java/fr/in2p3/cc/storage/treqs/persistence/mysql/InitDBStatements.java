@@ -311,7 +311,7 @@ final class InitDBStatements {
             + REQUESTS_QUEUE_ID + " int, " + REQUESTS_TAPE + " char(8), "
             + REQUESTS_POSITION + " int, " + REQUESTS_LEVEL + " tinyint, "
             + REQUESTS_SIZE + " bigint, " + REQUESTS_TRIES
-            + " tinyint default 0, " + REQUESTS_ERRORCODE + " smallint, "
+            + " tinyint default 0, " + REQUESTS_ERRORCODE + " int, "
             + REQUESTS_SUBMISSION_TIME + " datetime, " + REQUESTS_QUEUED_TIME
             + " datetime, " + REQUESTS_END_TIME + " datetime, "
             + REQUESTS_STATUS + " smallint default 100, " + REQUESTS_MESSAGE
