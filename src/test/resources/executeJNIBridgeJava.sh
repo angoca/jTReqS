@@ -4,7 +4,7 @@
 #
 # @author Andres Gomez
 
-sh ./compileJNIBridge.sh
+sh ./compileJNIBridgeJava.sh
 
 # HPSS JNI Bridge in Java.
 echo Compiling tester
