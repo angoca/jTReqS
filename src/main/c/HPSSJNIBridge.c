@@ -82,7 +82,7 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 
 	// Throws an exception if there is a problem.
 	if (rc != HPSS_E_NOERROR) {
-		sprintf(message, "getProperties %d", rc);
+		sprintf(message, "%d:getProperties", rc);
 		throwJNIException(env, message);
 	}
 	if (cont) {
@@ -100,8 +100,9 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 		// Prepares the StorageLevel - StorageName
 		jTapeName = (*env)->NewStringUTF(env, tape);
 		if (jTapeName == NULL) {
-			throwJNIException(env, "Problem creating the string - tapename");
-			rc = -1;
+			rc = -30002;
+			sprintf(message, "%d:Problem creating the string - tapename", rc);
+			throwJNIException(env, message);
 		}
 	}
 	if (cont) {
@@ -110,8 +111,9 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 				"fr/in2p3/cc/storage/treqs/hsm/HSMHelperFileProperties");
 		// If this class does not exist then return null.
 		if (helperClass == NULL) {
-			throwJNIException(env, "Class not found");
-			rc = -1;
+			rc = -30003;
+			sprintf(message, "%d:Class not found", rc);
+			throwJNIException(env, message);
 		}
 	}
 	if (cont) {
@@ -119,8 +121,9 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 		cid = (*env)->GetMethodID(env, helperClass, "<init>",
 				"(Ljava/lang/String;IJ)V");
 		if (cid == NULL) {
-			throwJNIException(env, "Constructor not found");
-			rc = -1;
+			rc = -30004;
+			sprintf(message, "%d:Constructor not found", rc);
+			throwJNIException(env, message);
 		}
 	}
 	if (cont) {
@@ -133,7 +136,7 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 	}
 
 	if (trace) {
-		printf("< JNI getFileProperties\n");
+		printf("< JNI getFileProperties - %d\n", rc);
 	}
 
 	return result;
@@ -169,12 +172,12 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_i
 
 	// Throws an exception if there is a problem.
 	if (rc != HPSS_E_NOERROR) {
-		sprintf(message, "init %d", rc);
+		sprintf(message, "%d:init", rc);
 		throwJNIException(env, message);
 	}
 
 	if (trace) {
-		printf("< JNI init\n");
+		printf("< JNI init - %d\n", rc);
 	}
 }
 
@@ -201,12 +204,12 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_s
 
 	// Throws an exception if there is a problem.
 	if (rc != HPSS_E_NOERROR) {
-		sprintf(message, "stage %d", rc);
+		sprintf(message, "%d:stage", rc);
 		throwJNIException(env, message);
 	}
 
 	if (trace) {
-		printf("< JNI stage\n");
+		printf("< JNI stage - %d\n", rc);
 	}
 }
 
@@ -233,7 +236,7 @@ jint throwNoClassDefError(JNIEnv *env, const char *message) {
 jint throwJNIException(JNIEnv *env, char *message) {
 	jclass exClass;
 	const char *className =
-			"fr/in2p3/cc/storage/treqs/hsm/hpssJNI/exception/JNIException";
+			"fr/in2p3/cc/storage/treqs/hsm/hpssJNI/JNIException";
 
 	if (trace) {
 		printf("> Creation JNI exception\n");
