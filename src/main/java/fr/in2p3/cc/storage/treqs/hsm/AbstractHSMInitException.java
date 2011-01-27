@@ -34,39 +34,58 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.command;
+package fr.in2p3.cc.storage.treqs.hsm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
 
 /**
- * Thrown when mapping an invalid number.
+ * Raised when there is a problem while initializing the HSM access.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-final class UnknownOutputException extends AbstractHSMPropertiesException {
-
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4181387207872984173L;
+public abstract class AbstractHSMInitException extends AbstractHSMException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(UnknownOutputException.class);
+            .getLogger(AbstractHSMInitException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -4400455423176802743L;
 
     /**
-     * Exception with a number format exception.
-     *
-     * @param e
-     *            Detail of the problem.
+     * Creates the exception.
      */
-    UnknownOutputException(final NumberFormatException e) {
-        super(e);
+    protected AbstractHSMInitException() {
+        super();
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception with an error code.
+     *
+     * @param hsmErrorcode
+     *            error code from the HSM.
+     */
+    protected AbstractHSMInitException(final int hsmErrorcode) {
+        super(hsmErrorcode);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception wrapping another exception.
+     *
+     * @param exception
+     *            Wrapped exception
+     */
+    protected AbstractHSMInitException(final Exception exception) {
+        super(exception);
 
         LOGGER.trace(">< Instance creation");
     }

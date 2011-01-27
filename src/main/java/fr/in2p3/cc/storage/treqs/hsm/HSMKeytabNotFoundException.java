@@ -34,35 +34,35 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception;
+package fr.in2p3.cc.storage.treqs.hsm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
 
 /**
- * This is a problem when initializing the HPSS Client.
+ * When the keytab was not found.
  *
- * @author Andres Gomez
+ * @author Andrés Gómez
  * @since 1.5
  */
-public final class JNIInitProblemException extends AbstractHSMInitException {
+final class HSMKeytabNotFoundException extends AbstractHSMInitException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CannotReadKeytabException.class);
+            .getLogger(HSMKeytabNotFoundException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -4357821308617937000L;
 
     /**
-     * Generated Id.
+     * Creates the exception.
      */
-    private static final long serialVersionUID = 832632770915623658L;
-
-    public JNIInitProblemException(JNIException e) {
-        super(e);
+    HSMKeytabNotFoundException() {
+        super();
 
         LOGGER.trace(">< Instance creation");
     }
-
 }

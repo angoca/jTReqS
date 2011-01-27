@@ -34,50 +34,49 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+package fr.in2p3.cc.storage.treqs.hsm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Error on HSM file staging.
+ * Thrown where there is a problem when staging a file. The problem is unknown.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-public final class HSMStageException extends AbstractHSMException {
+public final class HSMGeneralStageProblemException extends AbstractHSMStageException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMStageException.class);
+            .getLogger(HSMGeneralStageProblemException.class);
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = 635125729313261510L;
+    private static final long serialVersionUID = 4239501187201840617L;
 
     /**
-     * Creates the exception with an associated error code.
+     * Creates the exception wrapping another exception.
      *
-     * @param hsmErrorcode
-     *            Error code.
+     * @param exception
+     *            Wrapped exception
      */
-    public HSMStageException(final short hsmErrorcode) {
-        super(hsmErrorcode);
+    public HSMGeneralStageProblemException(final Exception exception) {
+        super(exception);
 
         LOGGER.trace(">< Instance creation");
     }
 
     /**
-     * Creates the exception with a message.
+     * Creates the exception with a descriptive message.
      *
      * @param message
-     *            Descriptive message.
+     *            Associated message.
      */
-    public HSMStageException(final String message) {
+    public HSMGeneralStageProblemException(final String message) {
         super(message);
 
         LOGGER.trace(">< Instance creation");
     }
-
 }

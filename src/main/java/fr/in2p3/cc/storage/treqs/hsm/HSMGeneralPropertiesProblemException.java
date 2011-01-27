@@ -34,30 +34,39 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+package fr.in2p3.cc.storage.treqs.hsm;
 
-import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception.JNIException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Thrown where there is a problem shen retrieving the properties of a file.
+ * Thrown where there is a problem when retrieving the properties of a file. The
+ * problem is unknown.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-public class HSMPropertiesProblemException extends AbstractHSMException {
-
+public final class HSMGeneralPropertiesProblemException extends
+        AbstractHSMPropertiesException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMGeneralPropertiesProblemException.class);
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = 6898118919774768039L;
+    private static final long serialVersionUID = 6479192392042630681L;
 
     /**
-     * Default constructor.
+     * Creates the exception wrapping another exception.
      *
-     * @param e
-     *            Wrapped exception.
+     * @param exception
+     *            Wrapped exception
      */
-    public HSMPropertiesProblemException(JNIException e) {
-        super(e);
+    public HSMGeneralPropertiesProblemException(final Exception exception) {
+        super(exception);
+
+        LOGGER.trace(">< Instance creation");
     }
 }

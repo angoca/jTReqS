@@ -34,11 +34,59 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Exception for the JNI implementation.
+ * The HSM is currently unavailable. This represents the code -5 in HPSS.
  *
- * @author Andres Gomez
+ * @author Andrés Gómez
  * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception;
+public final class HSMUnavailableException extends AbstractHSMPropertiesException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMUnavailableException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 5554832965026398673L;
 
+    /**
+     * Creates a default exception.
+     */
+    public HSMUnavailableException() {
+        super();
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception with an associated error code.
+     *
+     * @param hsmErrorcode
+     *            Error code.
+     */
+    public HSMUnavailableException(final int hsmErrorcode) {
+        super(hsmErrorcode);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
+     */
+    @Override
+    public final String getMessage() {
+        LOGGER.trace(">< getMessage");
+
+        return "HSM is currently unavailable.";
+    }
+}

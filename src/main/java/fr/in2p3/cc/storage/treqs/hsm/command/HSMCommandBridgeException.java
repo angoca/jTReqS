@@ -34,11 +34,61 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
+package fr.in2p3.cc.storage.treqs.hsm.command;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
+
 /**
- * Exceptions raised when interacting with the HSM.
+ * There was a problem while executing the requests to the HSM via Command
+ * bridge.
  *
- * @author Andres Gomez
+ * @author Andrés Gómez
  * @since 1.5
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+final class HSMCommandBridgeException extends AbstractHSMException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMCommandBridgeException.class);
+    /**
+     * Generated Id.
+     */
+    private static final long serialVersionUID = 8267968446883602498L;
 
+    /**
+     * Creates the exception with not parameters.
+     */
+    HSMCommandBridgeException() {
+        super();
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception wrapping another exception.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    HSMCommandBridgeException(final Exception exception) {
+        super(exception);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception with a descriptive message.
+     *
+     * @param message
+     *            Message describing the problem.
+     */
+    HSMCommandBridgeException(final String message) {
+        super(message);
+
+        LOGGER.trace(">< Instance creation");
+    }
+}

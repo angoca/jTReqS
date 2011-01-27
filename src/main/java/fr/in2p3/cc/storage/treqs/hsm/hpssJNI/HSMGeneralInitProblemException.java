@@ -34,41 +34,40 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.command;
+package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMInitException;
 
 /**
- * Thrown when mapping an invalid number.
+ * This is a problem when initializing the HPSS Client.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-final class UnknownOutputException extends AbstractHSMPropertiesException {
-
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4181387207872984173L;
+final class HSMGeneralInitProblemException extends AbstractHSMInitException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(UnknownOutputException.class);
+            .getLogger(HSMGeneralInitProblemException.class);
 
     /**
-     * Exception with a number format exception.
-     *
-     * @param e
-     *            Detail of the problem.
+     * Generated Id.
      */
-    UnknownOutputException(final NumberFormatException e) {
-        super(e);
+    private static final long serialVersionUID = -8873255407093192764L;
+
+    /**
+     * Creates the exception wrapping another exception.
+     *
+     * @param exception
+     *            Wrapped exception
+     */
+    HSMGeneralInitProblemException(final JNIException exception) {
+        super(exception);
 
         LOGGER.trace(">< Instance creation");
     }
-
 }

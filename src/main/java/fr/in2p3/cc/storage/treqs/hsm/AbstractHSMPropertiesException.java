@@ -34,47 +34,60 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception;
+package fr.in2p3.cc.storage.treqs.hsm;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * This exception is thrown from the Native bridge. This exception does not
- * extends TReqSException in order to be tested this module without many
- * dependencies.
+ * Error when getting the properties of a file.
+ * <p>
+ * TODO v1.5 abstract
  *
- * @author Andres Gomez
+ * @author Andrés Gómez
  * @since 1.5
  */
-public final class JNIException extends Exception {
+public abstract class AbstractHSMPropertiesException extends AbstractHSMException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(AbstractHSMPropertiesException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 2901944044450215851L;
 
     /**
-     * Generated Id.
+     * Creates a default exception.
      */
-    private static final long serialVersionUID = -7672189435704549513L;
-    /**
-     * Identification code.
-     */
-    private final String id;
+    protected AbstractHSMPropertiesException() {
+        super();
 
-    /**
-     * Default exception. Writes in the standard output.
-     *
-     * @param code
-     *            Id of the error.
-     */
-    public JNIException(final String code) {
-        assert code != null && !code.equals("") : "Invalid";
-
-        this.id = code;
-        System.out.println("JNIException created");
+        LOGGER.trace(">< Instance creation");
     }
 
-    /*
-     * (non-Javadoc)
+    /**
+     * Creates the exception with an associated error code.
      *
-     * @see java.lang.Throwable#getMessage()
+     * @param hsmErrorcode
+     *            Error code.
      */
-    //@Override
-    public String getMessage() {
-        return "Error code '" + this.id + '\'';
+    protected AbstractHSMPropertiesException(final int hsmErrorcode) {
+        super(hsmErrorcode);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception wrapping another one.
+     *
+     * @param exception
+     *            Wrapped exception.
+     */
+    protected AbstractHSMPropertiesException(final Exception exception) {
+        super(exception);
+
+        LOGGER.trace(">< Instance creation");
     }
 }

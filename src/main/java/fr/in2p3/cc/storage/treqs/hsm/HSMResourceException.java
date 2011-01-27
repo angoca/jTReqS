@@ -34,35 +34,50 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+package fr.in2p3.cc.storage.treqs.hsm;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
- * Raised when there is a problem while initializing the HSM access.
+ * Error on resources allocation. Raised when there is no more space left on the
+ * HSM disk to stage the file. This represents the code HPSS_ENOSPACE in HPSS.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public abstract class AbstractHSMInitException extends AbstractHSMException {
+public final class HSMResourceException extends AbstractHSMStageException {
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMResourceException.class);
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = -4400455423176802743L;
+    private static final long serialVersionUID = 4271400589349753437L;
 
     /**
-     * Creates the exception.
-     */
-    public AbstractHSMInitException() {
-        super();
-    }
-
-    /**
-     * Creates the exception wrapping another one.
+     * Creates the exception with an associated error code.
      *
-     * @param exception
-     *            Wrapped exception.
+     * @param hsmErrorcode
+     *            Error code.
      */
-    public AbstractHSMInitException(Exception exception) {
-        super(exception);
+    public HSMResourceException(final int hsmErrorcode) {
+        super(hsmErrorcode);
+
+        LOGGER.trace(">< Instance creation");
     }
 
+    /*
+     * (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
+     */
+    @Override
+    public final String getMessage() {
+        LOGGER.trace(">< getMessage");
+
+        return "No space available on disk.";
+    }
 }

@@ -34,28 +34,36 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+package fr.in2p3.cc.storage.treqs.hsm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Error on resources allocation. Raised when there is no more space left on the
- * HSM disk to stage the file.
+ * The given file is empty. This represents the code -30001.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class HSMResourceException extends HSMOpenException {
+public final class HSMEmptyFileException extends AbstractHSMPropertiesException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMResourceException.class);
+            .getLogger(HSMEmptyFileException.class);
     /**
      * Generated ID.
      */
-    private static final long serialVersionUID = 4271400589349753437L;
+    private static final long serialVersionUID = -8306158955069016197L;
+
+    /**
+     * Creates a default exception.
+     */
+    public HSMEmptyFileException() {
+        super();
+
+        LOGGER.trace(">< Instance creation");
+    }
 
     /**
      * Creates the exception with an associated error code.
@@ -63,7 +71,7 @@ public final class HSMResourceException extends HSMOpenException {
      * @param hsmErrorcode
      *            Error code.
      */
-    public HSMResourceException(final short hsmErrorcode) {
+    public HSMEmptyFileException(final int hsmErrorcode) {
         super(hsmErrorcode);
 
         LOGGER.trace(">< Instance creation");
@@ -71,12 +79,14 @@ public final class HSMResourceException extends HSMOpenException {
 
     /*
      * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
      */
     @Override
-    public String getMessage() {
+    public final String getMessage() {
         LOGGER.trace(">< getMessage");
 
-        return "No space available on disk." + super.getMessage();
+        return "File is empty.";
     }
 }

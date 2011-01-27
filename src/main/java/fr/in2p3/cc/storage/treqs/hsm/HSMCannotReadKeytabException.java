@@ -34,57 +34,34 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+package fr.in2p3.cc.storage.treqs.hsm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
- * There is not any file registered in the HSM with this name.
+ * When the keytab cannot be read.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class HSMStatException extends AbstractHSMException {
+final class HSMCannotReadKeytabException extends AbstractHSMInitException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMStatException.class);
+            .getLogger(HSMCannotReadKeytabException.class);
     /**
-     * Generated Id.
+     * Generated ID.
      */
-    private static final long serialVersionUID = 8267968446883602498L;
+    private static final long serialVersionUID = -8988830859148731369L;
 
     /**
-     * Creates the exception with not parameters.
+     * Creates the exception.
      */
-    public HSMStatException() {
+    HSMCannotReadKeytabException() {
         super();
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-    /**
-     * Creates the exception wrapping another exception.
-     *
-     * @param exception
-     *            Wrapped exception.
-     */
-    public HSMStatException(final Exception exception) {
-        super(exception);
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-    /**
-     * Creates the exception with a descriptive message.
-     *
-     * @param message
-     *            Message describing the problem.
-     */
-    public HSMStatException(final String message) {
-        super(message);
 
         LOGGER.trace(">< Instance creation");
     }

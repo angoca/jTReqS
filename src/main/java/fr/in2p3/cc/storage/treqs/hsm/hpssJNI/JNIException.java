@@ -34,36 +34,56 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
+package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 /**
- * When the keytab was not found.
+ * This exception is thrown from the Native bridge. This exception does not
+ * extends TReqSException in order to be tested this module without many
+ * dependencies.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-public final class KeytabNotFoundException extends AbstractHSMInitException {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(KeytabNotFoundException.class);
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4357821308617937000L;
+public final class JNIException extends Exception {
 
     /**
-     * Creates the exception.
+     * Generated Id.
      */
-    public KeytabNotFoundException() {
-        super();
+    private static final long serialVersionUID = -7672189435704549513L;
+    /**
+     * Identification code.
+     */
+    private final String id;
 
-        LOGGER.trace(">< Instance creation");
+    /**
+     * Default exception. Writes in the standard output.
+     *
+     * @param code
+     *            Id of the error.
+     */
+    public JNIException(final String code) {
+        assert code != null && !code.equals("") : "Invalid";
+
+        this.id = code;
+        System.out.println("JNIException created");
+    }
+
+    /**
+     * Returns the associated code of the exception.
+     *
+     * @return Error code.
+     */
+    public final String getCode() {
+        return this.id;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Throwable#getMessage()
+     */
+    // @Override
+    public String getMessage() {
+        return "Error code '" + this.id + '\'';
     }
 }

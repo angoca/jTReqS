@@ -34,35 +34,39 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.hpssJNI.exception;
+package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMInitException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
 
 /**
- * When the keytab cannot be read.
+ * This is a problem when initializing the HPSS Client.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-public final class CannotReadKeytabException extends AbstractHSMInitException {
+final class HSMJNIProblemException extends AbstractHSMException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(CannotReadKeytabException.class);
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -8988830859148731369L;
+            .getLogger(HSMJNIProblemException.class);
 
     /**
-     * Creates the exception.
+     * Generated Id.
      */
-    public CannotReadKeytabException() {
-        super();
+    private static final long serialVersionUID = -6872347249488992879L;
+
+    /**
+     * Creates the exception wrapping another exception.
+     *
+     * @param exception
+     *            Wrapped exception
+     */
+    HSMJNIProblemException(final JNIException exception) {
+        super(exception);
 
         LOGGER.trace(">< Instance creation");
     }

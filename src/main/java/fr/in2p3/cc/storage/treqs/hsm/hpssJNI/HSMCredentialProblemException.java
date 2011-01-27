@@ -34,39 +34,43 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.exception;
+package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMInitException;
+
+
+
 /**
- * Error when opening a file.
- * <p>
- * TODO v1.5 abstract
+ * This is a problem when initializing the HPSS Client. Probably the credentials
+ * are not valid. This exception represents the code -1 from the HSM.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-public class HSMOpenException extends AbstractHSMException {
+final class HSMCredentialProblemException extends AbstractHSMInitException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMOpenException.class);
+            .getLogger(HSMCredentialProblemException.class);
     /**
-     * Generated ID.
+     * Generated Id.
      */
-    private static final long serialVersionUID = 2901944044450215851L;
+    private static final long serialVersionUID = 3053579528659555482L;
 
     /**
-     * Creates the exception with an associated error code.
+     * There is a problem in the given credentials.
      *
      * @param hsmErrorcode
-     *            Error code.
+     *            error code from the HSM.
      */
-    public HSMOpenException(final short hsmErrorcode) {
+    HSMCredentialProblemException(final int hsmErrorcode) {
         super(hsmErrorcode);
 
         LOGGER.trace(">< Instance creation");
     }
+
 }

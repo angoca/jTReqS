@@ -34,41 +34,61 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.hsm.command;
+package fr.in2p3.cc.storage.treqs.hsm;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
 
 /**
- * Thrown when mapping an invalid number.
+ * This is thrown when the requests represents a directory This
+ * represents the code HPSS_EISDIR in HPSS.
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-final class UnknownOutputException extends AbstractHSMPropertiesException {
-
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4181387207872984173L;
+public final class HSMDirectoryException extends AbstractHSMPropertiesException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(UnknownOutputException.class);
+            .getLogger(HSMDirectoryException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 4598880844340766833L;
 
     /**
-     * Exception with a number format exception.
-     *
-     * @param e
-     *            Detail of the problem.
+     * Creates a default exception.
      */
-    UnknownOutputException(final NumberFormatException e) {
-        super(e);
+    public HSMDirectoryException() {
+        super();
 
         LOGGER.trace(">< Instance creation");
     }
 
+    /**
+     * Creates the exception with an associated error code.
+     *
+     * @param hsmErrorcode
+     *            Error code.
+     */
+    public HSMDirectoryException(final int hsmErrorcode) {
+        super(hsmErrorcode);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
+     */
+    @Override
+    public final String getMessage() {
+        LOGGER.trace(">< getMessage");
+
+        return "Request is a directory.";
+    }
 }
