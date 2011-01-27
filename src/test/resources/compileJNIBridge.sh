@@ -9,7 +9,7 @@ sh ./compileBroker.sh
 
 echo Generating JNI Bridge - Java
 javac -cp . -d ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/HSMHelperFileProperties.java -encoding UTF8
-javac -cp . -d ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/exception/JNIException.java -encoding UTF8
+javac -cp . -d ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/JNIException.java -encoding UTF8
 javac -cp . -d ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridge.java -encoding UTF8
 rm -f fr_*.h
 javah -classpath ./ -d ./ -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridge
