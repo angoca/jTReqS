@@ -59,10 +59,9 @@ import fr.in2p3.cc.storage.treqs.control.exception.NotMediaTypeDefinedException;
 import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.starter.Starter;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -514,8 +513,8 @@ public final class Dispatcher extends AbstractProcess {
             if (cont) {
                 // Now, try to find out the media type.
                 try {
-                media = MediaTypesController.getInstance().getMediaType(
-                        fileProperties.getTapeName());
+                    media = MediaTypesController.getInstance().getMediaType(
+                            fileProperties.getTapeName());
                 } catch (NotMediaTypeDefinedException e) {
                     this.logReadingException(e, fileRequest);
                 }
@@ -598,17 +597,9 @@ public final class Dispatcher extends AbstractProcess {
         assert exception != null;
         assert request != null;
 
-        if (exception instanceof HSMStatException) {
-            // TODO (jschaeff) if the error is HPSS_EIO, we could reschedule the
-            // stage because it could be due to a temporarily problem in the
-            // HSM.
-            // It means that the requests should not be passed as failed.
-            LOGGER.info("Setting FileRequest {} as failed", request.getId());
-            this.logReadingException(exception, request);
-        } else {
-            LOGGER.warn(exception.getMessage());
-            this.logReadingException(exception, request);
-        }
+        LOGGER.warn("Setting FileRequest {} as failed: {}", request.getId(),
+                exception.getMessage());
+        this.logReadingException(exception, request);
 
         LOGGER.trace("< processException");
     }
@@ -628,7 +619,7 @@ public final class Dispatcher extends AbstractProcess {
         assert exception != null;
         assert request != null;
 
-        short code = 0;
+        int code = 0;
         if (exception instanceof AbstractHSMException) {
             AbstractHSMException e = (AbstractHSMException) exception;
             code = e.getErrorCode();
@@ -639,8 +630,7 @@ public final class Dispatcher extends AbstractProcess {
                     .getDAOFactoryInstance()
                     .getReadingDAO()
                     .setRequestStatusById(request.getId(),
-                            RequestStatus.FAILED, code,
-                            exception.getMessage());
+                            RequestStatus.FAILED, code, exception.getMessage());
         } catch (TReqSException e1) {
             LOGGER.error("Error trying to update request status", exception);
         }
