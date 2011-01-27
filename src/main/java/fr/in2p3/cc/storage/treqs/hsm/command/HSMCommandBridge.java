@@ -49,13 +49,15 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMBridge;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMDirectoryException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMEmptyFileException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMGeneralStageProblemException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
-import fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStageException;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMStatException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMNotExistingFileException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.model.File;
-import fr.in2p3.cc.storage.treqs.tools.AbstractConfiguratorException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
@@ -171,11 +173,11 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * Retrieves the unique instance.
      *
      * @return The unique instance of this class.
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem reading the configuration.
      */
     public static HSMCommandBridge getInstance()
-            throws AbstractConfiguratorException {
+            throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -224,10 +226,10 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     /**
      * Constructor of the HSM Command.
      *
-     * @throws AbstractConfiguratorException
+     * @throws TReqSException
      *             If there is a problem reading the configuration.
      */
-    private HSMCommandBridge() throws AbstractConfiguratorException {
+    private HSMCommandBridge() throws TReqSException {
         LOGGER.trace("> create instance.");
 
         this.setKeytabPath(Configurator.getInstance().getStringValue(
@@ -302,7 +304,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             // Executes the command.
             process = Runtime.getRuntime().exec(command);
         } catch (final IOException exception) {
-            throw new HSMStatException(exception);
+            throw new HSMCommandBridgeException(exception);
         }
 
         // Takes the output.
@@ -321,7 +323,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             // AbstractProcess the output.
             ret = processGetPropertiesOutput(current);
         } else {
-            throw new HSMStatException();
+            throw new HSMCommandBridgeException();
         }
 
         assert ret != null;
@@ -346,7 +348,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      *             Problem detected.
      */
     private void printStream(final InputStream/* ! */inputStream,
-            final boolean error) throws IOException, HSMStageException {
+            final boolean error) throws IOException,
+            HSMGeneralStageProblemException {
         LOGGER.trace("> printStream");
 
         assert inputStream != null;
@@ -360,7 +363,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             current = stream.readLine();
             if (error && current != null) {
                 LOGGER.error(current);
-                throw new HSMStageException(current);
+                throw new HSMGeneralStageProblemException(current);
             }
             while (current != null) {
                 current = stream.readLine();
@@ -383,11 +386,11 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * @param error
      *            If the output is error or not.
      * @return The processed output. It could be null.
-     * @throws HSMStatException
+     * @throws HSMCommandBridgeException
      *             If there is a problem processing the output.
      */
     private String processOutput(final BufferedReader stream,
-            final boolean error) throws HSMStatException {
+            final boolean error) throws HSMCommandBridgeException {
         LOGGER.trace("> processOutput");
 
         assert stream != null;
@@ -398,17 +401,17 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             current = stream.readLine();
             if (error && current != null) {
                 LOGGER.error(current);
-                throw new HSMStatException(current);
+                throw new HSMCommandBridgeException(current);
             } else if (!error && current == null) {
-                throw new HSMStatException();
+                throw new HSMCommandBridgeException();
             }
         } catch (IOException e) {
-            throw new HSMStatException(e);
+            throw new HSMCommandBridgeException(e);
         } finally {
             try {
                 stream.close();
             } catch (IOException e) {
-                throw new HSMStatException(e);
+                throw new HSMCommandBridgeException(e);
             }
         }
 
@@ -423,14 +426,23 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * @param output
      *            Output of the script.
      * @return Helper with the values.
-     * @throws UnknownOutputException
-     *             If one value is invalid.
+     * @throws AbstractHSMPropertiesException
+     *             If there is a problem while getting the properties.
      */
     private HSMHelperFileProperties processGetPropertiesOutput(
-            final String output) throws UnknownOutputException {
+            final String output) throws AbstractHSMPropertiesException {
         LOGGER.trace("> processGetPropertiesOutput");
 
         assert output != null;
+
+        if (output.contains("FILE: ")) {
+            throw new HSMDirectoryException();
+        } else if (output.contains("doesn't exist")) {
+            throw new HSMNotExistingFileException();
+        } else if (output.contains("Size: 0 MB")
+                && output.contains("VOLID: ##DISK")) {
+            throw new HSMEmptyFileException();
+        }
 
         HSMHelperFileProperties ret;
         try {
@@ -471,7 +483,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             // Execute the command.
             process = Runtime.getRuntime().exec(command);
         } catch (final IOException exception) {
-            throw new HSMStatException(exception);
+            throw new HSMCommandBridgeException(exception);
         }
 
         try {
@@ -479,7 +491,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             // TODO v2.0 in a parallel thread check if the thread is not hung.
             process.waitFor();
         } catch (InterruptedException e) {
-            throw new HSMStatException(e);
+            throw new HSMCommandBridgeException(e);
         }
         LOGGER.debug("Exit code {}", process.exitValue());
         if (process.exitValue() != 0) {
@@ -494,7 +506,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
                             ErrorCodes.HSM_ENOSPACE.getId());
                 }
             } catch (IOException e) {
-                throw new HSMStatException(e);
+                throw new HSMCommandBridgeException(e);
             }
         }
 
