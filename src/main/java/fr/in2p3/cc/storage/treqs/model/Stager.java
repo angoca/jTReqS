@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
-import fr.in2p3.cc.storage.treqs.hsm.exception.HSMResourceException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
 
 /**
  * Reads files from a queue as a new thread. This is the responsible to demand
