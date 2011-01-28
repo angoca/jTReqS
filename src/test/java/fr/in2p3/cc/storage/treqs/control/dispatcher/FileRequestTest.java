@@ -54,6 +54,11 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 public final class FileRequestTest {
 
     /**
+     * Number ten.
+     */
+    private static final int TEN = 10;
+
+    /**
      * Tests a constructor with a negative id.
      *
      * @throws InvalidParameterException
@@ -61,7 +66,8 @@ public final class FileRequestTest {
      */
     @Test(expected = AssertionError.class)
     public void testContructor01() throws InvalidParameterException {
-        new FileRequest(-10, "file", new User("username"), (byte) 10);
+        new FileRequest(-FileRequestTest.TEN, "file", new User("username"),
+                (byte) FileRequestTest.TEN);
     }
 
     /**
@@ -72,7 +78,8 @@ public final class FileRequestTest {
      */
     @Test(expected = AssertionError.class)
     public void testContructor02() throws InvalidParameterException {
-        new FileRequest(10, null, new User("username"), (byte) 10);
+        new FileRequest(FileRequestTest.TEN, null, new User("username"),
+                (byte) FileRequestTest.TEN);
     }
 
     /**
@@ -83,7 +90,8 @@ public final class FileRequestTest {
      */
     @Test(expected = AssertionError.class)
     public void testContructor03() throws InvalidParameterException {
-        new FileRequest(10, "", new User("username"), (byte) 10);
+        new FileRequest(FileRequestTest.TEN, "", new User("username"),
+                (byte) FileRequestTest.TEN);
     }
 
     /**
@@ -94,7 +102,8 @@ public final class FileRequestTest {
      */
     @Test(expected = AssertionError.class)
     public void testContructor04() throws InvalidParameterException {
-        new FileRequest(10, "file", null, (byte) 10);
+        new FileRequest(FileRequestTest.TEN, "file", null,
+                (byte) FileRequestTest.TEN);
     }
 
     /**
@@ -105,7 +114,8 @@ public final class FileRequestTest {
      */
     @Test(expected = AssertionError.class)
     public void testContructor05() throws InvalidParameterException {
-        new FileRequest(10, "file", new User("username"), (byte) -10);
+        new FileRequest(FileRequestTest.TEN, "file", new User("username"),
+                (byte) -FileRequestTest.TEN);
     }
 
     /**

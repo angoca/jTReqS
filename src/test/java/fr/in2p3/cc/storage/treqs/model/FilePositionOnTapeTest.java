@@ -59,6 +59,10 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class FilePositionOnTapeTest {
     /**
+     * Number one hundred.
+     */
+    private static final int HUNDRED = 100;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
@@ -103,7 +107,7 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor01() {
-        int position = 100;
+        int position = FilePositionOnTapeTest.HUNDRED;
         User user = new User("username");
 
         boolean failed = false;
@@ -125,7 +129,7 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor02() {
-        int position = -100;
+        int position = -FilePositionOnTapeTest.HUNDRED;
         User user = new User("username");
 
         boolean failed = false;
@@ -147,7 +151,7 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor03() {
-        int position = 100;
+        int position = FilePositionOnTapeTest.HUNDRED;
         User user = new User("username");
 
         boolean failed = false;
@@ -169,7 +173,7 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor04() {
-        int position = 100;
+        int position = FilePositionOnTapeTest.HUNDRED;
         User user = null;
 
         boolean failed = false;
@@ -201,7 +205,7 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE);
 
-        int position = 100;
+        int position = FilePositionOnTapeTest.HUNDRED;
 
         new FilePositionOnTape(file, position, tape, new User("username"));
     }
@@ -219,8 +223,8 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "100");
 
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 100, tape,
-                new User("username"));
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                FilePositionOnTapeTest.HUNDRED, tape, new User("username"));
 
         boolean outdated = fpot.isMetadataOutdated();
 
@@ -242,8 +246,8 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "1");
 
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 100, tape,
-                new User("username"));
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                FilePositionOnTapeTest.HUNDRED, tape, new User("username"));
         LOGGER.info("Sleeping thread for 2 seconds");
         Thread.sleep(2000);
 
@@ -261,7 +265,7 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testToString01() throws ProblematicConfiguationFileException {
-        int position = 100;
+        int position = FilePositionOnTapeTest.HUNDRED;
         String username = "username";
         User user = new User(username);
 

@@ -71,6 +71,14 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 public final class ActivatorTest {
 
     /**
+     * Number three hundred.
+     */
+    private static final int THREE_HUNDRED = 300;
+    /**
+     * Number one hundred.
+     */
+    private static final int HUNDRED = 100;
+    /**
      * Media type 1 for tests.
      */
     private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
@@ -90,7 +98,7 @@ public final class ActivatorTest {
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
                 Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
-        HSMMockBridge.getInstance().setStageTime(100);
+        HSMMockBridge.getInstance().setStageTime(ActivatorTest.HUNDRED);
     }
 
     /**
@@ -155,7 +163,7 @@ public final class ActivatorTest {
         Activator.getInstance().setMaxStagers((short) 5);
         Activator.getInstance().setActiveStagers((short) 10);
 
-        File file = new File("filename", 300);
+        File file = new File("filename", ActivatorTest.THREE_HUNDRED);
         Tape tape = new Tape("tapename", MEDIA_TYPE_1);
         FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
                 new User("username"));
@@ -178,7 +186,7 @@ public final class ActivatorTest {
      */
     @Test
     public void testActivate03() throws TReqSException {
-        File file = new File("filename", 300);
+        File file = new File("filename", ActivatorTest.THREE_HUNDRED);
         Tape tape = new Tape("tapename", MEDIA_TYPE_1);
         FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
                 new User("username"));
@@ -207,16 +215,16 @@ public final class ActivatorTest {
         Tape tape = new Tape("tapename", MEDIA_TYPE_1);
         User user = new User("username");
 
-        File file1 = new File("filename1", 300);
+        File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
         Queue queue = QueuesController.getInstance().addFilePositionOnTape(
                 fpot1, (byte) 1);
 
-        File file2 = new File("filename2", 300);
+        File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
         FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
 
-        File file3 = new File("filename3", 300);
+        File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
         FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
 
@@ -241,16 +249,16 @@ public final class ActivatorTest {
         Tape tape = new Tape("tapename", MEDIA_TYPE_1);
         User user = new User("username");
 
-        File file1 = new File("filename1", 300);
+        File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
         FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
         Queue queue = QueuesController.getInstance().addFilePositionOnTape(
                 fpot1, (byte) 1);
 
-        File file2 = new File("filename2", 300);
+        File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
         FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
 
-        File file3 = new File("filename3", 300);
+        File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
         FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
 
@@ -321,7 +329,7 @@ public final class ActivatorTest {
      */
     @Test
     public void testMaxQueueStagers03() throws TReqSException {
-        Activator.getInstance().setMaxStagers((short) 100);
+        Activator.getInstance().setMaxStagers((short) ActivatorTest.HUNDRED);
 
         boolean failed = false;
         try {
@@ -345,7 +353,7 @@ public final class ActivatorTest {
      */
     @Test
     public void testMaxStagers01() throws TReqSException {
-        short value = 300;
+        short value = ActivatorTest.THREE_HUNDRED;
         Activator.getInstance().setMaxStagers((short) value);
 
         short actual = Activator.getInstance().getMaxStagers();
@@ -425,7 +433,7 @@ public final class ActivatorTest {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(ActivatorTest.HUNDRED);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -445,7 +453,7 @@ public final class ActivatorTest {
 
         Activator.getInstance().run();
         try {
-            Thread.sleep(100);
+            Thread.sleep(ActivatorTest.HUNDRED);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -535,7 +543,7 @@ public final class ActivatorTest {
 
         Activator.getInstance().start();
         try {
-            Thread.sleep(100);
+            Thread.sleep(ActivatorTest.HUNDRED);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

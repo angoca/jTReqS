@@ -85,6 +85,14 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class DispatcherTest {
     /**
+     * Number three.
+     */
+    private static final int THREE = 3;
+    /**
+     * Number twenty.
+     */
+    private static final int TWENTY = 20;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
@@ -340,7 +348,8 @@ public final class DispatcherTest {
     @Test
     public void testRetrieveNewRequest08() throws TReqSException {
         HSMMockBridge.getInstance().setFileProperties(
-                new HSMHelperFileProperties(Constants.FILE_ON_DISK, 1, 20));
+                new HSMHelperFileProperties(Constants.FILE_ON_DISK, 1,
+                        DispatcherTest.TWENTY));
         MockReadingDAO.setQuantityRequests(1);
 
         Dispatcher.getInstance().retrieveNewRequests();
@@ -375,8 +384,10 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest10() throws TReqSException {
-        HSMMockBridge.getInstance().setFileProperties(
-                new HSMHelperFileProperties("IT0123", 1, 20));
+        HSMMockBridge.getInstance()
+                .setFileProperties(
+                        new HSMHelperFileProperties("IT0123", 1,
+                                DispatcherTest.TWENTY));
         MockReadingDAO.setQuantityRequests(1);
 
         Dispatcher.getInstance().retrieveNewRequests();
@@ -390,8 +401,10 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest11() throws TReqSException {
-        HSMMockBridge.getInstance().setFileProperties(
-                new HSMHelperFileProperties("JT5678", 1, 20));
+        HSMMockBridge.getInstance()
+                .setFileProperties(
+                        new HSMHelperFileProperties("JT5678", 1,
+                                DispatcherTest.TWENTY));
         AbstractPersistanceException exception = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setNewRequestsException(exception);
@@ -424,7 +437,7 @@ public final class DispatcherTest {
     @Test
     public void testRetrieveNewRequest12() throws TReqSException {
         String filename = "filename1";
-        byte size = 3;
+        byte size = DispatcherTest.THREE;
         String username = "owner";
         List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
         PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
@@ -448,7 +461,7 @@ public final class DispatcherTest {
     @Test
     public void testRetrieveNewRequest13() throws TReqSException {
         String filename = "filename1";
-        byte size = 3;
+        byte size = DispatcherTest.THREE;
         String username = "owner";
         List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
         PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
@@ -479,7 +492,7 @@ public final class DispatcherTest {
     public void testRetrieveNewRequest14() throws TReqSException,
             InterruptedException {
         String filename = "filename1";
-        byte size = 3;
+        byte size = DispatcherTest.THREE;
         String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
@@ -515,7 +528,7 @@ public final class DispatcherTest {
     public void testRetrieveNewRequest15() throws TReqSException,
             InterruptedException {
         String filename = "filename1";
-        byte size = 3;
+        byte size = DispatcherTest.THREE;
         String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
@@ -554,7 +567,7 @@ public final class DispatcherTest {
     public void testRetrieveNewRequest16() throws TReqSException,
             InterruptedException {
         String filename = "filename1";
-        byte size = 3;
+        byte size = DispatcherTest.THREE;
         String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
@@ -570,7 +583,8 @@ public final class DispatcherTest {
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
         HSMMockBridge.getInstance().setFileProperties(
-                new HSMHelperFileProperties(Constants.FILE_ON_DISK, 1, 20));
+                new HSMHelperFileProperties(Constants.FILE_ON_DISK, 1,
+                        DispatcherTest.TWENTY));
 
         MockReadingDAO.setQuantityRequests(1);
         Thread.sleep(1500);
@@ -593,7 +607,7 @@ public final class DispatcherTest {
     public void testRetrieveNewRequest17() throws TReqSException,
             InterruptedException {
         String filename = "filename1";
-        byte size = 3;
+        byte size = DispatcherTest.THREE;
         String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
@@ -638,8 +652,10 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest18() throws TReqSException {
-        HSMMockBridge.getInstance().setFileProperties(
-                new HSMHelperFileProperties("IS9510", 1, 20));
+        HSMMockBridge.getInstance()
+                .setFileProperties(
+                        new HSMHelperFileProperties("IS9510", 1,
+                                DispatcherTest.TWENTY));
         AbstractPersistanceException exception = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setRequestStatusByIdException(exception);

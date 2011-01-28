@@ -58,6 +58,11 @@ import fr.in2p3.cc.storage.treqs.model.User;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class FilePositionOnTapesControllerTest {
     /**
+     * Number one hundred.
+     */
+    private static final int HUNDRED = 1000;
+
+    /**
      * Destroys everything.
      */
     @After
@@ -102,7 +107,8 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddFpot02TapeNull() throws TReqSException {
-        File file = new File("filename", 1000);
+        File file = new File("filename",
+                FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = null;
         User user = new User("userName");
 
@@ -129,7 +135,8 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddFpot03TapeNegative() throws TReqSException {
-        File file = new File("filename", 1000);
+        File file = new File("filename",
+                FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
         User user = new User("userName");
 
@@ -156,7 +163,8 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddFpot04UserNull() throws TReqSException {
-        File file = new File("filename", 1000);
+        File file = new File("filename",
+                FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
         User user = null;
 
@@ -183,7 +191,8 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddTwice() throws TReqSException {
-        File file = new File("filename", 1000);
+        File file = new File("filename",
+                FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
         User user = new User("userName");
 
@@ -231,7 +240,8 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testCreateFpot02TapeNull() throws TReqSException {
-        File file = new File("filename", 1000);
+        File file = new File("filename",
+                FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = null;
         User user = new User("userName");
 
@@ -258,7 +268,8 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testCreateFpot03TapeNegative() throws TReqSException {
-        File file = new File("filename", 1000);
+        File file = new File("filename",
+                FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
         User user = new User("userName");
 
@@ -285,7 +296,8 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testCreateFpot04UserNull() throws TReqSException {
-        File file = new File("filename", 1000);
+        File file = new File("filename",
+                FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
         User user = null;
 

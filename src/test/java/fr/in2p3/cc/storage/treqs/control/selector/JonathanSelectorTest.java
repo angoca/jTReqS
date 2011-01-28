@@ -70,6 +70,14 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class JonathanSelectorTest {
     /**
+     * Number three hundred.
+     */
+    private static final int THREE_HUNDRED = 300;
+    /**
+     * Number twenty.
+     */
+    private static final int TWENTY = 20;
+    /**
      * Number 5.
      */
     private static final int NUMBER_5 = 5;
@@ -130,9 +138,10 @@ public final class JonathanSelectorTest {
         String username = "username";
         User user = new User(username);
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
-        File file = new File("filename", 300);
+        File file = new File("filename", JonathanSelectorTest.THREE_HUNDRED);
         Tape tape = new Tape("tapename", MEDIA_TYPE_1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 20, tape, user);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                JonathanSelectorTest.TWENTY, tape, user);
         Queue queue = HelperControl.addFPOT(fpot, (byte) 1);
 
         Queue actual = new JonathanSelector().selectBestQueueForUser(
@@ -154,15 +163,16 @@ public final class JonathanSelectorTest {
         User user = new User(username);
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
-        File file1 = new File("filename1", 300);
+        File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
         Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
-                user);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                JonathanSelectorTest.TWENTY, tape1, user);
         Queue queue1 = HelperControl.addFPOT(fpot1, (byte) 1);
 
-        File file2 = new File("filename2", 300);
+        File file2 = new File("filename2", JonathanSelectorTest.THREE_HUNDRED);
         Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file2, 20, tape2, user);
+        FilePositionOnTape fpot = new FilePositionOnTape(file2,
+                JonathanSelectorTest.TWENTY, tape2, user);
         HelperControl.addFPOT(fpot, (byte) 1);
 
         Queue actual = new JonathanSelector().selectBestQueueForUser(
@@ -188,16 +198,16 @@ public final class JonathanSelectorTest {
         Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
         Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
 
-        File file1 = new File("filename1", 300);
+        File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
         File file2 = new File("filename2", 500);
         File file3 = new File("filename3", 600);
 
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
-                user);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                JonathanSelectorTest.TWENTY, tape1, user);
         FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 40, tape1,
                 user);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape2,
-                user);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                JonathanSelectorTest.TWENTY, tape2, user);
 
         // Tape 1
         Queue queue1 = HelperControl.addFPOT(fpot1, (byte) 1);
@@ -348,9 +358,10 @@ public final class JonathanSelectorTest {
     public void testBestUser04() throws TReqSException {
         User user = new User("username1");
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
-        File file = new File("filename", 300);
+        File file = new File("filename", JonathanSelectorTest.THREE_HUNDRED);
         Tape tape = new Tape("tapename", MEDIA_TYPE_1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 20, tape, user);
+        FilePositionOnTape fpot = new FilePositionOnTape(file,
+                JonathanSelectorTest.TWENTY, tape, user);
         HelperControl.addFPOT(fpot, (byte) 1);
         resource.setUserAllocation(user, (byte) NUMBER_5);
         resource.increaseUsedResources(user);
@@ -373,17 +384,17 @@ public final class JonathanSelectorTest {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         User user1 = new User("username1");
-        File file1 = new File("filename1", 300);
+        File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
         Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 20, tape1,
-                user1);
+        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                JonathanSelectorTest.TWENTY, tape1, user1);
         HelperControl.addFPOT(fpot1, (byte) 1);
 
         User user2 = new User("username2");
         File file2 = new File("filename2", 400);
         Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape2,
-                user2);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                JonathanSelectorTest.TWENTY, tape2, user2);
         HelperControl.addFPOT(fpot2, (byte) 1);
 
         resource.setUserAllocation(user1, (byte) 2);

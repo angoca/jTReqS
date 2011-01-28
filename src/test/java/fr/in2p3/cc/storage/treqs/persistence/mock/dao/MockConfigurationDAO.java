@@ -61,6 +61,16 @@ import fr.in2p3.cc.storage.treqs.persistence.mock.exception.MockPersistanceExcep
 public final class MockConfigurationDAO implements ConfigurationDAO {
 
     /**
+     * Dot one.
+     */
+    private static final double DOT_TWO = 0.2;
+
+    /**
+     * Dot two.
+     */
+    private static final double DOT_ONE = 0.1;
+
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
@@ -138,43 +148,43 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
         }
         MultiMap values = new MultiValueMap();
         // T10KA
-        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
-                "user1", 2));
-        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
-                "user2", 1));
-        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
-                "user3", 1));
+        values.put(new Float(MockConfigurationDAO.DOT_ONE),
+                new PersistenceHelperResourceAllocation("user1", 2));
+        values.put(new Float(MockConfigurationDAO.DOT_ONE),
+                new PersistenceHelperResourceAllocation("user2", 1));
+        values.put(new Float(MockConfigurationDAO.DOT_ONE),
+                new PersistenceHelperResourceAllocation("user3", 1));
         // No user4
         // No user5
-        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
-                "user6", 2));
-        values.put(new Float(0.1), new PersistenceHelperResourceAllocation(
-                "user7", 3));
+        values.put(new Float(MockConfigurationDAO.DOT_ONE),
+                new PersistenceHelperResourceAllocation("user6", 2));
+        values.put(new Float(MockConfigurationDAO.DOT_ONE),
+                new PersistenceHelperResourceAllocation("user7", 3));
 
         // T10KB
-        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
-                "user1", 3));
-        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
-                "user2", 2));
+        values.put(new Float(MockConfigurationDAO.DOT_TWO),
+                new PersistenceHelperResourceAllocation("user1", 3));
+        values.put(new Float(MockConfigurationDAO.DOT_TWO),
+                new PersistenceHelperResourceAllocation("user2", 2));
         // No user3
-        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
-                "user4", 1));
+        values.put(new Float(MockConfigurationDAO.DOT_TWO),
+                new PersistenceHelperResourceAllocation("user4", 1));
         // No user5
         // No user6
-        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
-                "user7", 3));
+        values.put(new Float(MockConfigurationDAO.DOT_TWO),
+                new PersistenceHelperResourceAllocation("user7", 3));
 
         // T10KC
         // No user1
         // No user2
         // No user3
         // No user4
-        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
-                "user5", 1));
-        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
-                "user6", 1));
-        values.put(new Float(0.2), new PersistenceHelperResourceAllocation(
-                "user6", 2));
+        values.put(new Float(MockConfigurationDAO.DOT_TWO),
+                new PersistenceHelperResourceAllocation("user5", 1));
+        values.put(new Float(MockConfigurationDAO.DOT_TWO),
+                new PersistenceHelperResourceAllocation("user6", 1));
+        values.put(new Float(MockConfigurationDAO.DOT_TWO),
+                new PersistenceHelperResourceAllocation("user6", 2));
 
         LOGGER.trace("< getResourceAllocation");
 

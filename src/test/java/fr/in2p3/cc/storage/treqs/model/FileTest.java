@@ -52,10 +52,15 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 public final class FileTest {
 
     /**
+     * Number ten.
+     */
+    private static final int TEN = 10;
+
+    /**
      * Tests create a file.
      */
     public void testConstructors01() {
-        new File("name", 10);
+        new File("name", FileTest.TEN);
     }
 
     /**
@@ -63,7 +68,7 @@ public final class FileTest {
      */
     @Test(expected = AssertionError.class)
     public void testConstructors02() {
-        new File(null, 10);
+        new File(null, FileTest.TEN);
     }
 
     /**
@@ -71,7 +76,7 @@ public final class FileTest {
      */
     @Test(expected = AssertionError.class)
     public void testConstructors03() {
-        new File("", 10);
+        new File("", FileTest.TEN);
     }
 
     /**
@@ -79,7 +84,7 @@ public final class FileTest {
      */
     @Test(expected = AssertionError.class)
     public void testConstructors04() {
-        new File("name", -10);
+        new File("name", -FileTest.TEN);
     }
 
     /**
@@ -88,7 +93,7 @@ public final class FileTest {
     @Test
     public void testSize01() {
         String filename = "tapename";
-        long size = 10;
+        long size = FileTest.TEN;
 
         File file = new File(filename, size);
 
@@ -112,7 +117,7 @@ public final class FileTest {
     @Test
     public void testToString01() {
         String filename = "tapename";
-        long size = 10;
+        long size = FileTest.TEN;
 
         File file = new File(filename, size);
 
@@ -129,7 +134,7 @@ public final class FileTest {
     @Test
     public void testUpdate01() {
         String filename = "filename";
-        long size = 10;
+        long size = FileTest.TEN;
 
         File file1 = new File(filename, size);
         file1.setSize(size);

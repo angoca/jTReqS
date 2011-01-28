@@ -161,7 +161,8 @@ public final class MockReadingDAO implements ReadingDAO {
      * @param requests
      *            List of requests.
      */
-    public static void setNewRequests(final List<PersistenceHelperFileRequest> requests) {
+    public static void setNewRequests(
+            final List<PersistenceHelperFileRequest> requests) {
         newRequests = requests;
     }
 

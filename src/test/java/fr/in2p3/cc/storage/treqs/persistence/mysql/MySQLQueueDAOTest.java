@@ -74,6 +74,14 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 public final class MySQLQueueDAOTest {
 
     /**
+     * Number one hundred.
+     */
+    private static final int HUNDRED = 100;
+    /**
+     * Number three.
+     */
+    private static final int THREE = 3;
+    /**
      * Media type.
      */
     private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
@@ -159,7 +167,7 @@ public final class MySQLQueueDAOTest {
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 size), 0, tape, new User("owner"));
 
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
         int id = queue.getId();
 
@@ -200,7 +208,7 @@ public final class MySQLQueueDAOTest {
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 size), 0, tape, new User("owner"));
 
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
         Helper.activate(queue);
         int id = queue.getId();
 
@@ -241,7 +249,7 @@ public final class MySQLQueueDAOTest {
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 size), 0, tape, new User("owner"));
 
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
         Helper.activate(queue);
         int id = queue.getId();
         Helper.suspend(queue);
@@ -280,7 +288,7 @@ public final class MySQLQueueDAOTest {
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 size), 0, tape, new User("owner"));
 
-        new Queue(fpot, (byte) 3);
+        new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
     }
 
     /**
@@ -294,7 +302,7 @@ public final class MySQLQueueDAOTest {
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 50), 0, new Tape("tapenameup1", MEDIA_TYPE), new User(
                 "username"));
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
         new MySQLQueueDAO().updateAddRequest(queue);
     }
@@ -315,7 +323,7 @@ public final class MySQLQueueDAOTest {
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 byteSize), 0, new Tape("tapename2", MEDIA_TYPE), new User(
                 ownerName));
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
         int id = queue.getId();
 
@@ -333,7 +341,7 @@ public final class MySQLQueueDAOTest {
         if (result.next()) {
             int actualRequestsSize = result.getInt(1);
             String actualOwner = result.getString(2);
-            long actualByteSize = result.getLong(3);
+            long actualByteSize = result.getLong(MySQLQueueDAOTest.THREE);
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -364,7 +372,7 @@ public final class MySQLQueueDAOTest {
         FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
                 byteSize), 10, new Tape("tapename2", MEDIA_TYPE), new User(
                 ownerName));
-        Queue queue = new Queue(fpot1, (byte) 3);
+        Queue queue = new Queue(fpot1, (byte) MySQLQueueDAOTest.THREE);
         String other = "other";
 
         FilePositionOnTape fpot2 = new FilePositionOnTape(new File("filename2",
@@ -388,7 +396,7 @@ public final class MySQLQueueDAOTest {
         if (result.next()) {
             int actualRequestsSize = result.getInt(1);
             String actualOwner = result.getString(2);
-            long actualByteSize = result.getLong(3);
+            long actualByteSize = result.getLong(MySQLQueueDAOTest.THREE);
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -415,12 +423,12 @@ public final class MySQLQueueDAOTest {
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
-        long byteSize = 100;
+        long byteSize = MySQLQueueDAOTest.HUNDRED;
 
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 byteSize), 0, new Tape("tapename", MEDIA_TYPE), new User(
                 ownerName));
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
         boolean failed = false;
         try {
@@ -448,12 +456,12 @@ public final class MySQLQueueDAOTest {
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
-        long byteSize = 100;
+        long byteSize = MySQLQueueDAOTest.HUNDRED;
 
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 byteSize), 0, new Tape("tapename", MEDIA_TYPE), new User(
                 ownerName));
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
         Helper.activate(queue);
 
         new MySQLQueueDAO().updateState(queue, time, nbDone, nbFailed);
@@ -471,12 +479,12 @@ public final class MySQLQueueDAOTest {
         short nbDone = 0;
         short nbFailed = 0;
         String ownerName = "owner";
-        long byteSize = 100;
+        long byteSize = MySQLQueueDAOTest.HUNDRED;
 
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 byteSize), 0, new Tape("tapename", MEDIA_TYPE), new User(
                 ownerName));
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
         boolean failed = false;
         try {
@@ -504,12 +512,12 @@ public final class MySQLQueueDAOTest {
         short nbDone = -50;
         short nbFailed = 0;
         String ownerName = "owner";
-        long byteSize = 100;
+        long byteSize = MySQLQueueDAOTest.HUNDRED;
 
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 byteSize), 0, new Tape("tapename", MEDIA_TYPE), new User(
                 ownerName));
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
         boolean failed = false;
         try {
@@ -537,12 +545,12 @@ public final class MySQLQueueDAOTest {
         short nbDone = 0;
         short nbFailed = -90;
         String ownerName = "owner";
-        long byteSize = 100;
+        long byteSize = MySQLQueueDAOTest.HUNDRED;
 
         FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
                 byteSize), 0, new Tape("tapename", MEDIA_TYPE), new User(
                 ownerName));
-        Queue queue = new Queue(fpot, (byte) 3);
+        Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
         boolean failed = false;
         try {
