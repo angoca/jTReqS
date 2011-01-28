@@ -102,7 +102,7 @@ public final class Watchdog {
 
         LOGGER.warn("PID {}", name);
         int index = name.indexOf('@');
-        // TODO it does not work with gij 
+        // TODO it does not work with gij
         int pid = Integer.parseInt(name.substring(0, index));
 
         AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().start(pid);

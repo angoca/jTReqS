@@ -38,7 +38,12 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 
-public class NativeBridge {
+/**
+ * This is the template for the native implementation of the HPSS brdge.
+ *
+ * @author Andes Gomez
+ */
+public final class NativeBridge {
     // Loads the dynamic library.
     static {
         try {
@@ -96,4 +101,10 @@ public class NativeBridge {
      */
     private static final String HPSS_JNI_BRIDGE_LIBRARY = "HPSSJNIBridge";
 
+    /**
+     * Default constructor hidden.
+     */
+    private NativeBridge() {
+        // Nothing.
+    }
 }

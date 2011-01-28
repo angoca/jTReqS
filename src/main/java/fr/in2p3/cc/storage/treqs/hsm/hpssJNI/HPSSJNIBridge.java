@@ -276,7 +276,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             ret = Short.parseShort(codeStr);
         } catch (NumberFormatException e1) {
-            ret = -50000;
+            ret = -40000;
         }
 
         LOGGER.trace("< processException");

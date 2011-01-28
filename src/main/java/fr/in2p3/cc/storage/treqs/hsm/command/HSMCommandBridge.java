@@ -344,7 +344,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      *            If processing error or standard output.
      * @throws IOException
      *             If there is a problem processing the output.
-     * @throws HSMStageException
+     * @throws HSMGeneralStageProblemException
      *             Problem detected.
      */
     private void printStream(final InputStream/* ! */inputStream,

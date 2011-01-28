@@ -72,6 +72,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
      * ()
@@ -117,6 +118,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
 
     /*
      * (non-Javadoc)
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation
      * ()
