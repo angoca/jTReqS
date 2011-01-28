@@ -84,7 +84,7 @@ public final class HSMUnavailableException extends AbstractHSMPropertiesExceptio
      * fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
      */
     @Override
-    public final String getMessage() {
+    public String getMessage() {
         LOGGER.trace(">< getMessage");
 
         return "HSM is currently unavailable.";

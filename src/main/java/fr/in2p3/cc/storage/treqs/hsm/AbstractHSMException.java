@@ -81,8 +81,6 @@ public abstract class AbstractHSMException extends TReqSException {
      *
      * @param exception
      *            Wrapped exception.
-     * @param code
-     *            Associated code.
      */
     protected AbstractHSMException(final Exception exception) {
         super(exception);

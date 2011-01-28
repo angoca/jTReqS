@@ -85,7 +85,7 @@ public final class HSMNotExistingFileException extends AbstractHSMPropertiesExce
      * fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
      */
     @Override
-    public final String getMessage() {
+    public String getMessage() {
         LOGGER.trace(">< getMessage");
 
         return "File not existant.";

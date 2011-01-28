@@ -73,7 +73,7 @@ public final class JNIException extends Exception {
      *
      * @return Error code.
      */
-    public final String getCode() {
+    public String getCode() {
         return this.id;
     }
 
@@ -82,7 +82,7 @@ public final class JNIException extends Exception {
      *
      * @see java.lang.Throwable#getMessage()
      */
-    // @Override
+    @Override
     public String getMessage() {
         return "Error code '" + this.id + '\'';
     }

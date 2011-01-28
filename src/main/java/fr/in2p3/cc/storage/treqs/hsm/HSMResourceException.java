@@ -39,7 +39,6 @@ package fr.in2p3.cc.storage.treqs.hsm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Error on resources allocation. Raised when there is no more space left on the
  * HSM disk to stage the file. This represents the code HPSS_ENOSPACE in HPSS.
@@ -72,10 +71,12 @@ public final class HSMResourceException extends AbstractHSMStageException {
 
     /*
      * (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.hsm.exception.AbstractHSMException#getMessage()
      */
     @Override
-    public final String getMessage() {
+    public String getMessage() {
         LOGGER.trace(">< getMessage");
 
         return "No space available on disk.";
