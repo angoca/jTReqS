@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.MySQLTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
@@ -90,6 +91,8 @@ public final class StarterTest {
                 MainTests.PROPERTIES_FILE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
                 Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
 
         MySQLRequestsDAO.deleteAll();
         MySQLHelper.deleteMediaTypes();
@@ -230,6 +233,10 @@ public final class StarterTest {
         String userName2 = "username2";
         RequestStatus status2 = RequestStatus.QUEUED;
         MySQLRequestsDAO.insertRow(fileName2, userName2, status2);
+
+        Assert.assertTrue(this
+                .countStatusRequest(RequestStatus.SUBMITTED, true) == 1);
+        Assert.assertTrue(this.countStatusRequest(RequestStatus.QUEUED, true) == 1);
 
         Starter.getInstance();
 
