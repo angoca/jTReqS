@@ -78,6 +78,10 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class MySQLReadingDAOTest {
     /**
+     * Number one hundred.
+     */
+    private static final int HUNDRED = 100;
+    /**
      * 3.
      */
     private static final int NUMBER_3 = 3;
@@ -146,7 +150,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testFirstUpdate01() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         File file = new File("filename", size);
         int position = NUMBER_4;
         Tape tape = new Tape("tapename", MEDIA_TYPE);
@@ -193,7 +197,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testFirstUpdate03() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         File file = new File("filename", size);
         int position = NUMBER_4;
         Tape tape = new Tape("tapename", MEDIA_TYPE);
@@ -226,7 +230,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testFirstUpdate04() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         File file = new File("filename", size);
         int position = NUMBER_4;
         Tape tape = new Tape("tapename", MEDIA_TYPE);
@@ -404,42 +408,13 @@ public final class MySQLReadingDAOTest {
     }
 
     /**
-     * Tests the code negative.
-     *
-     * @throws AbstractPersistanceException
-     *             Never.
-     */
-    @Test
-    public void testSetRequestStatusById03()
-            throws AbstractPersistanceException {
-        int id = 0;
-
-        RequestStatus status = RequestStatus.SUBMITTED;
-        int code = -50;
-        String message = "Problem";
-        boolean failed = false;
-        try {
-            new MySQLReadingDAO().setRequestStatusById(id, status, code,
-                    message);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
      * Tests the message null.
      *
      * @throws AbstractPersistanceException
      *             Never.
      */
     @Test
-    public void testSetRequestStatusById04()
+    public void testSetRequestStatusById03()
             throws AbstractPersistanceException {
         int id = 0;
 
@@ -468,7 +443,7 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testSetRequestStatusById05()
+    public void testSetRequestStatusById04()
             throws AbstractPersistanceException {
         int id = 0;
 
@@ -499,7 +474,7 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testSetRequestStatusById06() throws SQLException,
+    public void testSetRequestStatusById05() throws SQLException,
             TReqSException {
         int id = 0;
 
@@ -519,7 +494,7 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testSetRequestStatusById07() throws SQLException,
+    public void testSetRequestStatusById06() throws SQLException,
             TReqSException {
         String fileName = "requestByIDa02";
         String query = "INSERT INTO " + MySQLStatements.REQUESTS + " ("
@@ -612,7 +587,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate02() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         String fileName = "hpss/file";
         File file = new File(fileName, size);
         int position = NUMBER_4;
@@ -647,7 +622,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate03() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         String fileName = "hpss/file";
         File file = new File(fileName, size);
         int position = NUMBER_4;
@@ -682,7 +657,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate04Created() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         String fileName = "hpss/file";
         File file = new File(fileName, size);
         int position = NUMBER_4;
@@ -707,7 +682,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate05Submitted() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         String fileName = "hpss/file";
         File file = new File(fileName, size);
         int position = NUMBER_4;
@@ -732,7 +707,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate06Staged() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         String fileName = "hpss/file";
         File file = new File(fileName, size);
         int position = NUMBER_4;
@@ -757,7 +732,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate07Queued() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         String fileName = "hpss/file";
         File file = new File(fileName, size);
         int position = NUMBER_4;
@@ -782,7 +757,7 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate08Failed() throws TReqSException {
         User owner = new User("username");
-        long size = 100;
+        long size = MySQLReadingDAOTest.HUNDRED;
         String fileName = "hpss/file";
         File file = new File(fileName, size);
         int position = NUMBER_4;
