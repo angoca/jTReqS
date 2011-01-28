@@ -58,8 +58,6 @@ public final class HPSSJNIBridgeTester {
      *            <li>Keytab complete path.</li>
      *            <li>File to query.</li>
      *            </ol>
-     * @throws JNIException
-     *             If there is any error.
      */
     public static void main(final String[] args) {
         System.out.println("> Starting HPSSBridge");
