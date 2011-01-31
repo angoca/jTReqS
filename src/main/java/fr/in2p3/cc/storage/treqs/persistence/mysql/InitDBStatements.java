@@ -299,11 +299,14 @@ final class InitDBStatements {
      * Structure of the table requests. The columns were sorted in order to have
      * the primary at first, followed by the more volatile columns.
      * <p>
+     * The requested file could have 1024 characters for the path and 256 for
+     * the filename = 1280.
+     * <p>
      * TODO v1.5 validate the precision of the DB columns with Java types.
      */
     static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
             + " int not null auto_increment, " + REQUESTS_FILE
-            + " varchar(1024) not null, " + REQUESTS_CREATION_TIME
+            + " varchar(1280) not null, " + REQUESTS_CREATION_TIME
             + " datetime not null, " + REQUESTS_USER
             + " varchar(32) not null, " + REQUESTS_CLIENT
             + " varchar(32) not null, " + REQUESTS_VERSION
@@ -315,7 +318,7 @@ final class InitDBStatements {
             + REQUESTS_SUBMISSION_TIME + " datetime, " + REQUESTS_QUEUED_TIME
             + " datetime, " + REQUESTS_END_TIME + " datetime, "
             + REQUESTS_STATUS + " smallint default 100, " + REQUESTS_MESSAGE
-            + " varchar(254), " + "PRIMARY KEY  (" + REQUESTS_ID
+            + " varchar(1024), " + "PRIMARY KEY  (" + REQUESTS_ID
             + "), FOREIGN KEY (" + REQUESTS_QUEUE_ID + ") REFERENCES " + QUEUES
             + " (" + QUEUES_ID + ")) ENGINE=InnoDB";
 
