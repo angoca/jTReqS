@@ -141,7 +141,7 @@ public abstract class AbstractProcess extends Thread {
      * @return true if the process is in a state that permits it to continue.
      *         False, if the process has to stop.
      */
-    protected final boolean keepOn() {
+    public final boolean keepOn() {
         LOGGER.trace("> keepOn");
 
         assert this.getProcessStatus() == ProcessStatus.STARTED
