@@ -323,7 +323,7 @@ public final class Starter {
         AbstractDAOFactory.getDAOFactoryInstance().initialize();
 
         // Initializes the watchdog.
-        Watchdog.getInstance().start();
+        Watchdog.getInstance();
 
         // Cleans the database.
         int qty = AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
