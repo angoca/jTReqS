@@ -49,7 +49,7 @@ public final class MySQLStatements {
     /**
      * User allocation table name.
      */
-    static final String ALLOCATIONS = "allocations";
+    static final String ALLOCATIONS = "jallocations";
     /**
      * Allocations table: Id of the allocation.
      */
@@ -81,7 +81,7 @@ public final class MySQLStatements {
     /**
      * Media type table name.
      */
-    static final String MEDIATYPES = "mediatypes";
+    static final String MEDIATYPES = "jmediatypes";
     /**
      * Media types table: Quantity of drives for the media type.
      */
@@ -97,7 +97,7 @@ public final class MySQLStatements {
     /**
      * Queues table name.
      */
-    static final String QUEUES = "queues";
+    static final String QUEUES = "jqueues";
     /**
      * Queues table: When the queue was activated.
      */
@@ -154,7 +154,7 @@ public final class MySQLStatements {
     /**
      * Requests table name.
      */
-    static final String REQUESTS = "requests";
+    static final String REQUESTS = "jrequests";
     /**
      * Requests table: Name or IP of the client that is demanding the file. It's
      * only used by the client.
