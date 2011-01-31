@@ -811,6 +811,8 @@ public final class Dispatcher extends AbstractProcess {
             }
         }
 
+        LOGGER.warn("Dispatcher Stopped");
+
         LOGGER.trace("< toStart");
     }
 }
