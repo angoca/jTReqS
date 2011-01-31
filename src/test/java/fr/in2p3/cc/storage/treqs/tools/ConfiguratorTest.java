@@ -48,10 +48,9 @@ import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.controller.StagersControllerTest;
 
 /**
- * TReqSConfigTest.cpp.
+ * Tests for the configurator.
  *
  * @author Andrés Gómez
  */
@@ -61,7 +60,7 @@ public final class ConfiguratorTest {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(StagersControllerTest.class);
+            .getLogger(ConfiguratorTest.class);
 
     /**
      * Destroys all objects.
