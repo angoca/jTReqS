@@ -42,6 +42,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.activator.Activator;
+import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 
 /**
@@ -70,8 +72,10 @@ public final class Watchdog {
      * Retrieves the singleton.
      *
      * @return Unique instance.
+     * @throws TReqSException
+     *             If there is a problem.
      */
-    public static Watchdog getInstance() {
+    public static Watchdog getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -88,13 +92,25 @@ public final class Watchdog {
     }
 
     /**
-     * Starts the monitoring process.
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
+
+    /**
+     * Starts the monitoring process by writing the start time. However, and
+     * this time there is not any heart beat.
      *
      * @throws TReqSException
      *             If there a problem while accessing the data source.
      */
-    public void start() throws TReqSException {
-        LOGGER.trace("> start");
+    private Watchdog() throws TReqSException {
+        LOGGER.trace("> Watchdog");
 
         // Warning, this is dependent to the virtual machine.
         // http://blog.igorminar.com/2007/03/how-java-application-can-discover-its.html
@@ -107,7 +123,7 @@ public final class Watchdog {
 
         AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().start(pid);
 
-        LOGGER.trace("< start");
+        LOGGER.trace("< Watchdog");
     }
 
     /**
@@ -119,7 +135,24 @@ public final class Watchdog {
     public void heartBeat() throws TReqSException {
         LOGGER.trace("> heartBeat");
 
-        AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().heartBeat();
+        // TODO Check that the activator and the dispatcher are working well
+        // before insert the heart beat.
+
+        boolean activator = Activator.getInstance().keepOn();
+        boolean dispatcher = Dispatcher.getInstance().keepOn();
+        if (activator && dispatcher) {
+            AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO()
+                    .heartBeat();
+        } else {
+            LOGGER.error("No heartbeat, the application is dying.");
+            if (!activator && dispatcher) {
+                LOGGER.warn("Activator is stopped");
+            } else if (activator && !dispatcher) {
+                LOGGER.warn("Dispatcher is stopped");
+            } else {
+                LOGGER.warn("Dispatcher and Activator are stopped");
+            }
+        }
 
         LOGGER.trace("< heartBeat");
     }
