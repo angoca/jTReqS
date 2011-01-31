@@ -671,6 +671,8 @@ public final class Activator extends AbstractProcess {
             }
         }
 
+        LOGGER.warn("Activator Stopped");
+
         LOGGER.trace("< toStart");
     }
 }
