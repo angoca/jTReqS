@@ -36,7 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.tools;
 
-import java.lang.management.ManagementFactory;
+import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -112,14 +112,7 @@ public final class Watchdog {
     private Watchdog() throws TReqSException {
         LOGGER.trace("> Watchdog");
 
-        // Warning, this is dependent to the virtual machine.
-        // http://blog.igorminar.com/2007/03/how-java-application-can-discover-its.html
-        String name = ManagementFactory.getRuntimeMXBean().getName();
-
-        LOGGER.warn("PID {}", name);
-        int index = name.indexOf('@');
-        // TODO it does not work with gij
-        int pid = Integer.parseInt(name.substring(0, index));
+        int pid = Watchdog.getPID();
 
         AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().start(pid);
 
@@ -134,9 +127,6 @@ public final class Watchdog {
      */
     public void heartBeat() throws TReqSException {
         LOGGER.trace("> heartBeat");
-
-        // TODO Check that the activator and the dispatcher are working well
-        // before insert the heart beat.
 
         boolean activator = Activator.getInstance().keepOn();
         boolean dispatcher = Dispatcher.getInstance().keepOn();
@@ -155,5 +145,40 @@ public final class Watchdog {
         }
 
         LOGGER.trace("< heartBeat");
+    }
+
+    /**
+     * Method to retrieve the current PID of the application.
+     * <p>
+     * This information was obtained from <a
+     * href="http://blog.igorminar.com/2007/03/how-java
+     * -application-can-discover
+     * -its.html">http://blog.igorminar.com/2007/03/how-java
+     * -application-can-discover-its.html</a>
+     * <p>
+     * There is another approach but it is dependent to the virtual machine.
+     * <p>
+     * <code>
+     * String name = ManagementFactory.getRuntimeMXBean().getName();<br/>
+     * int index = name.indexOf('@');
+     * int ret = Integer.parseInt(name.substring(0, index));
+     * </code> However, this does not work with GCJ.
+     *
+     * @return PID of the application.
+     * @throws WatchdogException
+     *             If there is any problem while executing the command.
+     */
+    public static int getPID() throws WatchdogException {
+        byte[] bo = new byte[100];
+        String[] cmd = { "bash", "-c", "echo $PPID" };
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(cmd);
+            p.getInputStream().read(bo);
+        } catch (IOException e) {
+            throw new WatchdogException(e);
+        }
+        int ret = Integer.parseInt(new String(bo).trim());
+        return ret;
     }
 }
