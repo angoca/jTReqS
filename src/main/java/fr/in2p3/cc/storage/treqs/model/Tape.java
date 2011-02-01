@@ -133,7 +133,7 @@ public final class Tape {
     }
 
     /**
-     * Getter for update time member.
+     * Getter for update time member. TODO
      *
      * @return Returns the last time when the status was checked.
      */
@@ -187,7 +187,7 @@ public final class Tape {
     }
 
     /**
-     * Setter for update time member.
+     * Setter for update time member. TODO
      *
      * @param updateTime
      *            Time when the status was checked.
@@ -203,7 +203,7 @@ public final class Tape {
     // }
 
     /**
-     * Establishes the status update time to now.
+     * Establishes the status update time to now. TODO
      */
     // void setStatusUpdateTimeNow() {
     // LOGGER.trace("> setStatusUpdateTimeNow");
