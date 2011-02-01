@@ -1,5 +1,4 @@
 #!/bin/sh
-# File:  treqs_watchdog.sh
 #
 # Copyright      Jonathan Schaeffer 2009-2010,
 #                CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
@@ -39,28 +38,82 @@
 # This script checks if treqs is still running
 # If not, restart it and print a message
 # The heartbeat table is updated accordingly
+#
+# @author Jonathan Schaeffer
+# @author Andres Gomez
+# @author Pierre-Emmanuel Brinette
 
-DBUSER="treqshb"
-DBNAME="treqsconfig"
-SQL_HB_OK="UPDATE heartbeat SET last_time=CURRENT_TIMESTAMP WHERE pid=\${PID};"
-SQL_HB_NOK="INSERT INTO heartbeat \(pid,start_time\) VALUES \(\${PID},CURRENT_TIMESTAMP\);"
 
-PID=$(/sbin/pidof treqs)
+#pid_file="/var/lock/subsys/treqs.id"
+pid_file="/tmp/treqs.id"
+#jtreqs_init=/etc/init.d/jtreqs
+jtreqs_init=echo
 
-if [ -z  "${PID}" ] ; then
-  # TReqS has died
-  DATE=$(date +"%D %T")
-  echo ":: $DATE TReqS has died. Core file should be available."
-  echo " Restarting ..."
-  /sbin/service treqsd start
-  if [ $? -ne 0 ] ; then
-    # Dead again ? This is problematic ...
-    echo " Can't restart the server."
-  else
-    sleep 1
-    PID=$(/sbin/pidof treqs)
-    eval echo $SQL_HB_NOK | mysql -u $DBUSER $DBNAME
-  fi
+# Properties to check the last heart beat.
+check_db=no
+ok='ok'
+bad='bad'
+interval=3
+sql_select="SELECT IF (last_time > DATE_SUB(NOW(), INTERVAL ${interval} MINUTE), \"${ok}\", \"${bad}\") FROM heart_beat ;"
+dbuser=jtreqs
+dbname=jtreqs
+verbose=0
+
+# Processes the arguments.
+while [ "${1#-}" != "$1" -a $# -gt 0 ] ; do
+    case $1 in
+        -h|-help)   help_msg 1 ;;
+        -db) check_db=yes;;
+        -v) verbose=1;;
+    esac
+    shift 1
+done
+
+# Checks if the file exists.
+if [ -e  ${pid_file} ] ; then
+    if [ ${verbose} -eq 1 ] ; then
+        echo - The service should be active
+    fi
+
+    # Checks the TReqS status
+    status=`${jtreqs_init} status`
+
+status="jTReqS is STARTED"
+# TODO PIDOF?? or not?
+# TODO /sbin/service ou comment?
+    if [ "${status}" != "jTReqS is STARTED" ] ; then
+        if [ ${verbose} -eq 1 ] ; then
+            echo - The service is not started
+        fi
+
+        # The service should be running but it is not,
+        # then restart it.
+        $jtreqs_init restart
+    elif [ ${check_db} = "yes" ] ; then
+        if [ ${verbose} -eq 1 ] ; then
+            echo - The service is started
+        fi
+
+        # The service is started, then checks the heart beat.
+        result=`echo ${sql_select} | mysql -u $dbuser -p"jtreqs" $dbname | tail -1`
+
+        # Checks if the service is fine.
+        if [ "${result}" != "${ok}" ] ; then
+            if [ ${verbose} -eq 1 ] ; then
+                echo - Restarting the service because on an old heartbeat
+            fi
+            # The service has an old heartbeat
+            $jtreqs_init restart
+        else
+            if [ ${verbose} -eq 1 ] ; then
+                echo - The service has a good heartbeat
+            fi
+        fi
+    fi
 else
-  eval echo $SQL_HB_OK | mysql -u $DBUSER $DBNAME
+    # The file does not exist, then do nothing.
+    if [ ${verbose} -eq 1 ] ; then
+        echo - The service is not active.
+    fi
 fi
+
