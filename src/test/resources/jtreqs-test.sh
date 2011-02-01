@@ -26,7 +26,7 @@ export HPSS_API_DEBUG=0
 export TREQS_LOG=TRACE
 export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
 
-CMD="exec -a jtreqs java -cp ${CLASSPATH} ${ASSERTIONS} ${LOGBACK_CONF} ${MAIN} ${CONF_FILE} $1"
+CMD="exec -a jtreqs java -d64 -cp ${CLASSPATH} ${ASSERTIONS} ${LOGBACK_CONF} ${MAIN} ${CONF_FILE} $1"
 
 echo sudo /etc/init.d/mysqld start
 echo ${CMD}
