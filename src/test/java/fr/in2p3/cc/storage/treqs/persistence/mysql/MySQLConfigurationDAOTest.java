@@ -85,6 +85,7 @@ public final class MySQLConfigurationDAOTest {
         MySQLBroker.destroyInstance();
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
