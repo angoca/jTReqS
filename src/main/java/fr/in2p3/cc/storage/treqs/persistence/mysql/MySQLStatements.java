@@ -49,7 +49,7 @@ public final class MySQLStatements {
     /**
      * User allocation table name.
      */
-    static final String ALLOCATIONS = "jallocations";
+    public static final String ALLOCATIONS = "jallocations";
     /**
      * Allocations table: Id of the allocation.
      */
@@ -81,7 +81,7 @@ public final class MySQLStatements {
     /**
      * Media type table name.
      */
-    static final String MEDIATYPES = "jmediatypes";
+    public static final String MEDIATYPES = "jmediatypes";
     /**
      * Media types table: Quantity of drives for the media type.
      */
@@ -97,7 +97,7 @@ public final class MySQLStatements {
     /**
      * Queues table name.
      */
-    static final String QUEUES = "jqueues";
+    public static final String QUEUES = "jqueues";
     /**
      * Queues table: When the queue was activated.
      */
