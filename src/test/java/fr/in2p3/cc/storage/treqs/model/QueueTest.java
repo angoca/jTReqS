@@ -2157,10 +2157,13 @@ public final class QueueTest {
         LOGGER.info(actual);
         LOGGER.info(expectedPrefix);
 
-        Assert.assertTrue(actual.startsWith(expectedPrefix));
-        Assert.assertTrue(actual.contains(expectedContains1));
-        Assert.assertFalse(actual.contains(notExpectedContains2));
-        Assert.assertFalse(actual.contains(notExpectedContains3));
+        Assert.assertTrue("prefix", actual.startsWith(expectedPrefix));
+        Assert.assertTrue("contains activation",
+                actual.contains(expectedContains1));
+        Assert.assertFalse("contains suspension",
+                actual.contains(notExpectedContains2));
+        Assert.assertFalse("contains end",
+                actual.contains(notExpectedContains3));
     }
 
     /**
