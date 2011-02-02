@@ -85,6 +85,9 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
+        if (instance != null) {
+            LOGGER.info("Instance destroyed");
+        }
         instance = null;
 
         LOGGER.trace("< destroyInstance");
