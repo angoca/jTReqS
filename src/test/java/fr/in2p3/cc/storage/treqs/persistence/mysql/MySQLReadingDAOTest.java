@@ -107,13 +107,9 @@ public final class MySQLReadingDAOTest {
                 MainTests.PROPERTIES_FILE);
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
-        String query = "DELETE FROM " + MySQLStatements.QUEUES;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.ALLOCATIONS;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+
+        MySQLTests.cleanDatabase();
+        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
                 + " VALUES (2, \"T10K-B\", 5)";
         MySQLBroker.getInstance().executeModification(query);
     }
@@ -126,6 +122,7 @@ public final class MySQLReadingDAOTest {
         MySQLBroker.destroyInstance();
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
