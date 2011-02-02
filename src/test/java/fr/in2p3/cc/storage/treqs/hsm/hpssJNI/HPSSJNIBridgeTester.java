@@ -50,7 +50,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 public final class HPSSJNIBridgeTester {
 
     /**
-     * Test that the jni bridge works correctly.
+     * Test that the jni bridge works correctly. TODO this should be a test
      *
      * @param args
      *            List of arguments:
