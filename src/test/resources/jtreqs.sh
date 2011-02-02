@@ -20,8 +20,13 @@ CONF_FILE=
 MAIN="fr.in2p3.cc.storage.treqs.main.Main"
 
 ASSERTIONS=
+# This is for HPSS logging (it works from 0 - 7, the three bits)
+export HPSS_API_DEBUG=0
+# This is for the internal logger (WARN, INFO, DEBUG, TRACE)
+export TREQS_LOG=WARN
+export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
 
-CMD="exec -a jtreqs java -cp ${CLASSPATH} ${ASSERTIONS} ${LOGBACK_CONF} ${MAIN} ${CONF_FILE} $1"
+CMD="exec -a jtreqs java -d64 -cp ${CLASSPATH} ${ASSERTIONS} ${LOGBACK_CONF} ${MAIN} ${CONF_FILE} $1"
 
 #echo sudo /etc/init.d/mysqld start
 #echo ${CMD}
