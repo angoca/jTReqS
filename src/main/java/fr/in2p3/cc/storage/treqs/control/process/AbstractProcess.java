@@ -107,7 +107,7 @@ public abstract class AbstractProcess extends Thread {
 
         assert this.getProcessStatus() == ProcessStatus.STARTING
                 || this.getProcessStatus() == ProcessStatus.STARTED : this
-                .getProcessStatus();
+                .getProcessStatus().name();
 
         // The process cannot be in created status, because this state is
         // assigned when the object is being created.
@@ -136,7 +136,8 @@ public abstract class AbstractProcess extends Thread {
     /**
      * Tests if the process can continue.
      * <p>
-     * The process status should be started or stopping.
+     * The process status should be started (it should continue executing) or
+     * stopping (it is being stopped).
      *
      * @return true if the process is in a state that permits it to continue.
      *         False, if the process has to stop.
@@ -145,7 +146,8 @@ public abstract class AbstractProcess extends Thread {
         LOGGER.trace("> keepOn");
 
         assert this.getProcessStatus() == ProcessStatus.STARTED
-                || this.getProcessStatus() == ProcessStatus.STOPPING;
+                || this.getProcessStatus() == ProcessStatus.STOPPING : this
+                .getProcessStatus().name();
 
         boolean ret = false;
         if (this.getProcessStatus() == ProcessStatus.STARTED) {
