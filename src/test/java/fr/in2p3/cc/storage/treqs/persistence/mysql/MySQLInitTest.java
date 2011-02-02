@@ -84,7 +84,7 @@ public final class MySQLInitTest {
                 MainTests.PROPERTIES_FILE);
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
-        MySQLBroker.getInstance().connect();
+
         dropTable(MySQLStatements.REQUESTS);
         dropTable(MySQLStatements.QUEUES);
         dropTable(MySQLStatements.ALLOCATIONS);
@@ -101,6 +101,7 @@ public final class MySQLInitTest {
         MySQLBroker.destroyInstance();
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
