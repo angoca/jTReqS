@@ -196,7 +196,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Tester for the command HSM bridge.
+     * Tester for the command HSM bridge. TODO this should be a test
      *
      * @param args
      *            Mandatory Java argument for main. The first argument is the
