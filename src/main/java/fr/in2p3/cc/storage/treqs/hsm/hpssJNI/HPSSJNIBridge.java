@@ -277,7 +277,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
      *            Exception to process.
      * @return Code of the exception.
      */
-    private int processException(final JNIException e) {
+    static int processException(final JNIException e) {
         LOGGER.trace("> processException");
 
         assert e != null;
