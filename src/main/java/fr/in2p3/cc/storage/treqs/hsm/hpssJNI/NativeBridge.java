@@ -64,6 +64,16 @@ public final class NativeBridge {
      * @return Object that will contain the properties of the file.
      * @throws JNIException
      *             If there is a problem retrieving the information.
+     *             <p>
+     *             If the error code of the exception is
+     *             <ul>
+     *             <li>-30001: The file is empty.</li>
+     *             <li>-30002: JNI problem while converting the tape name.</li>
+     *             <li>-30003: JNI problem while looking for the helper class,
+     *             it was not found.</li>
+     *             <li>-30004: JNI problem while looking for the helper
+     *             constructor.</li>
+     *             </ul>
      */
     static native HSMHelperFileProperties getFileProperties(
             final String filename) throws JNIException;
