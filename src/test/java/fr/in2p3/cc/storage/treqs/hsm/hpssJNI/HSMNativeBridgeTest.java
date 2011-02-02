@@ -44,15 +44,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.in2p3.cc.storage.treqs.TReqSException;
-
 /**
  * Tests for the JNI implementation.
  *
  * @author Andres Gomez
  */
 // TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
-public final class NativeBridgeTest {
+public final class HSMNativeBridgeTest {
 
     /**
      * Location of a valid keytab.
@@ -94,7 +92,7 @@ public final class NativeBridgeTest {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(NativeBridgeTest.class);
+            .getLogger(HSMNativeBridgeTest.class);
     /**
      * Name of a directory.
      */
