@@ -296,6 +296,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert name != null && !name.equals("");
 
+        LOGGER.debug("Execution from {}", System.getProperty("user.dir"));
+
         String command = this.buildCommandGetProperties(name);
 
         LOGGER.debug(command);
