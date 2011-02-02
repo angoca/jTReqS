@@ -131,6 +131,9 @@ public abstract class AbstractDAOFactory {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
+        if (instance != null){
+            LOGGER.info("Instance destroyed");
+        }
         instance = null;
 
         LOGGER.trace("< destroyInstance");
