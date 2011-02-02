@@ -79,6 +79,20 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             .getLogger(HPSSJNIBridge.class);
 
     /**
+     * Destroys the unique instance. This is useful only for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.debug("> destroyInstance");
+
+        if (instance != null) {
+            LOGGER.info("Instance destroyed");
+        }
+        instance = null;
+
+        LOGGER.debug("< destroyInstance");
+    }
+
+    /**
      * Retrieves the unique instance.
      *
      * @return The singleton instance.

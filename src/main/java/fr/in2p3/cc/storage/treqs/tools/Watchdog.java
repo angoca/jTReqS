@@ -69,6 +69,20 @@ public final class Watchdog {
     private static Watchdog instance;
 
     /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        if (instance != null) {
+            LOGGER.info("Instance destroyed");
+        }
+        instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
+
+    /**
      * Retrieves the singleton.
      *
      * @return Unique instance.
@@ -89,17 +103,6 @@ public final class Watchdog {
         LOGGER.trace("< getInstance");
 
         return instance;
-    }
-
-    /**
-     * Destroys the only instance. ONLY for testing purposes.
-     */
-    public static void destroyInstance() {
-        LOGGER.trace("> destroyInstance");
-
-        instance = null;
-
-        LOGGER.trace("< destroyInstance");
     }
 
     /**

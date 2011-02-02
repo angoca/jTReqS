@@ -164,6 +164,9 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     protected static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
+        if (instance != null){
+            LOGGER.info("Instance destroyed");
+        }
         instance = null;
 
         LOGGER.trace("< destroyInstance");

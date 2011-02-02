@@ -91,6 +91,7 @@ public final class Configurator {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
+            LOGGER.info("Instance created");
             instance = new Configurator();
         }
 
