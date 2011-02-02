@@ -41,8 +41,9 @@ import java.util.GregorianCalendar;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -115,11 +116,21 @@ public final class QueueTest {
      * @throws ProblematicConfiguationFileException
      *             There is a problem getting the configuration.
      */
-    @BeforeClass
-    public static void oneTimeSetUp()
-            throws ProblematicConfiguationFileException {
+    @Before
+    public void setUp() throws ProblematicConfiguationFileException {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
+    }
+
+    /**
+     * Destroys all after the tests.
+     */
+    @After
+    public void tearDown() {
+        Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
@@ -129,6 +140,7 @@ public final class QueueTest {
     public static void oneTimeTearDown() {
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
@@ -2112,7 +2124,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 600, creation time: ";
+                + ", suspend duration: 60, creation time: ";
         String notExpectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2153,7 +2165,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 600, creation time: ";
+                + ", suspend duration: 60, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2195,7 +2207,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 1, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 600, creation time: ";
+                + ", suspend duration: 60, creation time: ";
         String expectedContains1 = "activation time: ";
         String expectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2237,7 +2249,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 600, creation time: ";
+                + ", suspend duration: 60, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String expectedContains3 = "end time: ";
