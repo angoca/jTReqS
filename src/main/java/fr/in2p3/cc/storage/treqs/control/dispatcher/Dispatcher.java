@@ -120,6 +120,7 @@ public final class Dispatcher extends AbstractProcess {
             if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
                 instance.waitToFinish();
             }
+            LOGGER.info("Instance destroyed");
         }
 
         instance = null;

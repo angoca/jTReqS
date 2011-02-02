@@ -102,6 +102,7 @@ public final class Activator extends AbstractProcess {
             if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
                 instance.waitToFinish();
             }
+            LOGGER.info("Instance destroyed");
         }
 
         instance = null;

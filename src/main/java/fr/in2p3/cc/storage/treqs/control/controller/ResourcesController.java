@@ -69,6 +69,20 @@ public final class ResourcesController {
     private static ResourcesController instance;
 
     /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
+
+        if (instance != null) {
+            LOGGER.info("Instance destroyed");
+        }
+        instance = null;
+
+        LOGGER.trace("< destroyInstance");
+    }
+
+    /**
      * Access the singleton instance.
      *
      * @return Unique instance of this class.

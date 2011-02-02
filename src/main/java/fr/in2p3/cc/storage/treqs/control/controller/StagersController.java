@@ -73,6 +73,9 @@ public final class StagersController {
     public static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
+        if (instance != null) {
+            LOGGER.info("Instance destroyed");
+        }
         instance = null;
 
         LOGGER.debug("< destroyInstance");

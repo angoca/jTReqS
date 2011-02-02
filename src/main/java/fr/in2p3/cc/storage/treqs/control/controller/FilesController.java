@@ -72,9 +72,14 @@ public final class FilesController extends AbstractController {
      * Destroys the unique instance. This is useful only for testing purposes.
      */
     public static void destroyInstance() {
-        LOGGER.debug(">< destroyInstance");
+        LOGGER.debug("> destroyInstance");
 
+        if (instance != null) {
+            LOGGER.info("Instance destroyed");
+        }
         instance = null;
+
+        LOGGER.debug("< destroyInstance");
     }
 
     /**

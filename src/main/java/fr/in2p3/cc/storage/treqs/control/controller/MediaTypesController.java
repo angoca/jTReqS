@@ -72,6 +72,9 @@ public final class MediaTypesController extends AbstractController {
     static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
+        if (instance != null) {
+            LOGGER.info("Instance destroyed");
+        }
         instance = null;
 
         LOGGER.trace("< destroyInstance");
@@ -87,6 +90,8 @@ public final class MediaTypesController extends AbstractController {
 
         if (instance == null) {
             instance = new MediaTypesController();
+
+            LOGGER.debug("Creating instance.");
         }
 
         assert instance != null;
