@@ -69,6 +69,10 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <p>
  * It is recommended to have a configuration with the maxStager as multiple of
  * the maxStagersPerQueue.
+ * <p>
+ * TODO Create a mechanism to stop the Activator when it passed and it did not
+ * activate any queue. Then, wait for the Dispatcher to process something, and
+ * then reactivates. This permits to process new requests faster.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -90,12 +94,14 @@ public final class Activator extends AbstractProcess {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        if (instance.getProcessStatus() == ProcessStatus.STARTING
-                || instance.getProcessStatus() == ProcessStatus.STARTED) {
-            instance.conclude();
-        }
-        if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
-            instance.waitToFinish();
+        if (instance != null) {
+            if (instance.getProcessStatus() == ProcessStatus.STARTING
+                    || instance.getProcessStatus() == ProcessStatus.STARTED) {
+                instance.conclude();
+            }
+            if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
+                instance.waitToFinish();
+            }
         }
 
         instance = null;
