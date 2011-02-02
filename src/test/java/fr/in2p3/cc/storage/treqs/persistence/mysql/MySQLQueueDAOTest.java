@@ -109,13 +109,9 @@ public final class MySQLQueueDAOTest {
      */
     @Before
     public void setUp() throws TReqSException {
-        String query = "DELETE FROM " + MySQLStatements.QUEUES;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.ALLOCATIONS;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+        MySQLTests.cleanDatabase();
+
+        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
                 + " VALUES (1, \"T10K-A\", 5)";
         MySQLBroker.getInstance().executeModification(query);
     }
@@ -128,15 +124,12 @@ public final class MySQLQueueDAOTest {
      */
     @AfterClass
     public static void oneTimeTearDown() throws TReqSException {
-        String query = "DELETE FROM " + MySQLStatements.QUEUES;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.ALLOCATIONS;
-        MySQLBroker.getInstance().executeModification(query);
-        query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
-        MySQLBroker.getInstance().executeModification(query);
+        MySQLTests.cleanDatabase();
+
         MySQLBroker.destroyInstance();
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
