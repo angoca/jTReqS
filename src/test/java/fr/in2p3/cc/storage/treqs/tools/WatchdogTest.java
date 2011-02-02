@@ -57,6 +57,7 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLRequestsDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
@@ -66,7 +67,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
  *
  * @author Andrés Gómez
  */
-//@RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class WatchdogTest {
     /**
      * Logger.
@@ -114,6 +115,7 @@ public final class WatchdogTest {
      */
     @AfterClass
     public static void oneTimeTearDown() throws TReqSException {
+        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
         System.clearProperty(Constants.CONFIGURATION_FILE);
     }
