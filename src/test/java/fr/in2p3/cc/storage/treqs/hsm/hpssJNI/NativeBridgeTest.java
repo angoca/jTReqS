@@ -38,78 +38,185 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import junit.framework.Assert;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests for the JNI implementation.
  *
  * @author Andres Gomez
  */
-public class NativeBridgeTest {
+// TODO @RunWith(RandomBlockJUnit4ClassRunner.class)
+public final class NativeBridgeTest {
 
-     @Test
-    public void testInit01BadUser() {
-//        Assert.fail();
+    /**
+     * Location of a valid keytab.
+     */
+    public static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
+    /**
+     * Name of the user related to the keytab.
+     */
+    public static final String VALID_USERNAME = "root";
+    /**
+     * Authentication type for the valid keytab.
+     */
+    public static final String VALID_AUTH_TYPE = "unix";
+    /**
+     * Name of a file that is stored in tape.
+     */
+    public static final String VALID_FILE_IN_TAPE = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/dummy";
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(NativeBridgeTest.class);
+
+    /**
+     * Setups the environment.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        String ldPath = "java.library.path";
+        System.setProperty(ldPath,
+                "/opt/hpss/lib/:" + System.getProperty(ldPath));
+        LOGGER.warn(System.getProperty(ldPath));
     }
 
-    // @Test
-    public void testInit01BadKeytab() {
-        Assert.fail();
+    /**
+     * Tests to init the API client with an invalid user (not the one for the
+     * keytab).
+     *
+     * @throws JNIException
+     *             Never.
+     */
+    @Test
+    public void testInit01AllValid() throws JNIException {
+        NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH, VALID_USERNAME);
     }
 
-    // @Test
-    public void testInit01BadAuthType() {
-        Assert.fail();
+    /**
+     * Tests to init the API client with an invalid user (not the one for the
+     * keytab).
+     */
+    @Test
+    public void testInit02BadUser() {
+        try {
+            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH, "foo");
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
+                Assert.fail();
+            }
+        }
     }
 
-    // @Test
+    /**
+     * Tests to init the API client with an invalid keytab.
+     */
+    @Test
+    public void testInit03BadKeytab() {
+        // TODO Assert.fail();
+    }
+
+    /**
+     * Tests to init the API client with an invalid authentication mechanism.
+     */
+    @Test
+    public void testInit04BadAuthType() {
+        // TODO Assert.fail();
+    }
+
+    /**
+     * Tests to get the properties of a directory.
+     */
+    @Test
     public void testGetProperties01Directory() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of a non-existing file.
+     */
+    @Test
     public void testGetProperties02NotExistingFile() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of a file that is in a tape (purged).
+     */
+    @Test
     public void testGetProperties03FileInTape() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of a file that is in disk (not purged).
+     */
+    @Test
     public void testGetProperties04FileInDisk() {
-
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of a file that is locked in the higher
+     * storage level.
+     */
+    @Test
     public void testGetProperties05FileLocked() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of an already open file.
+     */
+    @Test
     public void testGetProperties06FileAlreadyOpen() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of a file that is in an aggregation.
+     */
+    @Test
     public void testGetProperties07FileInAggregation() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of an empty file.
+     */
+    @Test
     public void testGetProperties08EmptyFile() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
+    /**
+     * Tests to get the properties of a file that is stored in a single storage
+     * class with just one level.
+     */
+    @Test
     public void testGetProperties09FileInSingleHierarchy() {
-        Assert.fail();
+        // TODO Assert.fail();
     }
 
-    // @Test
-    public void testStage01() {
-        Assert.fail();
+    /**
+     * Tests to stage a file that is in an unlocked tape.
+     */
+    @Test
+    public void testStage01Unlocked() {
+        // TODO Assert.fail();
     }
 
+    /**
+     * Tests to stage a file that is in an locked tape.
+     */
+    @Test
+    public void testStage02Locked() {
+        // TODO Assert.fail();
+    }
 }
