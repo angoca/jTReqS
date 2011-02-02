@@ -38,11 +38,13 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import junit.framework.Assert;
 
+import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
  * Tests for the JNI implementation.
@@ -55,25 +57,53 @@ public final class NativeBridgeTest {
     /**
      * Location of a valid keytab.
      */
-    public static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
+    private static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
     /**
      * Name of the user related to the keytab.
      */
-    public static final String VALID_USERNAME = "root";
+    private static final String VALID_USERNAME = "root";
     /**
      * Authentication type for the valid keytab.
      */
-    public static final String VALID_AUTH_TYPE = "unix";
+    private static final String VALID_AUTH_TYPE = "unix";
     /**
-     * Name of a file that is stored in tape.
+     * Name of a file that could be stored in tape.
      */
-    public static final String VALID_FILE_IN_TAPE = "/hpss/in2p3.fr/group/"
+    private static final String VALID_FILE = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
+    /**
+     * Size of the valid file.
+     */
+    private static final long VALID_FILE_SIZE = 1000;
+    /**
+     * Name of a file that could be stored in tape.
+     */
+    private static final String VALID_FILE_LOCKED = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/dummy";
+    /**
+     * Name of a file that is in an aggregation.
+     */
+    private static final String VALID_FILE_IN_AGGREGA = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/dummy";
+    /**
+     * Name of a file that is empty.
+     */
+    private static final String VALID_FILE_EMPTY = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/empty";
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(NativeBridgeTest.class);
+    /**
+     * Name of a directory.
+     */
+    private static final String DIRECTORY = "/hpss";
+    /**
+     * Name of a file in a single hierarchy.
+     */
+    private static final String VALID_FILE_SINGLE_HIERARCHY = "/hpss/in2p3.fr/"
+            + "group/ccin2p3/treqs/dummy";
 
     /**
      * Setups the environment.
@@ -83,31 +113,72 @@ public final class NativeBridgeTest {
         String ldPath = "java.library.path";
         System.setProperty(ldPath,
                 "/opt/hpss/lib/:" + System.getProperty(ldPath));
-        LOGGER.warn(System.getProperty(ldPath));
+        LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
+        LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
+        LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
     }
 
     /**
-     * Tests to init the API client with an invalid user (not the one for the
-     * keytab).
+     * Clears all after the tests.
+     */
+    @After
+    public void tearDown() {
+        // TODO destroy the authentication.
+    }
+
+    /**
+     * Checks if the authentication was done.
+     */
+    private static boolean authenticated = false;
+
+    /**
+     * Tests to get the properties of a file without having been authenticated.
+     *
+     * @throws JNIException
+     */
+    @Test
+    public void testGetProperties01NoInit() throws JNIException {
+        try {
+            NativeBridge.getFileProperties(VALID_FILE);
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testGetProperties01NoInit " + code);
+            if (code != HPSSErrorCode.HPSS_EACCES.getCode()) {
+                Assert.fail();
+            }
+        }
+    }
+
+    /**
+     * Tests to stage a file without being authenticated.
      *
      * @throws JNIException
      *             Never.
      */
     @Test
-    public void testInit01AllValid() throws JNIException {
-        NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH, VALID_USERNAME);
+    public void testStage01NoInit() {
+        try {
+            NativeBridge.stage(VALID_FILE, VALID_FILE_SIZE);
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testStage01NoInit " + code);
+            if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
+                Assert.fail();
+            }
+        }
     }
 
     /**
-     * Tests to init the API client with an invalid user (not the one for the
-     * keytab).
+     * Tests to init the API client with kerberos as authentication mechanism
+     * when the right is unix.
      */
     @Test
-    public void testInit02BadUser() {
+    public void testInit01KerberosAuthType() {
         try {
-            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH, "foo");
+            NativeBridge.init("kerberos", VALID_KEYTAB_PATH, VALID_USERNAME);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testInit04KerberosAuthType " + code);
             if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
                 Assert.fail();
             }
@@ -118,105 +189,276 @@ public final class NativeBridgeTest {
      * Tests to init the API client with an invalid keytab.
      */
     @Test
-    public void testInit03BadKeytab() {
-        // TODO Assert.fail();
+    public void testInit02BadKeytab() {
+        try {
+            NativeBridge.init(VALID_AUTH_TYPE, "foo", VALID_USERNAME);
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testInit03BadKeytab " + code);
+            if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
+                Assert.fail();
+            }
+        }
     }
 
     /**
-     * Tests to init the API client with an invalid authentication mechanism.
+     * Tests to init the API client with an invalid user (not the one for the
+     * keytab).
      */
     @Test
-    public void testInit04BadAuthType() {
-        // TODO Assert.fail();
+    public void testInit03BadUser() {
+        try {
+            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH, "foo");
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testInit02BadUser " + code);
+            if (code != HPSSErrorCode.HPSS_EINVAL.getCode()) {
+                Assert.fail();
+            }
+            // if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
+            // Assert.fail();
+            // }
+        }
+    }
+
+    /**
+     * Tests to init the API client with an invalid user (not the one for the
+     * keytab).
+     *
+     * @throws JNIException
+     *             Never.
+     */
+    @Test
+    public void testInit04AllValid() throws JNIException {
+        authenticate();
+    }
+
+    /**
+     * Tests to init the API client with an invalid authentication mechanism,
+     * and it passes because the default is unix.
+     *
+     * @throws JNIException
+     *             Never.
+     */
+    // TODO @Test
+    public void testInit05BadAuthType() throws JNIException {
+        if (!authenticated) {
+            NativeBridge.init("foo", VALID_KEYTAB_PATH, VALID_USERNAME);
+        } // TODO else { deauthenticate and authenticate correctly}
     }
 
     /**
      * Tests to get the properties of a directory.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties01Directory() {
-        // TODO Assert.fail();
+    public void testGetProperties01Directory() throws JNIException {
+        authenticate();
+        try {
+            NativeBridge.getFileProperties(DIRECTORY);
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testGetProperties01Directory " + code);
+            if (code != HPSSErrorCode.HPSS_EISDIR.getCode()) {
+                Assert.fail();
+            }
+        }
     }
 
     /**
      * Tests to get the properties of a non-existing file.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties02NotExistingFile() {
-        // TODO Assert.fail();
+    public void testGetProperties02NotExistingFile() throws JNIException {
+        authenticate();
+        try {
+            NativeBridge.getFileProperties("/NoExistingFile");
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testGetProperties02NotExistingFile " + code);
+            if (code != HPSSErrorCode.HPSS_ENOENT.getCode()) {
+                Assert.fail();
+            }
+        }
     }
 
     /**
      * Tests to get the properties of a file that is in a tape (purged).
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties03FileInTape() {
-        // TODO Assert.fail();
+    public void testGetProperties03FileInTape() throws JNIException {
+        authenticate();
+        // TODO NativeBridgeHelper.purge(VALID_FILE);
+
+        NativeBridge.getFileProperties(VALID_FILE);
     }
 
     /**
      * Tests to get the properties of a file that is in disk (not purged).
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties04FileInDisk() {
-        // TODO Assert.fail();
+    public void testGetProperties04FileInDisk() throws JNIException {
+        authenticate();
+        NativeBridge.stage(VALID_FILE, VALID_FILE_SIZE);
+
+        NativeBridge.getFileProperties(VALID_FILE);
     }
 
     /**
      * Tests to get the properties of a file that is locked in the higher
      * storage level.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties05FileLocked() {
-        // TODO Assert.fail();
+    public void testGetProperties05FileLocked() throws JNIException {
+        authenticate();
+        // TODO NativeBridgeHelper.lockFile(VALID_FILE);
+
+        NativeBridge.getFileProperties(VALID_FILE);
+
+        // TODO NativeBridgeHelper.unlockFile(VALID_FILE);
     }
 
     /**
      * Tests to get the properties of an already open file.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties06FileAlreadyOpen() {
-        // TODO Assert.fail();
+    public void testGetProperties06FileAlreadyOpen() throws JNIException {
+        authenticate();
+        // TODO NativeBridgeHelper.open(VALID_FILE);
+
+        NativeBridge.getFileProperties(VALID_FILE);
+
+        // TODO NativeBridgeHelper.close(VALID_FILE);
     }
 
     /**
      * Tests to get the properties of a file that is in an aggregation.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties07FileInAggregation() {
-        // TODO Assert.fail();
+    public void testGetProperties07FileInAggregation() throws JNIException {
+        authenticate();
+
+        NativeBridge.getFileProperties(VALID_FILE_IN_AGGREGA);
     }
 
     /**
      * Tests to get the properties of an empty file.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties08EmptyFile() {
-        // TODO Assert.fail();
+    public void testGetProperties08EmptyFile() throws JNIException {
+        authenticate();
+
+        try {
+            NativeBridge.getFileProperties(VALID_FILE_EMPTY);
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testGetProperties08EmptyFile " + code);
+            if (code != -30001) {
+                Assert.fail();
+            }
+        }
     }
 
     /**
      * Tests to get the properties of a file that is stored in a single storage
      * class with just one level.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testGetProperties09FileInSingleHierarchy() {
-        // TODO Assert.fail();
+    public void testGetProperties09FileInSingleHierarchy() throws JNIException {
+        authenticate();
+
+        NativeBridge.getFileProperties(VALID_FILE_SINGLE_HIERARCHY);
     }
 
     /**
      * Tests to stage a file that is in an unlocked tape.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testStage01Unlocked() {
-        // TODO Assert.fail();
+    public void testStage02Unlocked() throws JNIException {
+        authenticate();
+
+        NativeBridge.stage(VALID_FILE, VALID_FILE_SIZE);
     }
 
     /**
      * Tests to stage a file that is in an locked tape.
+     *
+     * @throws JNIException
+     *             Never.
      */
     @Test
-    public void testStage02Locked() {
-        // TODO Assert.fail();
+    public void testStage03Locked() throws JNIException {
+        authenticate();
+        // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
+
+        NativeBridge.stage(VALID_FILE_LOCKED, VALID_FILE_SIZE);
+
+        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+    }
+
+    /**
+     * Tests that it is not possible to be authenticated twice.
+     *
+     * @throws JNIException
+     *             Never.
+     */
+    @Test
+    public void testInit06AlreadyAuthenticated() throws JNIException {
+        // TODO NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
+        // VALID_USERNAME);
+
+        try {
+            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
+                    VALID_USERNAME);
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testInit06AlreadyAuthenticated " + code);
+            if (code != HPSSErrorCode.HPSS_EIO.getCode()) {
+                Assert.fail();
+            }
+        }
+    }
+
+    /**
+     * Authenticates the user.
+     *
+     * @throws JNIException
+     *             If there is a problem while authenticating.
+     */
+    private static void authenticate() throws JNIException {
+        if (!authenticated) {
+            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
+                    VALID_USERNAME);
+            authenticated = true;
+        }
     }
 }
