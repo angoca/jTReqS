@@ -37,6 +37,7 @@
 package fr.in2p3.cc.storage.treqs.hsm.command;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,6 +47,8 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.model.File;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Tests for HSMCommandBridgeTest.
@@ -60,6 +63,7 @@ public final class HSMCommandBridgeTest {
     @After
     public void tearDown() {
         HSMCommandBridge.destroyInstance();
+        Configurator.destroyInstance();
     }
 
     /**
