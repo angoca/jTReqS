@@ -115,6 +115,7 @@ public final class MySQLBrokerTest {
         MySQLBroker.destroyInstance();
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
