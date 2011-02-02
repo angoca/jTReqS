@@ -66,7 +66,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
  *
  * @author Andrés Gómez
  */
-@RunWith(RandomBlockJUnit4ClassRunner.class)
+//@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class WatchdogTest {
     /**
      * Logger.
@@ -101,9 +101,7 @@ public final class WatchdogTest {
      */
     @After
     public void tearDown() throws TReqSException {
-        Activator.getInstance().conclude();
         Activator.destroyInstance();
-        Dispatcher.getInstance().conclude();
         Dispatcher.destroyInstance();
         Watchdog.destroyInstance();
     }
