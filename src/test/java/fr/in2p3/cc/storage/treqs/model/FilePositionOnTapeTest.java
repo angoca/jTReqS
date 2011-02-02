@@ -281,6 +281,9 @@ public final class FilePositionOnTapeTest {
         String expectedSuffix = ", position: " + position + ", requester: "
                 + username + ", tape: " + tapeName + "}";
 
+        LOGGER.error("toString Current    {}", actual);
+        LOGGER.error("toString Excepected {}, {}", expectedPrefix, expectedSuffix);
+
         Assert.assertTrue("toString prefix", actual.startsWith(expectedPrefix));
         Assert.assertTrue("toString sufix", actual.endsWith(expectedSuffix));
     }
