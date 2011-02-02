@@ -119,8 +119,9 @@ public final class DispatcherTest {
     @AfterClass
     public static void oneTimeTearDown() throws TReqSException {
         HSMMockBridge.destroyInstance();
-        Configurator.destroyInstance();
         AbstractDAOFactory.destroyInstance();
+        Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
