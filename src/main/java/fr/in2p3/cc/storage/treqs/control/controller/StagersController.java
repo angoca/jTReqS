@@ -168,8 +168,7 @@ public final class StagersController {
             Stager stager = iterator.next();
             LOGGER.debug("Stager {} in status {}", stager.getName(), stager
                     .getProcessStatus().name());
-            if (stager.getProcessStatus() == ProcessStatus.CREATED
-                    || stager.getProcessStatus() == ProcessStatus.STARTED
+            if (stager.getProcessStatus() == ProcessStatus.STARTED
                     || stager.getProcessStatus() == ProcessStatus.STARTING) {
                 stager.conclude();
             }
