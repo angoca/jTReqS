@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.Dispatcher;
+import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 
 /**
@@ -131,8 +132,22 @@ public final class Watchdog {
     public void heartBeat() throws TReqSException {
         LOGGER.trace("> heartBeat");
 
-        boolean activator = Activator.getInstance().keepOn();
-        boolean dispatcher = Dispatcher.getInstance().keepOn();
+        boolean activator = false;
+        ProcessStatus activatorState = Activator.getInstance()
+                .getProcessStatus();
+        if (activatorState != ProcessStatus.STARTING
+                && activatorState != ProcessStatus.STOPPED) {
+            activator = Activator.getInstance().keepOn();
+        }
+
+        boolean dispatcher = false;
+        ProcessStatus dispatcherState = Dispatcher.getInstance()
+                .getProcessStatus();
+        if (dispatcherState != ProcessStatus.STARTING
+                && dispatcherState != ProcessStatus.STOPPED) {
+            dispatcher = Dispatcher.getInstance().keepOn();
+        }
+
         if (activator && dispatcher) {
             AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO()
                     .heartBeat();
