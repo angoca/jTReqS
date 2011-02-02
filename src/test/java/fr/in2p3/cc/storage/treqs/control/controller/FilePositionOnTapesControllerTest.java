@@ -49,6 +49,7 @@ import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Tests for FilePositionOnTapesController.
@@ -70,6 +71,7 @@ public final class FilePositionOnTapesControllerTest {
         FilePositionOnTapesController.destroyInstance();
         FilesController.destroyInstance();
         TapesController.destroyInstance();
+        Configurator.destroyInstance();
     }
 
     /**
