@@ -2119,10 +2119,13 @@ public final class QueueTest {
         LOGGER.info(actual);
         LOGGER.info(expectedPrefix);
 
-        Assert.assertTrue(actual.startsWith(expectedPrefix));
-        Assert.assertFalse(actual.contains(notExpectedContains1));
-        Assert.assertFalse(actual.contains(notExpectedContains2));
-        Assert.assertFalse(actual.contains(notExpectedContains3));
+        Assert.assertTrue("prefix", actual.startsWith(expectedPrefix));
+        Assert.assertFalse("contains activation",
+                actual.contains(notExpectedContains1));
+        Assert.assertFalse("contains suspension",
+                actual.contains(notExpectedContains2));
+        Assert.assertFalse("contains end",
+                actual.contains(notExpectedContains3));
     }
 
     /**
@@ -2199,10 +2202,13 @@ public final class QueueTest {
         LOGGER.info(actual);
         LOGGER.info(expectedPrefix);
 
-        Assert.assertTrue(actual.startsWith(expectedPrefix));
-        Assert.assertTrue(actual.contains(expectedContains1));
-        Assert.assertTrue(actual.contains(expectedContains2));
-        Assert.assertFalse(actual.contains(notExpectedContains3));
+        Assert.assertTrue("prefix", actual.startsWith(expectedPrefix));
+        Assert.assertTrue("contains activation",
+                actual.contains(expectedContains1));
+        Assert.assertTrue("contains suspension",
+                actual.contains(expectedContains2));
+        Assert.assertFalse("contains end",
+                actual.contains(notExpectedContains3));
     }
 
     /**
@@ -2238,9 +2244,11 @@ public final class QueueTest {
         LOGGER.info(actual);
         LOGGER.info(expectedPrefix);
 
-        Assert.assertTrue(actual.startsWith(expectedPrefix));
-        Assert.assertTrue(actual.contains(expectedContains1));
-        Assert.assertFalse(actual.contains(notExpectedContains2));
-        Assert.assertTrue(actual.contains(expectedContains3));
+        Assert.assertTrue("prefix", actual.startsWith(expectedPrefix));
+        Assert.assertTrue("contains activation",
+                actual.contains(expectedContains1));
+        Assert.assertFalse("contains suspension",
+                actual.contains(notExpectedContains2));
+        Assert.assertTrue("contains end", actual.contains(expectedContains3));
     }
 }
