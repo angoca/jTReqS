@@ -145,7 +145,6 @@ int processProperties(hpss_xfileattr_t attrOut, int * position,
 	}
 
 	// FIXME The file is empty, identify in other way.
-	// TODO javadoc about this
 	if (*position == -1 && rc == 0) {
 		rc = -30001;
 		strcpy(tape, "EMPTY");
