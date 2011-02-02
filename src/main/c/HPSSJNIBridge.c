@@ -196,8 +196,7 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_s
 	filename = (*env)->GetStringUTFChars(env, jFileName, JNI_FALSE);
 
 	// Calls the Broker.
-	// FIXME size is jint and it is not a long long int.
-	rc = stage(filename, &size);
+	rc = stage(filename, (long long unsigned int *)&size);
 
 	// Release JNI components.
 	(*env)->ReleaseStringUTFChars(env, jFileName, filename);
@@ -235,8 +234,7 @@ jint throwNoClassDefError(JNIEnv *env, const char *message) {
 
 jint throwJNIException(JNIEnv *env, char *message) {
 	jclass exClass;
-	const char *className =
-			"fr/in2p3/cc/storage/treqs/hsm/hpssJNI/JNIException";
+	const char *className = "fr/in2p3/cc/storage/treqs/hsm/hpssJNI/JNIException";
 
 	if (trace) {
 		printf("> Creation JNI exception\n");
