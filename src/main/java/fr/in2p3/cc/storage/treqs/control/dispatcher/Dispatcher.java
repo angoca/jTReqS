@@ -112,12 +112,14 @@ public final class Dispatcher extends AbstractProcess {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        if (instance.getProcessStatus() == ProcessStatus.STARTING
-                || instance.getProcessStatus() == ProcessStatus.STARTED) {
-            instance.conclude();
-        }
-        if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
-            instance.waitToFinish();
+        if (instance != null) {
+            if (instance.getProcessStatus() == ProcessStatus.STARTING
+                    || instance.getProcessStatus() == ProcessStatus.STARTED) {
+                instance.conclude();
+            }
+            if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
+                instance.waitToFinish();
+            }
         }
 
         instance = null;
