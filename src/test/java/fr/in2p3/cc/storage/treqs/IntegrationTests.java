@@ -44,6 +44,7 @@ import fr.in2p3.cc.storage.treqs.control.activator.ActivatorTest;
 import fr.in2p3.cc.storage.treqs.control.dispatcher.DispatcherTest;
 import fr.in2p3.cc.storage.treqs.control.selector.JonathanSelectorTest;
 import fr.in2p3.cc.storage.treqs.hsm.command.HSMCommandBridgeTest;
+import fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HSMNativeBridgeTest;
 import fr.in2p3.cc.storage.treqs.tools.WatchdogTest;
 
 /**
@@ -54,6 +55,6 @@ import fr.in2p3.cc.storage.treqs.tools.WatchdogTest;
 @RunWith(Suite.class)
 @SuiteClasses({ ControllerTests.class, JonathanSelectorTest.class,
         ActivatorTest.class, DispatcherTest.class, HSMCommandBridgeTest.class,
-        WatchdogTest.class })
+        HSMNativeBridgeTest.class, WatchdogTest.class })
 public final class IntegrationTests {
 }
