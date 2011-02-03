@@ -58,38 +58,38 @@ public final class HSMNativeBridgeTest {
     /**
      * Location of a valid keytab.
      */
-    public static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
+    static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
     /**
      * Name of the user related to the keytab.
      */
-    public static final String VALID_USERNAME = "root";
+    static final String VALID_USERNAME = "root";
     /**
      * Authentication type for the valid keytab.
      */
-    public static final String VALID_AUTH_TYPE = "unix";
+    static final String VALID_AUTH_TYPE = "unix";
     /**
      * Name of a file that could be stored in tape.
      */
-    public static final String VALID_FILE = "/hpss/in2p3.fr/group/"
+    static final String VALID_FILE = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
     /**
      * Size of the valid file.
      */
-    public static final long VALID_FILE_SIZE = 1000;
+    static final long VALID_FILE_SIZE = 1000;
     /**
      * Name of a file that could be stored in tape.
      */
-    private static final String VALID_FILE_LOCKED = "/hpss/in2p3.fr/group/"
+    static final String VALID_FILE_LOCKED = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
     /**
      * Name of a file that is in an aggregation.
      */
-    private static final String VALID_FILE_IN_AGGREGA = "/hpss/in2p3.fr/group/"
+    static final String VALID_FILE_IN_AGGREGA = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
     /**
      * Name of a file that is empty.
      */
-    private static final String VALID_FILE_EMPTY = "/hpss/in2p3.fr/group/"
+    static final String VALID_FILE_EMPTY = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/empty";
     /**
      * Logger.
@@ -99,11 +99,11 @@ public final class HSMNativeBridgeTest {
     /**
      * Name of a directory.
      */
-    private static final String DIRECTORY = "/hpss";
+    static final String DIRECTORY = "/hpss";
     /**
      * Name of a file in a single hierarchy.
      */
-    private static final String VALID_FILE_SINGLE_HIERARCHY = "/hpss/in2p3.fr/"
+    static final String VALID_FILE_SINGLE_HIERARCHY = "/hpss/in2p3.fr/"
             + "group/ccin2p3/treqs/dummy";
 
     /**
@@ -125,6 +125,9 @@ public final class HSMNativeBridgeTest {
         }
     }
 
+    /**
+     * Removes the authentication and destroys the instance.
+     */
     static void deauthenticate() {
         if (authenticated) {
             NativeBridge.destroyInstance();
