@@ -67,11 +67,11 @@ public final class HSMNativeBridgeContextBadUserTest {
     @BeforeClass
     public static void oneTimeSetUp() {
         String ldPath = "java.library.path";
-        System.setProperty(ldPath,
-                "/opt/hpss/lib/:" + System.getProperty(ldPath));
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
+        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTest.VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTest.VALID_KEYTAB_PATH);
     }
 
     /**
