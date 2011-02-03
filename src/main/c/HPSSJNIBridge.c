@@ -40,6 +40,8 @@
 #include "ProcessException.h"
 
 #define cont (rc == HPSS_E_NOERROR)
+
+// These definition are for a kind of logger.
 #define trace (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0)
 #define debug (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG")) == 0)
 #define info (LOGGER != NULL && (strcmp(LOGGER, "TRACE") || strcmp(LOGGER, "DEBUG") || strcmp(LOGGER, "INFO")) == 0)
