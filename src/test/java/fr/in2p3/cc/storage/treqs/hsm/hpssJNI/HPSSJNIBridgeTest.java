@@ -38,9 +38,14 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import junit.framework.Assert;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMDirectoryException;
@@ -57,10 +62,30 @@ import fr.in2p3.cc.storage.treqs.model.File;
 public final class HPSSJNIBridgeTest {
 
     /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMNativeBridgeContextTest.class);
+
+    /**
+     * Sets the general environment.
+     *
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
      * Tests to get the properties of a directory.
      */
     @Test
     public void testGetProperties02Directory() {
+        LOGGER.error("testGetProperties02Directory");
+
         boolean failed = false;
         try {
             HPSSJNIBridge.getInstance().getFileProperties(
@@ -81,10 +106,11 @@ public final class HPSSJNIBridgeTest {
      */
     @Test
     public void testGetProperties03NotExistingFile() {
+        LOGGER.error("testGetProperties03NotExistingFile");
+
         boolean failed = false;
         try {
-            HPSSJNIBridge.getInstance().getFileProperties(
-                    HSMNativeBridgeTest.DIRECTORY);
+            HPSSJNIBridge.getInstance().getFileProperties("/NoExistingFile");
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof HSMNotExistingFileException)) {
@@ -107,7 +133,8 @@ public final class HPSSJNIBridgeTest {
     @Test
     public void testGetProperties04FileInTape() throws JNIException,
             TReqSException {
-        HSMNativeBridgeTest.authenticate();
+        LOGGER.error("testGetProperties04FileInTape");
+
         // TODO NativeBridgeHelper.purge(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
@@ -125,6 +152,9 @@ public final class HPSSJNIBridgeTest {
     @Test
     public void testGetProperties05FileInDisk() throws JNIException,
             TReqSException {
+        LOGGER.error("testGetProperties05FileInDisk");
+
+        LOGGER.error("I'm going to stage a file");
         NativeBridge.getInstance().stage(HSMNativeBridgeTest.VALID_FILE,
                 HSMNativeBridgeTest.VALID_FILE_SIZE);
 
@@ -144,6 +174,8 @@ public final class HPSSJNIBridgeTest {
     @Test
     public void testGetProperties06FileLocked() throws JNIException,
             TReqSException {
+        LOGGER.error("testGetProperties06FileLocked");
+
         // TODO NativeBridgeHelper.lockFile(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
@@ -163,6 +195,8 @@ public final class HPSSJNIBridgeTest {
     @Test
     public void testGetProperties07FileAlreadyOpen() throws JNIException,
             TReqSException {
+        LOGGER.error("testGetProperties07FileAlreadyOpen");
+
         // TODO NativeBridgeHelper.open(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
@@ -179,6 +213,8 @@ public final class HPSSJNIBridgeTest {
      */
     @Test
     public void testGetProperties08FileInAggregation() throws TReqSException {
+        LOGGER.error("testGetProperties08FileInAggregation");
+
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTest.VALID_FILE_IN_AGGREGA);
     }
@@ -188,6 +224,8 @@ public final class HPSSJNIBridgeTest {
      */
     @Test
     public void testGetProperties09EmptyFile() {
+        LOGGER.error("testGetProperties09EmptyFile");
+
         boolean failed = false;
         try {
             HPSSJNIBridge.getInstance().getFileProperties(
@@ -213,6 +251,8 @@ public final class HPSSJNIBridgeTest {
     @Test
     public void testGetProperties10FileInSingleHierarchy()
             throws TReqSException {
+        LOGGER.error("testGetProperties10FileInSingleHierarchy");
+
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTest.VALID_FILE_SINGLE_HIERARCHY);
     }
@@ -227,10 +267,13 @@ public final class HPSSJNIBridgeTest {
      */
     @Test
     public void testStage02Unlocked() throws JNIException, TReqSException {
+        LOGGER.error("testStage02Unlocked");
+
         // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
         File file = new File(HSMNativeBridgeTest.VALID_FILE,
                 HSMNativeBridgeTest.VALID_FILE_SIZE);
+        LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);
     }
 
@@ -244,10 +287,13 @@ public final class HPSSJNIBridgeTest {
      */
     @Test
     public void testStage03Locked() throws JNIException, TReqSException {
+        LOGGER.error("testStage03Locked");
+
         // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
         File file = new File(HSMNativeBridgeTest.VALID_FILE_LOCKED,
                 HSMNativeBridgeTest.VALID_FILE_SIZE);
+        LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);
 
         // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
