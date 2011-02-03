@@ -60,6 +60,9 @@
  * @author Andres Gomez
  */
 
+//! Ends the context that maintains the credentials.
+void endContext();
+
 //! Initializes the HPSS_API with the given credentials.
 /**
  * Initializes the HPSS_API via hpss_SetLoginCred.
@@ -69,7 +72,7 @@
  * @param keytab (in) Complete path to the keytab.
  * @param user (in) User that will interact with HPSS.
  */
-int init(const char * authType, const char * keytab, const char * user);
+int initContext(const char * authType, const char * keytab, const char * user);
 
 //! Retrieves the properties of a file stored in HPSS.
 /**

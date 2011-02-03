@@ -78,7 +78,7 @@ public final class HPSSJNIBridgeTester {
         try {
             System.out.println("Initializing context - " + user + " - "
                     + keyTab);
-            NativeBridge.getInstance().init(authType, keyTab, user);
+            NativeBridge.getInstance().initContext(authType, keyTab, user);
 
             System.out.println("Getting properties - " + filename);
             helper = NativeBridge.getInstance().getFileProperties(filename);
@@ -91,6 +91,7 @@ public final class HPSSJNIBridgeTester {
             NativeBridge.getInstance().stage(filename, helper.getSize());
 
             System.out.println(";)");
+            NativeBridge.getInstance().endContext();
         } catch (JNIException e) {
             System.out.println(e.getMessage());
         }

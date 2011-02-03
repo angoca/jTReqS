@@ -56,6 +56,7 @@ public final class NativeBridge {
         System.out.println("> destroyInstance");
 
         if (instance != null) {
+            NativeBridge.getInstance().endContext();
             System.err.println("NativeBridge Instance destroyed");
         }
         instance = null;
@@ -79,6 +80,12 @@ public final class NativeBridge {
 
         return instance;
     }
+
+    /**
+     * Deletes the security context and terminates the thread that maintains the
+     * context.
+     */
+    native void endContext();
 
     /**
      * Queries HPSS for a given file.
@@ -114,7 +121,7 @@ public final class NativeBridge {
      * @throws JNIException
      *             If there is a problem initializing the environment.
      */
-    native void init(final String authType, final String keyTab,
+    native void initContext(final String authType, final String keyTab,
             final String user) throws JNIException;
 
     /**

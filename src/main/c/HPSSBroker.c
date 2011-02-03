@@ -44,21 +44,44 @@
 #define info (LOGGER != NULL && (strcmp(LOGGER, "TRACE") == 0 || strcmp(LOGGER, "DEBUG") == 0 || strcmp(LOGGER, "INFO") == 0))
 #define warn (LOGGER != NULL && (strcmp(LOGGER, "TRACE") == 0 || strcmp(LOGGER, "DEBUG") == 0 || strcmp(LOGGER, "INFO") == 0 || strcmp(LOGGER, "WARN") == 0))
 
+
+int init = FALSE;
 char* LOGGER;
 
-int init(const char * authType, const char * keytab, const char * user) {
+void endContext() {
+	if (trace) {
+		printf("> endContext\n");
+	}
+
+	if (init == TRUE) {
+		hpss_PurgeLoginCred();
+	} else if (info) {
+		printf("Not authenticated\n");
+	}
+
+	if (trace) {
+		printf("< endContext\n");
+	}
+}
+
+int initContext(const char * authType, const char * keytab, const char * user) {
 	int rc = -1;
 	hpss_authn_mech_t authMech;
 
 	LOGGER = getenv("TREQS_LOG");
 	if (trace) {
-		printf("> init\n");
+		printf("> initContext\n");
+	}
+
+	// If there is already an authentication, then destroy it.
+	if (init == TRUE){
+		printf("Already authenticated\n");
 	}
 
 	// Establishes the type of authentication mechanism.
 	if (strcmp(authType, "kerberos") == 0) {
 		if (debug) {
-			printf("auth kerb\n");
+			printf("auth kerberos\n");
 		}
 		authMech = hpss_authn_mech_krb5;
 	} else {
@@ -69,9 +92,12 @@ int init(const char * authType, const char * keytab, const char * user) {
 	}
 	rc = hpss_SetLoginCred((char *) user, authMech, hpss_rpc_cred_client,
 			hpss_rpc_auth_type_keytab, (void *) keytab);
+	if (rc == HPSS_E_NOERROR) {
+		init = TRUE;
+	}
 
 	if (trace) {
-		printf("< init - %d\n", rc);
+		printf("< initContext - %d\n", rc);
 	}
 
 	return rc;

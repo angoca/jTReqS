@@ -75,8 +75,8 @@ int main(int argc, char **argv) {
 	printf("> Starting Broker tester\n");
 
 	// Initializes the api.
-	rc = init(authType, keytab, user);
-	printf("Code from init: %d\n", rc);
+	rc = initContext(authType, keytab, user);
+	printf("Code from initContext: %d\n", rc);
 	if (rc == 0) {
 		// Gets the file properties.
 		rc = getFileProperties(filename, &position, &higherStorageLevel, tape,
@@ -99,6 +99,7 @@ int main(int argc, char **argv) {
 	} else {
 		printf("Error in init\n");
 	}
+	endContext();
 	printf("< Ending Broker tester\n");
 
 	return rc;

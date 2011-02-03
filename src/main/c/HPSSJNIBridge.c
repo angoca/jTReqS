@@ -47,8 +47,21 @@
 
 char* LOGGER;
 
+JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_endContext(
+		JNIEnv* env, jobject js) {
+	if (trace) {
+		printf("> JNI endContext\n");
+	}
+
+	endContext();
+
+	if (trace) {
+		printf("< JNI endContext\n");
+	}
+}
+
 JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_getFileProperties(
-		JNIEnv* env, jclass js, jstring jFileName) {
+		JNIEnv* env, jobject js, jstring jFileName) {
 
 	const char * filename;
 
@@ -142,8 +155,8 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
 	return result;
 }
 
-JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_init(
-		JNIEnv* env, jclass js, jstring jAuthType, jstring jKeytab, jstring jUser) {
+JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_initContext(
+		JNIEnv* env, jobject js, jstring jAuthType, jstring jKeytab, jstring jUser) {
 	const char * authType;
 	const char * keytab;
 	const char * user;
@@ -154,7 +167,7 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_i
 
 	LOGGER = getenv("TREQS_LOG");
 	if (trace) {
-		printf("> JNI init\n");
+		printf("> JNI initContext\n");
 	}
 
 	// Converts Java Strings in char*;
@@ -163,7 +176,7 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_i
 	user = (*env)->GetStringUTFChars(env, jUser, JNI_FALSE);
 
 	// Calls the Broker.
-	rc = init(authType, keytab, user);
+	rc = initContext(authType, keytab, user);
 
 	// Release JNI components.
 	(*env)->ReleaseStringUTFChars(env, jAuthType, authType);
@@ -172,17 +185,17 @@ JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_i
 
 	// Throws an exception if there is a problem.
 	if (rc != HPSS_E_NOERROR) {
-		sprintf(message, "%d:init", rc);
+		sprintf(message, "%d:initContext", rc);
 		throwJNIException(env, message);
 	}
 
 	if (trace) {
-		printf("< JNI init - %d\n", rc);
+		printf("< JNI initContext - %d\n", rc);
 	}
 }
 
 JNIEXPORT void JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridge_stage(
-		JNIEnv* env, jclass js, jstring jFileName, jlong size) {
+		JNIEnv* env, jobject js, jstring jFileName, jlong size) {
 	const char * filename;
 
 	int rc = -1;

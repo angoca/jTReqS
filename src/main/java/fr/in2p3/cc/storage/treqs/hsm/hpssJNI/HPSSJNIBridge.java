@@ -145,7 +145,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         LOGGER.debug("Passing this params to init: {}, {}, {}", new String[] {
                 this.getAuthType(), this.getKeytabPath(), this.getUser() });
         try {
-            NativeBridge.getInstance().init(this.getAuthType(),
+            NativeBridge.getInstance().initContext(this.getAuthType(),
                     this.getKeytabPath(), this.getUser());
         } catch (JNIException e) {
             int code = processException(e);
