@@ -51,13 +51,13 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
  * @author Andres Gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public final class HSMNativeBridgeContextBadAuthTest {
+public final class HSMNativeBridgeContextBadAuthTestNative {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMNativeBridgeContextBadAuthTest.class);
+            .getLogger(HSMNativeBridgeContextBadAuthTestNative.class);
 
     /**
      * Setups the environment.
@@ -68,8 +68,8 @@ public final class HSMNativeBridgeContextBadAuthTest {
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
-        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTest.VALID_USERNAME);
-        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTest.VALID_KEYTAB_PATH);
+        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTestNative.VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
     }
 
     /**
@@ -83,9 +83,9 @@ public final class HSMNativeBridgeContextBadAuthTest {
     public void testInit05BadAuthType() throws JNIException {
         LOGGER.info("----- testInit05BadAuthType");
         NativeBridge.getInstance().initContext("foo",
-                HSMNativeBridgeTest.VALID_KEYTAB_PATH,
-                HSMNativeBridgeTest.VALID_USERNAME);
+                HSMNativeBridgeTestNative.VALID_KEYTAB_PATH,
+                HSMNativeBridgeTestNative.VALID_USERNAME);
 
-        HSMNativeBridgeTest.deauthenticate();
+        HSMNativeBridgeTestNative.deauthenticate();
     }
 }

@@ -59,13 +59,13 @@ import fr.in2p3.cc.storage.treqs.model.File;
  * @author Andres Gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public final class HPSSJNIBridgeTest {
+public final class HPSSJNIBridgeTestNative {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMNativeBridgeContextTest.class);
+            .getLogger(HSMNativeBridgeContextTestNative.class);
 
     /**
      * Sets the general environment.
@@ -89,7 +89,7 @@ public final class HPSSJNIBridgeTest {
         boolean failed = false;
         try {
             HPSSJNIBridge.getInstance().getFileProperties(
-                    HSMNativeBridgeTest.DIRECTORY);
+                    HSMNativeBridgeTestNative.DIRECTORY);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof HSMDirectoryException)) {
@@ -138,7 +138,7 @@ public final class HPSSJNIBridgeTest {
         // TODO NativeBridgeHelper.purge(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
-                HSMNativeBridgeTest.VALID_FILE);
+                HSMNativeBridgeTestNative.VALID_FILE);
     }
 
     /**
@@ -155,11 +155,11 @@ public final class HPSSJNIBridgeTest {
         LOGGER.error("testGetProperties05FileInDisk");
 
         LOGGER.error("I'm going to stage a file");
-        NativeBridge.getInstance().stage(HSMNativeBridgeTest.VALID_FILE,
-                HSMNativeBridgeTest.VALID_FILE_SIZE);
+        NativeBridge.getInstance().stage(HSMNativeBridgeTestNative.VALID_FILE,
+                HSMNativeBridgeTestNative.VALID_FILE_SIZE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
-                HSMNativeBridgeTest.VALID_FILE);
+                HSMNativeBridgeTestNative.VALID_FILE);
     }
 
     /**
@@ -179,7 +179,7 @@ public final class HPSSJNIBridgeTest {
         // TODO NativeBridgeHelper.lockFile(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
-                HSMNativeBridgeTest.VALID_FILE);
+                HSMNativeBridgeTestNative.VALID_FILE);
 
         // TODO NativeBridgeHelper.unlockFile(VALID_FILE);
     }
@@ -200,7 +200,7 @@ public final class HPSSJNIBridgeTest {
         // TODO NativeBridgeHelper.open(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
-                HSMNativeBridgeTest.VALID_FILE);
+                HSMNativeBridgeTestNative.VALID_FILE);
 
         // TODO NativeBridgeHelper.close(VALID_FILE);
     }
@@ -216,7 +216,7 @@ public final class HPSSJNIBridgeTest {
         LOGGER.error("testGetProperties08FileInAggregation");
 
         HPSSJNIBridge.getInstance().getFileProperties(
-                HSMNativeBridgeTest.VALID_FILE_IN_AGGREGA);
+                HSMNativeBridgeTestNative.VALID_FILE_IN_AGGREGA);
     }
 
     /**
@@ -229,7 +229,7 @@ public final class HPSSJNIBridgeTest {
         boolean failed = false;
         try {
             HPSSJNIBridge.getInstance().getFileProperties(
-                    HSMNativeBridgeTest.VALID_FILE_EMPTY);
+                    HSMNativeBridgeTestNative.VALID_FILE_EMPTY);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof HSMEmptyFileException)) {
@@ -254,7 +254,7 @@ public final class HPSSJNIBridgeTest {
         LOGGER.error("testGetProperties10FileInSingleHierarchy");
 
         HPSSJNIBridge.getInstance().getFileProperties(
-                HSMNativeBridgeTest.VALID_FILE_SINGLE_HIERARCHY);
+                HSMNativeBridgeTestNative.VALID_FILE_SINGLE_HIERARCHY);
     }
 
     /**
@@ -271,8 +271,8 @@ public final class HPSSJNIBridgeTest {
 
         // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
-        File file = new File(HSMNativeBridgeTest.VALID_FILE,
-                HSMNativeBridgeTest.VALID_FILE_SIZE);
+        File file = new File(HSMNativeBridgeTestNative.VALID_FILE,
+                HSMNativeBridgeTestNative.VALID_FILE_SIZE);
         LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);
     }
@@ -291,8 +291,8 @@ public final class HPSSJNIBridgeTest {
 
         // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
-        File file = new File(HSMNativeBridgeTest.VALID_FILE_LOCKED,
-                HSMNativeBridgeTest.VALID_FILE_SIZE);
+        File file = new File(HSMNativeBridgeTestNative.VALID_FILE_LOCKED,
+                HSMNativeBridgeTestNative.VALID_FILE_SIZE);
         LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);
 

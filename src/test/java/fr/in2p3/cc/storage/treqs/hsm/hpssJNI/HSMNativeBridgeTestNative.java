@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
  * @author Andres Gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public final class HSMNativeBridgeTest {
+public final class HSMNativeBridgeTestNative {
 
     /**
      * Location of a valid keytab.
@@ -105,7 +105,7 @@ public final class HSMNativeBridgeTest {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMNativeBridgeTest.class);
+            .getLogger(HSMNativeBridgeTestNative.class);
     /**
      * Name of a directory.
      */
@@ -163,7 +163,7 @@ public final class HSMNativeBridgeTest {
      */
     @AfterClass
     public static void oneTimeTearDown() {
-        HSMNativeBridgeTest.deauthenticate();
+        HSMNativeBridgeTestNative.deauthenticate();
     }
 
     /**

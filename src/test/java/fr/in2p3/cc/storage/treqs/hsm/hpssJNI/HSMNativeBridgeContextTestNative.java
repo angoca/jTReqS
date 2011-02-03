@@ -53,13 +53,13 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
  * @author Andres Gomez
  */
 // @RunWith(RandomBlockJUnit4ClassRunner.class)
-public final class HSMNativeBridgeContextTest {
+public final class HSMNativeBridgeContextTestNative {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMNativeBridgeContextTest.class);
+            .getLogger(HSMNativeBridgeContextTestNative.class);
 
     /**
      * Setups the environment.
@@ -70,8 +70,8 @@ public final class HSMNativeBridgeContextTest {
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
-        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTest.VALID_USERNAME);
-        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTest.VALID_KEYTAB_PATH);
+        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTestNative.VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
     }
 
     /**
@@ -79,7 +79,7 @@ public final class HSMNativeBridgeContextTest {
      */
     @AfterClass
     public static void oneTimeTearDown() {
-        HSMNativeBridgeTest.deauthenticate();
+        HSMNativeBridgeTestNative.deauthenticate();
     }
 
     /**
@@ -93,7 +93,7 @@ public final class HSMNativeBridgeContextTest {
         boolean failed = false;
         try {
             NativeBridge.getInstance().getFileProperties(
-                    HSMNativeBridgeTest.VALID_FILE);
+                    HSMNativeBridgeTestNative.VALID_FILE);
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -123,8 +123,8 @@ public final class HSMNativeBridgeContextTest {
         LOGGER.info("----- testStage01NoInit");
         boolean failed = false;
         try {
-            NativeBridge.getInstance().stage(HSMNativeBridgeTest.VALID_FILE,
-                    HSMNativeBridgeTest.VALID_FILE_SIZE);
+            NativeBridge.getInstance().stage(HSMNativeBridgeTestNative.VALID_FILE,
+                    HSMNativeBridgeTestNative.VALID_FILE_SIZE);
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -149,8 +149,8 @@ public final class HSMNativeBridgeContextTest {
         boolean failed = false;
         try {
             NativeBridge.getInstance().initContext("kerberos",
-                    HSMNativeBridgeTest.VALID_KEYTAB_PATH,
-                    HSMNativeBridgeTest.VALID_USERNAME);
+                    HSMNativeBridgeTestNative.VALID_KEYTAB_PATH,
+                    HSMNativeBridgeTestNative.VALID_USERNAME);
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -174,8 +174,8 @@ public final class HSMNativeBridgeContextTest {
         boolean failed = false;
         try {
             NativeBridge.getInstance().initContext(
-                    HSMNativeBridgeTest.VALID_AUTH_TYPE, "foo",
-                    HSMNativeBridgeTest.VALID_USERNAME);
+                    HSMNativeBridgeTestNative.VALID_AUTH_TYPE, "foo",
+                    HSMNativeBridgeTestNative.VALID_USERNAME);
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -200,9 +200,9 @@ public final class HSMNativeBridgeContextTest {
     @Test
     public void testInit04AllValid() throws JNIException {
         LOGGER.info("----- testInit04AllValid");
-        HSMNativeBridgeTest.authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
-        HSMNativeBridgeTest.deauthenticate();
+        HSMNativeBridgeTestNative.deauthenticate();
     }
 
     /**
@@ -214,13 +214,13 @@ public final class HSMNativeBridgeContextTest {
     @Test
     public void testInit06AlreadyAuthenticated() throws JNIException {
         LOGGER.info("----- testInit06AlreadyAuthenticated");
-        HSMNativeBridgeTest.authenticate();
+        HSMNativeBridgeTestNative.authenticate();
         boolean failed = false;
         try {
             NativeBridge.getInstance().initContext(
-                    HSMNativeBridgeTest.VALID_AUTH_TYPE,
-                    HSMNativeBridgeTest.VALID_KEYTAB_PATH,
-                    HSMNativeBridgeTest.VALID_USERNAME);
+                    HSMNativeBridgeTestNative.VALID_AUTH_TYPE,
+                    HSMNativeBridgeTestNative.VALID_KEYTAB_PATH,
+                    HSMNativeBridgeTestNative.VALID_USERNAME);
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -230,7 +230,7 @@ public final class HSMNativeBridgeContextTest {
                 failed = true;
             }
         }
-        HSMNativeBridgeTest.deauthenticate();
+        HSMNativeBridgeTestNative.deauthenticate();
         if (failed) {
             Assert.fail();
         }

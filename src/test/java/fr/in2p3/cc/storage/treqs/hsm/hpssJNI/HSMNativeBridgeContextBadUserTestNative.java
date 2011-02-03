@@ -53,13 +53,13 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
  * @author Andres Gomez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
-public final class HSMNativeBridgeContextBadUserTest {
+public final class HSMNativeBridgeContextBadUserTestNative {
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMNativeBridgeContextBadUserTest.class);
+            .getLogger(HSMNativeBridgeContextBadUserTestNative.class);
 
     /**
      * Setups the environment.
@@ -70,8 +70,8 @@ public final class HSMNativeBridgeContextBadUserTest {
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
-        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTest.VALID_USERNAME);
-        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTest.VALID_KEYTAB_PATH);
+        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTestNative.VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
     }
 
     /**
@@ -84,8 +84,8 @@ public final class HSMNativeBridgeContextBadUserTest {
         boolean failed = false;
         try {
             NativeBridge.getInstance().initContext(
-                    HSMNativeBridgeTest.VALID_AUTH_TYPE,
-                    HSMNativeBridgeTest.VALID_KEYTAB_PATH, "foo");
+                    HSMNativeBridgeTestNative.VALID_AUTH_TYPE,
+                    HSMNativeBridgeTestNative.VALID_KEYTAB_PATH, "foo");
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
