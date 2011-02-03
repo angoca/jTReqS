@@ -58,11 +58,21 @@ public final class HSMNativeBridgeTest {
     /**
      * Location of a valid keytab.
      */
-    static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
+    static String VALID_KEYTAB_PATH = System.getProperty("keytab");
+    static {
+        if (VALID_KEYTAB_PATH == null) {
+            VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.treqs";
+        }
+    }
     /**
      * Name of the user related to the keytab.
      */
-    static final String VALID_USERNAME = "root";
+    static String VALID_USERNAME = System.getProperty("userKeytab");
+    static {
+        if (VALID_USERNAME == null) {
+            VALID_USERNAME = "treqs";
+        }
+    }
     /**
      * Authentication type for the valid keytab.
      */
@@ -141,11 +151,11 @@ public final class HSMNativeBridgeTest {
     @BeforeClass
     public static void oneTimeSetUp() {
         String ldPath = "java.library.path";
-        System.setProperty(ldPath,
-                "/opt/hpss/lib/:" + System.getProperty(ldPath));
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
+        LOGGER.warn("User Keytab   : {}", VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}", VALID_KEYTAB_PATH);
     }
 
     /**
