@@ -53,14 +53,14 @@ public final class NativeBridge {
      * Destroys the unique instance. This is useful only for testing purposes.
      */
     public static void destroyInstance() {
-        System.err.println("> destroyInstance");
+        System.out.println("> destroyInstance");
 
         if (instance != null) {
             System.err.println("NativeBridge Instance destroyed");
         }
         instance = null;
 
-        System.err.println("< destroyInstance");
+        System.out.println("< destroyInstance");
     }
 
     /**
