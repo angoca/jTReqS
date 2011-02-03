@@ -145,8 +145,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         LOGGER.debug("Passing this params to init: {}, {}, {}", new String[] {
                 this.getAuthType(), this.getKeytabPath(), this.getUser() });
         try {
-            NativeBridge.init(this.getAuthType(), this.getKeytabPath(),
-                    this.getUser());
+            NativeBridge.getInstance().init(this.getAuthType(),
+                    this.getKeytabPath(), this.getUser());
         } catch (JNIException e) {
             int code = processException(e);
             if (code == HPSSErrorCode.HPSS_EPERM.getCode()) {
@@ -186,7 +186,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         HSMHelperFileProperties ret = null;
         try {
-            ret = NativeBridge.getFileProperties(name);
+            ret = NativeBridge.getInstance().getFileProperties(name);
         } catch (JNIException e) {
             int code = processException(e);
             LOGGER.error("jni code " + code);
@@ -316,7 +316,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         assert file != null;
 
         try {
-            NativeBridge.stage(file.getName(), file.getSize());
+            NativeBridge.getInstance().stage(file.getName(), file.getSize());
         } catch (JNIException e) {
             int code = processException(e);
             LOGGER.error("jni code " + code);

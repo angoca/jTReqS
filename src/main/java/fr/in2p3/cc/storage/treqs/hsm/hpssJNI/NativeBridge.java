@@ -44,16 +44,40 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
  * @author Andes Gomez
  */
 public final class NativeBridge {
-    // Loads the dynamic library.
-    static {
-        try {
-            System.out.println("Loading the HPSS JNI Bridge.");
-            System.loadLibrary(NativeBridge.HPSS_JNI_BRIDGE_LIBRARY);
-            System.out.println("Library loaded succesfully.");
-        } catch (java.lang.UnsatisfiedLinkError e) {
-            System.out.println("Error loading library. " + e.getMessage());
-            throw e;
+    /**
+     * Instance of the singleton.
+     */
+    private static NativeBridge instance = null;
+
+    /**
+     * Destroys the unique instance. This is useful only for testing purposes.
+     */
+    public static void destroyInstance() {
+        System.err.println("> destroyInstance");
+
+        if (instance != null) {
+            System.err.println("NativeBridge Instance destroyed");
         }
+        instance = null;
+
+        System.err.println("< destroyInstance");
+    }
+
+    /**
+     * Provides the singleton instance.
+     *
+     * @return The singleton instance.
+     */
+    public static NativeBridge getInstance() {
+        if (instance == null) {
+            System.out.println("Creating NativeBridge instance.");
+
+            instance = new NativeBridge();
+        }
+
+        assert instance != null;
+
+        return instance;
     }
 
     /**
@@ -75,8 +99,8 @@ public final class NativeBridge {
      *             constructor.</li>
      *             </ul>
      */
-    static native HSMHelperFileProperties getFileProperties(
-            final String filename) throws JNIException;
+    native HSMHelperFileProperties getFileProperties(final String filename)
+            throws JNIException;
 
     /**
      * Initializes credentials.
@@ -90,7 +114,7 @@ public final class NativeBridge {
      * @throws JNIException
      *             If there is a problem initializing the environment.
      */
-    static native void init(final String authType, final String keyTab,
+    native void init(final String authType, final String keyTab,
             final String user) throws JNIException;
 
     /**
@@ -103,8 +127,7 @@ public final class NativeBridge {
      * @throws JNIException
      *             If there is a problem while staging the file.
      */
-    static native void stage(final String name, final long size)
-            throws JNIException;
+    native void stage(final String name, final long size) throws JNIException;
 
     /**
      * Name of the library to load the HPSS JNI bridge.
@@ -112,9 +135,16 @@ public final class NativeBridge {
     private static final String HPSS_JNI_BRIDGE_LIBRARY = "HPSSJNIBridge";
 
     /**
-     * Default constructor hidden.
+     * Default constructor hidden where the library is loaded.
      */
     private NativeBridge() {
-        // Nothing.
+        try {
+            System.out.println("Loading the HPSS JNI Bridge.");
+            System.loadLibrary(NativeBridge.HPSS_JNI_BRIDGE_LIBRARY);
+            System.out.println("Library loaded succesfully.");
+        } catch (java.lang.UnsatisfiedLinkError e) {
+            System.out.println("Error loading library. " + e.getMessage());
+            throw e;
+        }
     }
 }

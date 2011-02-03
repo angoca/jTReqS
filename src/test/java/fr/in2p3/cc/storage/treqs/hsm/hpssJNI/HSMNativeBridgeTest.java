@@ -55,24 +55,24 @@ public final class HSMNativeBridgeTest {
     /**
      * Location of a valid keytab.
      */
-    private static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
+    public static final String VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.root";
     /**
      * Name of the user related to the keytab.
      */
-    private static final String VALID_USERNAME = "root";
+    public static final String VALID_USERNAME = "root";
     /**
      * Authentication type for the valid keytab.
      */
-    private static final String VALID_AUTH_TYPE = "unix";
+    public static final String VALID_AUTH_TYPE = "unix";
     /**
      * Name of a file that could be stored in tape.
      */
-    private static final String VALID_FILE = "/hpss/in2p3.fr/group/"
+    public static final String VALID_FILE = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
     /**
      * Size of the valid file.
      */
-    private static final long VALID_FILE_SIZE = 1000;
+    public static final long VALID_FILE_SIZE = 1000;
     /**
      * Name of a file that could be stored in tape.
      */
@@ -137,7 +137,7 @@ public final class HSMNativeBridgeTest {
     @Test
     public void testGetProperties01NoInit() throws JNIException {
         try {
-            NativeBridge.getFileProperties(VALID_FILE);
+            NativeBridge.getInstance().getFileProperties(VALID_FILE);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties01NoInit " + code);
@@ -156,7 +156,7 @@ public final class HSMNativeBridgeTest {
     @Test
     public void testStage01NoInit() {
         try {
-            NativeBridge.stage(VALID_FILE, VALID_FILE_SIZE);
+            NativeBridge.getInstance().stage(VALID_FILE, VALID_FILE_SIZE);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testStage01NoInit " + code);
@@ -173,7 +173,8 @@ public final class HSMNativeBridgeTest {
     @Test
     public void testInit01KerberosAuthType() {
         try {
-            NativeBridge.init("kerberos", VALID_KEYTAB_PATH, VALID_USERNAME);
+            NativeBridge.getInstance().init("kerberos", VALID_KEYTAB_PATH,
+                    VALID_USERNAME);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testInit04KerberosAuthType " + code);
@@ -189,7 +190,8 @@ public final class HSMNativeBridgeTest {
     @Test
     public void testInit02BadKeytab() {
         try {
-            NativeBridge.init(VALID_AUTH_TYPE, "foo", VALID_USERNAME);
+            NativeBridge.getInstance().init(VALID_AUTH_TYPE, "foo",
+                    VALID_USERNAME);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testInit03BadKeytab " + code);
@@ -206,7 +208,8 @@ public final class HSMNativeBridgeTest {
     @Test
     public void testInit03BadUser() {
         try {
-            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH, "foo");
+            NativeBridge.getInstance().init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
+                    "foo");
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testInit02BadUser " + code);
@@ -241,7 +244,8 @@ public final class HSMNativeBridgeTest {
     // TODO @Test
     public void testInit05BadAuthType() throws JNIException {
         if (!authenticated) {
-            NativeBridge.init("foo", VALID_KEYTAB_PATH, VALID_USERNAME);
+            NativeBridge.getInstance().init("foo", VALID_KEYTAB_PATH,
+                    VALID_USERNAME);
         } // TODO else { deauthenticate and authenticate correctly}
     }
 
@@ -255,7 +259,7 @@ public final class HSMNativeBridgeTest {
     public void testGetProperties01Directory() throws JNIException {
         authenticate();
         try {
-            NativeBridge.getFileProperties(DIRECTORY);
+            NativeBridge.getInstance().getFileProperties(DIRECTORY);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties01Directory " + code);
@@ -275,7 +279,7 @@ public final class HSMNativeBridgeTest {
     public void testGetProperties02NotExistingFile() throws JNIException {
         authenticate();
         try {
-            NativeBridge.getFileProperties("/NoExistingFile");
+            NativeBridge.getInstance().getFileProperties("/NoExistingFile");
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties02NotExistingFile " + code);
@@ -296,7 +300,7 @@ public final class HSMNativeBridgeTest {
         authenticate();
         // TODO NativeBridgeHelper.purge(VALID_FILE);
 
-        NativeBridge.getFileProperties(VALID_FILE);
+        NativeBridge.getInstance().getFileProperties(VALID_FILE);
     }
 
     /**
@@ -308,9 +312,9 @@ public final class HSMNativeBridgeTest {
     @Test
     public void testGetProperties04FileInDisk() throws JNIException {
         authenticate();
-        NativeBridge.stage(VALID_FILE, VALID_FILE_SIZE);
+        NativeBridge.getInstance().stage(VALID_FILE, VALID_FILE_SIZE);
 
-        NativeBridge.getFileProperties(VALID_FILE);
+        NativeBridge.getInstance().getFileProperties(VALID_FILE);
     }
 
     /**
@@ -325,7 +329,7 @@ public final class HSMNativeBridgeTest {
         authenticate();
         // TODO NativeBridgeHelper.lockFile(VALID_FILE);
 
-        NativeBridge.getFileProperties(VALID_FILE);
+        NativeBridge.getInstance().getFileProperties(VALID_FILE);
 
         // TODO NativeBridgeHelper.unlockFile(VALID_FILE);
     }
@@ -341,7 +345,7 @@ public final class HSMNativeBridgeTest {
         authenticate();
         // TODO NativeBridgeHelper.open(VALID_FILE);
 
-        NativeBridge.getFileProperties(VALID_FILE);
+        NativeBridge.getInstance().getFileProperties(VALID_FILE);
 
         // TODO NativeBridgeHelper.close(VALID_FILE);
     }
@@ -356,7 +360,7 @@ public final class HSMNativeBridgeTest {
     public void testGetProperties07FileInAggregation() throws JNIException {
         authenticate();
 
-        NativeBridge.getFileProperties(VALID_FILE_IN_AGGREGA);
+        NativeBridge.getInstance().getFileProperties(VALID_FILE_IN_AGGREGA);
     }
 
     /**
@@ -370,7 +374,7 @@ public final class HSMNativeBridgeTest {
         authenticate();
 
         try {
-            NativeBridge.getFileProperties(VALID_FILE_EMPTY);
+            NativeBridge.getInstance().getFileProperties(VALID_FILE_EMPTY);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties08EmptyFile " + code);
@@ -391,7 +395,8 @@ public final class HSMNativeBridgeTest {
     public void testGetProperties09FileInSingleHierarchy() throws JNIException {
         authenticate();
 
-        NativeBridge.getFileProperties(VALID_FILE_SINGLE_HIERARCHY);
+        NativeBridge.getInstance().getFileProperties(
+                VALID_FILE_SINGLE_HIERARCHY);
     }
 
     /**
@@ -404,7 +409,7 @@ public final class HSMNativeBridgeTest {
     public void testStage02Unlocked() throws JNIException {
         authenticate();
 
-        NativeBridge.stage(VALID_FILE, VALID_FILE_SIZE);
+        NativeBridge.getInstance().stage(VALID_FILE, VALID_FILE_SIZE);
     }
 
     /**
@@ -418,7 +423,7 @@ public final class HSMNativeBridgeTest {
         authenticate();
         // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
-        NativeBridge.stage(VALID_FILE_LOCKED, VALID_FILE_SIZE);
+        NativeBridge.getInstance().stage(VALID_FILE_LOCKED, VALID_FILE_SIZE);
 
         // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
     }
@@ -435,7 +440,7 @@ public final class HSMNativeBridgeTest {
         // VALID_USERNAME);
 
         try {
-            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
+            NativeBridge.getInstance().init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
                     VALID_USERNAME);
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -454,7 +459,7 @@ public final class HSMNativeBridgeTest {
      */
     private static void authenticate() throws JNIException {
         if (!authenticated) {
-            NativeBridge.init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
+            NativeBridge.getInstance().init(VALID_AUTH_TYPE, VALID_KEYTAB_PATH,
                     VALID_USERNAME);
             authenticated = true;
         }
