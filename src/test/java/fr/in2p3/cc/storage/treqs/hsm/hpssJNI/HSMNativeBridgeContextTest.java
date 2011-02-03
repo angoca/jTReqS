@@ -52,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
  *
  * @author Andres Gomez
  */
-@RunWith(RandomBlockJUnit4ClassRunner.class)
+// @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class HSMNativeBridgeContextTest {
 
     /**
@@ -67,11 +67,11 @@ public final class HSMNativeBridgeContextTest {
     @BeforeClass
     public static void oneTimeSetUp() {
         String ldPath = "java.library.path";
-        System.setProperty(ldPath,
-                "/opt/hpss/lib/:" + System.getProperty(ldPath));
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
+        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTest.VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTest.VALID_KEYTAB_PATH);
     }
 
     /**
@@ -98,8 +98,12 @@ public final class HSMNativeBridgeContextTest {
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties01NoInit " + code + " - "
+                    + HPSSErrorCode.HPSS_EPERM.getCode() + ","
+                    + HPSSErrorCode.HPSS_EIO.getCode() + ", "
                     + HPSSErrorCode.HPSS_EACCES.getCode());
-            if (code != HPSSErrorCode.HPSS_EACCES.getCode()) {
+            if (code != HPSSErrorCode.HPSS_EPERM.getCode()
+                    && code != HPSSErrorCode.HPSS_EIO.getCode()
+                    && code != HPSSErrorCode.HPSS_EACCES.getCode()) {
                 failed = true;
             }
         }
