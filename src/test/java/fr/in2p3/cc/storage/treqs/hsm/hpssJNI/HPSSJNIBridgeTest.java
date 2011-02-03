@@ -49,7 +49,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMNotExistingFileException;
 import fr.in2p3.cc.storage.treqs.model.File;
 
 /**
- * Tests the JNI Bridge.
+ * Tests the JNI Bridge. TODO Do not execute these tests from Maven.
  *
  * @author Andres Gomez
  */
