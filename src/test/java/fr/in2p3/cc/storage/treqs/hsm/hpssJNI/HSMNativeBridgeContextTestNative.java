@@ -52,7 +52,7 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
  *
  * @author Andres Gomez
  */
-// @RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class HSMNativeBridgeContextTestNative {
 
     /**
