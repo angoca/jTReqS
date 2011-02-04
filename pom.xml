@@ -32,12 +32,14 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>fr.in2p3.cc.storage.treqs</groupId>
-  <artifactId>jtreqs-server</artifactId>
-
+  <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
   <version>1.5.0</version>
-  <name>jTReqS Server</name>
-  <packaging>jar</packaging>
+
+  <artifactId>jtreqs-server-parent</artifactId>
+
+  <name>jTReqS Server - Parent</name>
+  <packaging>pom</packaging>
+
   <url>https://forge.in2p3.fr/projects/show/treqs</url>
   <organization>
     <name>CC IN2P3</name>
@@ -78,6 +80,19 @@
       <name>Yvan Calas</name>
     </contributor>
   </contributors>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Codehaus repository</id>
+      <url>http://repository.codehaus.org/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <modules>
+    <module>java</module>
+    <module>native</module>
+    <module>release</module>
+  </modules>
 
   <dependencies>
 
@@ -156,12 +171,11 @@
   </dependencies>
 
   <properties>
-    <compileSource>1.6</compileSource>
-    <encoding>ISO-8859-1</encoding>
     <logbackFile>logback.xml</logbackFile>
     <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
     <watchdog>watchdog.sh</watchdog>
   </properties>
+
 
   <profiles>
     <profile>
@@ -174,37 +188,29 @@
           <plugin>
             <artifactId>maven-clean-plugin</artifactId>
           </plugin>
-
           <plugin>
             <artifactId>maven-resources-plugin</artifactId>
           </plugin>
-
           <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
           </plugin>
-
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>native-maven-plugin</artifactId>
           </plugin>
-
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
           </plugin>
-
           <plugin>
             <artifactId>maven-jar-plugin</artifactId>
           </plugin>
-
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>appassembler-maven-plugin</artifactId>
           </plugin>
-
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
           </plugin>
-
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
           </plugin>
@@ -215,194 +221,14 @@
   </profiles>
 
   <build>
-    <testResources>
-      <testResource>
-        <directory>${basedir}/src/test/resources</directory>
-        <includes>
-          <include>*</include>
-        </includes>
-      </testResource>
-      <testResource>
-        <directory>${basedir}/src/main/resources</directory>
-        <includes>
-          <include>hsm*.sh</include>
-        </includes>
-      </testResource>
-    </testResources>
-    <plugins>
-      <!-- Cleans the target directory. -->
-      <!-- mvn clean -->
-      <plugin>
-        <artifactId>maven-clean-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>auto-clean</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- This plugin copies the sources with a specific encoding. -->
-      <!-- mvn resources:resources -->
-      <!-- mvn resources:testResources -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <configuration>
-          <encoding>${encoding}</encoding>
-        </configuration>
-      </plugin>
-
-      <!-- Compiles the sources with a specific Java version and encoding. -->
-      <!-- mvn compiler:compile -->
-      <!-- mvn compiler:testCompile -->
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <encoding>${encoding}</encoding>
-          <source>${compileSource}</source>
-          <target>${compileSource}</target>
-        </configuration>
-      </plugin>
-
-      <!-- Executes the tests, taking the target directory as working directory. -->
-      <!-- mvn surefire:test -->
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <!-- The application reads configuration files. -->
-          <workingDirectory>
-            ${project.build.testOutputDirectory}
-          </workingDirectory>
-          <testFailureIgnore>true</testFailureIgnore>
-        </configuration>
-      </plugin>
-
-      <!-- Creates the jar of the application. -->
-      <!-- mvn jar:jar -->
-      <plugin>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>${jtreqsConfFile}</exclude>
-            <exclude>${logbackFile}</exclude>
-            <exclude>${watchdog}</exclude>
-
-            <exclude>jtreqs.conf.sample.properties</exclude>
-
-            <exclude>archiver.py</exclude>
-          </excludes>
-          <archive>
-            <manifest>
-              <addClasspath>true</addClasspath>
-              <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
-              <packageName>fr.in2p3.cc.storage.treqs</packageName>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-
-      <!-- Creates the environment for execution. Integrates the dependencies. -->
-      <!-- mvn appassembler:assemble -->
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>appassembler-maven-plugin</artifactId>
-        <configuration>
-          <!-- Extra JVM arguments that will be included in the bin scripts -->
-          <extraJvmArguments>
-            -d64
-            -Dlogback.configurationFile=${logbackFile}
-            -Djava.library.path=/opt/hpss/lib:./
-          </extraJvmArguments>
-          <configurationDirectory>etc</configurationDirectory>
-          <platforms>
-            <platform>unix</platform>
-          </platforms>
-          <programs>
-            <program>
-              <name>jtreqs</name>
-              <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
-            </program>
-          </programs>
-          <binFileExtensions>
-            <unix>.sh</unix>
-          </binFileExtensions>
-          <repositoryLayout>flat</repositoryLayout>
-          <assembleDirectory>${project.build.directory}/jtreqs</assembleDirectory>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-appassembler</id>
-            <phase>package</phase>
-            <goals>
-              <goal>assemble</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Adds some files in the environment for execution. -->
-      <!-- mvn antrun:run -->
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <configuration>
-          <tasks>
-            <property name="ant.regexp.regexpimpl"
-              value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
-            <copy todir="target/jtreqs/etc">
-              <fileset dir="target/classes">
-                <include name="${jtreqsConfFile}" />
-                <include name="${logbackFile}" />
-                <include name="${watchdog}" />
-                <include name="jtreqs.conf.sample.properties" />
-                <include name="archiver.py" />
-              </fileset>
-            </copy>
-          </tasks>
-        </configuration>
-        <executions>
-          <execution>
-            <id>fix-appassembler</id>
-            <phase>package</phase>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Packs all files in a tar. -->
-      <!-- mvn assembly:single -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId>
-          <finalName>jtreqs</finalName>
-          <descriptors>
-            <descriptor>src/main/config/assembly/assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <!-- Creates the assembly as part of package -->
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>native-maven-plugin</artifactId>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
-
-  <pluginRepositories>
-    <pluginRepository>
-      <id>Codehaus repository</id>
-      <url>http://repository.codehaus.org/</url>
-    </pluginRepository>
-  </pluginRepositories>
 
 </project>
