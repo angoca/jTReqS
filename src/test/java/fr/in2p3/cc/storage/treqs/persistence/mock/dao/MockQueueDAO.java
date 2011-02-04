@@ -49,6 +49,7 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
  * Managing Queues object updates to database.
  *
  * @author Andrés Gómez
+ * @since 1.5
  */
 public final class MockQueueDAO implements QueueDAO {
 

@@ -54,6 +54,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockWatchDogDAO;
  * data source access.
  *
  * @author Andrés Gómez
+ * @since 1.5
  */
 public final class MockDAOFactory extends AbstractDAOFactory {
 

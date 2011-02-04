@@ -55,6 +55,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
  * Managing Reading object updates to database.
  *
  * @author Andrés Gómez
+ * @since 1.5
  */
 public final class MockReadingDAO implements ReadingDAO {
     /**

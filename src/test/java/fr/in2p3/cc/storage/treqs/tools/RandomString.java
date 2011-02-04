@@ -42,6 +42,7 @@ import java.util.Random;
  * Creates random strings.
  *
  * @author Andrés Gómez
+ * @since 1.5
  */
 public final class RandomString {
 

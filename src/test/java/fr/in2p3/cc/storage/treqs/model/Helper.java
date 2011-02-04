@@ -42,6 +42,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * Helper for the queues.
  *
  * @author Andres Gomez
+ * @since 1.5
  */
 public final class Helper {
 

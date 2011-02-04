@@ -47,6 +47,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.AbstractMySQLExcept
  * Helps to inserts and deletes in the database.
  *
  * @author Andrés Gómez
+ * @since 1.5
  */
 public final class MySQLRequestsDAO {
 
