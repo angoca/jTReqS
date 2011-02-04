@@ -16,11 +16,11 @@ gcjh -classpath ./ -d ./ -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridge
 
 # Compiling Java as native
 rm -f NativeBridge.o
-gcj -fjni -c -Wall -o NativeBridge.o --disable-assertions -classpath ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridge.java ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/HSMHelperFileProperties.java ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/exception/JNIException.java
+gcj -fjni -c -Wall -o ./NativeBridge.o --disable-assertions -classpath ./ ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridge.java ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/HSMHelperFileProperties.java ../src/main/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/exception/JNIException.java
 
 echo Compiling JNI Bridge - c
 rm -f HPSSJNIBridge.o
-gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -Wall -fPIC -o HPSSJNIBridge.o -c ../src/main/c/HPSSJNIBridge.c
+gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -Wall -fPIC -o ./HPSSJNIBridge.o -c ../src/main/c/HPSSJNIBridge.c
 
 rm -f libHPSSJNIBridge.so
 # It is necessary to include the authentication / authorization libraries in

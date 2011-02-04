@@ -16,7 +16,7 @@ javah -classpath ./ -d ./ -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridg
 
 echo Compiling JNI Bridge - c
 rm -f HPSSJNIBridge.o
-gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -Wall -fPIC -o HPSSJNIBridge.o -c ../src/main/c/HPSSJNIBridge.c
+gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -Wall -fPIC -o ./HPSSJNIBridge.o -c ../src/main/c/HPSSJNIBridge.c
 
 rm -f libHPSSJNIBridge.so
 # It is necessary to include the authentication / authorization libraries in
