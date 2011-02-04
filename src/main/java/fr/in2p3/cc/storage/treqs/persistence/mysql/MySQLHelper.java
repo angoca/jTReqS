@@ -42,6 +42,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * Execute specific commands in the database.
  *
  * @author Andres Gomez
+ * @since 1.5
  */
 public final class MySQLHelper {
     /**

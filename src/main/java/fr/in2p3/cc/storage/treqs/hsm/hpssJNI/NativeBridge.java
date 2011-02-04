@@ -42,6 +42,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
  * This is the template for the native implementation of the HPSS brdge.
  *
  * @author Andes Gomez
+ * @since 1.5
  */
 public final class NativeBridge {
     /**
