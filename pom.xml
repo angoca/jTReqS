@@ -165,8 +165,8 @@
 
   <profiles>
     <profile>
-      <!-- mvn -P package -->
-      <id>package</id>
+      <!-- mvn -P jTReqS -->
+      <id>jTReqS</id>
       <build>
         <defaultGoal>package</defaultGoal>
         <plugins>
@@ -398,16 +398,6 @@
     </plugins>
   </build>
 
-  <!--]build> <plugins> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>native-maven-plugin</artifactId>
-    <extensions>true</extensions> <configuration> <compilerExecutable>gcj</compilerExecutable>
-    <compilerOutputDirectory>${project.build.directory}/objs</compilerOutputDirectory>
-    <sources> <source> <directory>src/main/java</directory> <includes> <include>**/*.java</include>
-    </includes> </source> </sources> <compilerStartOptions> <compilerStartOption>-shared
-    -O2 - -classpath vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar:vendor/apache/commons-collections-3.2.1/commons-collections-3.2.1.jar:vendor/apache/commons-cli-1.2/commons-cli-1.2.jar:vendor/apache/commons-configuration-1.6/commons-configuration-1.6.jar:vendor/apache/commons-lang-2.5/commons-lang-2.5.jar:vendor/apache/commons-logging-1.1.1/commons-logging-1.1.1.jar:vendor/mysql/mysql-connector-java-5.1.13/mysql-connector-java-5.1.13-bin.jar</compilerStartOption>
-    </compilerStartOptions> <linkerExecutable>gcj</linkerExecutable> <linkerStartOptions>
-    <linkerStartOption>- -main=fr.in2p3.cc.storage.treqs.main.Main</linkerStartOption>
-    <!- - linkerStartOption>- -main=fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester</linkerStartOption
-    - -> </linkerStartOptions> </configuration> </plugin> </plugins> </build -->
   <pluginRepositories>
     <pluginRepository>
       <id>Codehaus repository</id>
