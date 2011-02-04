@@ -34,11 +34,11 @@
 
   <appender name="TraceFile"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>var/log/treqs/jtreqs-trace.log</file>
+    <file>/var/log/jtreqs/jtreqs-trace.log</file>
     <append>true</append>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- daily rollover -->
-      <fileNamePattern>treqs-trace.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+      <fileNamePattern>jtreqs-trace.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
       <!-- keep 1 days' worth of history -->
       <maxHistory>1</maxHistory>
     </rollingPolicy>
@@ -52,14 +52,14 @@
 
   <appender name="LogFile"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>var/log/treqs/jtreqs.log</file>
+    <file>/var/log/jtreqs/jtreqs.log</file>
     <append>true</append>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>info</level>
     </filter>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- daily rollover -->
-      <fileNamePattern>treqs.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+      <fileNamePattern>jtreqs.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
       <!-- keep 180 days' worth of history -->
       <maxHistory>180</maxHistory>
     </rollingPolicy>
