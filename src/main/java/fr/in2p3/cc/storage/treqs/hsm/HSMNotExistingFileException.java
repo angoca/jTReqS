@@ -88,6 +88,6 @@ public final class HSMNotExistingFileException extends AbstractHSMPropertiesExce
     public String getMessage() {
         LOGGER.trace(">< getMessage");
 
-        return "File not existant.";
+        return "File not existing.";
     }
 }
