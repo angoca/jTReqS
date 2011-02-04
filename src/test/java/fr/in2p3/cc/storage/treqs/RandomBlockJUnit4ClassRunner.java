@@ -52,6 +52,7 @@ import org.junit.runners.model.InitializationError;
  * tests-run-in-random-order.
  *
  * @author Stackoverflow
+ * @since 1.5
  */
 public final class RandomBlockJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 

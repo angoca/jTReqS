@@ -46,6 +46,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
  * TODO convert to tests.
  *
  * @author Andres Gomez
+ * @since 1.5
  */
 public final class HPSSJNIBridgeTester {
 

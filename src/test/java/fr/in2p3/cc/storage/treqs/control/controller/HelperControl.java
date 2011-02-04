@@ -52,6 +52,7 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
  * Helper to access the methods of the controllers.
  *
  * @author Andres Gomez
+ * @since 1.5
  */
 public final class HelperControl {
     /**
