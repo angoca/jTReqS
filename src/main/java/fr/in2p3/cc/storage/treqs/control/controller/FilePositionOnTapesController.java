@@ -75,6 +75,9 @@ public final class FilePositionOnTapesController extends AbstractController {
     public static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
+        if (instance != null){
+            LOGGER.info("Instance destroyed");
+        }
         instance = null;
 
         LOGGER.debug("< destroyInstance");
@@ -270,12 +273,14 @@ public final class FilePositionOnTapesController extends AbstractController {
         LOGGER.trace("> exists");
 
         boolean ret = false;
-        @SuppressWarnings("rawtypes")
-        Iterator files = this.objectMap.values().iterator();
-        while (files.hasNext()) {
-            FilePositionOnTape fpot = (FilePositionOnTape) files.next();
-            if (user.equals(fpot.getRequester())) {
-                ret = true;
+        synchronized (this.objectMap) {
+            @SuppressWarnings("rawtypes")
+            Iterator files = this.objectMap.values().iterator();
+            while (files.hasNext()) {
+                FilePositionOnTape fpot = (FilePositionOnTape) files.next();
+                if (user.equals(fpot.getRequester())) {
+                    ret = true;
+                }
             }
         }
 
