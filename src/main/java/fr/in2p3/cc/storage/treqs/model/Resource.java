@@ -395,7 +395,7 @@ public final class Resource {
         ret += ", timestamp: " + this.getTimestamp().getTimeInMillis();
         ret += ", total allocation: " + this.getTotalAllocation();
         ret += ", used resources: " + this.getUsedResources();
-        ret += ", used allocation: " + this.getUserAllocation();
+        ret += ", user allocation: " + this.getUserAllocation();
         ret += "}";
 
         LOGGER.trace("< toString");
