@@ -1,17 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <!-- Copyright Jonathan Schaeffer 2009-2010, CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr> -->
+
   <!-- Contributors Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr> -->
+
   <!-- This software is a computer program whose purpose is to schedule, sort
     and submit file requests to the hierarchical storage system HPSS. -->
+
   <!-- This software is governed by the CeCILL license under French law and
     abiding by the rules of distribution of free software. You can use, modify
     and/or redistribute the software under the terms of the CeCILL license as
     circulated by CEA, CNRS and INRIA at the following URL "http://www.cecill.info". -->
+
   <!-- As a counterpart to the access to the source code and rights to copy,
     modify and redistribute granted by the license, users are provided only with
     a limited warranty and the software's author, the holder of the economic
     rights, and the successive licensors have only limited liability. -->
+
   <!-- In this respect, the user's attention is drawn to the risks associated
     with loading, using, modifying and/or developing or reproducing the software
     by the user in light of its specific status of free software, that may mean
@@ -21,8 +26,10 @@
     suitability as regards their requirements in conditions enabling the security
     of their systems and/or data to be ensured and, more generally, to use and
     operate it in the same conditions as regards security. -->
+
   <!-- The fact that you are presently reading this means that you have had
     knowledge of the CeCILL license and that you accept its terms. -->
+
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>fr.in2p3.cc.storage.treqs</groupId>
@@ -36,6 +43,41 @@
     <name>CC IN2P3</name>
     <url>http://cc.in2p3.fr</url>
   </organization>
+  <developers>
+    <developer>
+      <name>Andres Gomez Casanova</name>
+      <email>angoca at yahoo dot com</email>
+      <timezone>-5</timezone>
+      <url>http://angoca.users.sourceforge.net/</url>
+      <roles>
+        <role>Designer</role>
+        <role>Developer</role>
+      </roles>
+      <id>gomez</id>
+    </developer>
+    <developer>
+      <name>Jonathan Schaeffer</name>
+      <email>jchaeff@cc.in2p3.fr</email>
+      <roles>
+        <role>Designer</role>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Pierre-Emmanuel Brinette</name>
+      <email>pbrinett@cc.in2p3.fr</email>
+      <roles>
+        <role>Developer</role>
+        <role>Administrator</role>
+      </roles>
+    </developer>
+  </developers>
+
+  <contributors>
+    <contributor>
+      <name>Yvan Calas</name>
+    </contributor>
+  </contributors>
 
   <dependencies>
 
@@ -114,10 +156,11 @@
   </dependencies>
 
   <properties>
-    <compileSource>1.5</compileSource>
+    <compileSource>1.6</compileSource>
     <encoding>ISO-8859-1</encoding>
     <logbackFile>logback.xml</logbackFile>
     <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
+    <watchdog>watchdog.sh</watchdog>
   </properties>
 
   <profiles>
@@ -130,175 +173,245 @@
 
           <plugin>
             <artifactId>maven-clean-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>auto-clean</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>clean</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
 
-          <!-- This plugin copies the sources with a specific encoding. -->
-          <!-- mvn resources:resources -->
-          <!-- mvn resources:testResources -->
           <plugin>
             <artifactId>maven-resources-plugin</artifactId>
-            <configuration>
-              <encoding>${encoding}</encoding>
-            </configuration>
           </plugin>
 
-          <!-- Compiles the sources with a specific Java version and encoding. -->
-          <!-- mvn compiler:compile -->
-          <!-- mvn compiler:testCompile -->
           <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <encoding>${encoding}</encoding>
-              <source>${compileSource}</source>
-              <target>${compileSource}</target>
-            </configuration>
           </plugin>
 
-          <!-- TODO plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>native-maven-plugin</artifactId>
-            <extensions>true</extensions> <configuration> ... </configuration> </plugin -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>native-maven-plugin</artifactId>
+          </plugin>
 
-          <!-- Executes the tests, taking the target directory as working directory. -->
-          <!-- mvn surefire:test -->
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <!-- The application reads configuration files. -->
-              <workingDirectory>
-                ${project.build.testOutputDirectory}
-                    </workingDirectory>
-              <testFailureIgnore>true</testFailureIgnore>
-            </configuration>
           </plugin>
 
-          <!-- Creates the jar of jTReqS. -->
           <plugin>
             <artifactId>maven-jar-plugin</artifactId>
-            <configuration>
-              <excludes>
-                <exclude>${jtreqsConfFile}</exclude>
-                <exclude>${logbackFile}</exclude>
-                <exclude>archiver.py</exclude>
-                <exclude>hsmGetProperties.sh</exclude>
-                <exclude>hsmStageFile.sh</exclude>
-                <exclude>jtreqs.conf.properties</exclude>
-                <exclude>jtreqs.conf.sample.properties</exclude>
-                <exclude>watchdog.sh</exclude>
-              </excludes>
-            </configuration>
           </plugin>
 
-          <!-- Creates the environment for execution. Integrates the dependencies. -->
-          <!-- mvn appassembler:assemble -->
           <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>appassembler-maven-plugin</artifactId>
-            <configuration>
-              <!-- Extra JVM arguments that will be included in the bin scripts -->
-              <extraJvmArguments>
-                -Dlogback.configurationFile=${logbackFile}
-                -Djava.library.path=/opt/hpss/lib
-              </extraJvmArguments>
-
-              <configurationDirectory>etc</configurationDirectory>
-              <platforms>
-                <platform>unix</platform>
-              </platforms>
-              <programs>
-                <program>
-                  <name>jtreqs</name>
-                  <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
-                  <!--mainClass>fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSBridge</mainClass -->
-                </program>
-              </programs>
-              <binFileExtensions>
-                <unix>.sh</unix>
-              </binFileExtensions>
-              <repositoryLayout>flat</repositoryLayout>
-              <assembleDirectory>${project.build.directory}/jtreqs</assembleDirectory>
-            </configuration>
-            <executions>
-              <execution>
-                <id>make-appassembler</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>assemble</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
 
-          <!-- PATH=$PATH:$BASEDIR/etc
-cp src/test2/resources/hpss_cache target/jtreqs/etc/
-exec -a jtreqs java -->
-
-          <!-- Adds some files in the environment for execution. -->
-          <!-- mvn antrun:run -->
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
-            <configuration>
-              <tasks>
-                <property name="ant.regexp.regexpimpl"
-                  value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
-
-                <copy todir="target/jtreqs/etc">
-                  <fileset dir="target/classes">
-                    <include name="${treqsConfFile}" />
-                    <include name="${logbackFile}" />
-                    <include name="archiver.py" />
-                    <include name="hsmGetProperties.sh" />
-                    <include name="hsmStageFile.sh" />
-                    <include name="jtreqs.conf.properties" />
-                    <include name="jtreqs.conf.sample.properties" />
-                    <include name="watchdog.sh" />
-                  </fileset>
-                </copy>
-
-              </tasks>
-            </configuration>
-            <executions>
-              <execution>
-                <id>fix-appassembler</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
 
-          <!-- Packs all files in a tar. -->
           <plugin>
             <artifactId>maven-assembly-plugin</artifactId>
-            <configuration>
-              <appendAssemblyId>false</appendAssemblyId>
-              <finalName>jtreqs</finalName>
-              <descriptors>
-                <descriptor>src/main/config/assembly/assembly.xml</descriptor>
-              </descriptors>
-            </configuration>
-            <!-- Creates the assembly as part of package -->
-            <executions>
-              <execution>
-                <id>make-assembly</id>
-                <phase>package</phase>
-                <goals>
-                  <goal>single</goal>
-                </goals>
-              </execution>
-            </executions>
           </plugin>
 
         </plugins>
       </build>
     </profile>
   </profiles>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>${basedir}/src/test/resources</directory>
+        <includes>
+          <include>*</include>
+        </includes>
+      </testResource>
+      <testResource>
+        <directory>${basedir}/src/main/resources</directory>
+        <includes>
+          <include>hsm*.sh</include>
+        </includes>
+      </testResource>
+    </testResources>
+    <plugins>
+      <!-- Cleans the target directory. -->
+      <!-- mvn clean -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>auto-clean</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- This plugin copies the sources with a specific encoding. -->
+      <!-- mvn resources:resources -->
+      <!-- mvn resources:testResources -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <configuration>
+          <encoding>${encoding}</encoding>
+        </configuration>
+      </plugin>
+
+      <!-- Compiles the sources with a specific Java version and encoding. -->
+      <!-- mvn compiler:compile -->
+      <!-- mvn compiler:testCompile -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <encoding>${encoding}</encoding>
+          <source>${compileSource}</source>
+          <target>${compileSource}</target>
+        </configuration>
+      </plugin>
+
+      <!-- Executes the tests, taking the target directory as working directory. -->
+      <!-- mvn surefire:test -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- The application reads configuration files. -->
+          <workingDirectory>
+            ${project.build.testOutputDirectory}
+          </workingDirectory>
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+      </plugin>
+
+      <!-- Creates the jar of the application. -->
+      <!-- mvn jar:jar -->
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>${jtreqsConfFile}</exclude>
+            <exclude>${logbackFile}</exclude>
+            <exclude>${watchdog}</exclude>
+
+            <exclude>jtreqs.conf.sample.properties</exclude>
+
+            <exclude>archiver.py</exclude>
+          </excludes>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
+              <packageName>fr.in2p3.cc.storage.treqs</packageName>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <!-- Creates the environment for execution. Integrates the dependencies. -->
+      <!-- mvn appassembler:assemble -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <configuration>
+          <!-- Extra JVM arguments that will be included in the bin scripts -->
+          <extraJvmArguments>
+            -Dlogback.configurationFile=${logbackFile}
+            -Djava.library.path=/opt/hpss/lib
+          </extraJvmArguments>
+          <configurationDirectory>etc</configurationDirectory>
+          <platforms>
+            <platform>unix</platform>
+          </platforms>
+          <programs>
+            <program>
+              <name>jtreqs</name>
+              <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
+            </program>
+          </programs>
+          <binFileExtensions>
+            <unix>.sh</unix>
+          </binFileExtensions>
+          <repositoryLayout>flat</repositoryLayout>
+          <assembleDirectory>${project.build.directory}/jtreqs</assembleDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-appassembler</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Adds some files in the environment for execution. -->
+      <!-- mvn antrun:run -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <configuration>
+          <tasks>
+            <property name="ant.regexp.regexpimpl"
+              value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
+            <copy todir="target/jtreqs/etc">
+              <fileset dir="target/classes">
+                <include name="${jtreqsConfFile}" />
+                <include name="${logbackFile}" />
+                <include name="${watchdog}" />
+                <include name="jtreqs.conf.sample.properties" />
+                <include name="archiver.py" />
+              </fileset>
+            </copy>
+          </tasks>
+        </configuration>
+        <executions>
+          <execution>
+            <id>fix-appassembler</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Packs all files in a tar. -->
+      <!-- mvn assembly:single -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <finalName>jtreqs</finalName>
+          <descriptors>
+            <descriptor>src/main/config/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <!-- Creates the assembly as part of package -->
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <!--]build> <plugins> <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>native-maven-plugin</artifactId>
+    <extensions>true</extensions> <configuration> <compilerExecutable>gcj</compilerExecutable>
+    <compilerOutputDirectory>${project.build.directory}/objs</compilerOutputDirectory>
+    <sources> <source> <directory>src/main/java</directory> <includes> <include>**/*.java</include>
+    </includes> </source> </sources> <compilerStartOptions> <compilerStartOption>-shared
+    -O2 - -classpath vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar:vendor/apache/commons-collections-3.2.1/commons-collections-3.2.1.jar:vendor/apache/commons-cli-1.2/commons-cli-1.2.jar:vendor/apache/commons-configuration-1.6/commons-configuration-1.6.jar:vendor/apache/commons-lang-2.5/commons-lang-2.5.jar:vendor/apache/commons-logging-1.1.1/commons-logging-1.1.1.jar:vendor/mysql/mysql-connector-java-5.1.13/mysql-connector-java-5.1.13-bin.jar</compilerStartOption>
+    </compilerStartOptions> <linkerExecutable>gcj</linkerExecutable> <linkerStartOptions>
+    <linkerStartOption>- -main=fr.in2p3.cc.storage.treqs.main.Main</linkerStartOption>
+    <!- - linkerStartOption>- -main=fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester</linkerStartOption
+    - -> </linkerStartOptions> </configuration> </plugin> </plugins> </build -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Codehaus repository</id>
+      <url>http://repository.codehaus.org/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
 </project>
