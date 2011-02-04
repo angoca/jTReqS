@@ -80,19 +80,19 @@ public final class Instantiator {
             try {
                 getInstance = hsm.getMethod("getInstance");
             } catch (SecurityException e) {
-                e.printStackTrace();
+                throw new InstantiatorException(e);
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                throw new InstantiatorException(e);
             }
             if (getInstance != null) {
                 try {
                     bridge = (AbstractHSMBridge) getInstance.invoke(null);
                 } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
+                    throw new InstantiatorException(e);
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    throw new InstantiatorException(e);
                 } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+                    throw new InstantiatorException(e);
                 }
             }
         }
