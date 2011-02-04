@@ -144,6 +144,9 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         // Initializes the HPSS environment.
         LOGGER.debug("Passing this params to init: {}, {}, {}", new String[] {
                 this.getAuthType(), this.getKeytabPath(), this.getUser() });
+        LOGGER.debug("Library path: {}",
+                System.getProperty("java.library.path"));
+
         try {
             NativeBridge.getInstance().initContext(this.getAuthType(),
                     this.getKeytabPath(), this.getUser());
