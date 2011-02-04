@@ -356,7 +356,7 @@ public final class QueuesController {
                 }
             }
         }
-        LOGGER.info("There are {} activated queues", active);
+        LOGGER.debug("There are {} activated queues", active);
 
         LOGGER.trace("< countUsedResources");
 
