@@ -21,4 +21,7 @@ gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I ./ -DLINUX -Wall
 rm -f libHPSSJNIBridge.so
 # It is necessary to include the authentication / authorization libraries in
 # order to resolve the symbols.
+# By not including the authentication library, almost this project was rejected.
+# I think this is the most important line of code, at least the more
+# representative.
 ld -shared -L/opt/hpss/lib -lhpss -lhpssunixauth -o ./libHPSSJNIBridge.so ./HPSSBroker.o ./HPSSJNIBridge.o
