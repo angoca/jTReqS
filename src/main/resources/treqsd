@@ -38,6 +38,8 @@
 # This script starts treqs and registers some information about the
 # environment where it is running.
 
+# TODO review this
+
 # source function library
 . /etc/rc.d/init.d/functions
 

@@ -1,4 +1,5 @@
 MAILTO=treqsmaster@cc.in2p3.fr
+# TODO review this
 # TReqS watchdog
 */3 * * * * sh /opt/treqs/etc/treqs_watchdog.sh | tee -a /var/log/treqs/watchdog.log
 # TReqS archiver
