@@ -8,13 +8,14 @@ OUTPUT:
 Error loading library. /afs/in2p3.fr/home/g/gomez/jtreqs-server/bin/libHPSSJNIBridge.so: /afs/in2p3.fr/home/g/gomez/jtreqs-server/bin/libHPSSJNIBridge.so: wrong ELF class: ELFCLASS64 (Possible cause: architecture word width mismatch)
 
 LOCATION:
-Standard output or logs.
+Standard output or logs at startup.
 
 IMPORTANCE:
 High.
 
 DESCRIPTION:
-The Java Runtime environment that is currently used is not compatible with the Native library to access HPSS. The library is compiled in 64 bits.
+The Java Runtime environment that is currently used is not compatible with the
+Native library to access HPSS. The library is compiled in 64 bits.
 Please, check that your current JRE is also 64 bits and not 32 bits.
 This is important to communicate with HPSS. The native library is compiled in
 64 bits, then, it is necessary to run the java virtual machine in 64 bits.
@@ -35,7 +36,7 @@ ERROR in ch.qos.logback.core.rolling.RollingFileAppender[TraceFile] - openFile(/
     at  at java.io.FileOutputStream.openAppend(Native Method)
 
 LOCATION:
-Standard output or logs.
+Standard output or logs at startup.
 
 IMPORTANCE:
 Medium.
@@ -82,6 +83,7 @@ Insert in the database the available drives for the application. This can be
 done via:
 
 INSERT INTO jmediatypes VALUES ('1', 'T10K-A', 5);
+
 -----
 
 ERROR:
@@ -106,7 +108,111 @@ SOLUTION:
 Insert in the database the corresponding allocation per user. This can be done
 like this:
 
-INSERT INTO jallocations VALUES (1, 'atlagrid', 0.2)
+INSERT INTO jallocations VALUES (1, 'atlagrid', 0.2);
 
 The last column is the percentage of the total quantity of drives that are
 reserved for that user.
+
+-----
+
+ERROR:
+A media type defined in the database has not defined users for fair-share
+
+OUTPUT:
+INFO  f.i.c.s.t.c.activator.Activator - This media type has not defined users: id X
+
+LOCATION:
+Standard output or logs.
+
+IMPORTANCE:
+Low.
+
+DESCRIPTION:
+The fair-share needs two components, drives and users. Both of them are defined
+in the database, however, it could be possible to define drives to be used
+without fair-share. Then, this message is completely normal.
+However, one of the main objective of this application is to use the drives in
+a fair-share fashion, so it is better to check if that type of drive should not
+have users in the table jallocations.
+
+SOLUTION:
+If it is necessary to use fair-share, then register the user in the database:
+
+INSERT INTO jallocations VALUES (2, 'cmsrid', 0.3);
+
+-----
+
+ERROR:
+The database connection has not been established or it was lost.
+
+OUTPUT:
+WARN  f.i.c.s.t.p.mysql.MySQLBroker - The connection has not been established. Reestablishing the connection.
+
+LOCATION:
+Standard output or logs.
+
+IMPORTANCE:
+Low.
+
+DESCRIPTION:
+The application has a mechanism to detect if the database connection was not
+established, or it was lost, then it retries to connect to it.
+
+SOLUTION:
+Nothing, the application is designed to recover from this problem.
+
+-----
+
+ERROR:
+The given credentials in the configuration file do not permit to connect to
+the database.
+
+OUTPUT:
+SQLException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+SQLState: 08S01
+VendorError: 0
+fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException: com.mysql.jdbc.exceptions.jdbc4.CommunicationsException: Communications link failure
+
+The last packet sent successfully to the server was 0 milliseconds ago. The driver has not received any packets from the server.
+
+LOCATION:
+Standard output or logs at startup.
+
+IMPORTANCE:
+High.
+
+DESCRIPTION:
+The given credentials in the configuration file (jtreqs.conf.properties) are
+not valid to connect to the given database. The applications cannot connect to
+the data source and this is vital to function.
+
+SOLUTION:
+Please check the connectivity to the indicated database with the given
+credentials and change the configuration with the proper ones.
+
+-----
+
+ERROR:
+The database server is not available.
+
+OUTPUT:
+SQLException: Access denied for user 'treqs'@'localhost' (using password: YES)
+SQLState: 28000
+VendorError: 1045
+fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLOpenException: java.sql.SQLException: Access denied for user 'treqs'@'localhost' (using password: YES)
+
+LOCATION:
+Standard output or logs at startup.
+
+IMPORTANCE:
+High.
+
+DESCRIPTION:
+The given database seems online.
+
+SOLUTION:
+Try to connect to the given database with the given credentials and correct
+the configuration file if necessary (jtreqs.conf.properties).
+
