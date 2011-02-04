@@ -35,7 +35,7 @@
   <groupId>fr.in2p3.cc.storage.treqs</groupId>
   <artifactId>jtreqs-server</artifactId>
 
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5.0</version>
   <name>jTReqS Server</name>
   <packaging>jar</packaging>
   <url>https://forge.in2p3.fr/projects/show/treqs</url>
@@ -312,8 +312,9 @@
         <configuration>
           <!-- Extra JVM arguments that will be included in the bin scripts -->
           <extraJvmArguments>
+            -d64
             -Dlogback.configurationFile=${logbackFile}
-            -Djava.library.path=/opt/hpss/lib
+            -Djava.library.path=/opt/hpss/lib:./
           </extraJvmArguments>
           <configurationDirectory>etc</configurationDirectory>
           <platforms>
