@@ -261,7 +261,8 @@ public final class MySQLReadingDAO implements ReadingDAO {
                 break;
             // The requests has been resubmitted due to a problem in space.
             case SUBMITTED:
-                LOGGER.warn("Logging requeue of a file");
+                LOGGER.warn("Logging requeue of a file {}", reading
+                        .getMetaData().getFile().getName());
                 statement = MySQLBroker.getInstance().getPreparedStatement(
                         MySQLStatements.SQL_REQUESTS_UPDATE_RESUBMITTED);
                 break;
