@@ -47,7 +47,7 @@ import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
  * @author Andrés Gómez
  * @since 1.5
  */
-final class UnknownOutputException extends AbstractHSMPropertiesException {
+final class HSMUnknownOutputException extends AbstractHSMPropertiesException {
 
     /**
      * Generated ID.
@@ -57,7 +57,7 @@ final class UnknownOutputException extends AbstractHSMPropertiesException {
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(UnknownOutputException.class);
+            .getLogger(HSMUnknownOutputException.class);
 
     /**
      * Exception with a number format exception.
@@ -65,7 +65,7 @@ final class UnknownOutputException extends AbstractHSMPropertiesException {
      * @param e
      *            Detail of the problem.
      */
-    UnknownOutputException(final NumberFormatException e) {
+    HSMUnknownOutputException(final NumberFormatException e) {
         super(e);
 
         LOGGER.trace(">< Instance creation");
