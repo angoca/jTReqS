@@ -457,7 +457,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             String tape = tokens.nextToken();
             ret = new HSMHelperFileProperties(tape, position, size);
         } catch (NumberFormatException e) {
-            throw new UnknownOutputException(e);
+            throw new HSMUnknownOutputException(e);
         }
 
         assert ret != null;
