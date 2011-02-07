@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class HSMUnavailableException extends AbstractHSMPropertiesException {
+public final class HSMUnavailableException extends AbstractHSMException {
     /**
      * Logger.
      */
