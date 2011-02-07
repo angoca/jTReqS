@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * @since 1.5
  */
 public final class HSMNoAuthenticatedException extends
-        AbstractHSMPropertiesException {
+        AbstractHSMException {
     /**
      * Logger.
      */
