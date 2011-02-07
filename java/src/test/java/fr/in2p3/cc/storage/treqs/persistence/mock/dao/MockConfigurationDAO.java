@@ -126,10 +126,10 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      * Drive distribution per user.
      * <p>
      * <code>
-     * id type  user1 user2 user3 user4 user5 user6 user7<br/>
-     * 1  T10K-A 2     1     1     -     -     2     3<br/>
-     * 2  T10K-B 3     2     -     1     -     -     1<br/>
-     * 3  T10K-C -     -     -     -     1     1     2
+     * id type...user1 user2 user3 user4 user5 user6 user7<br/>
+     * 1. T10K-A . 2 ... 1 ... 1 ... - ... - ... 2 ... 3<br/>
+     * 2. T10K-B . 3 ... 2 ... - ... 1 ... - ... - ... 1<br/>
+     * 3. T10K-C . - ... - ... - ... - ... 1 ... 1 ... 2
      * </code>
      *
      * @link fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#
