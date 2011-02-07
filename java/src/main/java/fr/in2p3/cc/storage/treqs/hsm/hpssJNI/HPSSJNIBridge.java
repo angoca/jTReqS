@@ -51,6 +51,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.hsm.HSMNoAuthenticatedException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMNotExistingFileException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMUnavailableException;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
@@ -154,6 +155,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             int code = processException(e);
             if (code == HPSSErrorCode.HPSS_EPERM.getCode()) {
                 throw new HSMCredentialProblemException(code);
+            } else if (code == HPSSErrorCode.HPSS_EIO.getCode()) {
+                throw new HSMUnavailableException(code);
             } else {
                 throw new HSMGeneralInitProblemException(e);
             }
@@ -199,6 +202,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
                 throw new HSMDirectoryException(code);
             } else if (code == HPSSErrorCode.HPSS_EACCES.getCode()) {
                 throw new HSMNoAuthenticatedException(code);
+            } else if (code == HPSSErrorCode.HPSS_EIO.getCode()) {
+                throw new HSMUnavailableException(code);
             } else if (code == -30001) {
                 throw new HSMEmptyFileException(code);
             } else if (code >= -30004 && code <= -30002) {
@@ -327,6 +332,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
                 throw new HSMResourceException(code);
             } else if (code == HPSSErrorCode.HPSS_ENOENT.getCode()) {
                 throw new HSMNoAuthenticatedException(code);
+            } else if (code == HPSSErrorCode.HPSS_EIO.getCode()) {
+                throw new HSMUnavailableException(code);
             } else {
                 throw new HSMGeneralStageProblemException(e);
             }
