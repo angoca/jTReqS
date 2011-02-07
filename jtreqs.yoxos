@@ -1,0 +1,27 @@
+{
+  "profile":{
+    "components":[
+      "org.ucdetector.feature.feature.group",
+      "org.eclipse.cdt.feature.group",
+      "org.eclipse.egit.feature.group",
+      "net.sf.eclipsecs.feature.group",
+      "AnyEditTools.feature.group",
+      "org.eclipse.wst.xml_ui.feature.feature.group",
+      "org.eclipse.jdt.feature.group"
+    ],
+    "configurations":[
+      
+    ],
+    "description":"",
+    "doctype":"profile",
+    "folder":"",
+    "followExperimental":false,
+    "_id":"739cb59607d7db7bdce30f5d6cd2519e",
+    "name":"jtreqs",
+    "owner":"",
+    "placeID":"yoxos",
+    "sliceID":"3.6.1.20101111-2300",
+    "type":"PRIVATE",
+    "updateStrategy":"ALL"
+  }
+}
