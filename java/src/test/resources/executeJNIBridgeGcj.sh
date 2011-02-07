@@ -7,8 +7,8 @@
 sh ./executeJNIBridgeGcj.sh
 
 # Creates the executable
-gcj -c -Wall -o HPSSJNIBridgeTester.o ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridgeTester.java
-gcj --main=fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester -fno-assert -o tester.uexe HPSSJNIBridgeTester.o NativeBridge.o
+gcj -c -Wall -o NativeBridgeTester.o ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridgeTester.java
+gcj --main=fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester -fno-assert -o tester.uexe NativeBridgeTester.o NativeBridge.o
 
 # Execute.
 echo Executing

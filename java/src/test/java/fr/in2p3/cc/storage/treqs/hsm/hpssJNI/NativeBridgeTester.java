@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
  * @author Andres Gomez
  * @since 1.5
  */
-public final class HPSSJNIBridgeTester {
+public final class NativeBridgeTester {
 
     /**
      * Test that the jni bridge works correctly. TODO this should be a test
@@ -102,7 +102,7 @@ public final class HPSSJNIBridgeTester {
     /**
      * Hidden.
      */
-    private HPSSJNIBridgeTester() {
+    private NativeBridgeTester() {
         // Nothing
     }
 }

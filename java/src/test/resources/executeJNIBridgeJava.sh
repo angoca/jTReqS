@@ -8,7 +8,7 @@ sh ./compileJNIBridgeJava.sh
 
 # HPSS JNI Bridge in Java.
 echo Compiling tester
-javac -cp . -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridgeTester.java
+javac -cp . -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridgeTester.java
 
 echo Executing
 # This is for HPSS logging (it works from 0 - 7, the three bits)
@@ -17,5 +17,5 @@ export HPSS_API_DEBUG=0
 export TREQS_LOG=WARN
 export LD_LIBRARY_PATH=`pwd`:/opt/hpss/lib/
 
-java -Djava.library.path=./ -ea -cp ./ fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester
+java -Djava.library.path=./ -ea -cp ./ fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridgeTester
 

@@ -140,7 +140,7 @@ public final class NativeBridge {
     /**
      * Name of the library to load the HPSS JNI bridge.
      */
-    private static final String HPSS_JNI_BRIDGE_LIBRARY = "HPSSJNIBridge";
+    private static final String HPSS_JNI_BRIDGE_LIBRARY = "NativeBridge";
 
     /**
      * Default constructor hidden where the library is loaded.
