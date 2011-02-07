@@ -4,11 +4,12 @@
 #
 # @author Andres Gomez
 
-sh ./executeJNIBridgeGcj.sh
+sh ./compileJNIBridgeGcj.sh
 
 # Creates the executable
-gcj -c -Wall -o NativeBridgeTester.o ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridgeTester.java
-gcj --main=fr.in2p3.cc.storage.treqs.hsm.hpssJNI.HPSSJNIBridgeTester -fno-assert -o tester.uexe NativeBridgeTester.o NativeBridge.o
+gcj -c -Wall -o NativeBridgeTester.o ../java/src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/NativeBridgeTester.java
+# FIXME The next line does not work with GCJ.
+gcj --main=fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridgeTester -fno-assert -o tester.uexe NativeBridgeTester.o -L./ -lNativeBridge
 
 # Execute.
 echo Executing
