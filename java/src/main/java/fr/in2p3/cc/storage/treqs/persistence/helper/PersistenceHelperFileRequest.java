@@ -64,7 +64,7 @@ public final class PersistenceHelperFileRequest {
     /**
      * Id of the request.
      */
-    private final short id;
+    private final int id;
     /**
      * Quantity of tries for this file have been done.
      */
@@ -86,16 +86,16 @@ public final class PersistenceHelperFileRequest {
      * @param user
      *            Owner of the request.
      */
-    public PersistenceHelperFileRequest(final short requestId,
-            final String file, final byte nbTries, final String user) {
+    public PersistenceHelperFileRequest(final int requestId, final String file,
+            final byte nbTries, final String user) {
         LOGGER.trace("> create instance");
 
-        assert requestId > 0;
+        assert requestId >= 0;
         assert file != null && !file.equals("") : "File cannot be '" + file
                 + "'";
         assert nbTries >= 0;
         assert user != null && !user.equals("") : "User cannot be '" + user
-        + "'";
+                + "'";
 
         this.id = requestId;
         this.fileName = file;
