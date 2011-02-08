@@ -183,9 +183,11 @@ public final class JonathanSelector implements Selector {
                             queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
                         // There is another active queue for this tape. Just
                         // pick another one.
-                        LOGGER.debug("Another queue on this tape is already "
-                                + "active. Trying next queue.");
+                        LOGGER.debug("Another queue on this tape" + " ({})"
+                                + " is already active. Trying next queue.",
+                                queue.getTape().getName());
                         // Return the currently selected or null.
+                        ret = currentlySelected;
                     } else {
                         // This is a created one.
 
@@ -194,9 +196,9 @@ public final class JonathanSelector implements Selector {
                             LOGGER.debug("Current queue is null");
                             ret = queue;
                         } else if (currentlySelected.getCreationTime()
-                        // Select the oldest queue.
                                 .getTimeInMillis() >= queue.getCreationTime()
                                 .getTimeInMillis()) {
+                            // Select the oldest queue.
                             LOGGER.debug(
                                     "It is better the new one {} than the "
                                             + "selected one {}", queue
@@ -220,8 +222,9 @@ public final class JonathanSelector implements Selector {
                                 .getName());
                     }
                 } else {
-                    LOGGER.info("The analyzed queue is in other state: {}",
-                            queue.getStatus());
+                    LOGGER.info(
+                            "The analyzed queue is in other state: {} - {}",
+                            queue.getTape().getName(), queue.getStatus());
                     // Return the currently selected or null.
                     ret = currentlySelected;
                 }
@@ -244,7 +247,7 @@ public final class JonathanSelector implements Selector {
                     + ret.getStatus();
         }
 
-        LOGGER.trace("< checkQueue");
+        LOGGER.trace("< checkQueue - {}", ret);
 
         return ret;
     }
@@ -318,7 +321,7 @@ public final class JonathanSelector implements Selector {
 
         assert bestUser != null : "bestUser null";
 
-        LOGGER.trace("< selectBestUser");
+        LOGGER.trace("< selectBestUser - {}", bestUser.getName());
 
         return bestUser;
     }
