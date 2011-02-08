@@ -60,6 +60,8 @@ import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.control.starter.Starter;
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMDirectoryException;
+import fr.in2p3.cc.storage.treqs.hsm.HSMEmptyFileException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.model.File;
@@ -502,8 +504,24 @@ public final class Dispatcher extends AbstractProcess {
                 fileProperties = HSMFactory.getHSMBridge().getFileProperties(
                         fileRequest.getName());
             } catch (AbstractHSMException e) {
-                this.processException(e, fileRequest);
-                cont = false;
+                if (!(e instanceof HSMEmptyFileException)
+                        && !(e instanceof HSMDirectoryException)) {
+                    this.processException(e, fileRequest);
+                    cont = false;
+                } else {
+                    // The file is empty.
+                    try {
+                        AbstractDAOFactory
+                                .getDAOFactoryInstance()
+                                .getReadingDAO()
+                                .setRequestStatusById(fileRequest.getId(),
+                                        RequestStatus.ON_DISK,
+                                        e.getErrorCode(), e.getMessage());
+                    } catch (TReqSException e1) {
+                        LOGGER.error("Error trying to update request status", e);
+                    }
+                    cont = false;
+                }
             }
             if (cont
                     && fileProperties.getTapeName().equals(
