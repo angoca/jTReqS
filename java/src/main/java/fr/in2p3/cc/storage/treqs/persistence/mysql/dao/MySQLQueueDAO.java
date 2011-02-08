@@ -36,10 +36,10 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence.mysql.dao;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 import org.slf4j.Logger;
@@ -108,7 +108,7 @@ public final class MySQLQueueDAO implements QueueDAO {
         final int size = queue.getRequestsSize();
         final byte mediaTypeId = queue.getTape().getMediaType().getId();
         final long byteSize = queue.getByteSize();
-        final Date creationTime = new Date(queue.getCreationTime()
+        final Timestamp timestamp = new Timestamp(queue.getCreationTime()
                 .getTimeInMillis());
 
         int id = 0;
@@ -129,7 +129,7 @@ public final class MySQLQueueDAO implements QueueDAO {
             // Insert size.
             statement.setLong(index++, byteSize);
             // Insert time.
-            statement.setDate(index++, creationTime);
+            statement.setTimestamp(index++, timestamp);
 
             statement.execute();
 
@@ -232,7 +232,8 @@ public final class MySQLQueueDAO implements QueueDAO {
                 statement = MySQLBroker.getInstance().getPreparedStatement(
                         MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
                 // Insert activation time
-                statement.setDate(index++, new Date(time.getTimeInMillis()));
+                statement.setTimestamp(index++,
+                        new Timestamp(time.getTimeInMillis()));
                 break;
             case CREATED:
                 // This call could be done when the queue is unsuspended.
@@ -245,14 +246,16 @@ public final class MySQLQueueDAO implements QueueDAO {
                 statement = MySQLBroker.getInstance().getPreparedStatement(
                         MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
                 // Insert end time.
-                statement.setDate(index++, new Date(time.getTimeInMillis()));
+                statement.setTimestamp(index++,
+                        new Timestamp(time.getTimeInMillis()));
                 break;
             case TEMPORARILY_SUSPENDED:
                 // In this state the queue is not update in the database.
                 statement = MySQLBroker.getInstance().getPreparedStatement(
                         MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_SUSPENDED);
                 // Insert suspension time
-                statement.setDate(index++, new Date(time.getTimeInMillis()));
+                statement.setTimestamp(index++,
+                        new Timestamp(time.getTimeInMillis()));
                 break;
             default:
                 assert false;
