@@ -258,7 +258,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
                 // Insert end_time time stamp
                 statement.setTimestamp(index++, currentTimestamp);
                 LOGGER.debug("Logging a file final state with timestamp {}",
-                        time.toString());
+                        time.getTimeInMillis());
                 break;
             // The requests has been resubmitted due to a problem in space.
             case SUBMITTED:
