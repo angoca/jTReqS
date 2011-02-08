@@ -87,6 +87,6 @@ public final class HSMUnavailableException extends AbstractHSMException {
     public String getMessage() {
         LOGGER.trace(">< getMessage");
 
-        return "HSM is currently unavailable.";
+        return "File locked or HSM is currently unavailable.";
     }
 }
