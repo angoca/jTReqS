@@ -370,8 +370,12 @@ public final class QueuesController {
      * @param media
      *            Type of the media to analyze.
      * @return Quantity of waiting queues.
+     * @throws TReqSException
+     *             If there is a problem while checking the existence of a
+     *             queue.
      */
-    public short countWaitingQueues(final MediaType media) {
+    public short countWaitingQueues(final MediaType media)
+            throws TReqSException {
         LOGGER.trace("> countWaitingQueues");
 
         assert media != null;
@@ -387,7 +391,10 @@ public final class QueuesController {
             while (iterator2.hasNext()) {
                 Queue queue = iterator2.next();
                 if (queue.getStatus() == QueueStatus.CREATED
-                        && queue.getTape().getMediaType().equals(media)) {
+                        && queue.getTape().getMediaType().equals(media)
+                        && QueuesController.getInstance().exists(
+                                queue.getTape().getName(),
+                                QueueStatus.ACTIVATED) == null) {
                     waiting++;
                 }
             }
