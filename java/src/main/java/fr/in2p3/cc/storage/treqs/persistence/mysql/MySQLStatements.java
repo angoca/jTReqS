@@ -284,7 +284,7 @@ public final class MySQLStatements {
             + QueueStatus.ABORTED.getId() + ", " + QUEUES_END_TIME
             + " = FROM_UNIXTIME(UNIX_TIMESTAMP()) WHERE " + QUEUES_STATUS
             + " NOT IN (" + QueueStatus.ENDED.getId() + ", "
-            + QueueStatus.ABORTED.getId();
+            + QueueStatus.ABORTED.getId() + ')';
 
     /**
      * SQL statement to update the quantity of requests for a given queue. This
