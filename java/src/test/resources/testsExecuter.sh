@@ -8,11 +8,11 @@ sh ./compileJNIBridgeJava.sh
 
 # HPSS JNI Bridge in Java.
 echo Compiling tester
-javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeTestNative.java
-javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeContextTestNative.java
-javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeContextBadUserTestNative.java
-javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeContextBadAuthTestNative.java
-javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridgeTestNative.java
+javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../java/src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeTestNative.java
+javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../java/src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeContextTestNative.java
+javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../java/src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeContextBadUserTestNative.java
+javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../java/src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HSMNativeBridgeContextBadAuthTestNative.java
+javac -cp ./:../vendor/junit/junit4.8.2/junit-4.8.2.jar:../vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar -d . ../java/src/test/java/fr/in2p3/cc/storage/treqs/hsm/hpssJNI/HPSSJNIBridgeTestNative.java
 
 echo Executing
 # This is for HPSS logging (it works from 0 - 7, the three bits)
