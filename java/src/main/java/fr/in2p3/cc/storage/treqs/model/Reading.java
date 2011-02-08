@@ -291,6 +291,9 @@ public final class Reading {
             } else if (e instanceof AbstractHSMStageException) {
                 this.logsException("Error staging. Retrying " + filename, e,
                         RequestStatus.CREATED);
+            } else {
+                this.logsException("General error. Retrying " + filename, e,
+                        RequestStatus.FAILED);
             }
         } catch (Exception e) {
             String mess = "Unexpected error while staging " + filename + ":"
@@ -348,8 +351,6 @@ public final class Reading {
      */
     void setErrorCode(final int code) {
         LOGGER.trace("> setErrorCode");
-
-        assert code >= 0;
 
         this.errorCode = code;
 
