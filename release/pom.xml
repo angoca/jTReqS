@@ -58,6 +58,13 @@
     </dependency>
   </dependencies>
 
+  <properties>
+    <logbackFile>logback.xml</logbackFile>
+    <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
+    <watchdog>watchdog.sh</watchdog>
+    <installDirectory>$JTREQS_INSTALL_DIR</installDirectory>
+  </properties>
+
   <build>
     <plugins>
       <!-- Cleans the target directory. -->
@@ -85,9 +92,8 @@
           <extraJvmArguments>
             -d64
             -Dlogback.configurationFile=${logbackFile}
-            -Djava.library.path=/opt/hpss/lib:$INSTALL_DIR/jtreqs/repo/
+            -Djava.library.path=/opt/hpss/lib:${installDirectory}/repo/
           </extraJvmArguments>
-          <configurationDirectory>etc</configurationDirectory>
           <platforms>
             <platform>unix</platform>
           </platforms>
@@ -97,11 +103,15 @@
               <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
             </program>
           </programs>
+          <repositoryLayout>flat</repositoryLayout>
+          <assembleDirectory>${project.build.directory}/jtreqs</assembleDirectory>
+          <!-- The next 4 parameters do not work. -->
           <binFileExtensions>
             <unix>.sh</unix>
           </binFileExtensions>
-          <repositoryLayout>flat</repositoryLayout>
-          <assembleDirectory>${project.build.directory}/jtreqs</assembleDirectory>
+          <configurationDirectory>etc</configurationDirectory>
+          <configurationSourceDirectory>src/main/config</configurationSourceDirectory>
+          <copyConfigurationDirectory>true</copyConfigurationDirectory>
         </configuration>
         <executions>
           <execution>
@@ -123,7 +133,7 @@
             <property name="ant.regexp.regexpimpl"
               value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
             <copy todir="target/jtreqs/etc">
-              <fileset dir="../java/target/classes">
+              <fileset dir="src/config">
                 <include name="${jtreqsConfFile}" />
                 <include name="${logbackFile}" />
                 <include name="${watchdog}" />
@@ -167,6 +177,8 @@
           </execution>
         </executions>
       </plugin>
+
+      <!-- TODO change the .sh to executable -->
     </plugins>
   </build>
 
