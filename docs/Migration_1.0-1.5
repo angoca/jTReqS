@@ -156,3 +156,4 @@ update jqueues set nb_reqs = 1 where id = 14;
 
 select * from jqueues;
 
+(while read x ; do echo $RANDOM $x ; done) < IT6575 | sort -n | tail -10 | awk '{print $2,"."}'
