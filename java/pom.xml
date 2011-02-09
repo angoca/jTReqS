@@ -57,12 +57,6 @@
           <include>*</include>
         </includes>
       </testResource>
-      <testResource>
-        <directory>${basedir}/src/main/resources</directory>
-        <includes>
-          <include>hsm*.sh</include>
-        </includes>
-      </testResource>
     </testResources>
 
     <plugins>
@@ -121,15 +115,6 @@
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
-          <excludes>
-            <exclude>${jtreqsConfFile}</exclude>
-            <exclude>${logbackFile}</exclude>
-            <exclude>${watchdog}</exclude>
-
-            <exclude>jtreqs.conf.sample.properties</exclude>
-
-            <exclude>archiver.py</exclude>
-          </excludes>
           <archive>
             <manifest>
               <addClasspath>true</addClasspath>

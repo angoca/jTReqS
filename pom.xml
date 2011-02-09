@@ -170,13 +170,6 @@
 
   </dependencies>
 
-  <properties>
-    <logbackFile>logback.xml</logbackFile>
-    <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
-    <watchdog>watchdog.sh</watchdog>
-  </properties>
-
-
   <profiles>
     <profile>
       <!-- mvn -P jTReqS -->
