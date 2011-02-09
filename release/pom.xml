@@ -34,7 +34,7 @@
 
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
-    <version>1.5.0</version>
+    <version>1.5-SNAPSHOT</version>
     <artifactId>jtreqs-server-parent</artifactId>
   </parent>
 
@@ -46,9 +46,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>fr.in2p3.cc.storage.treqs.java</groupId>
+      <groupId>fr.in2p3.cc.storage.jtreqs.java</groupId>
       <artifactId>jtreqs-server-java</artifactId>
-      <version>1.5.0</version>
+      <version>1.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.in2p3.cc.storage.jtreqs.native</groupId>
+      <artifactId>jtreqs-server-native</artifactId>
+      <version>1.5-SNAPSHOT</version>
+      <type>so</type>
     </dependency>
   </dependencies>
 
