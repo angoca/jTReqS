@@ -31,6 +31,8 @@
   knowledge of the CeCILL license and that you accept its terms. -->
 
 <configuration debug="false" scan="true">
+  <contextName>jTReqS</contextName>
+  <jmxConfigurator />
 
   <appender name="TraceFile"
     class="ch.qos.logback.core.rolling.RollingFileAppender">
