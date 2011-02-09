@@ -131,7 +131,7 @@
                 <include name="archiver.py" />
               </fileset>
             </copy>
-            <copy file="../native/target/jtreqs-server-native.so" tofile="target/jtreqs/repo/libHPSSJNIBridge.so" />
+            <copy file="../native/target/jtreqs-server-native.so" tofile="target/jtreqs/repo/libNativeBridge.so" />
           </tasks>
         </configuration>
         <executions>
