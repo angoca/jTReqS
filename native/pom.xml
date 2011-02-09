@@ -108,7 +108,6 @@
         </configuration>
       </plugin>
       <!-- TODO Execute the native tests here -->
-      <!-- TODO Create a JAR with the generated library inside -->
 
     </plugins>
   </build>
