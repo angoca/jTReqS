@@ -35,7 +35,7 @@ for HPSS. This implementation is in Java.
    $ mvn -P jTReqS
  - Copy/Move and extract the file
      release/target/jtreqs.tar.gz
-   to an good location.
+   to a good location.
 
 (Without Maven)
 
@@ -109,11 +109,11 @@ project could have been thrown to the garbage.)
    (When using Maven)
    Once the file has been inflated, then execute these commands from the root
    dir of the installation:
-   $ export INSTALL_DIR=./
+   $ export INSTALL_DIR=`pwd`/jtreqs
    $ sh jtreqs/bin/jtreqs
 
    (When not using Maven)
-   $ export LD_LIBRARY_PATH=./:/opt/hpss/lib
+   $ export LD_LIBRARY_PATH=`pwd`/bin:/opt/hpss/lib
    $ cd bin
    $ sh jtreqs.sh
 
