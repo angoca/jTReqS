@@ -51,6 +51,10 @@ import fr.in2p3.cc.storage.treqs.model.User;
  * Specialization of the AbstractController template to manage users.
  * <p>
  * The key is the user name.
+ * <p>
+ * This is the only controller that do not destroys its references after being
+ * used. This behavior is due to the multiple uses of users from
+ * different objects, and the lower cardinality.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -73,7 +77,7 @@ public final class UsersController extends AbstractController {
     static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
-        if (instance != null){
+        if (instance != null) {
             LOGGER.info("Instance destroyed");
         }
         instance = null;
