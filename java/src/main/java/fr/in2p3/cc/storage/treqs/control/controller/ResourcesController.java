@@ -106,7 +106,9 @@ public final class ResourcesController {
      */
     private List<Resource> resources;
     /**
-     * Drive reservation per user.
+     * Drive reservation per user. These objects are kept for one iteration of
+     * the Activator. They are recreated each time, thus there is not necessary
+     * to do a clean up.
      */
     private MultiMap share;
 
@@ -146,8 +148,14 @@ public final class ResourcesController {
     public MultiMap getResourceAllocation() throws TReqSException {
         LOGGER.trace("> getResourceAllocation");
 
-        this.share = AbstractDAOFactory.getDAOFactoryInstance()
-                .getConfigurationDAO().getResourceAllocation();
+        synchronized (share) {
+            // This helps to pass the garbage collector.
+            this.share.clear();
+            this.share = null;
+            // Recreates the share map.
+            this.share = AbstractDAOFactory.getDAOFactoryInstance()
+                    .getConfigurationDAO().getResourceAllocation();
+        }
 
         assert this.share != null;
 
