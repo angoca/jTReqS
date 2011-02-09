@@ -109,7 +109,8 @@ project could have been thrown to the garbage.)
    (When using Maven)
    Once the file has been inflated, then execute these commands from the root
    dir of the installation:
-   $ export INSTALL_DIR=`pwd`/jtreqs
+   The install directory could be something like /opt/jtreqs
+   $ export JTREQS_INSTALL_DIR=`pwd`/jtreqs
    $ sh jtreqs/bin/jtreqs
 
    (When not using Maven)
