@@ -1,0 +1,172 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!-- Copyright Jonathan Schaeffer 2009-2010, CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr> -->
+
+  <!-- Contributors Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr> -->
+
+  <!-- This software is a computer program whose purpose is to schedule, sort
+    and submit file requests to the hierarchical storage system HPSS. -->
+
+  <!-- This software is governed by the CeCILL license under French law and
+    abiding by the rules of distribution of free software. You can use, modify
+    and/or redistribute the software under the terms of the CeCILL license as
+    circulated by CEA, CNRS and INRIA at the following URL "http://www.cecill.info". -->
+
+  <!-- As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided only with
+    a limited warranty and the software's author, the holder of the economic
+    rights, and the successive licensors have only limited liability. -->
+
+  <!-- In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the software
+    by the user in light of its specific status of free software, that may mean
+    that it is complicated to manipulate, and that also therefore means that
+    it is reserved for developers and experienced professionals having in-depth
+    computer knowledge. Users are therefore encouraged to load and test the software's
+    suitability as regards their requirements in conditions enabling the security
+    of their systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security. -->
+
+  <!-- The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms. -->
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- The Basics -->
+  <groupId>fr.in2p3.cc.storage.jtreqs.release</groupId>
+  <artifactId>jtreqs-server-release</artifactId>
+  <packaging>jar</packaging>
+  <dependencies>
+
+    <dependency>
+      <groupId>fr.in2p3.cc.storage.jtreqs.java</groupId>
+      <artifactId>jtreqs-server-java</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.in2p3.cc.storage.jtreqs.native</groupId>
+      <artifactId>jtreqs-server-native</artifactId>
+      <version>${project.version}</version>
+      <type>so</type>
+    </dependency>
+
+  </dependencies>
+  <parent>
+    <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
+    <version>1.5-SNAPSHOT</version>
+    <artifactId>jtreqs-server-parent</artifactId>
+  </parent>
+  <properties>
+    <logbackFile>logback.xml</logbackFile>
+    <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
+    <watchdog>watchdog.sh</watchdog>
+    <installDirectory>$JTREQS_INSTALL_DIR</installDirectory>
+  </properties>
+
+  <!-- Build Settings -->
+  <!-- "Project Build" contains more elements than just the BaseBuild set -->
+  <build>
+    <plugins>
+
+      <!-- Cleans the target directory. -->
+      <!-- mvn clean -->
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+      </plugin>
+
+      <!-- Creates the environment for execution. Integrates the dependencies. -->
+      <!-- mvn appassembler:assemble -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.1.1</version>
+        <configuration>
+          <!-- Extra JVM arguments that will be included in the bin scripts -->
+          <extraJvmArguments>
+            -d64
+            -Dlogback.configurationFile=${logbackFile}
+            -Djava.library.path=/opt/hpss/lib:${installDirectory}/repo/
+          </extraJvmArguments>
+          <platforms>
+            <platform>unix</platform>
+          </platforms>
+          <programs>
+            <program>
+              <name>jtreqs</name>
+              <mainClass>fr.in2p3.cc.storage.treqs.main.Main</mainClass>
+            </program>
+          </programs>
+          <repositoryLayout>flat</repositoryLayout>
+          <assembleDirectory>${project.build.directory}/jtreqs</assembleDirectory>
+          <!-- The next 4 parameters do not work. -->
+          <binFileExtensions>
+            <unix>.sh</unix>
+          </binFileExtensions>
+          <configurationDirectory>etc</configurationDirectory>
+          <copyConfigurationDirectory>true</copyConfigurationDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-appassembler</id>
+            <phase>package</phase>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Adds some files in the environment for execution. -->
+      <!-- mvn antrun:run -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.6</version>
+        <configuration>
+          <target>
+            <copy file="../native/target/jtreqs-server-native.so" tofile="target/jtreqs/repo/libNativeBridge.so" />
+          </target>
+        </configuration>
+        <executions>
+          <execution>
+            <id>fix-appassembler</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Packs all files in a tar. -->
+      <!-- mvn assembly:single -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2</version>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <finalName>jtreqs</finalName>
+          <descriptors>
+            <descriptor>src/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <!-- Creates the assembly as part of package -->
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- TODO change the .sh to executable -->
+    </plugins>
+  </build>
+
+  <!-- More Project Information -->
+  <name>jTReqS Server - Release bundle</name>
+  <description>Integration of the java part and native (C) part.</description>
+
+</project>
