@@ -69,6 +69,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>native-maven-plugin</artifactId>
+        <version>1.0-alpha-6</version>
         <extensions>true</extensions>
         <configuration>
           <!-- javah configuration -->
@@ -101,12 +102,7 @@
         </configuration>
       </plugin>
 
-      <!-- TODO REVISAR -->
-      <plugin>
-        <groupId>net.sf.doodleproject</groupId>
-        <artifactId>doxygen-maven-plugin</artifactId>
-        <version>2.2</version>
-      </plugin>
+      <!-- TODO documentation for native part (doxygen) -->
 
       <!-- TODO Execute the native tests here -->
 
