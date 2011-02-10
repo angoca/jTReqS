@@ -32,54 +32,46 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+  <!-- The Basics -->
+  <groupId>fr.in2p3.cc.storage.jtreqs.release</groupId>
+  <artifactId>jtreqs-server-release</artifactId>
+  <packaging>jar</packaging>
+  <dependencies>
+
+    <dependency>
+      <groupId>fr.in2p3.cc.storage.jtreqs.java</groupId>
+      <artifactId>jtreqs-server-java</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>fr.in2p3.cc.storage.jtreqs.native</groupId>
+      <artifactId>jtreqs-server-native</artifactId>
+      <version>${project.version}</version>
+      <type>so</type>
+    </dependency>
+
+  </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
     <version>1.5-SNAPSHOT</version>
     <artifactId>jtreqs-server-parent</artifactId>
   </parent>
-
-  <groupId>fr.in2p3.cc.storage.jtreqs.release</groupId>
-  <artifactId>jtreqs-server-release</artifactId>
-
-  <name>jTReqS Server - Release bundle</name>
-  <packaging>jar</packaging>
-
-  <dependencies>
-    <dependency>
-      <groupId>fr.in2p3.cc.storage.jtreqs.java</groupId>
-      <artifactId>jtreqs-server-java</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>fr.in2p3.cc.storage.jtreqs.native</groupId>
-      <artifactId>jtreqs-server-native</artifactId>
-      <version>1.5-SNAPSHOT</version>
-      <type>so</type>
-    </dependency>
-  </dependencies>
-
   <properties>
     <logbackFile>logback.xml</logbackFile>
     <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
     <watchdog>watchdog.sh</watchdog>
-    <installDirectory>$JTREQS_INSTALL_DIR</installDirectory>
+    <installDirectory>${env.JTREQS_INSTALL_DIR}</installDirectory>
   </properties>
 
+  <!-- Build Settings -->
+  <!-- "Project Build" contains more elements than just the BaseBuild set -->
   <build>
     <plugins>
+
       <!-- Cleans the target directory. -->
       <!-- mvn clean -->
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>auto-clean</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- Creates the environment for execution. Integrates the dependencies. -->
@@ -181,5 +173,9 @@
       <!-- TODO change the .sh to executable -->
     </plugins>
   </build>
+
+  <!-- More Project Information -->
+  <name>jTReqS Server - Release bundle</name>
+  <description>Integration of the java part and native (C) part.</description>
 
 </project>
