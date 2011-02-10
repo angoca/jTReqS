@@ -39,71 +39,6 @@
   <dependencies>
 
     <dependency>
-      <groupId>commons-cli</groupId>
-      <artifactId>commons-cli</artifactId>
-      <version>1.2</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-collections</groupId>
-      <artifactId>commons-collections</artifactId>
-      <version>3.2.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
-      <version>1.6</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.5</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>0.9.27</version>
-      <optional>true</optional>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>0.9.27</version>
-      <optional>true</optional>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.14</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
-      <scope>compile</scope>
-    </dependency>
-
-    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
@@ -137,6 +72,7 @@
       <!-- mvn resources:testResources -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
+        <version>2.4.3</version>
         <configuration>
           <encoding>${encoding}</encoding>
         </configuration>
@@ -147,6 +83,7 @@
       <!-- mvn compiler:testCompile -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
           <encoding>${encoding}</encoding>
           <source>${compileSource}</source>
@@ -158,6 +95,7 @@
       <!-- mvn surefire:test -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.7.2</version>
         <configuration>
           <!-- The application reads configuration files. -->
           <workingDirectory>
@@ -171,6 +109,7 @@
       <!-- mvn jar:jar -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
         <configuration>
           <archive>
             <manifest>
@@ -186,6 +125,7 @@
       <!-- mvn source:jar -->
       <plugin>
         <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
         <executions>
           <execution>
             <id>attach-test-sources</id>
@@ -201,6 +141,7 @@
       <!-- mvn javadoc:jar -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
         <executions>
           <execution>
             <id>attach-javadocs</id>
