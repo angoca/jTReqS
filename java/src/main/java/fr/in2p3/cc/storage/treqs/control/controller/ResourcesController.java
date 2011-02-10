@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,7 +117,11 @@ public final class ResourcesController {
      * Creates the unique instance of this object.
      */
     private ResourcesController() {
-        LOGGER.trace(">< create instance");
+        LOGGER.trace("> create instance");
+
+        this.share = new MultiValueMap();
+
+        LOGGER.trace("< create instance");
     }
 
     /**
@@ -151,7 +156,6 @@ public final class ResourcesController {
         synchronized (share) {
             // This helps to pass the garbage collector.
             this.share.clear();
-            this.share = null;
             // Recreates the share map.
             this.share = AbstractDAOFactory.getDAOFactoryInstance()
                     .getConfigurationDAO().getResourceAllocation();
