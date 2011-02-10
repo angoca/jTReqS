@@ -85,7 +85,7 @@
   </appender>
 
   <root>
-    <level value="trace" />
+    <level value="debug" />
     <appender-ref ref="Console" />
     <appender-ref ref="LogFile" />
     <appender-ref ref="TraceFile" />
