@@ -32,41 +32,34 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+  <!-- The Basics -->
+  <groupId>fr.in2p3.cc.storage.jtreqs.native</groupId>
+  <artifactId>jtreqs-server-native</artifactId>
+  <packaging>so</packaging>
+  <dependencies>
+
+    <dependency>
+      <groupId>fr.in2p3.cc.storage.jtreqs.java</groupId>
+      <artifactId>jtreqs-server-java</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+  </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
     <version>1.5-SNAPSHOT</version>
     <artifactId>jtreqs-server-parent</artifactId>
   </parent>
 
-  <groupId>fr.in2p3.cc.storage.jtreqs.native</groupId>
-  <artifactId>jtreqs-server-native</artifactId>
-
-  <name>jTReqS Server - Native part</name>
-  <packaging>so</packaging>
-
-  <dependencies>
-    <dependency>
-      <groupId>fr.in2p3.cc.storage.jtreqs.java</groupId>
-      <artifactId>jtreqs-server-java</artifactId>
-      <version>1.5-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
-
+  <!-- Build Settings -->
+  <!-- "Project Build" contains more elements than just the BaseBuild set -->
   <build>
     <plugins>
+
       <!-- Cleans the target directory. -->
       <!-- mvn clean -->
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>auto-clean</id>
-            <phase>initialize</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- Compiles the native part that interacts with HPSS -->
@@ -107,9 +100,35 @@
 
         </configuration>
       </plugin>
+
+      <!-- TODO REVISAR -->
+      <plugin>
+        <groupId>net.sf.doodleproject</groupId>
+        <artifactId>doxygen-maven-plugin</artifactId>
+        <version>2.2</version>
+      </plugin>
+
       <!-- TODO Execute the native tests here -->
 
     </plugins>
   </build>
+
+  <!-- More Project Information -->
+  <name>jTReqS Server - Native part</name>
+  <description>
+  Interface with HPSS. This is the JNI part of the project written in C.
+  </description>
+
+  <!-- Environment Settings -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>doodleproject-repo</id>
+      <name>DoodleProject Maven 2 Repository</name>
+      <url>http://doodleproject.sourceforge.net/maven2/release</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
 
 </project>
