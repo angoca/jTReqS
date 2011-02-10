@@ -60,7 +60,7 @@
     <logbackFile>logback.xml</logbackFile>
     <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
     <watchdog>watchdog.sh</watchdog>
-    <installDirectory>${env.JTREQS_INSTALL_DIR}</installDirectory>
+    <installDirectory>$JTREQS_INSTALL_DIR</installDirectory>
   </properties>
 
   <!-- Build Settings -->
@@ -79,6 +79,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.1.1</version>
         <configuration>
           <!-- Extra JVM arguments that will be included in the bin scripts -->
           <extraJvmArguments>
@@ -102,7 +103,6 @@
             <unix>.sh</unix>
           </binFileExtensions>
           <configurationDirectory>etc</configurationDirectory>
-          <configurationSourceDirectory>src/main/config</configurationSourceDirectory>
           <copyConfigurationDirectory>true</copyConfigurationDirectory>
         </configuration>
         <executions>
@@ -120,21 +120,11 @@
       <!-- mvn antrun:run -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.6</version>
         <configuration>
-          <tasks>
-            <property name="ant.regexp.regexpimpl"
-              value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
-            <copy todir="target/jtreqs/etc">
-              <fileset dir="src/config">
-                <include name="${jtreqsConfFile}" />
-                <include name="${logbackFile}" />
-                <include name="${watchdog}" />
-                <include name="jtreqs.conf.sample.properties" />
-                <include name="archiver.py" />
-              </fileset>
-            </copy>
+          <target>
             <copy file="../native/target/jtreqs-server-native.so" tofile="target/jtreqs/repo/libNativeBridge.so" />
-          </tasks>
+          </target>
         </configuration>
         <executions>
           <execution>
@@ -151,6 +141,7 @@
       <!-- mvn assembly:single -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2</version>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
           <finalName>jtreqs</finalName>
