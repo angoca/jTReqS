@@ -31,8 +31,14 @@ for HPSS. This implementation is in Java.
 
 (With Maven)
 
+ - Remove any existent maven artifact
+     $ rm -rf ~/.m2/repository/
  - Compile the project with Maven.
-   $ mvn -P jTReqS
+     $ mvn -P jTReqS
+   There could be many test failures, and they are due to the local database
+   configuration. If you change the
+       file scr/test/resources/jtreqs.conf.test.properties
+   you will not have these errors.
  - Copy/Move and extract the file
      release/target/jtreqs.tar.gz
    to a good location.
@@ -40,13 +46,13 @@ for HPSS. This implementation is in Java.
 (Without Maven)
 
  - Create a building directory.
-   $ mkdir bin
+     $ mkdir bin
  - Copy the necessary files.
-   $ cp java/src/test/resources/jtreqs.sh bin
-   $ cp java/src/main/resources/jtreqs.conf.properties bin
-   $ cp java/src/main/resources/logback.xml bin
+     $ cp java/src/test/resources/jtreqs.sh bin
+     $ cp java/src/main/resources/jtreqs.conf.properties bin
+     $ cp java/src/main/resources/logback.xml bin
  - Run javac over the source directory.
-   $ javac -d bin -encoding UTF8 -cp \
+     $ javac -d bin -encoding UTF8 -cp \
 vendor/apache/commons-cli-1.2/commons-cli-1.2.jar:\
 vendor/apache/commons-collections-3.2.1/commons-collections-3.2.1.jar:\
 vendor/apache/commons-configuration-1.6/commons-configuration-1.6.jar:\
@@ -76,15 +82,15 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/persistence/mysql/dao/*.java \
 java/src/main/java/fr/in2p3/cc/storage/treqs/persistence/mysql/exception/*.java \
 java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
  - Create the native library
-   $ javah -classpath bin/ -d bin/ \
+     $ javah -classpath bin/ -d bin/ \
 -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridge
-   $ gcc -I /opt/hpss/include/ -DLINUX -fPIC -Wall -o bin/HPSSBroker.o \
+     $ gcc -I /opt/hpss/include/ -DLINUX -fPIC -Wall -o bin/HPSSBroker.o \
 -c native/src/main/c/HPSSBroker.c
-   $ gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I bin/ \
+     $ gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I bin/ \
 -DLINUX -Wall -fPIC -o bin/HPSSJNIBridge.o -c native/src/main/c/HPSSJNIBridge.c
 This is the MOST important line of code of this project (because of this, this
 project could have been thrown to the garbage.)
-   $ ld -shared -L/opt/hpss/lib -lhpss -lhpssunixauth \
+     $ ld -shared -L/opt/hpss/lib -lhpss -lhpssunixauth \
 -o bin/libHPSSJNIBridge.so bin/HPSSBroker.o bin/HPSSJNIBridge.o
 
 
@@ -110,13 +116,13 @@ project could have been thrown to the garbage.)
    Once the file has been inflated, then execute these commands from the root
    dir of the installation:
    The install directory could be something like /opt/jtreqs
-   $ export JTREQS_INSTALL_DIR=`pwd`/jtreqs
-   $ sh jtreqs/bin/jtreqs
+     $ export JTREQS_INSTALL_DIR=`pwd`/jtreqs
+     $ sh jtreqs/bin/jtreqs.sh
 
    (When not using Maven)
-   $ export LD_LIBRARY_PATH=`pwd`/bin:/opt/hpss/lib
-   $ cd bin
-   $ sh jtreqs.sh
+     $ export LD_LIBRARY_PATH=`pwd`/bin:/opt/hpss/lib
+     $ cd bin
+     $ sh jtreqs.sh
 
 
 * Usage
