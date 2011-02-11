@@ -133,6 +133,7 @@ public final class TReqSTestTODO {
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
