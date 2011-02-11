@@ -146,7 +146,7 @@
           <appendAssemblyId>false</appendAssemblyId>
           <finalName>jtreqs</finalName>
           <descriptors>
-            <descriptor>src/assembly/assembly.xml</descriptor>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
           </descriptors>
         </configuration>
         <!-- Creates the assembly as part of package -->
