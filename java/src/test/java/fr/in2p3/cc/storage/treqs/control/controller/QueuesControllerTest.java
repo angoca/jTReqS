@@ -42,8 +42,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -128,6 +130,23 @@ public final class QueuesControllerTest {
      * User 1 for tests.
      */
     private static final User USER_1 = new User("username");
+
+    /**
+     * Setups the environment.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
 
     /**
      * Creates a set of queues.
