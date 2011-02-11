@@ -39,6 +39,8 @@ package fr.in2p3.cc.storage.treqs.tools;
 import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -46,6 +48,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 
@@ -63,11 +66,28 @@ public final class ConfiguratorTest {
             .getLogger(ConfiguratorTest.class);
 
     /**
+     * Setups the configuration file for tests.
+     */
+    @Before
+    public void setUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
      * Destroys all objects.
      */
     @After
     public void tearDown() {
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
+    /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
         System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
@@ -335,7 +355,7 @@ public final class ConfiguratorTest {
     @Test
     public void testSetFileName02() throws ProblematicConfiguationFileException {
         System.setProperty(Constants.CONFIGURATION_FILE,
-                DefaultProperties.CONFIGURATION_PROPERTIES);
+                MainTests.PROPERTIES_FILE);
         Configurator.getInstance();
     }
 
