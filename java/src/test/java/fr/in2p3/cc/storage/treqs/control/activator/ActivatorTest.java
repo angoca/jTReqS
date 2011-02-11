@@ -112,6 +112,7 @@ public final class ActivatorTest {
         HSMMockBridge.destroyInstance();
         Configurator.destroyInstance();
         AbstractDAOFactory.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
