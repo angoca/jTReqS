@@ -39,8 +39,10 @@ package fr.in2p3.cc.storage.treqs.control.selector;
 import java.util.ArrayList;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -89,6 +91,15 @@ public final class JonathanSelectorTest {
 
     /**
      * Setups the environment.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+   /**
+     * Setups the environment.
      *
      * @throws ProblematicConfiguationFileException
      *             If there is any problem.
@@ -99,6 +110,14 @@ public final class JonathanSelectorTest {
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
                 Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
+    }
+
+    /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
