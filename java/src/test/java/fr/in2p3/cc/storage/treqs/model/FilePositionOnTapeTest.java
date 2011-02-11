@@ -39,13 +39,15 @@ package fr.in2p3.cc.storage.treqs.model;
 import junit.framework.Assert;
 
 import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
-import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
@@ -67,6 +69,24 @@ public final class FilePositionOnTapeTest {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FilePositionOnTapeTest.class);
+
+    /**
+     * Setups the environment.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
     /**
      * File.
      */
@@ -275,16 +295,20 @@ public final class FilePositionOnTapeTest {
         String actual = fpot.toString();
 
         String expectedPrefix = "FilePositionOnTape{ "
-                + Constants.MAX_METADATA_AGE + ": "
-                + DefaultProperties.MAX_METADATA_AGE + ", file: " + fileName
-                + ", metadataAge: ";
+                + Constants.MAX_METADATA_AGE + ": " + 30 + ", file: "
+                + fileName + ", metadataAge: ";
         String expectedSuffix = ", position: " + position + ", requester: "
                 + username + ", tape: " + tapeName + "}";
 
         LOGGER.error("toString Current    {}", actual);
-        LOGGER.error("toString Excepected {}, {}", expectedPrefix, expectedSuffix);
+        LOGGER.error("toString Excepected {}XXXXXXXXXXXXX{}", expectedPrefix,
+                expectedSuffix);
+        int prefixSize = expectedPrefix.length();
+        int sufixStart = actual.length() - expectedSuffix.length();
 
-        Assert.assertTrue("toString prefix", actual.startsWith(expectedPrefix));
-        Assert.assertTrue("toString sufix", actual.endsWith(expectedSuffix));
+        Assert.assertEquals("toString prefix", expectedPrefix,
+                actual.substring(0, prefixSize));
+        Assert.assertEquals("toString sufix", expectedSuffix,
+                actual.substring(sufixStart));
     }
 }
