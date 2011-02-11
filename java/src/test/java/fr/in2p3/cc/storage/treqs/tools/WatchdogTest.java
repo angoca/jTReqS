@@ -44,6 +44,7 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,6 +92,16 @@ public final class WatchdogTest {
                 Constants.ACTIVATOR_INTERVAL, "1");
         Configurator.getInstance().setValue(Constants.SECTION_DISPATCHER,
                 Constants.DISPATCHER_INTERVAL, "1");
+    }
+
+    /**
+     * Setups the environment.
+     *
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    @Before
+    public void setUp() throws TReqSException {
         MySQLRequestsDAO.deleteAll();
     }
 
