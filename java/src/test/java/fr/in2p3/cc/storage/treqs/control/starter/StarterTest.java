@@ -113,6 +113,7 @@ public final class StarterTest {
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
