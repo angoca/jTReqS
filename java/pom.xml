@@ -59,6 +59,15 @@
   <!-- Build Settings -->
   <!-- "Project Build" contains more elements than just the BaseBuild set -->
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/config</directory>
+      </testResource>
+      <testResource>
+        <directory>src/test/scripts</directory>
+      </testResource>
+    </testResources>
+
     <plugins>
 
       <!-- Cleans the target directory. -->
