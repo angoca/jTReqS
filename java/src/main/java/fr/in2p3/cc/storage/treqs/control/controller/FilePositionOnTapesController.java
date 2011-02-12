@@ -145,7 +145,7 @@ public final class FilePositionOnTapesController extends AbstractController {
             fpot = this.create(file, tape, position, user);
         } else {
             LOGGER.debug("Updating old fpot");
-            // TODO This should update the queue.
+            // TODO v1.5 This should update the queue. (review)
             fpot.updateMetadata(tape, position);
         }
 

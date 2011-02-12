@@ -498,7 +498,7 @@ public final class Dispatcher extends AbstractProcess {
         if (file == null) {
             // The object file has to be created.
 
-            // TODO The next lines are repeated.
+            // TODO v2.0 The next lines are repeated.
             // Get the file properties from HSM.
             try {
                 fileProperties = HSMFactory.getHSMBridge().getFileProperties(
@@ -563,7 +563,7 @@ public final class Dispatcher extends AbstractProcess {
                 if (fpot.isMetadataOutdated()) {
                     LOGGER.info("Refreshing metadata of file {}",
                             fileRequest.getName());
-                    // TODO The next lines are repeated.
+                    // TODO v2.0 The next lines are repeated.
                     try {
                         fileProperties = HSMFactory.getHSMBridge()
                                 .getFileProperties(fileRequest.getName());

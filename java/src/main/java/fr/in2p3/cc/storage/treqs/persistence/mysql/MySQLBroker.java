@@ -186,7 +186,6 @@ public final class MySQLBroker {
                 stmt.close();
             } catch (SQLException sqlEx) {
                 handleSQLException(sqlEx);
-                // TODO v1.5 Deal with this exception.
                 throw new MySQLCloseException(sqlEx);
             }
         }
@@ -221,7 +220,6 @@ public final class MySQLBroker {
                     Class.forName(driver).newInstance();
                 } catch (Exception e) {
                     LOGGER.error("Exception: {}", e.getMessage());
-                    // TODO v1.5 Deal with this exception.
                     throw new MySQLOpenException(e);
                 }
                 try {
@@ -237,7 +235,6 @@ public final class MySQLBroker {
                     } catch (Exception e) {
                         LOGGER.error("Problem connecting", e);
                     }
-                    // TODO v1.5 Deal with this exception.
                     throw new MySQLOpenException(ex);
                 }
             }
@@ -261,7 +258,6 @@ public final class MySQLBroker {
                     this.connection.close();
                 } catch (SQLException ex) {
                     handleSQLException(ex);
-                    // TODO v1.5 Deal with this exception.
                     throw new MySQLCloseException(ex);
                 } finally {
                     this.connection = null;
@@ -301,13 +297,11 @@ public final class MySQLBroker {
                 rows = statement.executeUpdate(query);
             } catch (SQLException ex) {
                 handleSQLException(ex);
-                // TODO v1.5 Deal with this exception.
                 throw new MySQLExecuteException(ex);
             } finally {
                 try {
                     statement.close();
                 } catch (SQLException e) {
-                    // TODO v1.5 Deal with this exception.
                     throw new MySQLExecuteException(e);
                 }
             }
@@ -350,7 +344,6 @@ public final class MySQLBroker {
             } catch (SQLException ex) {
                 handleSQLException(ex);
                 closeResultSet(rs);
-                // TODO v1.5 Deal with this exception.
                 throw new MySQLExecuteException(ex);
             }
             ret = new Object[] { stmt, rs };
@@ -392,7 +385,6 @@ public final class MySQLBroker {
                 ret = this.connection.prepareStatement(query,
                         java.sql.Statement.RETURN_GENERATED_KEYS);
             } catch (SQLException e) {
-                // TODO v1.5 Deal with this exception.
                 throw new MySQLExecuteException(e);
             }
         }
@@ -461,7 +453,6 @@ public final class MySQLBroker {
                     && !this.connection.isClosed();
         } catch (SQLException e) {
             handleSQLException(e);
-            // TODO v1.5 Deal with this exception.
             throw new MySQLExecuteException(e);
         }
         if (!ret) {

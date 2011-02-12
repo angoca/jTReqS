@@ -63,7 +63,7 @@ public final class Tape {
     /**
      * The time Status got updated.
      */
-    // TODO v2.0 AngocA This part has not been used, and the application should
+    // TODO v2.0 This part has not been used, and the application should
     // check if the tape is still locked/unlocked once the state has been
     // obtained. It means, it has to check periodically if the state changes.
     // private Calendar statusUpdateTime;
@@ -90,6 +90,7 @@ public final class Tape {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -133,7 +134,9 @@ public final class Tape {
     }
 
     /**
-     * Getter for update time member. TODO
+     * Getter for update time member.
+     * <p>
+     * TODO v2.0 Will it be used?
      *
      * @return Returns the last time when the status was checked.
      */
@@ -145,6 +148,7 @@ public final class Tape {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -187,7 +191,9 @@ public final class Tape {
     }
 
     /**
-     * Setter for update time member. TODO
+     * Setter for update time member.
+     * <p>
+     * TODO v2.0 Will it be used?
      *
      * @param updateTime
      *            Time when the status was checked.
@@ -203,7 +209,9 @@ public final class Tape {
     // }
 
     /**
-     * Establishes the status update time to now. TODO
+     * Establishes the status update time to now.
+     * <p>
+     * TODO v2.0 Will it be used?
      */
     // void setStatusUpdateTimeNow() {
     // LOGGER.trace("> setStatusUpdateTimeNow");
@@ -215,6 +223,7 @@ public final class Tape {
 
     /*
      * (non-Javadoc)
+     *
      * @see java.lang.Object#toString()
      */
     @Override

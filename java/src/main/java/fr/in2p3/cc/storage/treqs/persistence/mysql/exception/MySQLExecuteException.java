@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Exception while executing a query.
  * <p>
- * TODO v1.5 To make it abstract
+ * TODO v2.0 To make it abstract
  *
  * @author Andrés Gómez
  * @since 1.5

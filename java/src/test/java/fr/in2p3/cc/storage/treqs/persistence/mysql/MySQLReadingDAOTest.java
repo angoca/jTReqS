@@ -665,7 +665,7 @@ public final class MySQLReadingDAOTest {
         Calendar endTime = new GregorianCalendar();
         Queue queue = new Queue(fpot, (byte) NUMBER_3);
         Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
-        // TODO get from db the dates to compare them
+        // TODO Tests: get from db the dates to compare them
 
         new MySQLReadingDAO().update(reading, status, endTime);
     }
@@ -690,7 +690,7 @@ public final class MySQLReadingDAOTest {
         Calendar endTime = new GregorianCalendar();
         Queue queue = new Queue(fpot, (byte) NUMBER_3);
         Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
-        // TODO get from db the dates to compare them
+        // TODO Tests: get from db the dates to compare them
 
         new MySQLReadingDAO().update(reading, status, endTime);
     }
@@ -715,7 +715,7 @@ public final class MySQLReadingDAOTest {
         Calendar endTime = new GregorianCalendar();
         Queue queue = new Queue(fpot, (byte) NUMBER_3);
         Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
-        // TODO get from db the dates to compare them
+        // TODO Tests: get from db the dates to compare them
 
         new MySQLReadingDAO().update(reading, status, endTime);
     }
@@ -740,7 +740,7 @@ public final class MySQLReadingDAOTest {
         Calendar endTime = new GregorianCalendar();
         Queue queue = new Queue(fpot, (byte) NUMBER_3);
         Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
-        // TODO get from db the dates to compare them
+        // TODO Tests: get from db the dates to compare them
 
         new MySQLReadingDAO().update(reading, status, endTime);
     }
@@ -765,7 +765,7 @@ public final class MySQLReadingDAOTest {
         Calendar endTime = new GregorianCalendar();
         Queue queue = new Queue(fpot, (byte) NUMBER_3);
         Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
-        // TODO get from db the dates to compare them
+        // TODO Tests: get from db the dates to compare them
 
         new MySQLReadingDAO().update(reading, status, endTime);
     }

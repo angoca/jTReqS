@@ -43,7 +43,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
  * <p>
  * This tester does not use the logger in order to ease the compilation.
  * <p>
- * TODO convert to tests.
+ * TODO Tests: convert to tests.
  *
  * @author Andres Gomez
  * @since 1.5
@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 public final class NativeBridgeTester {
 
     /**
-     * Test that the jni bridge works correctly. TODO this should be a test
+     * Test that the jni bridge works correctly.
      *
      * @param args
      *            List of arguments:

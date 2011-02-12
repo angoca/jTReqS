@@ -230,7 +230,7 @@ public final class HSMNativeBridgeTestNative {
     public void testGetProperties04FileInTape() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.purge(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.purge(VALID_FILE);
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE);
     }
@@ -261,11 +261,11 @@ public final class HSMNativeBridgeTestNative {
     public void testGetProperties06FileLocked() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.lockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockFile(VALID_FILE);
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE);
 
-        // TODO NativeBridgeHelper.unlockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockFile(VALID_FILE);
     }
 
     /**
@@ -278,11 +278,11 @@ public final class HSMNativeBridgeTestNative {
     public void testGetProperties07FileAlreadyOpen() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.open(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.open(VALID_FILE);
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE);
 
-        // TODO NativeBridgeHelper.close(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.close(VALID_FILE);
     }
 
     /**
@@ -350,7 +350,7 @@ public final class HSMNativeBridgeTestNative {
     public void testStage02Unlocked() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
         NativeBridge.getInstance().stage(VALID_FILE, VALID_FILE_SIZE);
     }
@@ -365,10 +365,10 @@ public final class HSMNativeBridgeTestNative {
     public void testStage03Locked() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
         NativeBridge.getInstance().stage(VALID_FILE_LOCKED, VALID_FILE_SIZE);
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
     }
 }

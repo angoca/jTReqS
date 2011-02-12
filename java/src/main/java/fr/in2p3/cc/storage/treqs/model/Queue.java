@@ -90,7 +90,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <i>activated</i> queue is suspended, and if exists a <i>created</i> queue for
  * the same tape, then the two queues will be merged in the <i>temporarily
  * suspended</i> one <br>
- * TODO v1.5 verificar si se hace esto.<br>
+ * TODO v1.5 Check if this is done.<br>
  * Also it could be many queues in <i>ended state</i> for the same queue; that
  * means that the tape has been already used before, but in a long lapse of
  * time. However, when a queue passes to ended state, it is be deleted from the
@@ -116,12 +116,12 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <i>created</i> queue, the files from the created one will be inserted in the
  * <i>temporarily suspended</i> and the <i>created</i> one will be passed as
  * <i>ended</i>. <br>
- * TODO v1.5 verificar si es verdad.<br>
+ * TODO v1.5 Check if this is true.<br>
  * The head position is 0, because a tape is rewound when not used after a few
  * seconds. It means, that this queue will received new files. <br>
- * TODO v1.5 poner un método sincronizado para asegurar que cuando se está
- * desocupando una cola (merging), no se van a adicionar nuevos requests por
- * otro lado .<br>
+ * TODO v2.0 Put a synchronized method in order to assure that the queue is
+ * being emptied (merging), and there will not be any new requests in the other
+ * side (the created queue).<br>
  * There cannot be any queue in <i>created state</i> nor in <i>activated
  * stated.</i><br>
  * However, there could be many queues in <i>ended state</i> meaning that the
@@ -547,7 +547,7 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        // FIXME concurrent problem
+        // FIXME v.1.5 concurrent problem
         List<Short> positions = new ArrayList<Short>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
@@ -959,8 +959,8 @@ public final class Queue implements Comparable<Queue> {
         // The insert method ensures that the reading object is inserted
         // in the right place.
 
-        // FIXME In HPSS version 7 the aggregation return the same position for
-        // different files.
+        // FIXME v2.0 In HPSS version 7 the aggregation return the same position
+        // for different files.
         boolean exists = this.readingList.containsKey((short) fpot
                 .getPosition());
         if (!exists) {
@@ -969,15 +969,10 @@ public final class Queue implements Comparable<Queue> {
             // The file is already in the queue.
             LOGGER.warn("Queue {} already has a reading for file {}", this
                     .getTape().getName(), fpot.getFile().getName());
-            // This case should never happen, because the fpot was checked when
-            // created (it does not exists an fpot for the same name)
-            // TODO this case exists when the same file is asked twice in a
-            // short period. Also, when a queue is suspended.
-            LOGGER.error("THIS CASE EXISTS, DELETE THIS LOG FROM THE CODE 2.");
             if (!this.readingList.get((short) fpot.getPosition()).getMetaData()
                     .getFile().getName().equals(fpot.getFile().getName())) {
                 assert false : "Two different files in the same position";
-                // TODO this will happen when using aggregation.
+                // FIXME v2.0 this will happen when using aggregation.
             }
         }
 
@@ -1193,7 +1188,7 @@ public final class Queue implements Comparable<Queue> {
         assert newQueueStatus != null;
 
         // Verification.
-        // TODO v1.5 To change when merge will be available. More tests.
+        // TODO v2.0 To change when merge will be available. More tests.
 
         if (this.numberSuspensions >= this.maxSuspendRetries) {
             throw new MaximalSuspensionTriesException();
@@ -1308,7 +1303,7 @@ public final class Queue implements Comparable<Queue> {
      * queue is ended. Sets the status to TEMPORARILY_SUSPENDED, and writes this
      * new status through DAO. The Activator will ignore such queues and
      * reschedule them when the suspension duration is over (suspension time is
-     * up.) TODO v1.5 Merge with the created one if existing.
+     * up.) TODO v2.0 Merge with the created one if existing.
      *
      * @throws TReqSException
      *             If there is a problem changing the state or the time.
@@ -1382,7 +1377,7 @@ public final class Queue implements Comparable<Queue> {
      * Remove the suspended status from the queue. Puts the queue in CREATED
      * state.
      * <p>
-     * TODO v1.5 reactivar la queue desde el activator.
+     * TODO v2.0 reactivate the queue from the Activator.
      *
      * @throws TReqSException
      *             If the queue has been suspended too many times.

@@ -42,12 +42,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Error when getting the properties of a file.
  * <p>
- * TODO v1.5 abstract
  *
  * @author Andrés Gómez
  * @since 1.5
  */
-public abstract class AbstractHSMPropertiesException extends AbstractHSMException {
+public abstract class AbstractHSMPropertiesException extends
+        AbstractHSMException {
     /**
      * Logger.
      */

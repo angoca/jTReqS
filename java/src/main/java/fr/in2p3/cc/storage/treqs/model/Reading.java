@@ -262,7 +262,7 @@ public final class Reading {
             this.setErrorMessage("Succesfully staged.");
             this.setFileRequestStatus(RequestStatus.STAGED);
             // Register the state in the database with staged status.
-            // TODO Que el metodo setStage haga esto.
+            // TODO v2.0 The setStage method should do this.
             AbstractDAOFactory
                     .getDAOFactoryInstance()
                     .getReadingDAO()
@@ -413,8 +413,8 @@ public final class Reading {
         }
 
         /*
-         * TODO If the staging is successful or if we have reached the maximum
-         * retries
+         * TODO v2.0 If the staging is successful or if we have reached the
+         * maximum retries (review this To Do)
          */
         /*
          * if ((f == STAGED) or (this.NbTries >= this.MaxTries))

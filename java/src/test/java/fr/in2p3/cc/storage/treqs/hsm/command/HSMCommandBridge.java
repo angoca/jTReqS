@@ -90,7 +90,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * </ul>
  * The stage script does not have output, it could be anything.
  * <p>
- * TODO v2.0 process the output.
+ * TODO Tests: process the output.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -164,7 +164,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     protected static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        if (instance != null){
+        if (instance != null) {
             LOGGER.info("Instance destroyed");
         }
         instance = null;
@@ -179,8 +179,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * @throws TReqSException
      *             If there is a problem reading the configuration.
      */
-    public static HSMCommandBridge getInstance()
-            throws TReqSException {
+    public static HSMCommandBridge getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -196,7 +195,9 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Tester for the command HSM bridge. TODO this should be a test
+     * Tester for the command HSM bridge.
+     * <p>
+     * TODO Tests: this should be a test
      *
      * @param args
      *            Mandatory Java argument for main. The first argument is the
@@ -341,7 +342,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     /**
      * Prints a output stream (error or standard).
      * <p>
-     * TODO analyze this output if there is a problem in the HSM.
+     * TODO Tests: analyze this output if there is a problem in the HSM.
      *
      * @param inputStream
      *            Script output.
@@ -493,7 +494,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         try {
             // Wait for the process.
-            // TODO v2.0 in a parallel thread check if the thread is not hung.
+            // TODO Tests: in a parallel thread check if the thread is not hung.
             process.waitFor();
         } catch (InterruptedException e) {
             throw new HSMCommandBridgeException(e);

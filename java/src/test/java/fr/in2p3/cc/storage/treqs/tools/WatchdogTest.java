@@ -146,7 +146,7 @@ public final class WatchdogTest {
 
         String pid = ManagementFactory.getRuntimeMXBean().getName();
         int index = pid.indexOf('@');
-        // TODO it does not work with gij
+        // Warning: It does not work with gij
         String expected = pid.substring(0, index);
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_PID + " FROM "

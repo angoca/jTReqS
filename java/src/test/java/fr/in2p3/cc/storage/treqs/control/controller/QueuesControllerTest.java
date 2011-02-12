@@ -1101,7 +1101,7 @@ public final class QueuesControllerTest {
         QueuesController.getInstance().countWaitingQueues(null);
     }
 
-    // TODO tests to count waiting queues for two queues of the same tape
+    // TODO Tests: tests to count waiting queues for two queues of the same tape
     // but in different states (activated and created).
 
     /**

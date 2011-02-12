@@ -320,8 +320,8 @@ public final class Starter {
     void toStart() throws TReqSException {
         LOGGER.trace("> toStart");
 
-        // TODO v1.5 Check the PID of a same process to prevent two TReqS.
-        // TODO v1.5 Check that the selector, DAO and hsm bridge could be loaded
+        // TODO v2.0 Check the PID of a same process to prevent two TReqS.
+        // TODO v2.0 Check that the selector, DAO and hsm bridge could be loaded
 
         // Initialize the database if necessary.
         AbstractDAOFactory.getDAOFactoryInstance().initialize();

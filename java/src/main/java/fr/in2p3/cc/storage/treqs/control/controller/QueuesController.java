@@ -247,7 +247,7 @@ public final class QueuesController {
                 // after the file position.
                 LOGGER.info("A queue with status CREATED already exists.");
                 queue.registerFPOT(fpot, retry);
-                // TODO v1.5 create a special flag in the queue, indicating that
+                // TODO v2.0 create a special flag in the queue, indicating that
                 // there is an activated queue for the same tape, so this new
                 // queue has to be activated once the other has finished. This
                 // prevents to unmount an already mounted tape.

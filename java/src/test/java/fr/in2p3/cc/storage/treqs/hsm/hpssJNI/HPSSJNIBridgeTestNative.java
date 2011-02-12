@@ -55,7 +55,10 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMNotExistingFileException;
 import fr.in2p3.cc.storage.treqs.model.File;
 
 /**
- * Tests the JNI Bridge. TODO Do not execute these tests from Maven.
+ * Tests the JNI Bridge.
+ * <p>
+ * The name of this tests does not end with Test in order to not be taken in
+ * account by Maven.
  *
  * @author Andres Gomez
  */
@@ -144,7 +147,7 @@ public final class HPSSJNIBridgeTestNative {
             TReqSException {
         LOGGER.error("testGetProperties04FileInTape");
 
-        // TODO NativeBridgeHelper.purge(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.purge(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTestNative.VALID_FILE);
@@ -185,12 +188,12 @@ public final class HPSSJNIBridgeTestNative {
             TReqSException {
         LOGGER.error("testGetProperties06FileLocked");
 
-        // TODO NativeBridgeHelper.lockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockFile(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTestNative.VALID_FILE);
 
-        // TODO NativeBridgeHelper.unlockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockFile(VALID_FILE);
     }
 
     /**
@@ -206,12 +209,12 @@ public final class HPSSJNIBridgeTestNative {
             TReqSException {
         LOGGER.error("testGetProperties07FileAlreadyOpen");
 
-        // TODO NativeBridgeHelper.open(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.open(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTestNative.VALID_FILE);
 
-        // TODO NativeBridgeHelper.close(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.close(VALID_FILE);
     }
 
     /**
@@ -278,7 +281,7 @@ public final class HPSSJNIBridgeTestNative {
     public void testStage02Unlocked() throws JNIException, TReqSException {
         LOGGER.error("testStage02Unlocked");
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
         File file = new File(HSMNativeBridgeTestNative.VALID_FILE,
                 HSMNativeBridgeTestNative.VALID_FILE_SIZE);
@@ -298,13 +301,13 @@ public final class HPSSJNIBridgeTestNative {
     public void testStage03Locked() throws JNIException, TReqSException {
         LOGGER.error("testStage03Locked");
 
-        // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
         File file = new File(HSMNativeBridgeTestNative.VALID_FILE_LOCKED,
                 HSMNativeBridgeTestNative.VALID_FILE_SIZE);
         LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
     }
 }
