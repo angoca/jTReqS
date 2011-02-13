@@ -116,7 +116,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <i>created</i> queue, the files from the created one will be inserted in the
  * <i>temporarily suspended</i> and the <i>created</i> one will be passed as
  * <i>ended</i>. <br>
- * TODO v1.5 Check if this is true.<br>
+ * TODO v2.0 Do this, the fusion and reactivation is not yet done.<br>
  * The head position is 0, because a tape is rewound when not used after a few
  * seconds. It means, that this queue will received new files. <br>
  * TODO v2.0 Put a synchronized method in order to assure that the queue is
