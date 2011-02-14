@@ -162,7 +162,7 @@ public final class JonathanSelector implements Selector {
      *             If there is a problem getting the configuration.
      */
     private Queue/* ? */checkQueue(final Resource resource, final User user,
-            final Queue/* ? */currentlySelected, final Queue queue)
+            final Queue/* ? */currentlySelected, final Queue/* ! */queue)
             throws TReqSException {
         LOGGER.trace("> checkQueue");
 
@@ -266,7 +266,7 @@ public final class JonathanSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    synchronized User selectBestUser(final List<Queue> queuesMap,
+    synchronized User/* ? */selectBestUser(final List<Queue> queuesMap,
             final Resource resource) throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
@@ -299,17 +299,23 @@ public final class JonathanSelector implements Selector {
             Iterator<User> users = usersScores.keySet().iterator();
             // This assures that bestUser will have a value.
             bestUser = users.next();
+            float bestScore = usersScores.get(bestUser);
+            LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
             while (users.hasNext()) {
-                User key = users.next();
-                if (resource.getUserAllocation(key) < 0) {
+                User user = users.next();
+                float score = usersScores.get(user);
+                LOGGER.info("Score: {}\t{}", user.getName(), score);
+                // TODO v2.0 This is wrong, the first user could have a
+                // negative share.
+                if (resource.getUserAllocation(user) < 0) {
                     // The share for this user has been set to a negative
                     // value.
                     // This means that we have to skip this user
                     LOGGER.warn("User {} has a negative share. His queues are "
-                            + "hold.", key.getName());
-                } else if (bestUser != null
-                        && usersScores.get(key) > usersScores.get(bestUser)) {
-                    bestUser = key;
+                            + "hold.", user.getName());
+                } else if (bestUser != null && score > bestScore) {
+                    bestUser = user;
+                    bestScore = score;
                 }
             }
             // We have to check that the best user has positive share
@@ -330,7 +336,11 @@ public final class JonathanSelector implements Selector {
     }
 
     /**
-     * Calculates the score for a user.
+     * Calculates the score for a user with the next formula.
+     * <p>
+     * <code>
+     * Value = #TotalDrives * #Reserved - #Used
+     * </code>
      *
      * @param resource
      *            Type of associated resource.
