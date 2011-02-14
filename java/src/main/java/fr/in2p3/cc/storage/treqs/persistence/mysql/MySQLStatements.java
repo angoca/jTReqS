@@ -41,6 +41,9 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 
 /**
  * Statements used to interact with the database.
+ * <p>
+ * TODO v2.0 The dates have to be server side or database side, but not both of
+ * them.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -449,14 +452,14 @@ public final class MySQLStatements {
     /**
      * SQL statement to retrieve the allocation per user per media type.
      */
-    public static final String SQL_SELECT_ALLOCATIONS = "SELECT "
+    public static final String SQL_ALLOCATIONS_SELECT = "SELECT "
             + ALLOCATIONS_ID + ", " + ALLOCATIONS_USER + ", "
             + ALLOCATIONS_SHARE + " FROM " + ALLOCATIONS;
 
     /**
      * SQL statement to retrieve the quantity of drives available for use.
      */
-    public static final String SQL_SELECT_DRIVES = "SELECT " + MEDIATYPES_ID
+    public static final String SQL_MEDIATYPES_SELECT = "SELECT " + MEDIATYPES_ID
             + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES + " FROM "
             + MEDIATYPES;
 
