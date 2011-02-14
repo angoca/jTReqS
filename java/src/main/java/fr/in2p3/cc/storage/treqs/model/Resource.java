@@ -78,7 +78,7 @@ public final class Resource {
     /**
      * Total resource (drives) attribution.
      */
-    private byte totalAllocation;
+    private short totalAllocation;
     /**
      * Resources currently used for a user.
      */
@@ -96,7 +96,7 @@ public final class Resource {
      * @param totalDriveAllocation
      *            Total quantity of drive allocation for a user.
      */
-    public Resource(final MediaType media, final byte totalDriveAllocation) {
+    public Resource(final MediaType media, final short totalDriveAllocation) {
         LOGGER.trace("> Creating Resource");
 
         this.setMediaType(media);
@@ -114,10 +114,10 @@ public final class Resource {
      *
      * @return Quantity of free drives per type.
      */
-    public byte countFreeResources() {
+    public short countFreeResources() {
         LOGGER.trace("> countFreeResources");
 
-        byte resourceLeft = this.totalAllocation;
+        short resourceLeft = this.totalAllocation;
 
         Set<User> keySet = this.usedResources.keySet();
         Iterator<User> iterator = keySet.iterator();
@@ -177,7 +177,7 @@ public final class Resource {
      *
      * @return Total allocation.
      */
-    public byte getTotalAllocation() {
+    public short getTotalAllocation() {
         LOGGER.trace(">< getTotalAllocation");
 
         return this.totalAllocation;
@@ -335,7 +335,7 @@ public final class Resource {
      * @param qty
      *            Total allocation for this media type.
      */
-    public void setTotalAllocation(final byte qty) {
+    public void setTotalAllocation(final short qty) {
         LOGGER.trace("> setTotalAllocation");
 
         assert qty > 0;

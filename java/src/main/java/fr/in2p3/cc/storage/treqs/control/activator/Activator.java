@@ -425,8 +425,8 @@ public final class Activator extends AbstractProcess {
         while (resources.hasNext()) {
             Resource resource = resources.next();
             // while there is room to activate a queue, do it
-            int freeResources = resource.countFreeResources();
-            int waitingQueues = QueuesController.getInstance()
+            short freeResources = resource.countFreeResources();
+            short waitingQueues = QueuesController.getInstance()
                     .countWaitingQueues(resource.getMediaType());
 
             boolean cont = true;

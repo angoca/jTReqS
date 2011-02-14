@@ -99,17 +99,17 @@ public final class MySQLReadingDAO implements ReadingDAO {
         int index = 1;
         try {
             // Insert file Status
-            statement.setInt(index++, statusId);
+            statement.setShort(index++, statusId);
             // Insert the message
             statement.setString(index++, message);
             // insert id
-            statement.setLong(index++, queueId);
+            statement.setInt(index++, queueId);
             // Insert tape name
             statement.setString(index++, tapename);
             // Insert position
             statement.setInt(index++, position);
             // Insert level
-            statement.setInt(index++, 0);
+            statement.setByte(index++, (byte) 0);
             // Insert size
             statement.setLong(index++, size);
             // Insert submission time
@@ -346,7 +346,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
             // Insert number of tries
             statement.setByte(index++, nbTries);
             // Insert File request Status
-            statement.setInt(index++, statusId);
+            statement.setShort(index++, statusId);
             // Insert message
             statement.setString(index++, errorMessage);
             // Insert file name

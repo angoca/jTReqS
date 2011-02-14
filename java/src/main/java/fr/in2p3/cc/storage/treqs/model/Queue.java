@@ -90,7 +90,6 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <i>activated</i> queue is suspended, and if exists a <i>created</i> queue for
  * the same tape, then the two queues will be merged in the <i>temporarily
  * suspended</i> one <br>
- * TODO v1.5 Check if this is done.<br>
  * Also it could be many queues in <i>ended state</i> for the same queue; that
  * means that the tape has been already used before, but in a long lapse of
  * time. However, when a queue passes to ended state, it is be deleted from the
