@@ -54,6 +54,9 @@ import fr.in2p3.cc.storage.treqs.Constants;
  * Allocations is the minimal quantity of reserved drives for the users.
  * <p>
  * Resources is the quantity of drives used in "this moment" for a user.
+ * <p>
+ * TODO v2.0 The allocation is for all type of drives, probably it will be
+ * interesting to have a different allocation per type of drive.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -195,21 +198,21 @@ public final class Resource {
     /**
      * Returns the resource usage for a given user.
      *
-     * @param userName
+     * @param user
      *            User to be queried.
      * @return Quantity of used resources for the given user, or -1 if the user
      *         is not defined in the resources.
      */
-    public byte getUsedResources(final User userName) {
+    public byte getUsedResources(final User user) {
         LOGGER.trace("> getUsedResources");
 
-        assert userName != null;
+        assert user != null;
 
         byte ret = 0;
-        if (!this.usedResources.containsKey(userName)) {
+        if (!this.usedResources.containsKey(user)) {
             ret = -1;
         } else {
-            ret = this.usedResources.get(userName);
+            ret = this.usedResources.get(user);
         }
 
         LOGGER.trace("< getUsedResources");
@@ -230,7 +233,9 @@ public final class Resource {
     }
 
     /**
-     * Returns the allocation for a given user.
+     * Returns the allocation for a given user. This is the percentage of total
+     * drives to be used by the given user, when all drives are used
+     * simultaneously.
      *
      * @param user
      *            The user to be queried.
