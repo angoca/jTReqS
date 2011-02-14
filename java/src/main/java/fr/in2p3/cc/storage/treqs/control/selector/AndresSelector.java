@@ -127,16 +127,22 @@ public final class AndresSelector implements Selector {
         assert resource != null : "resource null";
         assert user != null : "user null";
 
-        Queue ret = null;
+        Queue best = null;
         // First get the list of queues
         int length = queues.size();
         for (int j = 0; j < length; j++) {
             Queue queue = queues.get(j);
-            ret = this.checkQueue(resource, user, ret, queue);
+            if (this.checkQueue(resource, user, queue)) {
+                if (best != null) {
+                    best = this.compareQueue(best, queue);
+                } else {
+                    best = queue;
+                }
+            }
         }
 
-        if (ret != null) {
-            LOGGER.info("Best queue for {} is on tape {}", user.getName(), ret
+        if (best != null) {
+            LOGGER.info("Best queue for {} is on tape {}", user.getName(), best
                     .getTape().getName());
         } else {
             LOGGER.info("No queue could be selected");
@@ -144,7 +150,52 @@ public final class AndresSelector implements Selector {
 
         LOGGER.trace("< selectBestQueueForUser");
 
-        return ret;
+        return best;
+    }
+
+    /**
+     * Compares the two queue to see which one can be selected. Both of them are
+     * eligible.
+     *
+     * @param bestQueue
+     *            This is the best queue at the moment.
+     * @param currentQueue
+     *            The currently analyzed queue.
+     * @return The new best queue.
+     */
+    private Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
+            final Queue/* ! */currentQueue) {
+        LOGGER.trace("> compareQueue");
+
+        assert bestQueue != null : "Current best queue null";
+        assert currentQueue != null : "Current queue null";
+
+        Queue newBest = null;
+
+        if (bestQueue.getCreationTime().getTimeInMillis() >= currentQueue
+                .getCreationTime().getTimeInMillis()) {
+            // Select the oldest queue.
+            LOGGER.debug("It is better the new one {} than the "
+                    + "selected one {}", currentQueue.getTape().getName(),
+                    bestQueue.getTape().getName());
+            newBest = currentQueue;
+        } else if (bestQueue.getCreationTime().getTimeInMillis() < currentQueue
+                .getCreationTime().getTimeInMillis()) {
+            LOGGER.debug("It is better the already selected {} "
+                    + "than the new one {}", currentQueue.getTape().getName(),
+                    bestQueue.getTape().getName());
+            newBest = bestQueue;
+        } else {
+            LOGGER.warn("This is weird");
+            assert false : "No queue selected, mmm?";
+        }
+        LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
+
+        assert newBest != null : "Best queue null";
+
+        LOGGER.trace("< compareQueue");
+
+        return newBest;
     }
 
     /**
@@ -154,30 +205,27 @@ public final class AndresSelector implements Selector {
      *            Type of resource.
      * @param user
      *            User that owns the queue.
-     * @param currentlySelected
-     *            Queue currently selected. The first time is null.
      * @param queue
      *            Currently analyzed queue.
-     * @return Selected queue or null if the queue does not correspond to the
-     *         criteria. The returned queue must be in Created state.
+     * @return true if the queue could be taken in account for comparison.
      * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
-    private Queue/* ? */checkQueue(final Resource resource, final User user,
-            final Queue/* ? */currentlySelected, final Queue queue)
-            throws TReqSException {
+    private boolean checkQueue(final Resource resource, final User user,
+            final Queue/* ! */queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null : "resource null";
         assert user != null : "user null";
         assert queue != null : "queue null";
 
-        Queue ret = null;
+        boolean ret = false;
 
-        // The queue belong to this user, it concerns the given resource
-        // and it is in created state.
+        // The queue belong to this user.
         if (queue.getOwner().equals(user)) {
+            // The queue concerns the given resource.
             if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
+                // The queue is in created state.
                 if (queue.getStatus() == QueueStatus.CREATED) {
                     // Check if the tape for this queue is not already used by
                     // another active queue.
@@ -188,68 +236,27 @@ public final class AndresSelector implements Selector {
                         LOGGER.debug("Another queue on this tape" + " ({})"
                                 + " is already active. Trying next queue.",
                                 queue.getTape().getName());
-                        // Return the currently selected or null.
-                        ret = currentlySelected;
                     } else {
-                        // This is a created one.
-
-                        // Return this one because there is not selected one.
-                        if (currentlySelected == null) {
-                            LOGGER.debug("Current queue is null");
-                            ret = queue;
-                        } else if (currentlySelected.getCreationTime()
-                                .getTimeInMillis() >= queue.getCreationTime()
-                                .getTimeInMillis()) {
-                            // Select the oldest queue.
-                            LOGGER.debug(
-                                    "It is better the new one {} than the "
-                                            + "selected one {}", queue
-                                            .getTape().getName(),
-                                    currentlySelected.getTape().getName());
-                            ret = queue;
-                        } else if (currentlySelected.getCreationTime()
-                                .getTimeInMillis() < queue.getCreationTime()
-                                .getTimeInMillis()) {
-                            LOGGER.debug(
-                                    "It is better the already selected {} "
-                                            + "than the new one {}", queue
-                                            .getTape().getName(),
-                                    currentlySelected.getTape().getName());
-                            ret = currentlySelected;
-                        } else {
-                            LOGGER.warn("This is weird");
-                            assert false : "No queue selected, mmm?";
-                        }
-                        LOGGER.debug("Selected queue: {}", ret.getTape()
-                                .getName());
+                        // This is a queue for the given user, for the media
+                        // type of the given resource, that is in created state
+                        // and there is not another queue in activated state.
+                        ret = true;
                     }
                 } else {
                     LOGGER.info(
                             "The analyzed queue is in other state: {} - {}",
                             queue.getTape().getName(), queue.getStatus());
-                    // Return the currently selected or null.
-                    ret = currentlySelected;
                 }
             } else {
-                LOGGER.debug("Different media type: current queue {} "
+                LOGGER.error("Different media type: current queue {} "
                         + "searched {}", queue.getTape().getMediaType()
                         .getName(), resource.getMediaType().getName());
-                // Return the currently selected or null.
-                ret = currentlySelected;
-                LOGGER.error("Different type of tape");
                 assert false : "This should never happen, the list of tapes is "
                         + "the correct type";
             }
         } else {
             LOGGER.debug("Different owner: current queue {} searched {}", queue
                     .getOwner().getName(), user.getName());
-            // Return the currently selected or null.
-            ret = currentlySelected;
-        }
-
-        if (ret != null) {
-            assert ret.getStatus() == QueueStatus.CREATED : "Invalid state "
-                    + ret.getStatus();
         }
 
         LOGGER.trace("< checkQueue - {}", ret);
@@ -268,7 +275,7 @@ public final class AndresSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    synchronized User selectBestUser(final List<Queue> queuesMap,
+    synchronized User/* ! */selectBestUser(final List<Queue> queuesMap,
             final Resource resource) throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
@@ -301,17 +308,15 @@ public final class AndresSelector implements Selector {
             Iterator<User> users = usersScores.keySet().iterator();
             // This assures that bestUser will have a value.
             bestUser = users.next();
+            float bestScore = usersScores.get(bestUser);
+            LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
             while (users.hasNext()) {
-                User key = users.next();
-                if (resource.getUserAllocation(key) < 0) {
-                    // The share for this user has been set to a negative
-                    // value.
-                    // This means that we have to skip this user
-                    LOGGER.warn("User {} has a negative share. His queues are "
-                            + "hold.", key.getName());
-                } else if (bestUser != null
-                        && usersScores.get(key) > usersScores.get(bestUser)) {
-                    bestUser = key;
+                User user = users.next();
+                float score = usersScores.get(user);
+                LOGGER.info("Score: {}\t{}", user.getName(), score);
+                if (score > bestScore) {
+                    bestUser = user;
+                    bestScore = score;
                 }
             }
             // We have to check that the best user has positive share
@@ -332,7 +337,7 @@ public final class AndresSelector implements Selector {
     }
 
     /**
-     * Calculates the score for a user with the next formule.
+     * Calculates the score for a user with the next formula.
      * <p>
      * <code>
      * Value = (#Reserved - #Used) * (#Reserved + 1)
@@ -373,6 +378,9 @@ public final class AndresSelector implements Selector {
 
         }
 
+        assert usersScores.size() > 0 : "There must be at least one user";
+
         LOGGER.trace("< checkUser");
     }
+
 }
