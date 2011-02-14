@@ -234,6 +234,9 @@ public final class JonathanSelector implements Selector {
                         .getName(), resource.getMediaType().getName());
                 // Return the currently selected or null.
                 ret = currentlySelected;
+                LOGGER.error("Different type of tape");
+                assert false : "This should never happen, the list of tapes is "
+                        + "the correct type";
             }
         } else {
             LOGGER.debug("Different owner: current queue {} searched {}", queue
