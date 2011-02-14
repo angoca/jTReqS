@@ -185,9 +185,11 @@ public final class AndresSelector implements Selector {
                             queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
                         // There is another active queue for this tape. Just
                         // pick another one.
-                        LOGGER.debug("Another queue on this tape is already "
-                                + "active. Trying next queue.");
+                        LOGGER.debug("Another queue on this tape" + " ({})"
+                                + " is already active. Trying next queue.",
+                                queue.getTape().getName());
                         // Return the currently selected or null.
+                        ret = currentlySelected;
                     } else {
                         // This is a created one.
 
@@ -196,9 +198,9 @@ public final class AndresSelector implements Selector {
                             LOGGER.debug("Current queue is null");
                             ret = queue;
                         } else if (currentlySelected.getCreationTime()
-                        // Select the oldest queue.
                                 .getTimeInMillis() >= queue.getCreationTime()
                                 .getTimeInMillis()) {
+                            // Select the oldest queue.
                             LOGGER.debug(
                                     "It is better the new one {} than the "
                                             + "selected one {}", queue
@@ -222,8 +224,9 @@ public final class AndresSelector implements Selector {
                                 .getName());
                     }
                 } else {
-                    LOGGER.info("The analyzed queue is in other state: {}",
-                            queue.getStatus());
+                    LOGGER.info(
+                            "The analyzed queue is in other state: {} - {}",
+                            queue.getTape().getName(), queue.getStatus());
                     // Return the currently selected or null.
                     ret = currentlySelected;
                 }
@@ -233,6 +236,9 @@ public final class AndresSelector implements Selector {
                         .getName(), resource.getMediaType().getName());
                 // Return the currently selected or null.
                 ret = currentlySelected;
+                LOGGER.error("Different type of tape");
+                assert false : "This should never happen, the list of tapes is "
+                        + "the correct type";
             }
         } else {
             LOGGER.debug("Different owner: current queue {} searched {}", queue
@@ -246,7 +252,7 @@ public final class AndresSelector implements Selector {
                     + ret.getStatus();
         }
 
-        LOGGER.trace("< checkQueue");
+        LOGGER.trace("< checkQueue - {}", ret);
 
         return ret;
     }
@@ -320,13 +326,17 @@ public final class AndresSelector implements Selector {
 
         assert bestUser != null : "bestUser null";
 
-        LOGGER.trace("< selectBestUser");
+        LOGGER.trace("< selectBestUser - {}", bestUser.getName());
 
         return bestUser;
     }
 
     /**
-     * Calculates the score for a user.
+     * Calculates the score for a user with the next formule.
+     * <p>
+     * <code>
+     * Value = (#Reserved - #Used) * (#Reserved + 1)
+     * </code>
      *
      * @param resource
      *            Type of associated resource.
@@ -348,16 +358,13 @@ public final class AndresSelector implements Selector {
             // Just setting a default best user.
             User user = queue.getOwner();
             if (user != null) {
-                score = (resource.getTotalAllocation() * resource
-                        .getUserAllocation(user))
-                        - resource.getUsedResources(user);
+                float reserved = resource.getUserAllocation(user);
+                int used = resource.getUsedResources(user);
+                score = (reserved - used) * (reserved + 1);
                 usersScores.put(user, score);
-                LOGGER.debug(
-                        "{} score: {} = {} * {} - {}",
-                        new Object[] { user.getName(), score,
-                                resource.getTotalAllocation(),
-                                resource.getUserAllocation(user),
-                                resource.getUsedResources(user) });
+                LOGGER.debug("{} score: {} = ({} - {}) * ({} + 1)",
+                        new Object[] { user.getName(), score, reserved, used,
+                                reserved });
             } else {
                 LOGGER.info("The queue does not have an owner: {}. This "
                         + "should never happen - 3.", queue.getTape().getName());
@@ -368,5 +375,4 @@ public final class AndresSelector implements Selector {
 
         LOGGER.trace("< checkUser");
     }
-
 }
