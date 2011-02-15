@@ -210,7 +210,7 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:git://git.in2p3.fr/jtreqs</connection>
+    <connection>scm:git:git://git.in2p3.fr/jtreqs</connection>
     <tag>HEAD</tag>
     <url>https://git.in2p3.fr/public/jtreqs/</url>
   </scm>
