@@ -123,6 +123,18 @@
         <configuration>
           <target>
             <copy file="../native/target/jtreqs-server-native.so" tofile="target/jtreqs/repo/libNativeBridge.so" />
+            <copy todir="target/jtreqs">
+              <fileset dir="../">
+                <include name="README.txt" />
+                <include name="LICENSE.txt" />
+              </fileset>
+            </copy>
+            <copy todir="target/jtreqs/docs">
+              <fileset dir="../docs">
+                <include name="errors.txt" />
+                <include name="Migration_1.0-1.5" />
+              </fileset>
+            </copy>
           </target>
         </configuration>
         <executions>
