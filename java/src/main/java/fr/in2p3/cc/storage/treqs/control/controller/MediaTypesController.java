@@ -107,7 +107,7 @@ public final class MediaTypesController extends AbstractController {
     public MediaTypesController() {
         LOGGER.trace("> create instance");
 
-        super.objectMap = new HashMap<String, Object>();
+        super.setObjectMap(new HashMap<String, Object>());
 
         LOGGER.trace("< create instance");
     }
@@ -195,13 +195,13 @@ public final class MediaTypesController extends AbstractController {
         assert storageName != null && !storageName.equals("");
 
         MediaType ret = null;
-        synchronized (this.objectMap) {
+        synchronized (this.getObjectMap()) {
             if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
                 LOGGER.debug("T10K-A");
-                ret = (MediaType) this.objectMap.get("T10K-A");
+                ret = (MediaType) this.getObjectMap().get("T10K-A");
             } else if (storageName.startsWith("JT")) {
                 LOGGER.debug("T10K-B");
-                ret = (MediaType) this.objectMap.get("T10K-B");
+                ret = (MediaType) this.getObjectMap().get("T10K-B");
             } else {
                 LOGGER.error("Unknown media type");
                 assert false;

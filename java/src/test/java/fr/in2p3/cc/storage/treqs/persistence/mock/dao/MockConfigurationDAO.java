@@ -51,7 +51,6 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
-import fr.in2p3.cc.storage.treqs.persistence.mock.exception.MockPersistanceException;
 
 /**
  * Configuration DAO mock.

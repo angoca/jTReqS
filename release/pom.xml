@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <!-- Copyright Jonathan Schaeffer 2009-2010, CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr> -->
 
   <!-- Contributors Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr> -->
@@ -53,7 +52,7 @@
   </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5.1-SNAPSHOT</version>
     <artifactId>jtreqs-server-parent</artifactId>
   </parent>
   <properties>
@@ -124,6 +123,18 @@
         <configuration>
           <target>
             <copy file="../native/target/jtreqs-server-native.so" tofile="target/jtreqs/repo/libNativeBridge.so" />
+            <copy todir="target/jtreqs">
+              <fileset dir="../">
+                <include name="README.txt" />
+                <include name="LICENSE.txt" />
+              </fileset>
+            </copy>
+            <copy todir="target/jtreqs/docs">
+              <fileset dir="../docs">
+                <include name="errors.txt" />
+                <include name="Migration_1.0-1.5" />
+              </fileset>
+            </copy>
           </target>
         </configuration>
         <executions>

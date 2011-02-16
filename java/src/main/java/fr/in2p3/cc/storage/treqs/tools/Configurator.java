@@ -71,7 +71,7 @@ public final class Configurator {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        if (instance != null){
+        if (instance != null) {
             LOGGER.info("Instance destroyed");
         }
         instance = null;
@@ -121,7 +121,7 @@ public final class Configurator {
         String name = null;
         this.properties.addConfiguration(new SystemConfiguration());
         try {
-           name = System.getProperty(Constants.CONFIGURATION_FILE);
+            name = System.getProperty(Constants.CONFIGURATION_FILE);
             if (name == null) {
                 name = DefaultProperties.CONFIGURATION_PROPERTIES;
                 LOGGER.debug("No given file in System property");

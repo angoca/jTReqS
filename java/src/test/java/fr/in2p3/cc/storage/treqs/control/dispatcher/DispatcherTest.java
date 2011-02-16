@@ -73,8 +73,8 @@ import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mock.exception.MockPersistanceException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**

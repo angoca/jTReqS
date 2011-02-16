@@ -60,7 +60,26 @@ abstract class AbstractController {
     /**
      * Set of objects controlled by this class.
      */
-    protected Map<String, Object> objectMap;
+    private Map<String, Object> objectMap;
+
+    /**
+     * Retrieves the object map.
+     *
+     * @return Object map.
+     */
+    protected Map<String, Object>/* <!>? */getObjectMap() {
+        return this.objectMap;
+    }
+
+    /**
+     * Sets the map of the controller.
+     *
+     * @param map
+     *            Object's map.
+     */
+    protected void setObjectMap(final Map<String, Object>/* <!>! */map) {
+        this.objectMap = map;
+    }
 
     /**
      * Creates a new object instance and insert it in the map if the "same"

@@ -39,10 +39,9 @@ package fr.in2p3.cc.storage.treqs.hsm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
- * This is thrown when the requests represents a directory This
- * represents the code HPSS_EISDIR in HPSS.
+ * This is thrown when the requests represents a directory This represents the
+ * code HPSS_EISDIR in HPSS.
  *
  * @author Andrés Gómez
  * @since 1.5

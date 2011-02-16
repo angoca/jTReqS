@@ -45,7 +45,8 @@ import org.slf4j.LoggerFactory;
  * @author Andres Gomez
  * @since 1.5
  */
-public final class HSMGeneralStageProblemException extends AbstractHSMStageException {
+public final class HSMGeneralStageProblemException extends
+        AbstractHSMStageException {
     /**
      * Logger.
      */

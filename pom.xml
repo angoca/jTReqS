@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <!-- Copyright Jonathan Schaeffer 2009-2010, CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr> -->
 
   <!-- Contributors Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr> -->
@@ -35,7 +34,7 @@
   <!-- The Basics -->
   <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
   <artifactId>jtreqs-server-parent</artifactId>
-  <version>1.5-SNAPSHOT</version>
+  <version>1.5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <dependencies>
       <dependency>
@@ -210,7 +209,7 @@
   </issueManagement>
 
   <scm>
-    <connection>scm:git://git.in2p3.fr/jtreqs</connection>
+    <connection>scm:git:git://git.in2p3.fr/jtreqs</connection>
     <tag>HEAD</tag>
     <url>https://git.in2p3.fr/public/jtreqs/</url>
   </scm>
