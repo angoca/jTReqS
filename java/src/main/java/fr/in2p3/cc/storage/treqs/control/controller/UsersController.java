@@ -53,8 +53,8 @@ import fr.in2p3.cc.storage.treqs.model.User;
  * The key is the user name.
  * <p>
  * This is the only controller that do not destroys its references after being
- * used. This behavior is due to the multiple uses of users from
- * different objects, and the lower cardinality.
+ * used. This behavior is due to the multiple uses of users from different
+ * objects, and the lower cardinality.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -112,7 +112,7 @@ public final class UsersController extends AbstractController {
     private UsersController() {
         LOGGER.trace("> create instance");
 
-        super.objectMap = new HashMap<String, Object>();
+        super.setObjectMap(new HashMap<String, Object>());
 
         LOGGER.trace("< create instance");
     }
@@ -152,13 +152,13 @@ public final class UsersController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (objectMap) {
+        synchronized (getObjectMap()) {
 
             // Checks the references of users.
-            Iterator<String> iter = this.objectMap.keySet().iterator();
+            Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {
                 String name = iter.next();
-                User user = (User) this.objectMap.get(name);
+                User user = (User) this.getObjectMap().get(name);
                 boolean exist = FilePositionOnTapesController.getInstance()
                         .exists(user);
                 if (!exist) {
@@ -172,7 +172,7 @@ public final class UsersController extends AbstractController {
             size = toRemove.size();
             for (int i = 0; i < size; i++) {
                 LOGGER.debug("Deleting {}", toRemove.get(i));
-                this.objectMap.remove(toRemove.get(i));
+                this.getObjectMap().remove(toRemove.get(i));
             }
         }
 

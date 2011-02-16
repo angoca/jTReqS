@@ -109,7 +109,7 @@ public final class FilesController extends AbstractController {
     private FilesController() {
         LOGGER.trace("> FilesController");
 
-        super.objectMap = new HashMap<String, Object>();
+        this.setObjectMap(new HashMap<String, Object>());
 
         LOGGER.trace("< FilesController");
     }
@@ -180,12 +180,12 @@ public final class FilesController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (objectMap) {
+        synchronized (getObjectMap()) {
             // Checks the references without fpots.
-            Iterator<String> iter = this.objectMap.keySet().iterator();
+            Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {
                 String key = iter.next();
-                File file = (File) this.objectMap.get(key);
+                File file = (File) this.getObjectMap().get(key);
                 String filename = file.getName();
                 FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
                         .getInstance().exists(filename);
@@ -197,7 +197,7 @@ public final class FilesController extends AbstractController {
             size = toRemove.size();
             for (int i = 0; i < size; i++) {
                 LOGGER.debug("Deleting {}", toRemove.get(i));
-                this.objectMap.remove(toRemove.get(i));
+                this.getObjectMap().remove(toRemove.get(i));
             }
         }
 

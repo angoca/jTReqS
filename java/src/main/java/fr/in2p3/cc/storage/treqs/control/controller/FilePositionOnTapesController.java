@@ -105,9 +105,11 @@ public final class FilePositionOnTapesController extends AbstractController {
      * Constructor where the map is initialized.
      */
     private FilePositionOnTapesController() {
-        super.objectMap = new HashMap<String, Object>();
+        LOGGER.trace("> create instance");
 
-        LOGGER.trace(">< create instance");
+        super.setObjectMap(new HashMap<String, Object>());
+
+        LOGGER.trace("< create instance");
     }
 
     /**
@@ -218,14 +220,14 @@ public final class FilePositionOnTapesController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (objectMap) {
+        synchronized (getObjectMap()) {
 
             // Checks the references without queues.
-            Iterator<String> iter = this.objectMap.keySet().iterator();
+            Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {
                 String key = iter.next();
-                FilePositionOnTape fpot = (FilePositionOnTape) this.objectMap
-                        .get(key);
+                FilePositionOnTape fpot = (FilePositionOnTape) this
+                        .getObjectMap().get(key);
                 String tapename = fpot.getTape().getName();
                 boolean exist = QueuesController.getInstance().exists(tapename);
                 if (!exist) {
@@ -236,7 +238,7 @@ public final class FilePositionOnTapesController extends AbstractController {
             size = toRemove.size();
             for (int i = 0; i < size; i++) {
                 LOGGER.debug("Deleting {}", toRemove.get(i));
-                this.objectMap.remove(toRemove.get(i));
+                this.getObjectMap().remove(toRemove.get(i));
             }
         }
 
@@ -259,7 +261,7 @@ public final class FilePositionOnTapesController extends AbstractController {
         assert tape != null;
 
         tape.getName();
-        Iterator<Object> iter = super.objectMap.values().iterator();
+        Iterator<Object> iter = super.getObjectMap().values().iterator();
         boolean found = false;
         while (iter.hasNext() && !found) {
             Tape iterTape = ((FilePositionOnTape) iter.next()).getTape();
@@ -285,7 +287,7 @@ public final class FilePositionOnTapesController extends AbstractController {
 
         boolean ret = false;
         @SuppressWarnings("rawtypes")
-        Iterator files = this.objectMap.values().iterator();
+        Iterator files = this.getObjectMap().values().iterator();
         while (files.hasNext()) {
             FilePositionOnTape fpot = (FilePositionOnTape) files.next();
             if (user.equals(fpot.getRequester())) {
