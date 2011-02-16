@@ -34,7 +34,7 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistence.mock.exception;
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
