@@ -71,9 +71,9 @@ public final class HSMNativeBridgeContextBadUserTestNative {
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
         LOGGER.warn("User Keytab   : {}",
-                HSMNativeBridgeTestNative.VALID_USERNAME);
+                HSMNativeBridgeTestNative.getValidUsername());
         LOGGER.warn("Keytab        : {}",
-                HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
+                HSMNativeBridgeTestNative.getValidKeytabPath());
     }
 
     /**
@@ -87,7 +87,7 @@ public final class HSMNativeBridgeContextBadUserTestNative {
         try {
             NativeBridge.getInstance().initContext(
                     HSMNativeBridgeTestNative.VALID_AUTH_TYPE,
-                    HSMNativeBridgeTestNative.VALID_KEYTAB_PATH, "foo");
+                    HSMNativeBridgeTestNative.getValidKeytabPath(), "foo");
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
