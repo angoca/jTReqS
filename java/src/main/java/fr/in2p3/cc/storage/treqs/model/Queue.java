@@ -483,8 +483,6 @@ public final class Queue implements Comparable<Queue> {
      * Change the state to activated and change the activation time. This is the
      * time when the queue was activated, then its files went sent to the HSM
      * for staging.
-     * <p>
-     * TODO v1.5 change to private
      *
      * @throws TReqSException
      *             If there is a problem changing the states.
