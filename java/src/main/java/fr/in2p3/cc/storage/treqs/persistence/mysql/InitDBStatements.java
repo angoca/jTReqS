@@ -261,8 +261,7 @@ final class InitDBStatements {
      */
     static final String STRUCTURE_TABLE_HEART_BEAT = "(" + HEART_BEAT_PID
             + " int not null, " + HEART_BEAT_START_TIME
-            + " datetime not null, " + HEART_BEAT_LAST_TIME
-            + " datetime)";
+            + " datetime not null, " + HEART_BEAT_LAST_TIME + " datetime)";
 
     /**
      * Structure of the table media types.

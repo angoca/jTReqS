@@ -51,7 +51,8 @@ public enum HPSSErrorCode {
      * (hpss_Open) One of the following conditions occurred:
      * <ul>
      * <li>Search permission is denied on a component of the path prefix.</li>
-     * <li>The file exists and the permissions specified by Oflag are denied.</li>
+     * <li>The file exists and the permissions specified by <code>Oflag</code>
+     * are denied.</li>
      * <li>The file does not exist and write permission is denied for the parent
      * directory of the file to be created.</li>
      * <li>O_TRUNC is specified and write permission is denied.</li>

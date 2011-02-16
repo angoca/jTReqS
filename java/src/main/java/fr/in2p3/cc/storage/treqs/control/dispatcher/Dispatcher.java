@@ -518,7 +518,8 @@ public final class Dispatcher extends AbstractProcess {
                                         RequestStatus.ON_DISK,
                                         e.getErrorCode(), e.getMessage());
                     } catch (TReqSException e1) {
-                        LOGGER.error("Error trying to update request status", e);
+                        LOGGER.error("Error trying to update request "
+                                + "status", e);
                     }
                     cont = false;
                 }

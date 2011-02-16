@@ -70,8 +70,10 @@ public final class HSMNativeBridgeContextBadUserTestNative {
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
-        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTestNative.VALID_USERNAME);
-        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
+        LOGGER.warn("User Keytab   : {}",
+                HSMNativeBridgeTestNative.VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}",
+                HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
     }
 
     /**

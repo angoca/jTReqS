@@ -70,8 +70,10 @@ public final class HSMNativeBridgeContextTestNative {
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
-        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTestNative.VALID_USERNAME);
-        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
+        LOGGER.warn("User Keytab   : {}",
+                HSMNativeBridgeTestNative.VALID_USERNAME);
+        LOGGER.warn("Keytab        : {}",
+                HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
     }
 
     /**
@@ -86,6 +88,7 @@ public final class HSMNativeBridgeContextTestNative {
      * Tests to get the properties of a file without having been authenticated.
      *
      * @throws JNIException
+     *             Never.
      */
     @Test
     public void testGetProperties01NoInit() throws JNIException {
@@ -123,7 +126,8 @@ public final class HSMNativeBridgeContextTestNative {
         LOGGER.info("----- testStage01NoInit");
         boolean failed = false;
         try {
-            NativeBridge.getInstance().stage(HSMNativeBridgeTestNative.VALID_FILE,
+            NativeBridge.getInstance().stage(
+                    HSMNativeBridgeTestNative.VALID_FILE,
                     HSMNativeBridgeTestNative.VALID_FILE_SIZE);
             failed = true;
         } catch (JNIException e) {
