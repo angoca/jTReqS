@@ -276,8 +276,6 @@ final class InitDBStatements {
     /**
      * Structure of the table queues. The columns were sorted in order to have
      * the primary key at first, followed by the more volatile columns.
-     * <p>
-     * TODO v1.5 validate the precision of the DB columns with Java types.
      */
     static final String STRUCTURE_TABLE_QUEUES = "(" + QUEUES_ID
             + " int not null auto_increment, " + QUEUES_NAME
@@ -301,8 +299,6 @@ final class InitDBStatements {
      * <p>
      * The requested file could have 1024 characters for the path and 256 for
      * the filename = 1280.
-     * <p>
-     * TODO v1.5 validate the precision of the DB columns with Java types.
      */
     static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
             + " int not null auto_increment, " + REQUESTS_FILE
