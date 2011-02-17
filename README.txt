@@ -116,6 +116,7 @@ project could have been thrown to the garbage.)
    Once the file has been inflated, then execute these commands from the root
    dir of the installation:
    The install directory could be something like /opt/jtreqs
+     $ export LD_LIBRARY_PATH=/opt/hpss/lib
      $ export JTREQS_INSTALL_DIR=`pwd`/jtreqs
      $ sh jtreqs/bin/jtreqs.sh
 
