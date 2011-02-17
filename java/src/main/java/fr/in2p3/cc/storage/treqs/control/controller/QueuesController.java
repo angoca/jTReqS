@@ -504,10 +504,16 @@ public final class QueuesController {
      *
      * @return Map of queues.
      */
+    @SuppressWarnings("unchecked")
     MultiMap getQueues() {
-        LOGGER.trace(">< getQueues");
+        LOGGER.trace("> getQueues");
 
-        return this.queuesMap;
+        MultiMap copy = new MultiValueMap();
+        copy.putAll(this.queuesMap);
+
+        LOGGER.trace("< getQueues");
+
+        return copy;
     }
 
     /**
@@ -584,16 +590,18 @@ public final class QueuesController {
         assert status != null;
 
         boolean found = false;
-        @SuppressWarnings("unchecked")
-        Collection<Queue> queuesSameTape = (Collection<Queue>) this.queuesMap
-                .get(name);
-        if (queuesSameTape != null) {
-            Iterator<Queue> iterator = queuesSameTape.iterator();
-            while (iterator.hasNext() && !found) {
-                Queue queue = iterator.next();
-                if (queue.getStatus() == status) {
-                    this.queuesMap.remove(name, queue);
-                    found = true;
+        synchronized (this.queuesMap) {
+            @SuppressWarnings("unchecked")
+            Collection<Queue> queuesSameTape = (Collection<Queue>) this.queuesMap
+                    .get(name);
+            if (queuesSameTape != null) {
+                Iterator<Queue> iterator = queuesSameTape.iterator();
+                while (iterator.hasNext() && !found) {
+                    Queue queue = iterator.next();
+                    if (queue.getStatus() == status) {
+                        this.queuesMap.remove(name, queue);
+                        found = true;
+                    }
                 }
             }
         }
