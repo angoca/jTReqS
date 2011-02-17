@@ -681,14 +681,14 @@ public final class Queue implements Comparable<Queue> {
                         || (fs == RequestStatus.ON_DISK)) {
                     this.changeToEnded();
 
-                    this.cleanReferences();
-
                     LOGGER.warn("Queue {} ended", this.getTape().getName());
                     AbstractDAOFactory
                             .getDAOFactoryInstance()
                             .getQueueDAO()
                             .updateState(this, this.getEndTime(),
                                     this.numberDone, this.numberFailed);
+
+                    this.cleanReferences();
                 } else {
                     // If we get there, the last reading object is not in a
                     // final state.
