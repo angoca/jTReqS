@@ -201,8 +201,8 @@ public final class QueuesController {
             // 2. There is only one created queue.
             // 3. There is not any queue.
             // Find out if there is an activated queue.
-            queue = this.exists(fpot.getTape().getName(),
-                    QueueStatus.ACTIVATED);
+            queue = this
+                    .exists(fpot.getTape().getName(), QueueStatus.ACTIVATED);
             if (queue != null) {
                 LOGGER.debug("We have an activated queue.");
 
