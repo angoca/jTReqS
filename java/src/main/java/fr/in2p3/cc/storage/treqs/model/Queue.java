@@ -418,6 +418,7 @@ public final class Queue implements Comparable<Queue> {
              *            Second queue.
              * @return the difference between them, or 0 if they are the same.
              */
+            @Override
             public int compare(final User o1, final User o2) {
                 return o1.getName().compareTo(o2.getName());
             }
@@ -1170,7 +1171,6 @@ public final class Queue implements Comparable<Queue> {
      *             If the queue has reached the maximal suspension retries.
      * @throws InvalidParameterException
      *             If the queue tries to change an invalid change of state.
-     * @throws InvalidStateException
      */
     synchronized void setStatus(final QueueStatus newQueueStatus)
             throws MaximalSuspensionTriesException, InvalidParameterException {
