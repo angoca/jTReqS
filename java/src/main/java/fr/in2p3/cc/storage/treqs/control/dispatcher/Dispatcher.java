@@ -559,6 +559,8 @@ public final class Dispatcher extends AbstractProcess {
                 LOGGER.error("No FilePostionOnTape references this File. This "
                         + "should never happen - 2.");
                 cont = false;
+                // FIXME v2.0 This suppression is not synchronous. Careful.
+                // This should be unified with the previous 'exists'.
                 FilesController.getInstance().remove(file.getName());
             }
             if (cont && fpot != null) {
