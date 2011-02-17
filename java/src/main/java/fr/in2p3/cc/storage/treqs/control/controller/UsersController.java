@@ -132,9 +132,12 @@ public final class UsersController extends AbstractController {
 
         assert userName != null;
 
-        User user = (User) this.exists(userName);
-        if (user == null) {
-            user = create(userName);
+        User user = null;
+        synchronized (this.getObjectMap()) {
+            user = (User) this.exists(userName);
+            if (user == null) {
+                user = create(userName);
+            }
         }
 
         LOGGER.trace("< add");
@@ -152,7 +155,7 @@ public final class UsersController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (getObjectMap()) {
+        synchronized (this.getObjectMap()) {
 
             // Checks the references of users.
             Iterator<String> iter = this.getObjectMap().keySet().iterator();
