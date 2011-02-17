@@ -140,29 +140,32 @@ public final class FilePositionOnTapesController extends AbstractController {
         assert position >= 0;
         assert user != null;
 
-        FilePositionOnTape fpot = (FilePositionOnTape) this.exists(file
-                .getName());
-        if (fpot == null) {
-            LOGGER.debug("Creating a new fpot");
-            fpot = this.create(file, tape, position, user);
-        } else {
-            // TODO v2.0 The file could have been repacked, then the file is
-            // in a new tape
-            // if (!tape.getName().equals(fpot.getTape().getName())) {
-            // Collection<Queue> queues = QueuesController.getInstance()
-            // .getQueuesOnTape(fpot.getTape().getName());
-            // Deletes the old reference from all queues.
-            // for (Queue queue : queues) {
-            // This method should be synchronized and this should update the db.
-            // Recalculates the owner and the size.
-            // queue.unregisterFPOT(fpot);
-            // }
-            // The file is not updated. If the size changes it is not
-            // important, it only affect the size of the queue if it is still in
-            // the same tape.
-            LOGGER.debug("Updating old fpot");
-            fpot.updateMetadata(tape, position);
-            // }
+        FilePositionOnTape fpot = null;
+        synchronized (this.getObjectMap()) {
+            fpot = (FilePositionOnTape) this.exists(file.getName());
+            if (fpot == null) {
+                LOGGER.debug("Creating a new fpot");
+                fpot = this.create(file, tape, position, user);
+            } else {
+                // TODO v2.0 The file could have been repacked, then the file is
+                // in a new tape
+                // if (!tape.getName().equals(fpot.getTape().getName())) {
+                // Collection<Queue> queues = QueuesController.getInstance()
+                // .getQueuesOnTape(fpot.getTape().getName());
+                // Deletes the old reference from all queues.
+                // for (Queue queue : queues) {
+                // This method should be synchronized and this should update the
+                // db.
+                // Recalculates the owner and the size.
+                // queue.unregisterFPOT(fpot);
+                // }
+                // The file is not updated. If the size changes it is not
+                // important, it only affect the size of the queue if it is
+                // still in the same tape.
+                LOGGER.debug("Updating old fpot");
+                fpot.updateMetadata(tape, position);
+                // }
+            }
         }
 
         LOGGER.trace("< add");
