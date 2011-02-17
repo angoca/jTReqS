@@ -73,7 +73,7 @@ public final class Helper {
      */
     public static Reading createReading(final FilePositionOnTape fpot,
             final byte tries, final Queue queue) throws TReqSException {
-        return new Reading(fpot, (byte) 3, queue);
+        return new Reading(fpot, tries, queue);
     }
 
     /**

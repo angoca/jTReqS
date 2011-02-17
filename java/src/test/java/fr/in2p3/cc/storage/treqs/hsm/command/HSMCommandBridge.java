@@ -120,11 +120,11 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
          *            Number of the error code.
          */
         private ErrorCodes(final byte code) {
-            LOGGER.trace("> Instance creation");
+            HSMCommandBridge.LOGGER.trace("> Instance creation");
 
             this.errorCode = code;
 
-            LOGGER.trace("< Instance creation");
+            HSMCommandBridge.LOGGER.trace("< Instance creation");
         }
 
         /**
@@ -155,7 +155,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory
+    static final Logger LOGGER = LoggerFactory
             .getLogger(HSMCommandBridge.class);
 
     /**

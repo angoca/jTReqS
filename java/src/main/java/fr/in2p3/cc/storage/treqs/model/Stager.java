@@ -109,7 +109,7 @@ public final class Stager extends AbstractProcess {
         } else {
             LOGGER.info("Cannot work on a non-activated queue or queue "
                     + "already processed ({}). Probably the queue has been "
-                    + "finished", queue.getStatus());
+                    + "finished", this.queue.getStatus());
         }
 
         LOGGER.trace("< action");

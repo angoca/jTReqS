@@ -64,12 +64,9 @@ public final class TapesControllerTest {
 
     /**
      * Tries to add a null name.
-     *
-     * @throws Exception
-     *             Never.
      */
     @Test
-    public void testAdd01() throws Exception {
+    public void testAdd01() {
         MediaType mediatype = new MediaType((byte) 1, "mediatype");
 
         boolean failed = false;
@@ -89,11 +86,9 @@ public final class TapesControllerTest {
     /**
      * Tries to add a null tape.
      *
-     * @throws Exception
-     *             Never.
      */
     @Test
-    public void testAdd02() throws Exception {
+    public void testAdd02() {
         String tapename = "tapename";
 
         boolean failed = false;
@@ -126,12 +121,9 @@ public final class TapesControllerTest {
 
     /**
      * Tries to create a tape giving a null key.
-     *
-     * @throws Exception
-     *             Never.
      */
     @Test
-    public void testCreate01() throws Exception {
+    public void testCreate01() {
         MediaType mediatype = new MediaType((byte) 1, "mediatype");
 
         boolean failed = false;
@@ -150,12 +142,9 @@ public final class TapesControllerTest {
 
     /**
      * Tries to create a null object.
-     *
-     * @throws Exception
-     *             Never.
      */
     @Test
-    public void testCreate02() throws Exception {
+    public void testCreate02() {
         String tapename = "tapename";
 
         boolean failed = false;

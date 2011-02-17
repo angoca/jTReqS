@@ -153,7 +153,7 @@ public final class ResourcesController {
     public MultiMap getResourceAllocation() throws TReqSException {
         LOGGER.trace("> getResourceAllocation");
 
-        synchronized (share) {
+        synchronized (this.share) {
             // This helps to pass the garbage collector.
             this.share.clear();
             // Recreates the share map.

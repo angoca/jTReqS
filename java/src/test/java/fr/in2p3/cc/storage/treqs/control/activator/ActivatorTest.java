@@ -103,12 +103,9 @@ public final class ActivatorTest {
 
     /**
      * Destroys all after all tests.
-     *
-     * @throws TReqSException
-     *             If there is any problem.
      */
     @AfterClass
-    public static void oneTimeTearDown() throws TReqSException {
+    public static void oneTimeTearDown() {
         HSMMockBridge.destroyInstance();
         Configurator.destroyInstance();
         AbstractDAOFactory.destroyInstance();
@@ -294,7 +291,7 @@ public final class ActivatorTest {
     @Test
     public void testMaxQueueStagers01() throws TReqSException {
         byte value = 3;
-        Activator.getInstance().setMaxStagersPerQueue((byte) value);
+        Activator.getInstance().setMaxStagersPerQueue(value);
 
         byte actual = Activator.getInstance().getMaxStagersPerQueue();
 
@@ -355,7 +352,7 @@ public final class ActivatorTest {
     @Test
     public void testMaxStagers01() throws TReqSException {
         short value = ActivatorTest.THREE_HUNDRED;
-        Activator.getInstance().setMaxStagers((short) value);
+        Activator.getInstance().setMaxStagers(value);
 
         short actual = Activator.getInstance().getMaxStagers();
 

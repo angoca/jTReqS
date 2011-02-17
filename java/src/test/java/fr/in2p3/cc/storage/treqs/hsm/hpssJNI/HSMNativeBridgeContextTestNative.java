@@ -86,12 +86,9 @@ public final class HSMNativeBridgeContextTestNative {
 
     /**
      * Tests to get the properties of a file without having been authenticated.
-     *
-     * @throws JNIException
-     *             Never.
      */
     @Test
-    public void testGetProperties01NoInit() throws JNIException {
+    public void testGetProperties01NoInit() {
         LOGGER.info("----- testGetProperties01NoInit");
         boolean failed = false;
         try {

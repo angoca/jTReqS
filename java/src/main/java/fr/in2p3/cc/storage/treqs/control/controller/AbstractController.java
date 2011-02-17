@@ -147,7 +147,7 @@ abstract class AbstractController {
 
         assert key != null;
 
-        synchronized (objectMap) {
+        synchronized (this.objectMap) {
             this.exists(key);
 
             this.objectMap.remove(key);

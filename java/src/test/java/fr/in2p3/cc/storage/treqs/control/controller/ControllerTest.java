@@ -93,12 +93,9 @@ public final class ControllerTest {
 
     /**
      * Tries to add a null key.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAdd02Null() throws TReqSException {
+    public void testAdd02Null() {
         String tapename = "tapenameYes";
 
         boolean failed = false;
@@ -118,12 +115,9 @@ public final class ControllerTest {
 
     /**
      * Tries to add a null object.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAdd03Null() throws TReqSException {
+    public void testAdd03Null() {
         String tapename = "tapenameYes";
 
         boolean failed = false;
@@ -211,12 +205,9 @@ public final class ControllerTest {
 
     /**
      * Tries to remove a null.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testRemove02Null() throws TReqSException {
+    public void testRemove02Null() {
         boolean failed = false;
         try {
             TapesController.getInstance().remove(null);

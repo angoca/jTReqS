@@ -167,11 +167,9 @@ public final class Configurator {
      * @return The value.
      * @throws KeyNotFoundException
      *             If the variable was not found.
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem reading the file.
      */
     public String getStringValue(final String sec, final String key)
-            throws KeyNotFoundException, ProblematicConfiguationFileException {
+            throws KeyNotFoundException {
         LOGGER.trace("> getStringValue");
 
         assert sec != null && !sec.equals("");
@@ -202,12 +200,9 @@ public final class Configurator {
      * @param defaultValue
      *            Default value if nothing is found.
      * @return The value.
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem reading the file.
      */
     public byte getByteValue(final String sec, final String key,
-            final byte defaultValue)
-            throws ProblematicConfiguationFileException {
+            final byte defaultValue) {
         LOGGER.trace("> getByteValue");
 
         assert sec != null && !sec.equals("");
@@ -231,12 +226,9 @@ public final class Configurator {
      * @param defaultValue
      *            Default value if nothing is found.
      * @return The value.
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem reading the file.
      */
     public short getShortValue(final String sec, final String key,
-            final short defaultValue)
-            throws ProblematicConfiguationFileException {
+            final short defaultValue) {
         LOGGER.trace("> getShortValue");
 
         assert sec != null && !sec.equals("");
@@ -258,11 +250,9 @@ public final class Configurator {
      *            Identifier of the variable.
      * @param value
      *            Value of the variable.
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem reading the file.
      */
     public void setValue(final String section, final String key,
-            final String value) throws ProblematicConfiguationFileException {
+            final String value) {
         LOGGER.trace("> setValue");
 
         assert section != null && !section.equals("");

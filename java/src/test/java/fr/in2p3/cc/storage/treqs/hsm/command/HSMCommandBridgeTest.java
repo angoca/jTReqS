@@ -47,7 +47,6 @@ import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
@@ -87,12 +86,9 @@ public final class HSMCommandBridgeTest {
 
     /**
      * Gets a null file properties.
-     *
-     * @throws AbstractHSMException
-     *             Never.
      */
     @Test
-    public void testGetProperties01() throws AbstractHSMException {
+    public void testGetProperties01() {
         String name = null;
 
         boolean failed = false;
@@ -111,12 +107,9 @@ public final class HSMCommandBridgeTest {
 
     /**
      * Gets a empty file properties.
-     *
-     * @throws AbstractHSMException
-     *             Never.
      */
     @Test
-    public void testGetProperties02() throws AbstractHSMException {
+    public void testGetProperties02() {
         String name = "";
 
         boolean failed = false;

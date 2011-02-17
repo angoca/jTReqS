@@ -292,7 +292,7 @@ public final class MySQLBroker {
         synchronized (instance) {
             this.validConnection();
             try {
-                statement = (Statement) connection.createStatement();
+                statement = (Statement) this.connection.createStatement();
                 LOGGER.debug("Query: '{}'", query);
                 rows = statement.executeUpdate(query);
             } catch (SQLException ex) {
@@ -300,7 +300,9 @@ public final class MySQLBroker {
                 throw new MySQLExecuteException(ex);
             } finally {
                 try {
-                    statement.close();
+                    if (statement != null) {
+                        statement.close();
+                    }
                 } catch (SQLException e) {
                     throw new MySQLExecuteException(e);
                 }

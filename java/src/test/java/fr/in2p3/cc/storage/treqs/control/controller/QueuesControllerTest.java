@@ -1155,12 +1155,9 @@ public final class QueuesControllerTest {
 
     /**
      * Tries to create with a null fpot.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreate03() throws TReqSException {
+    public void testCreate03() {
         byte max = QueuesControllerTest.THREE;
 
         boolean failed = false;
@@ -1322,7 +1319,7 @@ public final class QueuesControllerTest {
         Collection<Queue> queues = QueuesController.getInstance()
                 .getQueuesOnTape(tapename1);
         for (Iterator<Queue> iterator = queues.iterator(); iterator.hasNext();) {
-            Queue queue = (Queue) iterator.next();
+            Queue queue = iterator.next();
 
             if (queue.getStatus() == QueueStatus.CREATED) {
                 created1 = true;
@@ -1379,7 +1376,7 @@ public final class QueuesControllerTest {
         Collection<Queue> queues = QueuesController.getInstance()
                 .getQueuesOnTape(tapename2);
         for (Iterator<Queue> iterator = queues.iterator(); iterator.hasNext();) {
-            Queue queue = (Queue) iterator.next();
+            Queue queue = iterator.next();
 
             if (queue.getStatus() == QueueStatus.CREATED) {
                 created2 = true;
@@ -1603,12 +1600,9 @@ public final class QueuesControllerTest {
 
     /**
      * Tries to set a negative time.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testSuspendTime02() throws TReqSException {
+    public void testSuspendTime02() {
         try {
             QueuesController.getInstance().updateSuspendTime((short) -NUMBER_5);
             Assert.fail();

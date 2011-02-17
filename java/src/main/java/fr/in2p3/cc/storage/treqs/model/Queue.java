@@ -435,7 +435,7 @@ public final class Queue implements Comparable<Queue> {
                 max = score;
                 bestUser = user;
                 // One user has more than 50%+1 files of the queue.
-                if (max > (readingList.size() / 2)) {
+                if (max > (this.readingList.size() / 2)) {
                     // We are sure to have the major owner of the queue
                     found = true;
                 }
@@ -611,11 +611,8 @@ public final class Queue implements Comparable<Queue> {
     /**
      * Counts the processed fpots making difference between done and failed.
      * Updates numberDone and numberFailed.
-     *
-     * @throws InvalidStateException
-     *             If the queue has an invalid state.
      */
-    private void countRequests() throws InvalidStateException {
+    private void countRequests() {
         LOGGER.trace("> countRequests");
 
         byte nbFailed = 0;
@@ -638,6 +635,7 @@ public final class Queue implements Comparable<Queue> {
             case ON_DISK:
                 LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE 1.");
                 nbDone++;
+                break;
             default:
                 // Count requests is called only when a Queue is in ACTIVATED
                 // state and all its files must be in QUEUED state or a
@@ -1084,10 +1082,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Creation time.
-     * @throws InvalidParameterException
-     *             If the given creation time is invalid.
      */
-    void setCreationTime(final Calendar time) throws InvalidParameterException {
+    void setCreationTime(final Calendar time) {
         LOGGER.trace("> setCreationTime");
 
         assert time != null;
@@ -1112,10 +1108,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Time when the queue has finished to be processed.
-     * @throws InvalidParameterException
-     *             If the given time is invalid.
      */
-    void setEndTime(final Calendar time) throws InvalidParameterException {
+    void setEndTime(final Calendar time) {
         LOGGER.trace("> setEndTime");
 
         assert time != null;
@@ -1225,11 +1219,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Activation time.
-     * @throws InvalidParameterException
-     *             If the given time is invalid.
      */
-    void setActivationTime(final Calendar time)
-            throws InvalidParameterException {
+    void setActivationTime(final Calendar time) {
         LOGGER.trace("> setActivationTime");
 
         assert time != null;
@@ -1272,11 +1263,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            The time when the queue has to be waked up.
-     * @throws InvalidParameterException
-     *             If the time is invalid.
      */
-    void setSuspensionTime(final Calendar time)
-            throws InvalidParameterException {
+    void setSuspensionTime(final Calendar time) {
         LOGGER.trace("> setSuspensionTime");
 
         assert time != null;

@@ -62,12 +62,9 @@ public final class FilesControllerTest {
 
     /**
      * Tries to add a null key.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAddUser01() throws TReqSException {
+    public void testAddUser01() {
         boolean failed = false;
         try {
             FilesController.getInstance().add(null, 10);
@@ -84,12 +81,9 @@ public final class FilesControllerTest {
 
     /**
      * Tries to add a file with negative size.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAddUser02() throws TReqSException {
+    public void testAddUser02() {
         boolean failed = false;
         try {
             FilesController.getInstance().add("filename", -10);
@@ -117,12 +111,9 @@ public final class FilesControllerTest {
 
     /**
      * Tries to create a file with null name.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreateUser01() throws TReqSException {
+    public void testCreateUser01() {
         boolean failed = false;
         try {
             FilesController.getInstance().create(null, 10);
@@ -139,12 +130,9 @@ public final class FilesControllerTest {
 
     /**
      * Tries to create a file with negative size.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreateUser02() throws TReqSException {
+    public void testCreateUser02() {
         boolean failed = false;
         try {
             FilesController.getInstance().create("filename", -10);
