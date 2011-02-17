@@ -272,16 +272,14 @@ public final class QueuesController {
         int cleaned = 0;
         MultiMap toRemove = new MultiValueMap();
         synchronized (this.queuesMap) {
-            @SuppressWarnings("rawtypes")
-            Iterator iterName = this.queuesMap.keySet().iterator();
+            Iterator<String> iterName = this.queuesMap.keySet().iterator();
             // Checks the references to ended queues.
             while (iterName.hasNext()) {
-                String key = (String) iterName.next();
-                @SuppressWarnings("rawtypes")
-                Iterator queues = ((Collection<Queue>) this.queuesMap.get(key))
-                        .iterator();
+                String key = iterName.next();
+                Iterator<Queue> queues = ((Collection<Queue>) this.queuesMap
+                        .get(key)).iterator();
                 while (queues.hasNext()) {
-                    Queue queue = (Queue) queues.next();
+                    Queue queue = queues.next();
 
                     if (queue.getStatus() == QueueStatus.ENDED) {
                         LOGGER.debug("Queue {} is ended. Cleanup starting.",
@@ -297,13 +295,12 @@ public final class QueuesController {
             // Removes ended queues.
             iterName = toRemove.keySet().iterator();
             while (iterName.hasNext()) {
-                String key = (String) iterName.next();
+                String key = iterName.next();
 
-                @SuppressWarnings("rawtypes")
-                Iterator queues = ((Collection<Queue>) toRemove.get(key))
+                Iterator<Queue> queues = ((Collection<Queue>) toRemove.get(key))
                         .iterator();
                 while (queues.hasNext()) {
-                    Queue queue = (Queue) queues.next();
+                    Queue queue = queues.next();
 
                     LOGGER.debug("Deleting {} {}", key, queue.toString());
                     this.queuesMap.remove(key, queue);
@@ -325,7 +322,6 @@ public final class QueuesController {
      *            List of resources that keep the quantity of used drives.
      * @return Quantity of active queues.
      */
-    @SuppressWarnings("unchecked")
     public short countUsedResources(final List<Resource> resources) {
         LOGGER.trace("> countUsedResources");
 
@@ -333,9 +329,11 @@ public final class QueuesController {
 
         short active = 0;
         // Iterating through all queues.
+        @SuppressWarnings("unchecked")
         Iterator<String> iterator1 = this.queuesMap.keySet().iterator();
         while (iterator1.hasNext()) {
             String key = iterator1.next();
+            @SuppressWarnings("unchecked")
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
@@ -523,12 +521,12 @@ public final class QueuesController {
      *            the tape to search for.
      * @return the bounds of a range that includes all the queues on tape name.
      */
-    @SuppressWarnings("unchecked")
     Collection<Queue> getQueuesOnTape(final String name) {
         LOGGER.trace("> getQueuesOnTape");
 
         assert name != null && !name.equals("");
 
+        @SuppressWarnings("unchecked")
         Collection<Queue> ret = (Collection<Queue>) this.queuesMap.get(name);
 
         LOGGER.trace("< getQueuesOnTape");
@@ -616,16 +614,17 @@ public final class QueuesController {
      * @param time
      *            Time in seconds for queue suspension.
      */
-    @SuppressWarnings("unchecked")
     protected void updateSuspendTime(final short time) {
         LOGGER.trace("> updateSuspendTime");
 
         assert time > 0;
 
         this.suspendTimeForQueues = time;
+        @SuppressWarnings("unchecked")
         Iterator<String> iterator = this.queuesMap.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
+            @SuppressWarnings("unchecked")
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
