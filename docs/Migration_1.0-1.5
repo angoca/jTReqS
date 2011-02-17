@@ -57,7 +57,7 @@ create trigger updateRequests before update on jrequests for each row
 begin
     declare currentStatus smallint;
     if new.status = 150 then
-        set currentStatus := 14;
+        set currentStatus := 19;
     else
         set currentStatus := new.status / 10;
     end if;
