@@ -545,7 +545,6 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        // FIXME v.1.5 concurrent problem
         List<Short> positions = new ArrayList<Short>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
@@ -957,18 +956,21 @@ public final class Queue implements Comparable<Queue> {
 
         // FIXME v2.0 In HPSS version 7 the aggregation return the same position
         // for different files.
-        boolean exists = this.readingList.containsKey((short) fpot
-                .getPosition());
-        if (!exists) {
-            this.insertNotRegisteredFile(reading);
-        } else {
-            // The file is already in the queue.
-            LOGGER.warn("Queue {} already has a reading for file {}", this
-                    .getTape().getName(), fpot.getFile().getName());
-            if (!this.readingList.get((short) fpot.getPosition()).getMetaData()
-                    .getFile().getName().equals(fpot.getFile().getName())) {
-                assert false : "Two different files in the same position";
-                // FIXME v2.0 this will happen when using aggregation.
+        boolean exists = false;
+        synchronized (this.readingList) {
+            exists = this.readingList.containsKey((short) fpot.getPosition());
+            if (!exists) {
+                this.insertNotRegisteredFile(reading);
+            } else {
+                // The file is already in the queue.
+                LOGGER.warn("Queue {} already has a reading for file {}", this
+                        .getTape().getName(), fpot.getFile().getName());
+                if (!this.readingList.get((short) fpot.getPosition())
+                        .getMetaData().getFile().getName()
+                        .equals(fpot.getFile().getName())) {
+                    assert false : "Two different files in the same position";
+                    // FIXME v2.0 this will happen when using aggregation.
+                }
             }
         }
 
