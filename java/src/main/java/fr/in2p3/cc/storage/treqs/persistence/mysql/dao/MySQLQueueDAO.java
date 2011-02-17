@@ -241,8 +241,6 @@ public final class MySQLQueueDAO implements QueueDAO {
                 assert false;
                 break;
             case ENDED:
-                // This should be ENDED or ABORTED or
-                // TEMPORARILY_SUSPENDED
                 statement = MySQLBroker.getInstance().getPreparedStatement(
                         MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
                 // Insert end time.
@@ -258,6 +256,7 @@ public final class MySQLQueueDAO implements QueueDAO {
                         new Timestamp(time.getTimeInMillis()));
                 break;
             default:
+                // Aborted queue exists only when the application starts.
                 assert false;
             }
         } catch (SQLException e) {
