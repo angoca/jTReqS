@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,10 +187,12 @@ public final class AndresSelector implements Selector {
                     bestQueue.getTape().getName());
             newBest = bestQueue;
         } else {
-            LOGGER.warn("This is weird");
+            LOGGER.warn("This is weird, there must be a selected queue.");
             assert false : "No queue selected, mmm?";
         }
-        LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
+        if (newBest != null) {
+            LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
+        }
 
         assert newBest != null : "Best queue null";
 
@@ -211,8 +214,9 @@ public final class AndresSelector implements Selector {
      * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
-    private boolean checkQueue(final Resource resource, final User user,
-            final Queue/* ! */queue) throws TReqSException {
+    private boolean checkQueue(final Resource/* ! */resource,
+            final User/* ! */user, final Queue/* ! */queue)
+            throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null : "resource null";
@@ -275,8 +279,8 @@ public final class AndresSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    User/* ! */selectBestUser(final List<Queue> queuesMap,
-            final Resource resource) throws NoQueuesDefinedException {
+    User/* ! */selectBestUser(final List<Queue>/* <!>! */queuesMap,
+            final Resource/* ! */resource) throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";
@@ -307,27 +311,32 @@ public final class AndresSelector implements Selector {
         // Catch the best
         Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
-        bestUser = users.next();
-        float bestScore = usersScores.get(bestUser);
-        LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
-        while (users.hasNext()) {
-            User user = users.next();
-            float score = usersScores.get(user);
-            LOGGER.info("Score: {}\t{}", user.getName(), score);
-            if (score > bestScore) {
-                bestUser = user;
-                bestScore = score;
+        try {
+            bestUser = users.next();
+            float bestScore = usersScores.get(bestUser);
+            LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
+            while (users.hasNext()) {
+                User user = users.next();
+                float score = usersScores.get(user);
+                LOGGER.info("Score: {}\t{}", user.getName(), score);
+                if (score > bestScore) {
+                    bestUser = user;
+                    bestScore = score;
+                }
             }
-        }
-        if (bestUser != null) {
+
             // We have to check that the best user has positive share
             if (resource.getUserAllocation(bestUser) < 0) {
                 LOGGER.warn(
                         "User {} has a negative share. We should never get "
                                 + "here.", bestUser.getName());
+                assert false;
             }
 
             LOGGER.debug("Best user: {}", bestUser.getName());
+        } catch (NoSuchElementException e) {
+            LOGGER.error("Houston, we have a problem.");
+            throw e;
         }
 
         assert bestUser != null : "bestUser null";
