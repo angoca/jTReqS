@@ -220,7 +220,7 @@ public final class FilePositionOnTapesController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (getObjectMap()) {
+        synchronized (this.getObjectMap()) {
 
             // Checks the references without queues.
             Iterator<String> iter = this.getObjectMap().keySet().iterator();
@@ -261,7 +261,7 @@ public final class FilePositionOnTapesController extends AbstractController {
         assert tape != null;
 
         tape.getName();
-        Iterator<Object> iter = super.getObjectMap().values().iterator();
+        Iterator<?> iter = super.getObjectMap().values().iterator();
         boolean found = false;
         while (iter.hasNext() && !found) {
             Tape iterTape = ((FilePositionOnTape) iter.next()).getTape();
@@ -286,8 +286,7 @@ public final class FilePositionOnTapesController extends AbstractController {
         LOGGER.trace("> exists");
 
         boolean ret = false;
-        @SuppressWarnings("rawtypes")
-        Iterator files = this.getObjectMap().values().iterator();
+        Iterator<?> files = this.getObjectMap().values().iterator();
         while (files.hasNext()) {
             FilePositionOnTape fpot = (FilePositionOnTape) files.next();
             if (user.equals(fpot.getRequester())) {
