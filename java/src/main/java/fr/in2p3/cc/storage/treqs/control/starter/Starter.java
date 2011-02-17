@@ -228,7 +228,7 @@ public final class Starter {
 
         CommandLineParser parser = new PosixParser();
 
-        CommandLine cli = parser.parse(options, arguments);
+        CommandLine cli = parser.parse(this.options, arguments);
 
         LOGGER.trace("< prepareCommandOptions");
 

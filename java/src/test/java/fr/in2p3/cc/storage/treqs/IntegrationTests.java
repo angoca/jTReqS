@@ -56,4 +56,5 @@ import fr.in2p3.cc.storage.treqs.tools.WatchdogTest;
         ActivatorTest.class, DispatcherTest.class, HSMCommandBridgeTest.class,
         WatchdogTest.class })
 public final class IntegrationTests {
+    // Nothing.
 }

@@ -418,6 +418,7 @@ public final class Queue implements Comparable<Queue> {
              *            Second queue.
              * @return the difference between them, or 0 if they are the same.
              */
+            @Override
             public int compare(final User o1, final User o2) {
                 return o1.getName().compareTo(o2.getName());
             }
@@ -435,7 +436,7 @@ public final class Queue implements Comparable<Queue> {
                 max = score;
                 bestUser = user;
                 // One user has more than 50%+1 files of the queue.
-                if (max > (readingList.size() / 2)) {
+                if (max > (this.readingList.size() / 2)) {
                     // We are sure to have the major owner of the queue
                     found = true;
                 }
@@ -544,7 +545,6 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        // FIXME v.1.5 concurrent problem
         List<Short> positions = new ArrayList<Short>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
@@ -611,11 +611,8 @@ public final class Queue implements Comparable<Queue> {
     /**
      * Counts the processed fpots making difference between done and failed.
      * Updates numberDone and numberFailed.
-     *
-     * @throws InvalidStateException
-     *             If the queue has an invalid state.
      */
-    private void countRequests() throws InvalidStateException {
+    private void countRequests() {
         LOGGER.trace("> countRequests");
 
         byte nbFailed = 0;
@@ -638,6 +635,7 @@ public final class Queue implements Comparable<Queue> {
             case ON_DISK:
                 LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE 1.");
                 nbDone++;
+                break;
             default:
                 // Count requests is called only when a Queue is in ACTIVATED
                 // state and all its files must be in QUEUED state or a
@@ -958,18 +956,21 @@ public final class Queue implements Comparable<Queue> {
 
         // FIXME v2.0 In HPSS version 7 the aggregation return the same position
         // for different files.
-        boolean exists = this.readingList.containsKey((short) fpot
-                .getPosition());
-        if (!exists) {
-            this.insertNotRegisteredFile(reading);
-        } else {
-            // The file is already in the queue.
-            LOGGER.warn("Queue {} already has a reading for file {}", this
-                    .getTape().getName(), fpot.getFile().getName());
-            if (!this.readingList.get((short) fpot.getPosition()).getMetaData()
-                    .getFile().getName().equals(fpot.getFile().getName())) {
-                assert false : "Two different files in the same position";
-                // FIXME v2.0 this will happen when using aggregation.
+        boolean exists = false;
+        synchronized (this.readingList) {
+            exists = this.readingList.containsKey((short) fpot.getPosition());
+            if (!exists) {
+                this.insertNotRegisteredFile(reading);
+            } else {
+                // The file is already in the queue.
+                LOGGER.warn("Queue {} already has a reading for file {}", this
+                        .getTape().getName(), fpot.getFile().getName());
+                if (!this.readingList.get((short) fpot.getPosition())
+                        .getMetaData().getFile().getName()
+                        .equals(fpot.getFile().getName())) {
+                    assert false : "Two different files in the same position";
+                    // FIXME v2.0 this will happen when using aggregation.
+                }
             }
         }
 
@@ -1084,10 +1085,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Creation time.
-     * @throws InvalidParameterException
-     *             If the given creation time is invalid.
      */
-    void setCreationTime(final Calendar time) throws InvalidParameterException {
+    void setCreationTime(final Calendar time) {
         LOGGER.trace("> setCreationTime");
 
         assert time != null;
@@ -1112,10 +1111,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Time when the queue has finished to be processed.
-     * @throws InvalidParameterException
-     *             If the given time is invalid.
      */
-    void setEndTime(final Calendar time) throws InvalidParameterException {
+    void setEndTime(final Calendar time) {
         LOGGER.trace("> setEndTime");
 
         assert time != null;
@@ -1176,7 +1173,6 @@ public final class Queue implements Comparable<Queue> {
      *             If the queue has reached the maximal suspension retries.
      * @throws InvalidParameterException
      *             If the queue tries to change an invalid change of state.
-     * @throws InvalidStateException
      */
     synchronized void setStatus(final QueueStatus newQueueStatus)
             throws MaximalSuspensionTriesException, InvalidParameterException {
@@ -1225,11 +1221,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Activation time.
-     * @throws InvalidParameterException
-     *             If the given time is invalid.
      */
-    void setActivationTime(final Calendar time)
-            throws InvalidParameterException {
+    void setActivationTime(final Calendar time) {
         LOGGER.trace("> setActivationTime");
 
         assert time != null;
@@ -1272,11 +1265,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            The time when the queue has to be waked up.
-     * @throws InvalidParameterException
-     *             If the time is invalid.
      */
-    void setSuspensionTime(final Calendar time)
-            throws InvalidParameterException {
+    void setSuspensionTime(final Calendar time) {
         LOGGER.trace("> setSuspensionTime");
 
         assert time != null;

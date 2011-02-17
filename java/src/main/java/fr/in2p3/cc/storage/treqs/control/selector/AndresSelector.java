@@ -275,7 +275,7 @@ public final class AndresSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    synchronized User/* ! */selectBestUser(final List<Queue> queuesMap,
+    User/* ! */selectBestUser(final List<Queue> queuesMap,
             final Resource resource) throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
@@ -287,40 +287,41 @@ public final class AndresSelector implements Selector {
             assert false : "No queues, weird";
 
             throw new NoQueuesDefinedException();
-        } else {
+        }
 
-            Map<User, Float> usersScores = new HashMap<User, Float>();
+        Map<User, Float> usersScores = new HashMap<User, Float>();
 
-            // For each waiting user, get its allocation and its used resources.
+        // For each waiting user, get its allocation and its used resources.
 
-            // First get the list of queues
+        // First get the list of queues
 
-            // Browse the list of queues and compute the users scores
-            LOGGER.debug("Computing Score: (total allocation) "
-                    + "* (user allocation) - (used resources)");
-            Iterator<Queue> queues = queuesMap.iterator();
-            while (queues.hasNext()) {
-                Queue queue = queues.next();
-                this.calculateUserScore(resource, usersScores, queue);
+        // Browse the list of queues and compute the users scores
+        LOGGER.debug("Computing Score: (total allocation) "
+                + "* (user allocation) - (used resources)");
+        Iterator<Queue> queues = queuesMap.iterator();
+        while (queues.hasNext()) {
+            Queue queue = queues.next();
+            this.calculateUserScore(resource, usersScores, queue);
+        }
+
+        // Catch the best
+        Iterator<User> users = usersScores.keySet().iterator();
+        // This assures that bestUser will have a value.
+        bestUser = users.next();
+        float bestScore = usersScores.get(bestUser);
+        LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
+        while (users.hasNext()) {
+            User user = users.next();
+            float score = usersScores.get(user);
+            LOGGER.info("Score: {}\t{}", user.getName(), score);
+            if (score > bestScore) {
+                bestUser = user;
+                bestScore = score;
             }
-
-            // Catch the best
-            Iterator<User> users = usersScores.keySet().iterator();
-            // This assures that bestUser will have a value.
-            bestUser = users.next();
-            float bestScore = usersScores.get(bestUser);
-            LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
-            while (users.hasNext()) {
-                User user = users.next();
-                float score = usersScores.get(user);
-                LOGGER.info("Score: {}\t{}", user.getName(), score);
-                if (score > bestScore) {
-                    bestUser = user;
-                    bestScore = score;
-                }
-            }
+        }
+        if (bestUser != null) {
             // We have to check that the best user has positive share
-            if (bestUser != null && resource.getUserAllocation(bestUser) < 0) {
+            if (resource.getUserAllocation(bestUser) < 0) {
                 LOGGER.warn(
                         "User {} has a negative share. We should never get "
                                 + "here.", bestUser.getName());

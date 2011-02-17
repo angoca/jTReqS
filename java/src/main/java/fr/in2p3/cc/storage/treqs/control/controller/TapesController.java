@@ -131,9 +131,12 @@ public final class TapesController extends AbstractController {
         assert name != null && !name.equals("");
         assert media != null;
 
-        Tape tape = (Tape) this.exists(name);
-        if (tape == null) {
-            tape = create(name, media);
+        Tape tape = null;
+        synchronized (this.getObjectMap()) {
+            tape = (Tape) this.exists(name);
+            if (tape == null) {
+                tape = create(name, media);
+            }
         }
 
         assert tape != null;
@@ -181,7 +184,7 @@ public final class TapesController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (getObjectMap()) {
+        synchronized (this.getObjectMap()) {
 
             // Checks the references without fpots.
             Iterator<String> iter = this.getObjectMap().keySet().iterator();

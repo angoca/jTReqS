@@ -525,6 +525,7 @@ public final class Dispatcher extends AbstractProcess {
                 }
             }
             if (cont
+                    && fileProperties != null
                     && fileProperties.getTapeName().equals(
                             Constants.FILE_ON_DISK)) {
                 this.fileOnDisk(fileRequest);
@@ -532,7 +533,7 @@ public final class Dispatcher extends AbstractProcess {
             }
             // The file is not registered in the application and it is not in
             // disk.
-            if (cont) {
+            if (cont && fileProperties != null) {
                 // Now, try to find out the media type.
                 try {
                     media = MediaTypesController.getInstance().getMediaType(
@@ -544,7 +545,7 @@ public final class Dispatcher extends AbstractProcess {
                     cont = false;
                 }
             }
-            if (cont) {
+            if (cont && fileProperties != null) {
                 // We have all information to create a new file object.
                 file = FilesController.getInstance().add(fileRequest.getName(),
                         fileProperties.getSize());
@@ -558,9 +559,11 @@ public final class Dispatcher extends AbstractProcess {
                 LOGGER.error("No FilePostionOnTape references this File. This "
                         + "should never happen - 2.");
                 cont = false;
+                // FIXME v2.0 This suppression is not synchronous. Careful.
+                // This should be unified with the previous 'exists'.
                 FilesController.getInstance().remove(file.getName());
             }
-            if (cont) {
+            if (cont && fpot != null) {
                 if (fpot.isMetadataOutdated()) {
                     LOGGER.info("Refreshing metadata of file {}",
                             fileRequest.getName());
@@ -573,18 +576,19 @@ public final class Dispatcher extends AbstractProcess {
                         cont = false;
                     }
                     if (cont
+                            && fileProperties != null
                             && fileProperties.getTapeName() == Constants.FILE_ON_DISK) {
                         this.fileOnDisk(fileRequest);
                         cont = false;
                     }
-                    if (cont) {
+                    if (cont && fileProperties != null) {
                         media = MediaTypesController.getInstance()
                                 .getMediaType(fileProperties.getTapeName());
                         if (media == null) {
                             cont = false;
                         }
                     }
-                    if (cont) {
+                    if (cont && fileProperties != null) {
                         fpot.getFile().setSize(fileProperties.getSize());
                     }
                 } else {

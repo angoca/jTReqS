@@ -94,24 +94,18 @@ public final class MySQLBrokerTest {
 
     /**
      * Sets the general environment.
-     *
-     * @throws TReqSException
-     *             If there is any problem.
      */
     @BeforeClass
-    public static void oneTimeSetUp() throws TReqSException {
+    public static void oneTimeSetUp() {
         System.setProperty(Constants.CONFIGURATION_FILE,
                 MainTests.PROPERTIES_FILE);
     }
 
     /**
      * Destroys all after tests.
-     *
-     * @throws TReqSException
-     *             Problem acceding the database.
      */
     @AfterClass
-    public static void oneTimeTearDown() throws TReqSException {
+    public static void oneTimeTearDown() {
         MySQLBroker.destroyInstance();
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
@@ -370,12 +364,9 @@ public final class MySQLBrokerTest {
 
     /**
      * Tries to execute an empty modification without connection.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testModify03() throws TReqSException {
+    public void testModify03() {
         String query = "";
         boolean failed = false;
         try {

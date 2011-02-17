@@ -131,9 +131,12 @@ public final class FilesController extends AbstractController {
         assert name != null && !name.equals("");
         assert size >= 0;
 
-        File file = (File) this.exists(name);
-        if (file == null) {
-            file = create(name, size);
+        File file = null;
+        synchronized (this.getObjectMap()) {
+            file = (File) this.exists(name);
+            if (file == null) {
+                file = this.create(name, size);
+            }
         }
 
         LOGGER.trace("< add");
@@ -180,7 +183,7 @@ public final class FilesController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (getObjectMap()) {
+        synchronized (this.getObjectMap()) {
             // Checks the references without fpots.
             Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {

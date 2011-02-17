@@ -40,7 +40,7 @@ import java.util.Random;
 
 /**
  * Creates random strings.
- *
+ * 
  * @author Andrés Gómez
  * @since 1.5
  */
@@ -72,7 +72,7 @@ public final class RandomString {
 
     /**
      * Creates a string.
-     *
+     * 
      * @param length
      *            Quantity of characters in the string.
      */
@@ -80,17 +80,17 @@ public final class RandomString {
         if (length < 1) {
             throw new IllegalArgumentException("length < 1: " + length);
         }
-        buf = new char[length];
+        this.buf = new char[length];
     }
 
     /**
      * @return Returns a random string.
      */
     public String nextString() {
-        for (int idx = 0; idx < buf.length; ++idx) {
-            buf[idx] = SYMBOLS[random.nextInt(SYMBOLS.length)];
+        for (int idx = 0; idx < this.buf.length; ++idx) {
+            this.buf[idx] = SYMBOLS[this.random.nextInt(SYMBOLS.length)];
         }
-        return new String(buf);
+        return new String(this.buf);
     }
 
 }

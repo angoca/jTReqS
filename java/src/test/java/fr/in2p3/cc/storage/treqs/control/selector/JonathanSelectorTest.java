@@ -98,7 +98,7 @@ public final class JonathanSelectorTest {
                 MainTests.PROPERTIES_FILE);
     }
 
-   /**
+    /**
      * Setups the environment.
      *
      * @throws ProblematicConfiguationFileException
@@ -244,12 +244,9 @@ public final class JonathanSelectorTest {
 
     /**
      * Null queues.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestQueue05() throws TReqSException {
+    public void testBestQueue05() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;
@@ -283,12 +280,9 @@ public final class JonathanSelectorTest {
 
     /**
      * Null user.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestQueue07() throws TReqSException {
+    public void testBestQueue07() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;
@@ -308,12 +302,9 @@ public final class JonathanSelectorTest {
 
     /**
      * Test to evaluate a null set of queues.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestUser01() throws TReqSException {
+    public void testBestUser01() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;
@@ -344,12 +335,9 @@ public final class JonathanSelectorTest {
 
     /**
      * No queues defined.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestUser03() throws TReqSException {
+    public void testBestUser03() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;

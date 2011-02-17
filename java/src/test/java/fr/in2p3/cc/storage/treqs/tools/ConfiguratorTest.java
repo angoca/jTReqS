@@ -282,12 +282,9 @@ public final class ConfiguratorTest {
 
     /**
      * Tests an inexistent value from the default properties.
-     *
-     * @throws KeyNotFoundException
-     *             Never.
      */
     @Test
-    public void testLoadDefaultsInexistant01() throws KeyNotFoundException {
+    public void testLoadDefaultsInexistant01() {
         boolean failed = false;
         try {
             Configurator.getInstance().getStringValue("UNKNOWN", "KEY");
@@ -304,12 +301,9 @@ public final class ConfiguratorTest {
 
     /**
      * Reads a file.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testReadFile01() throws TReqSException {
+    public void testReadFile01() {
         boolean failed = false;
         try {
             System.setProperty(Constants.CONFIGURATION_FILE, "INEXISTANT_FILE");

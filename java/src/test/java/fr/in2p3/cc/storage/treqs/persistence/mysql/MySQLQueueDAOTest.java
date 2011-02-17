@@ -561,12 +561,9 @@ public final class MySQLQueueDAOTest {
 
     /**
      * Tries to updates a null queue.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testUpdateState06() throws TReqSException {
+    public void testUpdateState06() {
         Calendar time = new GregorianCalendar();
         short nbDone = 0;
         short nbFailed = -90;

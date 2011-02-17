@@ -128,20 +128,21 @@ public final class StagersController {
 
         int iter = 0;
         int cleanedStager = 0;
-        // This method is not synchronized because the stagers are not used by
-        // any other object that the thread.
-        ListIterator<Stager> list = this.stagers.listIterator();
-        while (list.hasNext()) {
-            Stager stager = list.next();
-            iter++;
-            LOGGER.debug("Scanning stager {}", iter);
-            if (stager.getProcessStatus() == ProcessStatus.STOPPED) {
-                LOGGER.debug("Cleaning stager {} - {}", iter, stager.getName());
-                list.remove();
-                cleanedStager++;
-            } else {
-                LOGGER.debug("Stager {} is still running - {}", iter,
-                        stager.getName());
+        synchronized (this.stagers) {
+            ListIterator<Stager> list = this.stagers.listIterator();
+            while (list.hasNext()) {
+                Stager stager = list.next();
+                iter++;
+                LOGGER.debug("Scanning stager {}", iter);
+                if (stager.getProcessStatus() == ProcessStatus.STOPPED) {
+                    LOGGER.debug("Cleaning stager {} - {}", iter,
+                            stager.getName());
+                    list.remove();
+                    cleanedStager++;
+                } else {
+                    LOGGER.debug("Stager {} is still running - {}", iter,
+                            stager.getName());
+                }
             }
         }
 
@@ -190,7 +191,9 @@ public final class StagersController {
         assert queue != null;
 
         Stager stager = new Stager(this.stagers.size(), queue);
-        this.stagers.add(stager);
+        synchronized (this.stagers) {
+            this.stagers.add(stager);
+        }
 
         assert stager != null;
 

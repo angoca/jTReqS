@@ -31,6 +31,8 @@ for HPSS. This implementation is in Java.
 
 (With Maven)
 
+ - Set the environment.
+     $ export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
  - Remove any existent maven artifact
      $ rm -rf ~/.m2/repository/
  - Compile the project with Maven.
@@ -116,11 +118,13 @@ project could have been thrown to the garbage.)
    Once the file has been inflated, then execute these commands from the root
    dir of the installation:
    The install directory could be something like /opt/jtreqs
+     $ export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
      $ export JTREQS_INSTALL_DIR=`pwd`/jtreqs
      $ sh jtreqs/bin/jtreqs.sh
 
    (When not using Maven)
-     $ export LD_LIBRARY_PATH=`pwd`/bin:/opt/hpss/lib
+     $ export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
+     $ export LD_LIBRARY_PATH=`pwd`/bin:${HPSS_ROOT}/lib
      $ cd bin
      $ sh jtreqs.sh
 

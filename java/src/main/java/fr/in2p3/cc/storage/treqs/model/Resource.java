@@ -272,14 +272,15 @@ public final class Resource {
         assert user != null;
 
         if (this.usedResources.containsKey(user)) {
-            usedResources.put(user, (byte) (usedResources.get(user) + 1));
+            this.usedResources.put(user,
+                    (byte) (this.usedResources.get(user) + 1));
         } else {
-            usedResources.put(user, (byte) 1);
+            this.usedResources.put(user, (byte) 1);
         }
 
         LOGGER.trace("< increaseUsedResources");
 
-        return usedResources.get(user);
+        return this.usedResources.get(user);
     }
 
     /**

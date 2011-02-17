@@ -52,10 +52,8 @@ public final class Main {
      *
      * @param args
      *            Arguments for the loading.
-     * @throws InterruptedException
-     *             When there is a problem with the threads.
      */
-    public static void main(final String[] args) throws InterruptedException {
+    public static void main(final String[] args) {
         System.out.println("jTReqS-Server started");
         try {
             Starter.getInstance().process(args);

@@ -50,7 +50,6 @@ import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
@@ -108,10 +107,10 @@ public final class FilePositionOnTapeTest {
      * Initializes the objects.
      */
     public FilePositionOnTapeTest() {
-        fileName = "filename";
-        tapeName = "tapename";
-        this.file = new File(fileName, 400);
-        this.tape = new Tape(tapeName, new MediaType((byte) 1, "media"));
+        this.fileName = "filename";
+        this.tapeName = "tapename";
+        this.file = new File(this.fileName, 400);
+        this.tape = new Tape(this.tapeName, new MediaType((byte) 1, "media"));
     }
 
     /**
@@ -132,7 +131,7 @@ public final class FilePositionOnTapeTest {
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(null, position, tape, user);
+            new FilePositionOnTape(null, position, this.tape, user);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -154,7 +153,7 @@ public final class FilePositionOnTapeTest {
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(file, position, tape, user);
+            new FilePositionOnTape(this.file, position, this.tape, user);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -176,7 +175,7 @@ public final class FilePositionOnTapeTest {
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(file, position, null, user);
+            new FilePositionOnTape(this.file, position, null, user);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -198,7 +197,7 @@ public final class FilePositionOnTapeTest {
 
         boolean failed = false;
         try {
-            new FilePositionOnTape(file, position, tape, user);
+            new FilePositionOnTape(this.file, position, this.tape, user);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -213,21 +212,19 @@ public final class FilePositionOnTapeTest {
     /**
      * Tests no configuration value.
      *
-     * @throws KeyNotFoundException
-     *             Never.
      * @throws ProblematicConfiguationFileException
      *             Never.
      */
     @Test
-    public void testConstructor05() throws KeyNotFoundException,
-            ProblematicConfiguationFileException {
+    public void testConstructor05() throws ProblematicConfiguationFileException {
         Configurator.getInstance().deleteValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE);
 
         int position = FilePositionOnTapeTest.HUNDRED;
 
-        new FilePositionOnTape(file, position, tape, new User("username"));
+        new FilePositionOnTape(this.file, position, this.tape, new User(
+                "username"));
     }
 
     /**
@@ -243,8 +240,8 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "100");
 
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                FilePositionOnTapeTest.HUNDRED, tape, new User("username"));
+        FilePositionOnTape fpot = new FilePositionOnTape(this.file,
+                FilePositionOnTapeTest.HUNDRED, this.tape, new User("username"));
 
         boolean outdated = fpot.isMetadataOutdated();
 
@@ -266,8 +263,8 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "1");
 
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                FilePositionOnTapeTest.HUNDRED, tape, new User("username"));
+        FilePositionOnTape fpot = new FilePositionOnTape(this.file,
+                FilePositionOnTapeTest.HUNDRED, this.tape, new User("username"));
         LOGGER.info("Sleeping thread for 2 seconds");
         Thread.sleep(2000);
 
@@ -289,16 +286,16 @@ public final class FilePositionOnTapeTest {
         String username = "username";
         User user = new User(username);
 
-        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                user);
+        FilePositionOnTape fpot = new FilePositionOnTape(this.file, position,
+                this.tape, user);
 
         String actual = fpot.toString();
 
         String expectedPrefix = "FilePositionOnTape{ "
                 + Constants.MAX_METADATA_AGE + ": " + 30 + ", file: "
-                + fileName + ", metadataAge: ";
+                + this.fileName + ", metadataAge: ";
         String expectedSuffix = ", position: " + position + ", requester: "
-                + username + ", tape: " + tapeName + "}";
+                + username + ", tape: " + this.tapeName + "}";
 
         LOGGER.error("toString Current    {}", actual);
         LOGGER.error("toString Excepected {}XXXXXXXXXXXXX{}", expectedPrefix,
