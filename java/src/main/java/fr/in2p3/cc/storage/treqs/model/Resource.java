@@ -54,6 +54,9 @@ import fr.in2p3.cc.storage.treqs.Constants;
  * Allocations is the minimal quantity of reserved drives for the users.
  * <p>
  * Resources is the quantity of drives used in "this moment" for a user.
+ * <p>
+ * TODO v2.0 The allocation is for all type of drives, probably it will be
+ * interesting to have a different allocation per type of drive.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -75,7 +78,7 @@ public final class Resource {
     /**
      * Total resource (drives) attribution.
      */
-    private byte totalAllocation;
+    private short totalAllocation;
     /**
      * Resources currently used for a user.
      */
@@ -93,7 +96,7 @@ public final class Resource {
      * @param totalDriveAllocation
      *            Total quantity of drive allocation for a user.
      */
-    public Resource(final MediaType media, final byte totalDriveAllocation) {
+    public Resource(final MediaType media, final short totalDriveAllocation) {
         LOGGER.trace("> Creating Resource");
 
         this.setMediaType(media);
@@ -111,10 +114,10 @@ public final class Resource {
      *
      * @return Quantity of free drives per type.
      */
-    public byte countFreeResources() {
+    public short countFreeResources() {
         LOGGER.trace("> countFreeResources");
 
-        byte resourceLeft = this.totalAllocation;
+        short resourceLeft = this.totalAllocation;
 
         Set<User> keySet = this.usedResources.keySet();
         Iterator<User> iterator = keySet.iterator();
@@ -174,7 +177,7 @@ public final class Resource {
      *
      * @return Total allocation.
      */
-    public byte getTotalAllocation() {
+    public short getTotalAllocation() {
         LOGGER.trace(">< getTotalAllocation");
 
         return this.totalAllocation;
@@ -195,21 +198,21 @@ public final class Resource {
     /**
      * Returns the resource usage for a given user.
      *
-     * @param userName
+     * @param user
      *            User to be queried.
      * @return Quantity of used resources for the given user, or -1 if the user
      *         is not defined in the resources.
      */
-    public byte getUsedResources(final User userName) {
+    public byte getUsedResources(final User user) {
         LOGGER.trace("> getUsedResources");
 
-        assert userName != null;
+        assert user != null;
 
         byte ret = 0;
-        if (!this.usedResources.containsKey(userName)) {
+        if (!this.usedResources.containsKey(user)) {
             ret = -1;
         } else {
-            ret = this.usedResources.get(userName);
+            ret = this.usedResources.get(user);
         }
 
         LOGGER.trace("< getUsedResources");
@@ -230,7 +233,9 @@ public final class Resource {
     }
 
     /**
-     * Returns the allocation for a given user.
+     * Returns the allocation for a given user. This is the percentage of total
+     * drives to be used by the given user, when all drives are used
+     * simultaneously.
      *
      * @param user
      *            The user to be queried.
@@ -267,14 +272,15 @@ public final class Resource {
         assert user != null;
 
         if (this.usedResources.containsKey(user)) {
-            usedResources.put(user, (byte) (usedResources.get(user) + 1));
+            this.usedResources.put(user,
+                    (byte) (this.usedResources.get(user) + 1));
         } else {
-            usedResources.put(user, (byte) 1);
+            this.usedResources.put(user, (byte) 1);
         }
 
         LOGGER.trace("< increaseUsedResources");
 
-        return usedResources.get(user);
+        return this.usedResources.get(user);
     }
 
     /**
@@ -330,7 +336,7 @@ public final class Resource {
      * @param qty
      *            Total allocation for this media type.
      */
-    public void setTotalAllocation(final byte qty) {
+    public void setTotalAllocation(final short qty) {
         LOGGER.trace("> setTotalAllocation");
 
         assert qty > 0;

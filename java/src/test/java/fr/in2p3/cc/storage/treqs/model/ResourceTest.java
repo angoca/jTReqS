@@ -369,7 +369,7 @@ public final class ResourceTest {
     public void testResourceFree01() {
         Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        byte freeResources = resource.countFreeResources();
+        short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == ResourceTest.TEN);
     }
@@ -383,7 +383,7 @@ public final class ResourceTest {
                 (byte) ResourceTest.TEN);
         resource.setUsedResources(new User("user1"), (byte) ResourceTest.FIVE);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FIVE);
-        byte freeResources = resource.countFreeResources();
+        short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == 0);
     }
@@ -396,7 +396,7 @@ public final class ResourceTest {
         Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         resource.setUsedResources(new User("user1"), (byte) 0);
-        byte freeResources = resource.countFreeResources();
+        short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == ResourceTest.TEN);
     }
@@ -409,7 +409,7 @@ public final class ResourceTest {
         Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         resource.setUsedResources(new User("user1"), (byte) ResourceTest.FIVE);
-        byte freeResources = resource.countFreeResources();
+        short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == ResourceTest.FIVE);
     }

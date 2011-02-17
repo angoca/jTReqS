@@ -43,7 +43,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
-import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 
 /**
  * Managing Queues object updates to database.
@@ -65,7 +64,7 @@ public final class MockQueueDAO implements QueueDAO {
      * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
      */
     @Override
-    public int abortPendingQueues() throws AbstractPersistanceException {
+    public int abortPendingQueues() {
         LOGGER.trace(">< abortPendingQueues");
 
         return 0;

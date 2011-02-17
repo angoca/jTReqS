@@ -188,7 +188,7 @@ public final class FilePositionOnTape {
      * outdated. It's a good practice to call this method after a
      * isMetadataOutdated.
      * <p>
-     * TODO check it the metadata is verified before.
+     * TODO v2.0 check if the metadata is verified before.
      *
      * @return Tape where the file is stored.
      */

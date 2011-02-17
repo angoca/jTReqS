@@ -90,7 +90,6 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <i>activated</i> queue is suspended, and if exists a <i>created</i> queue for
  * the same tape, then the two queues will be merged in the <i>temporarily
  * suspended</i> one <br>
- * TODO v1.5 verificar si se hace esto.<br>
  * Also it could be many queues in <i>ended state</i> for the same queue; that
  * means that the tape has been already used before, but in a long lapse of
  * time. However, when a queue passes to ended state, it is be deleted from the
@@ -116,12 +115,12 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <i>created</i> queue, the files from the created one will be inserted in the
  * <i>temporarily suspended</i> and the <i>created</i> one will be passed as
  * <i>ended</i>. <br>
- * TODO v1.5 verificar si es verdad.<br>
+ * TODO v2.0 Do this, the fusion and reactivation is not yet done.<br>
  * The head position is 0, because a tape is rewound when not used after a few
  * seconds. It means, that this queue will received new files. <br>
- * TODO v1.5 poner un método sincronizado para asegurar que cuando se está
- * desocupando una cola (merging), no se van a adicionar nuevos requests por
- * otro lado .<br>
+ * TODO v2.0 Put a synchronized method in order to assure that the queue is
+ * being emptied (merging), and there will not be any new requests in the other
+ * side (the created queue).<br>
  * There cannot be any queue in <i>created state</i> nor in <i>activated
  * stated.</i><br>
  * However, there could be many queues in <i>ended state</i> meaning that the
@@ -419,6 +418,7 @@ public final class Queue implements Comparable<Queue> {
              *            Second queue.
              * @return the difference between them, or 0 if they are the same.
              */
+            @Override
             public int compare(final User o1, final User o2) {
                 return o1.getName().compareTo(o2.getName());
             }
@@ -436,7 +436,7 @@ public final class Queue implements Comparable<Queue> {
                 max = score;
                 bestUser = user;
                 // One user has more than 50%+1 files of the queue.
-                if (max > (readingList.size() / 2)) {
+                if (max > (this.readingList.size() / 2)) {
                     // We are sure to have the major owner of the queue
                     found = true;
                 }
@@ -484,8 +484,6 @@ public final class Queue implements Comparable<Queue> {
      * Change the state to activated and change the activation time. This is the
      * time when the queue was activated, then its files went sent to the HSM
      * for staging.
-     * <p>
-     * TODO v1.5 change to private
      *
      * @throws TReqSException
      *             If there is a problem changing the states.
@@ -547,7 +545,6 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        // FIXME concurrent problem
         List<Short> positions = new ArrayList<Short>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
@@ -614,11 +611,8 @@ public final class Queue implements Comparable<Queue> {
     /**
      * Counts the processed fpots making difference between done and failed.
      * Updates numberDone and numberFailed.
-     *
-     * @throws InvalidStateException
-     *             If the queue has an invalid state.
      */
-    private void countRequests() throws InvalidStateException {
+    private void countRequests() {
         LOGGER.trace("> countRequests");
 
         byte nbFailed = 0;
@@ -641,6 +635,7 @@ public final class Queue implements Comparable<Queue> {
             case ON_DISK:
                 LOGGER.warn("THIS CASE EXISTS, DELETE THIS LOG FROM CODE 1.");
                 nbDone++;
+                break;
             default:
                 // Count requests is called only when a Queue is in ACTIVATED
                 // state and all its files must be in QUEUED state or a
@@ -959,25 +954,23 @@ public final class Queue implements Comparable<Queue> {
         // The insert method ensures that the reading object is inserted
         // in the right place.
 
-        // FIXME In HPSS version 7 the aggregation return the same position for
-        // different files.
-        boolean exists = this.readingList.containsKey((short) fpot
-                .getPosition());
-        if (!exists) {
-            this.insertNotRegisteredFile(reading);
-        } else {
-            // The file is already in the queue.
-            LOGGER.warn("Queue {} already has a reading for file {}", this
-                    .getTape().getName(), fpot.getFile().getName());
-            // This case should never happen, because the fpot was checked when
-            // created (it does not exists an fpot for the same name)
-            // TODO this case exists when the same file is asked twice in a
-            // short period. Also, when a queue is suspended.
-            LOGGER.error("THIS CASE EXISTS, DELETE THIS LOG FROM THE CODE 2.");
-            if (!this.readingList.get((short) fpot.getPosition()).getMetaData()
-                    .getFile().getName().equals(fpot.getFile().getName())) {
-                assert false : "Two different files in the same position";
-                // TODO this will happen when using aggregation.
+        // FIXME v2.0 In HPSS version 7 the aggregation return the same position
+        // for different files.
+        boolean exists = false;
+        synchronized (this.readingList) {
+            exists = this.readingList.containsKey((short) fpot.getPosition());
+            if (!exists) {
+                this.insertNotRegisteredFile(reading);
+            } else {
+                // The file is already in the queue.
+                LOGGER.warn("Queue {} already has a reading for file {}", this
+                        .getTape().getName(), fpot.getFile().getName());
+                if (!this.readingList.get((short) fpot.getPosition())
+                        .getMetaData().getFile().getName()
+                        .equals(fpot.getFile().getName())) {
+                    assert false : "Two different files in the same position";
+                    // FIXME v2.0 this will happen when using aggregation.
+                }
             }
         }
 
@@ -1092,10 +1085,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Creation time.
-     * @throws InvalidParameterException
-     *             If the given creation time is invalid.
      */
-    void setCreationTime(final Calendar time) throws InvalidParameterException {
+    void setCreationTime(final Calendar time) {
         LOGGER.trace("> setCreationTime");
 
         assert time != null;
@@ -1120,10 +1111,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Time when the queue has finished to be processed.
-     * @throws InvalidParameterException
-     *             If the given time is invalid.
      */
-    void setEndTime(final Calendar time) throws InvalidParameterException {
+    void setEndTime(final Calendar time) {
         LOGGER.trace("> setEndTime");
 
         assert time != null;
@@ -1184,7 +1173,6 @@ public final class Queue implements Comparable<Queue> {
      *             If the queue has reached the maximal suspension retries.
      * @throws InvalidParameterException
      *             If the queue tries to change an invalid change of state.
-     * @throws InvalidStateException
      */
     synchronized void setStatus(final QueueStatus newQueueStatus)
             throws MaximalSuspensionTriesException, InvalidParameterException {
@@ -1193,7 +1181,7 @@ public final class Queue implements Comparable<Queue> {
         assert newQueueStatus != null;
 
         // Verification.
-        // TODO v1.5 To change when merge will be available. More tests.
+        // TODO v2.0 To change when merge will be available. More tests.
 
         if (this.numberSuspensions >= this.maxSuspendRetries) {
             throw new MaximalSuspensionTriesException();
@@ -1233,11 +1221,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            Activation time.
-     * @throws InvalidParameterException
-     *             If the given time is invalid.
      */
-    void setActivationTime(final Calendar time)
-            throws InvalidParameterException {
+    void setActivationTime(final Calendar time) {
         LOGGER.trace("> setActivationTime");
 
         assert time != null;
@@ -1280,11 +1265,8 @@ public final class Queue implements Comparable<Queue> {
      *
      * @param time
      *            The time when the queue has to be waked up.
-     * @throws InvalidParameterException
-     *             If the time is invalid.
      */
-    void setSuspensionTime(final Calendar time)
-            throws InvalidParameterException {
+    void setSuspensionTime(final Calendar time) {
         LOGGER.trace("> setSuspensionTime");
 
         assert time != null;
@@ -1308,7 +1290,7 @@ public final class Queue implements Comparable<Queue> {
      * queue is ended. Sets the status to TEMPORARILY_SUSPENDED, and writes this
      * new status through DAO. The Activator will ignore such queues and
      * reschedule them when the suspension duration is over (suspension time is
-     * up.) TODO v1.5 Merge with the created one if existing.
+     * up.) TODO v2.0 Merge with the created one if existing.
      *
      * @throws TReqSException
      *             If there is a problem changing the state or the time.
@@ -1382,7 +1364,7 @@ public final class Queue implements Comparable<Queue> {
      * Remove the suspended status from the queue. Puts the queue in CREATED
      * state.
      * <p>
-     * TODO v1.5 reactivar la queue desde el activator.
+     * TODO v2.0 reactivate the queue from the Activator.
      *
      * @throws TReqSException
      *             If the queue has been suspended too many times.

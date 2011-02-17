@@ -91,7 +91,7 @@ public final class HSMFactory {
         }
 
         LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
-        // TODO keep a copy of an object to invoke it fastly, not to do the
+        // TODO v2.0 keep a copy of an object to invoke it fastly, not to do the
         // whole process each time.
         AbstractHSMBridge bridge = Instantiator
                 .getInstanceClass(hsmBridgeClass);

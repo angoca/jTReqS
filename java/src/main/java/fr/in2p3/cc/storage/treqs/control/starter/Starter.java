@@ -110,11 +110,25 @@ public final class Starter {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
     /**
-     * Long name for the command option: Database script.
+     * Short name for the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_COMMAND_OPTION = "dbc";
+    /**
+     * Long name for the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_LONG_COMMAND_OPTION = "data"
+            + "base-create";
+    /**
+     * Description of the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_DESCRIPTION = "Create the "
+            + "tables in the database.";
+    /**
+     * Short name for the command option: Database script.
      */
     private static final String DATABASE_SCRIPT_COMMAND_OPTION = "db";
     /**
-     * Short name for the command option: Database script.
+     * Long name for the command option: Database script.
      */
     private static final String DATABASE_SCRIPT_LONG_COMMAND_OPTION = "data"
             + "base-script";
@@ -202,6 +216,11 @@ public final class Starter {
                 CONFIG_FILE_LONG_COMMAND_OPTION, true,
                 CONFIG_FILE_COMMAND_DESCRIPTION);
 
+        // Datasource create.
+        this.options.addOption(DATABASE_CREATE_COMMAND_OPTION,
+                DATABASE_CREATE_LONG_COMMAND_OPTION, false,
+                DATABASE_CREATE_DESCRIPTION);
+
         // Datasource script.
         this.options.addOption(DATABASE_SCRIPT_COMMAND_OPTION,
                 DATABASE_SCRIPT_LONG_COMMAND_OPTION, false,
@@ -209,7 +228,7 @@ public final class Starter {
 
         CommandLineParser parser = new PosixParser();
 
-        CommandLine cli = parser.parse(options, arguments);
+        CommandLine cli = parser.parse(this.options, arguments);
 
         LOGGER.trace("< prepareCommandOptions");
 
@@ -261,6 +280,9 @@ public final class Starter {
             if (cli.hasOption(DATABASE_SCRIPT_LONG_COMMAND_OPTION)) {
                 System.out.println(AbstractDAOFactory.getDAOFactoryInstance()
                         .dumpStructure());
+            } else if (cli.hasOption(DATABASE_CREATE_LONG_COMMAND_OPTION)) {
+                // Initialize the database if necessary.
+                AbstractDAOFactory.getDAOFactoryInstance().initialize();
             } else {
                 this.toStart();
             }
@@ -320,11 +342,8 @@ public final class Starter {
     void toStart() throws TReqSException {
         LOGGER.trace("> toStart");
 
-        // TODO v1.5 Check the PID of a same process to prevent two TReqS.
-        // TODO v1.5 Check that the selector, DAO and hsm bridge could be loaded
-
-        // Initialize the database if necessary.
-        AbstractDAOFactory.getDAOFactoryInstance().initialize();
+        // TODO v2.0 Check the PID of a same process to prevent two TReqS.
+        // TODO v2.0 Check that the selector, DAO and hsm bridge could be loaded
 
         // Initializes the watchdog.
         Watchdog.getInstance();

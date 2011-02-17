@@ -75,7 +75,7 @@ public final class FilePositionOnTapesController extends AbstractController {
     public static void destroyInstance() {
         LOGGER.debug("> destroyInstance");
 
-        if (instance != null){
+        if (instance != null) {
             LOGGER.info("Instance destroyed");
         }
         instance = null;
@@ -108,9 +108,11 @@ public final class FilePositionOnTapesController extends AbstractController {
      * Constructor where the map is initialized.
      */
     private FilePositionOnTapesController() {
-        super.objectMap = new HashMap<String, Object>();
+        LOGGER.trace("> create instance");
 
-        LOGGER.trace(">< create instance");
+        super.setObjectMap(new HashMap<String, Object>());
+
+        LOGGER.trace("< create instance");
     }
 
     /**
@@ -119,7 +121,7 @@ public final class FilePositionOnTapesController extends AbstractController {
      * update metadata and return it.
      *
      * @param file
-     *            Description of the file..
+     *            Description of the file.
      * @param tape
      *            Tape where the file is stored.
      * @param position
@@ -141,15 +143,32 @@ public final class FilePositionOnTapesController extends AbstractController {
         assert position >= 0;
         assert user != null;
 
-        FilePositionOnTape fpot = (FilePositionOnTape) this.exists(file
-                .getName());
-        if (fpot == null) {
-            LOGGER.debug("Creating a new fpot");
-            fpot = this.create(file, tape, position, user);
-        } else {
-            LOGGER.debug("Updating old fpot");
-            // TODO This should update the queue.
-            fpot.updateMetadata(tape, position);
+        FilePositionOnTape fpot = null;
+        synchronized (this.getObjectMap()) {
+            fpot = (FilePositionOnTape) this.exists(file.getName());
+            if (fpot == null) {
+                LOGGER.debug("Creating a new fpot");
+                fpot = this.create(file, tape, position, user);
+            } else {
+                // TODO v2.0 The file could have been repacked, then the file is
+                // in a new tape
+                // if (!tape.getName().equals(fpot.getTape().getName())) {
+                // Collection<Queue> queues = QueuesController.getInstance()
+                // .getQueuesOnTape(fpot.getTape().getName());
+                // Deletes the old reference from all queues.
+                // for (Queue queue : queues) {
+                // This method should be synchronized and this should update the
+                // db.
+                // Recalculates the owner and the size.
+                // queue.unregisterFPOT(fpot);
+                // }
+                // The file is not updated. If the size changes it is not
+                // important, it only affect the size of the queue if it is
+                // still in the same tape.
+                LOGGER.debug("Updating old fpot");
+                fpot.updateMetadata(tape, position);
+                // }
+            }
         }
 
         LOGGER.trace("< add");
@@ -207,14 +226,14 @@ public final class FilePositionOnTapesController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (objectMap) {
+        synchronized (this.getObjectMap()) {
 
             // Checks the references without queues.
-            Iterator<String> iter = this.objectMap.keySet().iterator();
+            Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {
                 String key = iter.next();
-                FilePositionOnTape fpot = (FilePositionOnTape) this.objectMap
-                        .get(key);
+                FilePositionOnTape fpot = (FilePositionOnTape) this
+                        .getObjectMap().get(key);
                 String tapename = fpot.getTape().getName();
                 boolean exist = QueuesController.getInstance().exists(tapename);
                 if (!exist) {
@@ -225,7 +244,7 @@ public final class FilePositionOnTapesController extends AbstractController {
             size = toRemove.size();
             for (int i = 0; i < size; i++) {
                 LOGGER.debug("Deleting {}", toRemove.get(i));
-                this.objectMap.remove(toRemove.get(i));
+                this.getObjectMap().remove(toRemove.get(i));
             }
         }
 
@@ -248,7 +267,7 @@ public final class FilePositionOnTapesController extends AbstractController {
         assert tape != null;
 
         tape.getName();
-        Iterator<Object> iter = super.objectMap.values().iterator();
+        Iterator<?> iter = super.getObjectMap().values().iterator();
         boolean found = false;
         while (iter.hasNext() && !found) {
             Tape iterTape = ((FilePositionOnTape) iter.next()).getTape();
@@ -273,14 +292,11 @@ public final class FilePositionOnTapesController extends AbstractController {
         LOGGER.trace("> exists");
 
         boolean ret = false;
-        synchronized (this.objectMap) {
-            @SuppressWarnings("rawtypes")
-            Iterator files = this.objectMap.values().iterator();
-            while (files.hasNext()) {
-                FilePositionOnTape fpot = (FilePositionOnTape) files.next();
-                if (user.equals(fpot.getRequester())) {
-                    ret = true;
-                }
+        Iterator<?> files = this.getObjectMap().values().iterator();
+        while (files.hasNext()) {
+            FilePositionOnTape fpot = (FilePositionOnTape) files.next();
+            if (user.equals(fpot.getRequester())) {
+                ret = true;
             }
         }
 

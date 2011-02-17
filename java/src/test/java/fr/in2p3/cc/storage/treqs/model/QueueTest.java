@@ -203,12 +203,9 @@ public final class QueueTest {
 
     /**
      * Tests the constructor with a null tape.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testConstructor01() throws TReqSException {
+    public void testConstructor01() {
         boolean failed = false;
         try {
             new Queue(null, (byte) 1);
@@ -2155,7 +2152,7 @@ public final class QueueTest {
 
         Queue queue = new Queue(new FilePositionOnTape(new File("filename",
                 size), QueueTest.TEN, new Tape(tapename, new MediaType(
-                (byte) 1, "media")), new User(username)), (byte) retries);
+                (byte) 1, "media")), new User(username)), retries);
         queue.changeToActivated();
 
         String actual = queue.toString();

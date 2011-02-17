@@ -41,6 +41,9 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 
 /**
  * Statements used to interact with the database.
+ * <p>
+ * TODO v2.0 The dates have to be server side or database side, but not both of
+ * them.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -337,8 +340,8 @@ public final class MySQLStatements {
             + QUEUES_ID + " = ? ";
     /**
      * SQL statement to retrieve the new requests registered in the database.
-     * TODO v1.5 This query should add this condition
-     * "AND retries < MAX_RETRIES" or "AND retries != -1"
+     * TODO v2.0 This query should add this condition, but currently it is dealt
+     * in the code. "AND retries < MAX_RETRIES" or "AND retries != -1"
      * <p>
      * Requests 1.
      */
@@ -434,7 +437,7 @@ public final class MySQLStatements {
      * SQL statement to update the unprocessed requests of a previous execution.
      * It changes all the requests to created.
      * <p>
-     * TODO v2.0 this could be changed: compare the date of the metadata, if it
+     * TODO v2.0 This could be changed: compare the date of the metadata, if it
      * is still valid then process the request directly to a queue. This could
      * reduces the getAttr after a crash.
      * <p>
@@ -449,14 +452,14 @@ public final class MySQLStatements {
     /**
      * SQL statement to retrieve the allocation per user per media type.
      */
-    public static final String SQL_SELECT_ALLOCATIONS = "SELECT "
+    public static final String SQL_ALLOCATIONS_SELECT = "SELECT "
             + ALLOCATIONS_ID + ", " + ALLOCATIONS_USER + ", "
             + ALLOCATIONS_SHARE + " FROM " + ALLOCATIONS;
 
     /**
      * SQL statement to retrieve the quantity of drives available for use.
      */
-    public static final String SQL_SELECT_DRIVES = "SELECT " + MEDIATYPES_ID
+    public static final String SQL_MEDIATYPES_SELECT = "SELECT " + MEDIATYPES_ID
             + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES + " FROM "
             + MEDIATYPES;
 

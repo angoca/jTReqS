@@ -44,6 +44,7 @@ import junit.framework.Assert;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,17 +92,24 @@ public final class WatchdogTest {
                 Constants.ACTIVATOR_INTERVAL, "1");
         Configurator.getInstance().setValue(Constants.SECTION_DISPATCHER,
                 Constants.DISPATCHER_INTERVAL, "1");
+    }
+
+    /**
+     * Setups the environment.
+     *
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    @Before
+    public void setUp() throws TReqSException {
         MySQLRequestsDAO.deleteAll();
     }
 
     /**
      * Destroys all objects.
-     *
-     * @throws TReqSException
-     *             If there is any problem while stopping.
      */
     @After
-    public void tearDown() throws TReqSException {
+    public void tearDown() {
         Activator.destroyInstance();
         Dispatcher.destroyInstance();
         Watchdog.destroyInstance();
@@ -109,12 +117,9 @@ public final class WatchdogTest {
 
     /**
      * Destroys the objects.
-     *
-     * @throws TReqSException
-     *             If there is any problem.
      */
     @AfterClass
-    public static void oneTimeTearDown() throws TReqSException {
+    public static void oneTimeTearDown() {
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
         System.clearProperty(Constants.CONFIGURATION_FILE);
@@ -135,7 +140,7 @@ public final class WatchdogTest {
 
         String pid = ManagementFactory.getRuntimeMXBean().getName();
         int index = pid.indexOf('@');
-        // TODO it does not work with gij
+        // Warning: It does not work with gij
         String expected = pid.substring(0, index);
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_PID + " FROM "

@@ -58,21 +58,41 @@ public final class HSMNativeBridgeTestNative {
     /**
      * Location of a valid keytab.
      */
-    static String VALID_KEYTAB_PATH = System.getProperty("keytab");
+    private static String validKeytabPath = System.getProperty("keytab");
     static {
-        if (VALID_KEYTAB_PATH == null) {
-            VALID_KEYTAB_PATH = "/var/hpss/etc/keytab.treqs";
+        if (validKeytabPath == null) {
+            validKeytabPath = "/var/hpss/etc/keytab.treqs";
         }
     }
+
+    /**
+     * Retrieves the valid keytab.
+     *
+     * @return Complete path to a keytab.
+     */
+    static String getValidKeytabPath() {
+        return validKeytabPath;
+    }
+
     /**
      * Name of the user related to the keytab.
      */
-    static String VALID_USERNAME = System.getProperty("userKeytab");
+    private static String validUsername = System.getProperty("userKeytab");
     static {
-        if (VALID_USERNAME == null) {
-            VALID_USERNAME = "treqs";
+        if (validUsername == null) {
+            validUsername = "treqs";
         }
     }
+
+    /**
+     * Retrieves the user related to the keytab.
+     *
+     * @return Username.
+     */
+    static String getValidUsername() {
+        return validUsername;
+    }
+
     /**
      * Authentication type for the valid keytab.
      */
@@ -130,7 +150,7 @@ public final class HSMNativeBridgeTestNative {
     static void authenticate() throws JNIException {
         if (!authenticated) {
             NativeBridge.getInstance().initContext(VALID_AUTH_TYPE,
-                    VALID_KEYTAB_PATH, VALID_USERNAME);
+                    validKeytabPath, validUsername);
             authenticated = true;
         }
     }
@@ -154,8 +174,8 @@ public final class HSMNativeBridgeTestNative {
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
-        LOGGER.warn("User Keytab   : {}", VALID_USERNAME);
-        LOGGER.warn("Keytab        : {}", VALID_KEYTAB_PATH);
+        LOGGER.warn("User Keytab   : {}", validUsername);
+        LOGGER.warn("Keytab        : {}", validKeytabPath);
     }
 
     /**
@@ -230,7 +250,7 @@ public final class HSMNativeBridgeTestNative {
     public void testGetProperties04FileInTape() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.purge(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.purge(VALID_FILE);
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE);
     }
@@ -261,11 +281,11 @@ public final class HSMNativeBridgeTestNative {
     public void testGetProperties06FileLocked() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.lockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockFile(VALID_FILE);
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE);
 
-        // TODO NativeBridgeHelper.unlockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockFile(VALID_FILE);
     }
 
     /**
@@ -278,11 +298,11 @@ public final class HSMNativeBridgeTestNative {
     public void testGetProperties07FileAlreadyOpen() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.open(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.open(VALID_FILE);
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE);
 
-        // TODO NativeBridgeHelper.close(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.close(VALID_FILE);
     }
 
     /**
@@ -350,7 +370,7 @@ public final class HSMNativeBridgeTestNative {
     public void testStage02Unlocked() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
         NativeBridge.getInstance().stage(VALID_FILE, VALID_FILE_SIZE);
     }
@@ -365,10 +385,10 @@ public final class HSMNativeBridgeTestNative {
     public void testStage03Locked() throws JNIException {
         authenticate();
 
-        // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
         NativeBridge.getInstance().stage(VALID_FILE_LOCKED, VALID_FILE_SIZE);
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
     }
 }

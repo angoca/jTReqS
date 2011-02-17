@@ -34,51 +34,41 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
-
-import java.sql.SQLException;
+package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
+
 /**
- * Exception while executing a query.
- * <p>
- * TODO v2.0 To make it abstract
+ * wraps an exeption when using the mock.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
-public class MySQLExecuteException extends AbstractMySQLException {
-
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -2824525900625129436L;
+public final class MockPersistanceException extends
+        AbstractPersistanceException {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLExecuteException.class);
+            .getLogger(MockPersistanceException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 247769961987947808L;
 
     /**
-     * Constructor wrapping an exception generated in execution.
+     * Wraps an exception.
      *
-     * @param ex
-     *            Wrapped exception.
+     * @param e
+     *            Exception to wrap.
      */
-    public MySQLExecuteException(final SQLException ex) {
-        super(ex);
-
-        LOGGER.trace(">< Instance creation wrapping exception");
-    }
-
-    /**
-     * Default constructor for extended exceptions.
-     */
-    protected MySQLExecuteException() {
-        super();
+    public MockPersistanceException(final Exception e) {
+        super(e);
 
         LOGGER.trace(">< Instance creation");
     }
+
 }

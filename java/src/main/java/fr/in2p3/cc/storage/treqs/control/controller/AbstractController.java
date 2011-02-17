@@ -60,12 +60,35 @@ abstract class AbstractController {
     /**
      * Set of objects controlled by this class.
      */
-    protected Map<String, Object> objectMap;
+    private Map<String, Object> objectMap;
+
+    /**
+     * Retrieves the object map.
+     *
+     * @return Object map.
+     */
+    protected Map<String, Object>/* <!>? */getObjectMap() {
+        return this.objectMap;
+    }
+
+    /**
+     * Sets the map of the controller.
+     *
+     * @param map
+     *            Object's map.
+     */
+    protected void setObjectMap(final Map<String, Object>/* <!>! */map) {
+        this.objectMap = map;
+    }
 
     /**
      * Creates a new object instance and insert it in the map if the "same"
      * object does not exist. Return a new instance or throw an exception if it
      * already exists.
+     * <p>
+     * This method should be always called in a synchronized method with the
+     * objectMap as object. This prevents to have multiple modifications in the
+     * map.
      *
      * @param key
      *            The key of the object in the map.
@@ -119,6 +142,10 @@ abstract class AbstractController {
 
     /**
      * Deletes the reference to an object from the set of objects.
+     * <p>
+     * This method should not be called from a synchronous block. This method is
+     * to be called from other classes, not the implementations of the
+     * controllers.
      *
      * @param key
      *            Identifier of the object.
@@ -128,7 +155,7 @@ abstract class AbstractController {
 
         assert key != null;
 
-        synchronized (objectMap) {
+        synchronized (this.objectMap) {
             this.exists(key);
 
             this.objectMap.remove(key);

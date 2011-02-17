@@ -70,9 +70,9 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * It is recommended to have a configuration with the maxStager as multiple of
  * the maxStagersPerQueue.
  * <p>
- * TODO Create a mechanism to stop the Activator when it passed and it did not
- * activate any queue. Then, wait for the Dispatcher to process something, and
- * then reactivates. This permits to process new requests faster.
+ * TODO v2.0 Create a mechanism to stop the Activator when it passed and it did
+ * not activate any queue. Then, wait for the Dispatcher to process something,
+ * and then reactivates. This permits to process new requests faster.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -425,8 +425,8 @@ public final class Activator extends AbstractProcess {
         while (resources.hasNext()) {
             Resource resource = resources.next();
             // while there is room to activate a queue, do it
-            int freeResources = resource.countFreeResources();
-            int waitingQueues = QueuesController.getInstance()
+            short freeResources = resource.countFreeResources();
+            short waitingQueues = QueuesController.getInstance()
                     .countWaitingQueues(resource.getMediaType());
 
             boolean cont = true;

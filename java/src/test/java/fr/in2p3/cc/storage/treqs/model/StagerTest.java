@@ -80,8 +80,7 @@ public final class StagerTest {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(StagerTest.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(StagerTest.class);
 
     /**
      * Sets the global configuration.
@@ -92,6 +91,8 @@ public final class StagerTest {
     @BeforeClass
     public static void oneTimeSetUp()
             throws ProblematicConfiguationFileException {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
@@ -105,6 +106,7 @@ public final class StagerTest {
     public static void oneTimeTearDown() {
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
@@ -255,13 +257,13 @@ public final class StagerTest {
 
             @Override
             public void run() {
-                LOGGER.info("Starting " + getName());
+                StagerTest.LOGGER.info("Starting " + getName());
                 try {
                     Thread.sleep(StagerTest.FIFTY);
                 } catch (InterruptedException e) {
                     LOGGER.error("Error sleeping", e);
                 }
-                LOGGER.warn("Concluding stager");
+                StagerTest.LOGGER.warn("Concluding stager");
                 stager.conclude();
             }
         };

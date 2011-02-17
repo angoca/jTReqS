@@ -125,6 +125,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
      */
     @Override
     public void initialize() {
+        // Nothing.
     }
 
     /*

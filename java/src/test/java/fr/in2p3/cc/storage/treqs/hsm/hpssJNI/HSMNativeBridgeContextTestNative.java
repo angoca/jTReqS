@@ -70,8 +70,10 @@ public final class HSMNativeBridgeContextTestNative {
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
-        LOGGER.warn("User Keytab   : {}", HSMNativeBridgeTestNative.VALID_USERNAME);
-        LOGGER.warn("Keytab        : {}", HSMNativeBridgeTestNative.VALID_KEYTAB_PATH);
+        LOGGER.warn("User Keytab   : {}",
+                HSMNativeBridgeTestNative.getValidUsername());
+        LOGGER.warn("Keytab        : {}",
+                HSMNativeBridgeTestNative.getValidKeytabPath());
     }
 
     /**
@@ -84,11 +86,9 @@ public final class HSMNativeBridgeContextTestNative {
 
     /**
      * Tests to get the properties of a file without having been authenticated.
-     *
-     * @throws JNIException
      */
     @Test
-    public void testGetProperties01NoInit() throws JNIException {
+    public void testGetProperties01NoInit() {
         LOGGER.info("----- testGetProperties01NoInit");
         boolean failed = false;
         try {
@@ -114,16 +114,14 @@ public final class HSMNativeBridgeContextTestNative {
 
     /**
      * Tests to stage a file without being authenticated.
-     *
-     * @throws JNIException
-     *             Never.
      */
     @Test
     public void testStage01NoInit() {
         LOGGER.info("----- testStage01NoInit");
         boolean failed = false;
         try {
-            NativeBridge.getInstance().stage(HSMNativeBridgeTestNative.VALID_FILE,
+            NativeBridge.getInstance().stage(
+                    HSMNativeBridgeTestNative.VALID_FILE,
                     HSMNativeBridgeTestNative.VALID_FILE_SIZE);
             failed = true;
         } catch (JNIException e) {
@@ -149,8 +147,8 @@ public final class HSMNativeBridgeContextTestNative {
         boolean failed = false;
         try {
             NativeBridge.getInstance().initContext("kerberos",
-                    HSMNativeBridgeTestNative.VALID_KEYTAB_PATH,
-                    HSMNativeBridgeTestNative.VALID_USERNAME);
+                    HSMNativeBridgeTestNative.getValidKeytabPath(),
+                    HSMNativeBridgeTestNative.getValidUsername());
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -175,7 +173,7 @@ public final class HSMNativeBridgeContextTestNative {
         try {
             NativeBridge.getInstance().initContext(
                     HSMNativeBridgeTestNative.VALID_AUTH_TYPE, "foo",
-                    HSMNativeBridgeTestNative.VALID_USERNAME);
+                    HSMNativeBridgeTestNative.getValidUsername());
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);
@@ -219,8 +217,8 @@ public final class HSMNativeBridgeContextTestNative {
         try {
             NativeBridge.getInstance().initContext(
                     HSMNativeBridgeTestNative.VALID_AUTH_TYPE,
-                    HSMNativeBridgeTestNative.VALID_KEYTAB_PATH,
-                    HSMNativeBridgeTestNative.VALID_USERNAME);
+                    HSMNativeBridgeTestNative.getValidKeytabPath(),
+                    HSMNativeBridgeTestNative.getValidUsername());
             failed = true;
         } catch (JNIException e) {
             int code = HPSSJNIBridge.processException(e);

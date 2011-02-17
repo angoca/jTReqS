@@ -44,12 +44,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
-import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Reading;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteException;
 
 /**
  * Managing Reading object updates to database.
@@ -129,8 +128,7 @@ public final class MockReadingDAO implements ReadingDAO {
      * .storage.treqs.model.Reading, java.lang.String)
      */
     @Override
-    public void firstUpdate(final Reading reading, final String message)
-            throws MySQLExecuteException {
+    public void firstUpdate(final Reading reading, final String message) {
         LOGGER.trace(">< firstUpdate");
     }
 
@@ -229,7 +227,7 @@ public final class MockReadingDAO implements ReadingDAO {
      */
     @Override
     public void update(final Reading reading, final RequestStatus status,
-            final Calendar time) throws AbstractPersistanceException {
+            final Calendar time) {
         LOGGER.trace(">< update");
     }
 
@@ -240,7 +238,7 @@ public final class MockReadingDAO implements ReadingDAO {
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#updateUnfinishedRequests()
      */
     @Override
-    public int updateUnfinishedRequests() throws AbstractPersistanceException {
+    public int updateUnfinishedRequests() {
         LOGGER.trace(">< updateUnfinishedRequests");
 
         return 0;
