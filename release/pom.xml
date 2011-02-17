@@ -60,6 +60,7 @@
     <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
     <watchdog>watchdog.sh</watchdog>
     <installDirectory>$JTREQS_INSTALL_DIR</installDirectory>
+    <hpssRootDirectory>$HPSS_ROOT</hpssRootDirectory>
   </properties>
 
   <!-- Build Settings -->
@@ -84,7 +85,7 @@
           <extraJvmArguments>
             -d64
             -Dlogback.configurationFile=${logbackFile}
-            -Djava.library.path=/opt/hpss/lib:${installDirectory}/repo/
+            -Djava.library.path=${hpssRootDirectory}/lib:${installDirectory}/repo/
           </extraJvmArguments>
           <platforms>
             <platform>unix</platform>
