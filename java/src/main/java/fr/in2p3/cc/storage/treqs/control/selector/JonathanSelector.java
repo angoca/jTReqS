@@ -125,16 +125,16 @@ public final class JonathanSelector implements Selector {
         assert resource != null : "resource null";
         assert user != null : "user null";
 
-        Queue ret = null;
+        Queue best = null;
         // First get the list of queues
         int length = queues.size();
         for (int j = 0; j < length; j++) {
             Queue queue = queues.get(j);
-            ret = this.checkQueue(resource, user, ret, queue);
+            best = this.checkQueue(resource, user, best, queue);
         }
 
-        if (ret != null) {
-            LOGGER.info("Best queue for {} is on tape {}", user.getName(), ret
+        if (best != null) {
+            LOGGER.info("Best queue for {} is on tape {}", user.getName(), best
                     .getTape().getName());
         } else {
             LOGGER.info("No queue could be selected");
@@ -142,7 +142,7 @@ public final class JonathanSelector implements Selector {
 
         LOGGER.trace("< selectBestQueueForUser");
 
-        return ret;
+        return best;
     }
 
     /**
