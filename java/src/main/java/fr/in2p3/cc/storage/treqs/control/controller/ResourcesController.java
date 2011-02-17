@@ -36,6 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.control.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -120,6 +121,7 @@ public final class ResourcesController {
         LOGGER.trace("> create instance");
 
         this.share = new MultiValueMap();
+        this.resources = new ArrayList<Resource>();
 
         LOGGER.trace("< create instance");
     }
