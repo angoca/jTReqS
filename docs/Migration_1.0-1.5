@@ -4,6 +4,7 @@ UPDATE requests SET status = 16 WHERE status BETWEEN 10 AND 12
 
 
 -- Trigger for current database TReqS 1.0
+drop trigger if exists t1;
 
 drop trigger if exists replicateNewRequestsBefore;
 drop trigger if exists replicateNewRequestsAfter;
@@ -14,14 +15,11 @@ drop trigger if exists replicateNewRequestsAfter;
 create trigger replicateNewRequestsBefore before insert on requests for each row
 begin
     if new.user = "xrdmgr" then
-        set new.status := 14 ;
-        set new.message := "Automatically changed - 20101126153000";
+        set new.status := 11 ;
+        set new.message := "Requests replicated for jTReqS 1.5";
     elseif new.hpss_file in (select file from blacklist) then
         set new.status := 16;
         set new.message := "Problem in tape";
-    else
-        set new.status := 11 ;
-        set new.message := "Requests replicated for jTReqS 1.5";
     end if;
 end@
 
