@@ -57,7 +57,7 @@ create trigger updateRequests before update on jrequests for each row
 begin
     declare currentStatus smallint;
     if new.status = 150 then
-        set currentStatus := 19;
+        set currentStatus := 14;
     else
         set currentStatus := new.status / 10;
     end if;
@@ -86,8 +86,14 @@ drop trigger if exists updateQueues;
 -- Replicates the modification of the request.
 create trigger updateQueues after update on jqueues for each row
 begin
+    declare nb_jobs smallint;
+    if new.nb_reqs = 0 then
+        set nb_jobs := new.nb_reqs_done + new.nb_reqs_failed;
+    else
+        set nb_jobs := new.nb_reqs;
+    end if;
     update queues set \
-            nbjobs = new.nb_reqs, \
+            nbjobs = nb_jobs, \
             nbdone = new.nb_reqs_done, \
             nbfailed = new.nb_reqs_failed, \
             status = new.status / 10, \
