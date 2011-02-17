@@ -39,8 +39,10 @@ package fr.in2p3.cc.storage.treqs.control.selector;
 import java.util.ArrayList;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -89,6 +91,15 @@ public final class JonathanSelectorTest {
 
     /**
      * Setups the environment.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
+     * Setups the environment.
      *
      * @throws ProblematicConfiguationFileException
      *             If there is any problem.
@@ -99,6 +110,14 @@ public final class JonathanSelectorTest {
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
                 Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
+    }
+
+    /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
@@ -225,12 +244,9 @@ public final class JonathanSelectorTest {
 
     /**
      * Null queues.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestQueue05() throws TReqSException {
+    public void testBestQueue05() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;
@@ -264,12 +280,9 @@ public final class JonathanSelectorTest {
 
     /**
      * Null user.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestQueue07() throws TReqSException {
+    public void testBestQueue07() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;
@@ -289,12 +302,9 @@ public final class JonathanSelectorTest {
 
     /**
      * Test to evaluate a null set of queues.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestUser01() throws TReqSException {
+    public void testBestUser01() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;
@@ -325,12 +335,9 @@ public final class JonathanSelectorTest {
 
     /**
      * No queues defined.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testBestUser03() throws TReqSException {
+    public void testBestUser03() {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         boolean failed = false;

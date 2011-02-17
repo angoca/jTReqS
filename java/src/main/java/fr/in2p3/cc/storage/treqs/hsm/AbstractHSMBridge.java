@@ -105,7 +105,7 @@ public abstract class AbstractHSMBridge {
     protected final String getKeytabPath() {
         LOGGER.trace(">< getKeytabPath");
 
-        return keytabPath;
+        return this.keytabPath;
     }
 
     /**
@@ -153,9 +153,7 @@ public abstract class AbstractHSMBridge {
     public abstract void stage(final File file) throws AbstractHSMException;
 
     /**
-     * Tests the readability of the keytab file. // TODO this could be part of
-     * the AbstractHSM constructor, and the related exception could be moved to
-     * the right directory.
+     * Tests the readability of the keytab file.
      *
      * @throws AbstractHSMException
      *             When the keytab cannot be read.

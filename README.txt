@@ -48,9 +48,9 @@ for HPSS. This implementation is in Java.
  - Create a building directory.
      $ mkdir bin
  - Copy the necessary files.
-     $ cp java/src/test/resources/jtreqs.sh bin
-     $ cp java/src/main/resources/jtreqs.conf.properties bin
-     $ cp java/src/main/resources/logback.xml bin
+     $ cp java/src/test/scripts/jtreqs.sh bin
+     $ cp release/src/main/config/jtreqs.conf.properties bin
+     $ cp release/src/main/config/logback.xml bin
  - Run javac over the source directory.
      $ javac -d bin -encoding UTF8 -cp \
 vendor/apache/commons-cli-1.2/commons-cli-1.2.jar:\
@@ -87,11 +87,11 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
      $ gcc -I /opt/hpss/include/ -DLINUX -fPIC -Wall -o bin/HPSSBroker.o \
 -c native/src/main/c/HPSSBroker.c
      $ gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I bin/ \
--DLINUX -Wall -fPIC -o bin/HPSSJNIBridge.o -c native/src/main/c/HPSSJNIBridge.c
+-DLINUX -Wall -fPIC -o bin/NativeBridge.o -c native/src/main/c/NativeBridge.c
 This is the MOST important line of code of this project (because of this, this
 project could have been thrown to the garbage.)
      $ ld -shared -L/opt/hpss/lib -lhpss -lhpssunixauth \
--o bin/libHPSSJNIBridge.so bin/HPSSBroker.o bin/HPSSJNIBridge.o
+-o bin/libNativeBridge.so bin/HPSSBroker.o bin/NativeBridge.o
 
 
 * Installation
@@ -116,6 +116,7 @@ project could have been thrown to the garbage.)
    Once the file has been inflated, then execute these commands from the root
    dir of the installation:
    The install directory could be something like /opt/jtreqs
+     $ export LD_LIBRARY_PATH=/opt/hpss/lib
      $ export JTREQS_INSTALL_DIR=`pwd`/jtreqs
      $ sh jtreqs/bin/jtreqs.sh
 

@@ -42,8 +42,10 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -128,6 +130,23 @@ public final class QueuesControllerTest {
      * User 1 for tests.
      */
     private static final User USER_1 = new User("username");
+
+    /**
+     * Setups the environment.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
 
     /**
      * Creates a set of queues.
@@ -1082,7 +1101,7 @@ public final class QueuesControllerTest {
         QueuesController.getInstance().countWaitingQueues(null);
     }
 
-    // TODO tests to count waiting queues for two queues of the same tape
+    // TODO Tests: tests to count waiting queues for two queues of the same tape
     // but in different states (activated and created).
 
     /**
@@ -1136,12 +1155,9 @@ public final class QueuesControllerTest {
 
     /**
      * Tries to create with a null fpot.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreate03() throws TReqSException {
+    public void testCreate03() {
         byte max = QueuesControllerTest.THREE;
 
         boolean failed = false;
@@ -1303,7 +1319,7 @@ public final class QueuesControllerTest {
         Collection<Queue> queues = QueuesController.getInstance()
                 .getQueuesOnTape(tapename1);
         for (Iterator<Queue> iterator = queues.iterator(); iterator.hasNext();) {
-            Queue queue = (Queue) iterator.next();
+            Queue queue = iterator.next();
 
             if (queue.getStatus() == QueueStatus.CREATED) {
                 created1 = true;
@@ -1360,7 +1376,7 @@ public final class QueuesControllerTest {
         Collection<Queue> queues = QueuesController.getInstance()
                 .getQueuesOnTape(tapename2);
         for (Iterator<Queue> iterator = queues.iterator(); iterator.hasNext();) {
-            Queue queue = (Queue) iterator.next();
+            Queue queue = iterator.next();
 
             if (queue.getStatus() == QueueStatus.CREATED) {
                 created2 = true;
@@ -1584,12 +1600,9 @@ public final class QueuesControllerTest {
 
     /**
      * Tries to set a negative time.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testSuspendTime02() throws TReqSException {
+    public void testSuspendTime02() {
         try {
             QueuesController.getInstance().updateSuspendTime((short) -NUMBER_5);
             Assert.fail();

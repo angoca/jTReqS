@@ -43,7 +43,6 @@ import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
  * Tests for FileRequest.
@@ -60,72 +59,54 @@ public final class FileRequestTest {
 
     /**
      * Tests a constructor with a negative id.
-     *
-     * @throws InvalidParameterException
-     *             Never
      */
     @Test(expected = AssertionError.class)
-    public void testContructor01() throws InvalidParameterException {
+    public void testContructor01() {
         new FileRequest(-FileRequestTest.TEN, "file", new User("username"),
                 (byte) FileRequestTest.TEN);
     }
 
     /**
      * Tests a constructor with null file.
-     *
-     * @throws InvalidParameterException
-     *             Never
      */
     @Test(expected = AssertionError.class)
-    public void testContructor02() throws InvalidParameterException {
+    public void testContructor02() {
         new FileRequest(FileRequestTest.TEN, null, new User("username"),
                 (byte) FileRequestTest.TEN);
     }
 
     /**
      * Tests a constructor with empty file.
-     *
-     * @throws InvalidParameterException
-     *             Never
      */
     @Test(expected = AssertionError.class)
-    public void testContructor03() throws InvalidParameterException {
+    public void testContructor03() {
         new FileRequest(FileRequestTest.TEN, "", new User("username"),
                 (byte) FileRequestTest.TEN);
     }
 
     /**
      * Tests a constructor with null client.
-     *
-     * @throws InvalidParameterException
-     *             Never
      */
     @Test(expected = AssertionError.class)
-    public void testContructor04() throws InvalidParameterException {
+    public void testContructor04() {
         new FileRequest(FileRequestTest.TEN, "file", null,
                 (byte) FileRequestTest.TEN);
     }
 
     /**
      * Tests a constructor with negative tries.
-     *
-     * @throws InvalidParameterException
-     *             Never
      */
     @Test(expected = AssertionError.class)
-    public void testContructor05() throws InvalidParameterException {
+    public void testContructor05() {
         new FileRequest(FileRequestTest.TEN, "file", new User("username"),
                 (byte) -FileRequestTest.TEN);
     }
 
     /**
      * Tests the toString method.
-     *
-     * @throws InvalidParameterException
-     *             Never.
      */
     @Test
-    public void testToString01() throws InvalidParameterException {
+    public void testToString01() {
         int id = 1;
         String filename = "fileName";
         String username = "Username";

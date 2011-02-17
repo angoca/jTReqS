@@ -63,4 +63,5 @@ import fr.in2p3.cc.storage.treqs.tools.ConfiguratorTest;
         FilePositionOnTapeTest.class, ReadingTest.class, QueueTest.class,
         StagerTest.class, ConfiguratorTest.class, FileRequestTest.class })
 public final class UnitTests {
+    // Nothing.
 }

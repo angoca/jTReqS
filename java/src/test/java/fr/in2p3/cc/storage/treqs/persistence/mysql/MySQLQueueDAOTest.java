@@ -153,7 +153,7 @@ public final class MySQLQueueDAOTest {
      *             Never.
      */
     @Test
-    public void testAbort02created() throws TReqSException, SQLException {
+    public void testAbort02Created() throws TReqSException, SQLException {
         Tape tape = new Tape("tapename2", MEDIA_TYPE);
         int size = 987;
 
@@ -172,7 +172,7 @@ public final class MySQLQueueDAOTest {
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actual = result.getInt(1);
-            short expected = QueueStatus.ENDED.getId();
+            short expected = QueueStatus.ABORTED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -194,7 +194,7 @@ public final class MySQLQueueDAOTest {
      *             Never.
      */
     @Test
-    public void testAbort03activated() throws TReqSException, SQLException {
+    public void testAbort03Activated() throws TReqSException, SQLException {
         Tape tape = new Tape("tapename2", MEDIA_TYPE);
         int size = 987;
 
@@ -213,7 +213,7 @@ public final class MySQLQueueDAOTest {
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actual = result.getInt(1);
-            short expected = QueueStatus.ENDED.getId();
+            short expected = QueueStatus.ABORTED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -254,7 +254,7 @@ public final class MySQLQueueDAOTest {
         ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             int actual = result.getInt(1);
-            short expected = QueueStatus.ENDED.getId();
+            short expected = QueueStatus.ABORTED.getId();
 
             MySQLBroker.getInstance().terminateExecution(objects);
             MySQLBroker.getInstance().disconnect();
@@ -561,12 +561,9 @@ public final class MySQLQueueDAOTest {
 
     /**
      * Tries to updates a null queue.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testUpdateState06() throws TReqSException {
+    public void testUpdateState06() {
         Calendar time = new GregorianCalendar();
         short nbDone = 0;
         short nbFailed = -90;

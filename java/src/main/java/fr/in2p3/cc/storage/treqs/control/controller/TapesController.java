@@ -108,7 +108,7 @@ public final class TapesController extends AbstractController {
     private TapesController() {
         LOGGER.trace("> create instance");
 
-        super.objectMap = new HashMap<String, Object>();
+        super.setObjectMap(new HashMap<String, Object>());
 
         LOGGER.trace("< create instance");
     }
@@ -131,9 +131,12 @@ public final class TapesController extends AbstractController {
         assert name != null && !name.equals("");
         assert media != null;
 
-        Tape tape = (Tape) this.exists(name);
-        if (tape == null) {
-            tape = create(name, media);
+        Tape tape = null;
+        synchronized (this.getObjectMap()) {
+            tape = (Tape) this.exists(name);
+            if (tape == null) {
+                tape = create(name, media);
+            }
         }
 
         assert tape != null;
@@ -181,13 +184,13 @@ public final class TapesController extends AbstractController {
 
         int size = 0;
         List<String> toRemove = new ArrayList<String>();
-        synchronized (objectMap) {
+        synchronized (this.getObjectMap()) {
 
             // Checks the references without fpots.
-            Iterator<String> iter = this.objectMap.keySet().iterator();
+            Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {
                 String name = iter.next();
-                Tape tape = (Tape) this.objectMap.get(name);
+                Tape tape = (Tape) this.getObjectMap().get(name);
                 boolean exist = FilePositionOnTapesController.getInstance()
                         .exists(tape);
                 if (!exist) {
@@ -198,7 +201,7 @@ public final class TapesController extends AbstractController {
             size = toRemove.size();
             for (int i = 0; i < size; i++) {
                 LOGGER.debug("Deleting {}", toRemove.get(i));
-                this.objectMap.remove(toRemove.get(i));
+                this.getObjectMap().remove(toRemove.get(i));
             }
         }
 

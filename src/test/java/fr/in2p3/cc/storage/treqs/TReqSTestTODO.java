@@ -133,6 +133,7 @@ public final class TReqSTestTODO {
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
@@ -1364,14 +1365,14 @@ public final class TReqSTestTODO {
             HSMMockBridge.getInstance().waitStage(null);
         }
     }
-    // TODO Tests: Dos usuarios registrados que tienen la misma capacidad y
-    // quieren un drive.
-    // caso a: es el ultimo que les queda
-    // caso b: tienen aun mas
-    // caso c: sobrepasaron el limite
-    // caso d: uno de ellos sobrepaso el limite.
+    // TODO Tests: Two registered users that have the same capacity and both of
+    // them want a drive:
+    // case a: it is the last one available for their capacity
+    // case b: there are several place in their capacity
+    // case c: They overpassed their capacity
+    // case d: One of them overpassed its capacity
 
-    // TODO Tests: NO MEDIA types in the db
+    // TODO Tests: No media types in the db
     // TODO Tests: 1 media type 0 allocations
     // TODO Tests: 2 media type 0 allocations
     // TODO Tests: 0 media type 1 allocations

@@ -49,7 +49,9 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
  * Initializes the database if the tables are not created. This only works if
  * the database user have the privileges to create tables.
  * <p>
- * TODO v1.5 creer les utilisateur et ses droits.
+ * TODO v2.0 Create the users and their grants.
+ * <p>
+ * TODO v2.0 Create triggers in the database to validate the data precision.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

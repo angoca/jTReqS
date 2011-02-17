@@ -47,6 +47,13 @@ import org.slf4j.LoggerFactory;
  * <p>
  * TODO v2.0 Take the id (ns_object) of the file instead of the name, because
  * the file could be renamed.
+ * <p>
+ * If the size changes it is not taken in account. This could lead to change the
+ * quantity of bytes to read for a queue. However, this is not really important,
+ * and it is not very frequent. Anyway, if the file changed its size few minutes
+ * ago, that means that the file should be on disk, so it is not important, the
+ * file will not be part of a queue. Also, if the file changes its size, it will
+ * be written in a new tape.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

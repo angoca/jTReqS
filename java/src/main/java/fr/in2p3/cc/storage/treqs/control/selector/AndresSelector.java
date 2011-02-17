@@ -54,17 +54,19 @@ import fr.in2p3.cc.storage.treqs.model.User;
 /**
  * Implementation of the algorithm to choose the best queue.
  * <p>
- * This implementation was proposed by Jonathan Schaeffer.
+ * This implementation was proposed by Andres Gomez. This is a smooth variation
+ * of the Jonathan selector, but it assures that a queue is returned for the
+ * important users.
  *
  * @author Andres Gomez
  * @since 1.5
  */
-public final class JonathanSelector implements Selector {
+public final class AndresSelector implements Selector {
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
-            .getLogger(JonathanSelector.class);
+            .getLogger(AndresSelector.class);
 
     /*
      * (non-Javadoc)
@@ -332,7 +334,11 @@ public final class JonathanSelector implements Selector {
     }
 
     /**
-     * Calculates the score for a user.
+     * Calculates the score for a user with the next formula.
+     * <p>
+     * <code>
+     * Value = (#Reserved - #Used) * (#Reserved + 1)
+     * </code>
      *
      * @param resource
      *            Type of associated resource.
@@ -354,16 +360,13 @@ public final class JonathanSelector implements Selector {
             // Just setting a default best user.
             User user = queue.getOwner();
             if (user != null) {
-                score = (resource.getTotalAllocation() * resource
-                        .getUserAllocation(user))
-                        - resource.getUsedResources(user);
+                float reserved = resource.getUserAllocation(user);
+                int used = resource.getUsedResources(user);
+                score = (reserved - used) * (reserved + 1);
                 usersScores.put(user, score);
-                LOGGER.debug(
-                        "{} score: {} = {} * {} - {}",
-                        new Object[] { user.getName(), score,
-                                resource.getTotalAllocation(),
-                                resource.getUserAllocation(user),
-                                resource.getUsedResources(user) });
+                LOGGER.debug("{} score: {} = ({} - {}) * ({} + 1)",
+                        new Object[] { user.getName(), score, reserved, used,
+                                reserved });
             } else {
                 LOGGER.info("The queue does not have an owner: {}. This "
                         + "should never happen - 3.", queue.getTape().getName());
@@ -374,5 +377,4 @@ public final class JonathanSelector implements Selector {
 
         LOGGER.trace("< checkUser");
     }
-
 }

@@ -84,7 +84,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
         List<Resource> mediaTypeList = new ArrayList<Resource>();
 
         Object[] objects = MySQLBroker.getInstance().executeSelect(
-                MySQLStatements.SQL_SELECT_DRIVES);
+                MySQLStatements.SQL_MEDIATYPES_SELECT);
 
         // store result
         ResultSet result = (ResultSet) objects[1];
@@ -93,7 +93,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
                 int index = 1;
                 byte id = result.getByte(index++);
                 String name = result.getString(index++);
-                byte qty = result.getByte(index++);
+                short qty = result.getShort(index++);
                 MediaType media = MediaTypesController.getInstance().add(name,
                         id);
                 Resource res = new Resource(media, qty);
@@ -131,7 +131,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
         MultiMap allocations = new MultiValueMap();
 
         Object[] objects = MySQLBroker.getInstance().executeSelect(
-                MySQLStatements.SQL_SELECT_ALLOCATIONS);
+                MySQLStatements.SQL_ALLOCATIONS_SELECT);
 
         // store result
         ResultSet result = (ResultSet) objects[1];

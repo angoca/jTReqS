@@ -59,4 +59,5 @@ import fr.in2p3.cc.storage.treqs.control.controller.UsersControllerTest;
         FilePositionOnTapesControllerTest.class, StagersControllerTest.class,
         QueuesControllerTest.class })
 public final class ControllerTests {
+    // Nothing.
 }

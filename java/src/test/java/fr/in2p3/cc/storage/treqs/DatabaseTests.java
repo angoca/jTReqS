@@ -48,4 +48,5 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ MySQLTests.class })
 public final class DatabaseTests {
+    // Nothing.
 }

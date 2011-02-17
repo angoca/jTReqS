@@ -81,7 +81,6 @@ public final class User {
         boolean ret = false;
         if (obj instanceof User) {
             User user = (User) obj;
-            // TODO when using the id, add them here.
             if (user.getName().equals(this.getName())) {
                 ret = true;
             }

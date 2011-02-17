@@ -149,6 +149,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
                 System.getProperty("java.library.path"));
 
         try {
+            // TODO v2.0 in a parallel thread check if the operation is not
+            // hung.
             NativeBridge.getInstance().initContext(this.getAuthType(),
                     this.getKeytabPath(), this.getUser());
         } catch (JNIException e) {
@@ -192,6 +194,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         HSMHelperFileProperties ret = null;
         try {
+            // TODO v2.0 in a parallel thread check if the operation is not
+            // hung.
             ret = NativeBridge.getInstance().getFileProperties(name);
         } catch (JNIException e) {
             int code = processException(e);
@@ -324,6 +328,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         assert file != null;
 
         try {
+            // TODO v2.0 in a parallel thread check if the operation is not
+            // hung.
             NativeBridge.getInstance().stage(file.getName(), file.getSize());
         } catch (JNIException e) {
             int code = processException(e);

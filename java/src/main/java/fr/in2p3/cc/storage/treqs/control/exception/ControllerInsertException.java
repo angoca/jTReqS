@@ -45,7 +45,8 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Gómez
  * @since 1.5
  */
-public final class ControllerInsertException extends AbstractControllerException {
+public final class ControllerInsertException extends
+        AbstractControllerException {
     /**
      * Logger.
      */

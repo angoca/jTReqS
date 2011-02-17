@@ -107,13 +107,14 @@ public final class MediaTypesController extends AbstractController {
     public MediaTypesController() {
         LOGGER.trace("> create instance");
 
-        super.objectMap = new HashMap<String, Object>();
+        super.setObjectMap(new HashMap<String, Object>());
 
         LOGGER.trace("< create instance");
     }
 
     /**
-     * Creates an instance of media type and adds it to the controller.
+     * Creates an instance of media type and adds it to the controller. Once a
+     * media type is added, it cannot be deleted.
      *
      * @param name
      *            Name of the media type.
@@ -131,9 +132,12 @@ public final class MediaTypesController extends AbstractController {
         assert name != null && !name.equals("");
         assert id >= 0;
 
-        MediaType media = (MediaType) this.exists(name);
-        if (media == null) {
-            media = create(name, id);
+        MediaType media = null;
+        synchronized (this.getObjectMap()) {
+            media = (MediaType) this.exists(name);
+            if (media == null) {
+                media = create(name, id);
+            }
         }
 
         assert media != null;
@@ -176,7 +180,7 @@ public final class MediaTypesController extends AbstractController {
      * <p>
      * In version 1.0, this was done by a query using the 'like' operator.
      * <p>
-     * TODO v2.0 This should be an external component, such as the ACSLS. Or
+     * FIXME v2.0 This should be an external component, such as the ACSLS. Or
      * something with regular expressions.
      *
      * @param storageName
@@ -195,13 +199,13 @@ public final class MediaTypesController extends AbstractController {
         assert storageName != null && !storageName.equals("");
 
         MediaType ret = null;
-        synchronized (this.objectMap) {
+        synchronized (this.getObjectMap()) {
             if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
                 LOGGER.debug("T10K-A");
-                ret = (MediaType) this.objectMap.get("T10K-A");
+                ret = (MediaType) this.getObjectMap().get("T10K-A");
             } else if (storageName.startsWith("JT")) {
                 LOGGER.debug("T10K-B");
-                ret = (MediaType) this.objectMap.get("T10K-B");
+                ret = (MediaType) this.getObjectMap().get("T10K-B");
             } else {
                 LOGGER.error("Unknown media type");
                 assert false;

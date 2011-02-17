@@ -38,6 +38,7 @@ package fr.in2p3.cc.storage.treqs.hsm.hpssJNI;
 
 import junit.framework.Assert;
 
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,7 +55,10 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMNotExistingFileException;
 import fr.in2p3.cc.storage.treqs.model.File;
 
 /**
- * Tests the JNI Bridge. TODO Do not execute these tests from Maven.
+ * Tests the JNI Bridge.
+ * <p>
+ * The name of this tests does not end with Test in order to not be taken in
+ * account by Maven.
  *
  * @author Andres Gomez
  */
@@ -69,14 +73,19 @@ public final class HPSSJNIBridgeTestNative {
 
     /**
      * Sets the general environment.
-     *
-     * @throws TReqSException
-     *             If there is any problem.
      */
     @BeforeClass
-    public static void oneTimeSetUp() throws TReqSException {
+    public static void oneTimeSetUp() {
         System.setProperty(Constants.CONFIGURATION_FILE,
                 MainTests.PROPERTIES_FILE);
+    }
+
+    /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
@@ -125,17 +134,14 @@ public final class HPSSJNIBridgeTestNative {
     /**
      * Tests to get the properties of a file that is in a tape (purged).
      *
-     * @throws JNIException
-     *             If there is a problem while setting the context.
      * @throws TReqSException
      *             If there is any problem.
      */
     @Test
-    public void testGetProperties04FileInTape() throws JNIException,
-            TReqSException {
+    public void testGetProperties04FileInTape() throws TReqSException {
         LOGGER.error("testGetProperties04FileInTape");
 
-        // TODO NativeBridgeHelper.purge(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.purge(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTestNative.VALID_FILE);
@@ -166,43 +172,37 @@ public final class HPSSJNIBridgeTestNative {
      * Tests to get the properties of a file that is locked in the higher
      * storage level.
      *
-     * @throws JNIException
-     *             Never.
      * @throws TReqSException
      *             If there is any problem.
      */
     @Test
-    public void testGetProperties06FileLocked() throws JNIException,
-            TReqSException {
+    public void testGetProperties06FileLocked() throws TReqSException {
         LOGGER.error("testGetProperties06FileLocked");
 
-        // TODO NativeBridgeHelper.lockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockFile(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTestNative.VALID_FILE);
 
-        // TODO NativeBridgeHelper.unlockFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockFile(VALID_FILE);
     }
 
     /**
      * Tests to get the properties of an already open file.
      *
-     * @throws JNIException
-     *             Never.
      * @throws TReqSException
      *             If there is any problem.
      */
     @Test
-    public void testGetProperties07FileAlreadyOpen() throws JNIException,
-            TReqSException {
+    public void testGetProperties07FileAlreadyOpen() throws TReqSException {
         LOGGER.error("testGetProperties07FileAlreadyOpen");
 
-        // TODO NativeBridgeHelper.open(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.open(VALID_FILE);
 
         HPSSJNIBridge.getInstance().getFileProperties(
                 HSMNativeBridgeTestNative.VALID_FILE);
 
-        // TODO NativeBridgeHelper.close(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.close(VALID_FILE);
     }
 
     /**
@@ -260,16 +260,14 @@ public final class HPSSJNIBridgeTestNative {
     /**
      * Tests to stage a file that is in an unlocked tape.
      *
-     * @throws JNIException
-     *             Never.
      * @throws TReqSException
      *             If there is any problem.
      */
     @Test
-    public void testStage02Unlocked() throws JNIException, TReqSException {
+    public void testStage02Unlocked() throws TReqSException {
         LOGGER.error("testStage02Unlocked");
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
         File file = new File(HSMNativeBridgeTestNative.VALID_FILE,
                 HSMNativeBridgeTestNative.VALID_FILE_SIZE);
@@ -280,22 +278,20 @@ public final class HPSSJNIBridgeTestNative {
     /**
      * Tests to stage a file that is in an locked tape.
      *
-     * @throws JNIException
-     *             Never.
      * @throws TReqSException
      *             If there is any problem.
      */
     @Test
-    public void testStage03Locked() throws JNIException, TReqSException {
+    public void testStage03Locked() throws TReqSException {
         LOGGER.error("testStage03Locked");
 
-        // TODO NativeBridgeHelper.lockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
         File file = new File(HSMNativeBridgeTestNative.VALID_FILE_LOCKED,
                 HSMNativeBridgeTestNative.VALID_FILE_SIZE);
         LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);
 
-        // TODO NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
+        // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
     }
 }

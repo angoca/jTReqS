@@ -188,69 +188,74 @@ public final class QueuesController {
 
         boolean foundQueue = false;
 
-        // From the FilePositionOnTape object, create a Reading object and
-        // assign it to the suitable Queue.
+        Queue queue = null;
+        synchronized (this.queuesMap) {
+            // From the FilePositionOnTape object, create a Reading object and
+            // assign it to the suitable Queue.
 
-        LOGGER.debug("We have to find the queue for tape {}", fpot.getTape()
-                .getName());
-        // First find all queues for the tape referenced by the fpot.
-        // Three cases:
-        // 1. There is an already activated queue or temporarily suspended.
-        // 2. There is only one created queue.
-        // 3. There is not any queue.
-        // Find out if there is an activated queue.
-        Queue queue = this.exists(fpot.getTape().getName(),
-                QueueStatus.ACTIVATED);
-        if (queue != null) {
-            LOGGER.debug("We have an activated queue.");
-
-            // We have an activated queue.
-            // Avoid the reading head to go back and forth
-            // If current read position < file's position,
-            // then do not insert in this queue.
-            if (queue.getHeadPosition() <= fpot.getPosition()) {
-                LOGGER.debug("Adding file to an active queue.");
-
-                queue.registerFPOT(fpot, retry);
-                foundQueue = true;
-            } else {
-                LOGGER.debug(
-                        "Active queue has passed the file's position: {}>{}",
-                        queue.getHeadPosition(), fpot.getPosition());
-            }
-        }
-
-        // There is no activated queue, or the current position is after
-        // file position.
-
-        if (!foundQueue) {
-            // But maybe there is a TEMPORILY_SUSPENDED queue.
-            queue = this.exists(fpot.getTape().getName(),
-                    QueueStatus.TEMPORARILY_SUSPENDED);
+            LOGGER.debug("We have to find the queue for tape {}", fpot
+                    .getTape().getName());
+            // First find all queues for the tape referenced by the fpot.
+            // Three cases:
+            // 1. There is an already activated queue or temporarily suspended.
+            // 2. There is only one created queue.
+            // 3. There is not any queue.
+            // Find out if there is an activated queue.
+            queue = this
+                    .exists(fpot.getTape().getName(), QueueStatus.ACTIVATED);
             if (queue != null) {
-                LOGGER.debug("We have a temporarily suspended queue.");
-                queue.registerFPOT(fpot, retry);
-                foundQueue = true;
-            }
-        }
+                LOGGER.debug("We have an activated queue.");
 
-        if (!foundQueue) {
-            // If we get here, try to create or get if already existing Queue
-            // and register the file in it.
-            queue = this.exists(fpot.getTape().getName(), QueueStatus.CREATED);
-            if (queue == null) {
-                // That means that there is not any queue for that tape in
-                // created state.
-                queue = this.create(fpot, retry);
-            } else {
-                // Or there is one in activated state, but the head position is
-                // after the file position.
-                LOGGER.info("A queue with status CREATED already exists.");
-                queue.registerFPOT(fpot, retry);
-                // TODO v1.5 create a special flag in the queue, indicating that
-                // there is an activated queue for the same tape, so this new
-                // queue has to be activated once the other has finished. This
-                // prevents to unmount an already mounted tape.
+                // We have an activated queue.
+                // Avoid the reading head to go back and forth
+                // If current read position < file's position,
+                // then do not insert in this queue.
+                if (queue.getHeadPosition() <= fpot.getPosition()) {
+                    LOGGER.debug("Adding file to an active queue.");
+
+                    queue.registerFPOT(fpot, retry);
+                    foundQueue = true;
+                } else {
+                    LOGGER.debug(
+                            "Active queue has passed the file's position: {}>{}",
+                            queue.getHeadPosition(), fpot.getPosition());
+                }
+            }
+
+            // There is no activated queue, or the current position is after
+            // file position.
+
+            if (!foundQueue) {
+                // But maybe there is a TEMPORILY_SUSPENDED queue.
+                queue = this.exists(fpot.getTape().getName(),
+                        QueueStatus.TEMPORARILY_SUSPENDED);
+                if (queue != null) {
+                    LOGGER.debug("We have a temporarily suspended queue.");
+                    queue.registerFPOT(fpot, retry);
+                    foundQueue = true;
+                }
+            }
+
+            if (!foundQueue) {
+                // If we get here, try to create or get if already existing
+                // Queue and register the file in it.
+                queue = this.exists(fpot.getTape().getName(),
+                        QueueStatus.CREATED);
+                if (queue == null) {
+                    // That means that there is not any queue for that tape in
+                    // created state.
+                    queue = this.create(fpot, retry);
+                } else {
+                    // Or there is one in activated state, but the head position
+                    // is after the file position.
+                    LOGGER.info("A queue with status CREATED already exists.");
+                    queue.registerFPOT(fpot, retry);
+                    // TODO v2.0 create a special flag in the queue, indicating
+                    // that there is an activated queue for the same tape, so
+                    // this new queue has to be activated once the other has
+                    // finished. This prevents to unmount an already mounted
+                    // tape.
+                }
             }
         }
 
@@ -272,16 +277,14 @@ public final class QueuesController {
         int cleaned = 0;
         MultiMap toRemove = new MultiValueMap();
         synchronized (this.queuesMap) {
-            @SuppressWarnings("rawtypes")
-            Iterator iterName = this.queuesMap.keySet().iterator();
+            Iterator<String> iterName = this.queuesMap.keySet().iterator();
             // Checks the references to ended queues.
             while (iterName.hasNext()) {
-                String key = (String) iterName.next();
-                @SuppressWarnings("rawtypes")
-                Iterator queues = ((Collection<Queue>) this.queuesMap.get(key))
-                        .iterator();
+                String key = iterName.next();
+                Iterator<Queue> queues = ((Collection<Queue>) this.queuesMap
+                        .get(key)).iterator();
                 while (queues.hasNext()) {
-                    Queue queue = (Queue) queues.next();
+                    Queue queue = queues.next();
 
                     if (queue.getStatus() == QueueStatus.ENDED) {
                         LOGGER.debug("Queue {} is ended. Cleanup starting.",
@@ -297,13 +300,12 @@ public final class QueuesController {
             // Removes ended queues.
             iterName = toRemove.keySet().iterator();
             while (iterName.hasNext()) {
-                String key = (String) iterName.next();
+                String key = iterName.next();
 
-                @SuppressWarnings("rawtypes")
-                Iterator queues = ((Collection<Queue>) toRemove.get(key))
+                Iterator<Queue> queues = ((Collection<Queue>) toRemove.get(key))
                         .iterator();
                 while (queues.hasNext()) {
-                    Queue queue = (Queue) queues.next();
+                    Queue queue = queues.next();
 
                     LOGGER.debug("Deleting {} {}", key, queue.toString());
                     this.queuesMap.remove(key, queue);
@@ -325,7 +327,6 @@ public final class QueuesController {
      *            List of resources that keep the quantity of used drives.
      * @return Quantity of active queues.
      */
-    @SuppressWarnings("unchecked")
     public short countUsedResources(final List<Resource> resources) {
         LOGGER.trace("> countUsedResources");
 
@@ -333,9 +334,11 @@ public final class QueuesController {
 
         short active = 0;
         // Iterating through all queues.
+        @SuppressWarnings("unchecked")
         Iterator<String> iterator1 = this.queuesMap.keySet().iterator();
         while (iterator1.hasNext()) {
             String key = iterator1.next();
+            @SuppressWarnings("unchecked")
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
@@ -433,9 +436,7 @@ public final class QueuesController {
         Queue retQueue = new Queue(fpot, retries);
         LOGGER.debug("Creating new queue on tape {}", fpot.getTape().getName());
         retQueue.setSuspendDuration(this.suspendTimeForQueues);
-        synchronized (this.queuesMap) {
-            this.queuesMap.put(fpot.getTape().getName(), retQueue);
-        }
+        this.queuesMap.put(fpot.getTape().getName(), retQueue);
         LOGGER.info("Queue created for tape {}", fpot.getTape().getName());
 
         LOGGER.trace("< create");
@@ -504,10 +505,16 @@ public final class QueuesController {
      *
      * @return Map of queues.
      */
+    @SuppressWarnings("unchecked")
     MultiMap getQueues() {
-        LOGGER.trace(">< getQueues");
+        LOGGER.trace("> getQueues");
 
-        return this.queuesMap;
+        MultiMap copy = new MultiValueMap();
+        copy.putAll(this.queuesMap);
+
+        LOGGER.trace("< getQueues");
+
+        return copy;
     }
 
     /**
@@ -517,12 +524,12 @@ public final class QueuesController {
      *            the tape to search for.
      * @return the bounds of a range that includes all the queues on tape name.
      */
-    @SuppressWarnings("unchecked")
     Collection<Queue> getQueuesOnTape(final String name) {
         LOGGER.trace("> getQueuesOnTape");
 
         assert name != null && !name.equals("");
 
+        @SuppressWarnings("unchecked")
         Collection<Queue> ret = (Collection<Queue>) this.queuesMap.get(name);
 
         LOGGER.trace("< getQueuesOnTape");
@@ -584,16 +591,18 @@ public final class QueuesController {
         assert status != null;
 
         boolean found = false;
-        @SuppressWarnings("unchecked")
-        Collection<Queue> queuesSameTape = (Collection<Queue>) this.queuesMap
-                .get(name);
-        if (queuesSameTape != null) {
-            Iterator<Queue> iterator = queuesSameTape.iterator();
-            while (iterator.hasNext() && !found) {
-                Queue queue = iterator.next();
-                if (queue.getStatus() == status) {
-                    this.queuesMap.remove(name, queue);
-                    found = true;
+        synchronized (this.queuesMap) {
+            @SuppressWarnings("unchecked")
+            Collection<Queue> queuesSameTape = (Collection<Queue>) this.queuesMap
+                    .get(name);
+            if (queuesSameTape != null) {
+                Iterator<Queue> iterator = queuesSameTape.iterator();
+                while (iterator.hasNext() && !found) {
+                    Queue queue = iterator.next();
+                    if (queue.getStatus() == status) {
+                        this.queuesMap.remove(name, queue);
+                        found = true;
+                    }
                 }
             }
         }
@@ -608,16 +617,17 @@ public final class QueuesController {
      * @param time
      *            Time in seconds for queue suspension.
      */
-    @SuppressWarnings("unchecked")
     protected void updateSuspendTime(final short time) {
         LOGGER.trace("> updateSuspendTime");
 
         assert time > 0;
 
         this.suspendTimeForQueues = time;
+        @SuppressWarnings("unchecked")
         Iterator<String> iterator = this.queuesMap.keySet().iterator();
         while (iterator.hasNext()) {
             String key = iterator.next();
+            @SuppressWarnings("unchecked")
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {

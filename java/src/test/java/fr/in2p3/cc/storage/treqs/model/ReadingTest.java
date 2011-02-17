@@ -41,6 +41,7 @@ import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -76,6 +77,15 @@ public final class ReadingTest {
     private static final int TEN = 10;
 
     /**
+     * Setups the environment.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
      * Establishes the configuration.
      *
      * @throws TReqSException
@@ -105,6 +115,7 @@ public final class ReadingTest {
     public static void oneTimeTearDown() {
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**
@@ -152,35 +163,6 @@ public final class ReadingTest {
 
         HSMMockBridge.getInstance().setStageTime(ReadingTest.HUNDRED);
         reading.stage();
-    }
-
-    /**
-     * Tries to set a negative error code.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void testOtherMethods01() throws TReqSException {
-        File file = new File("filename", 1);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
-                ReadingTest.HUNDRED, tape, new User("username"));
-        Queue queue = new Queue(fpot, (byte) 3);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
-
-        boolean failed = false;
-        try {
-            reading.setErrorCode((short) -1);
-            failed = true;
-        } catch (Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
     }
 
     /**
@@ -470,7 +452,7 @@ public final class ReadingTest {
         FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
         Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) max, queue);
+        Reading reading = new Reading(fpot, max, queue);
 
         reading.stage();
     }

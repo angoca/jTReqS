@@ -74,7 +74,7 @@ public final class Instantiator {
         LOGGER.trace("> instanciateClass");
 
         AbstractHSMBridge bridge = null;
-        Class<?> hsm = (Class<?>) getClass(hsmBridgeClass);
+        Class<?> hsm = getClass(hsmBridgeClass);
         if (hsm != null) {
             Method getInstance = null;
             try {
@@ -119,7 +119,7 @@ public final class Instantiator {
         LOGGER.trace("> getDataSourceAccess");
 
         // Retrieves the class.
-        Class<?> daoFactory = (Class<?>) getClass(daoFactoryName);
+        Class<?> daoFactory = getClass(daoFactoryName);
 
         // Instantiates the class calling the constructor.
         AbstractDAOFactory daoInst = null;
