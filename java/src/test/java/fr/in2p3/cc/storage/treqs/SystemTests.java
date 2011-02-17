@@ -49,6 +49,7 @@ import fr.in2p3.cc.storage.treqs.control.starter.StarterTest;
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)
-@SuiteClasses({ StarterTest.class /*TReqSTest.class*/ })
+@SuiteClasses({ StarterTest.class /* TReqSTest.class */})
 public final class SystemTests {
+    // Nothing.
 }

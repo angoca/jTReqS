@@ -452,7 +452,7 @@ public final class ReadingTest {
         FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
         Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) max, queue);
+        Reading reading = new Reading(fpot, max, queue);
 
         reading.stage();
     }

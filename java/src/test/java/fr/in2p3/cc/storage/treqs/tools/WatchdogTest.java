@@ -107,12 +107,9 @@ public final class WatchdogTest {
 
     /**
      * Destroys all objects.
-     *
-     * @throws TReqSException
-     *             If there is any problem while stopping.
      */
     @After
-    public void tearDown() throws TReqSException {
+    public void tearDown() {
         Activator.destroyInstance();
         Dispatcher.destroyInstance();
         Watchdog.destroyInstance();
@@ -120,12 +117,9 @@ public final class WatchdogTest {
 
     /**
      * Destroys the objects.
-     *
-     * @throws TReqSException
-     *             If there is any problem.
      */
     @AfterClass
-    public static void oneTimeTearDown() throws TReqSException {
+    public static void oneTimeTearDown() {
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
         System.clearProperty(Constants.CONFIGURATION_FILE);

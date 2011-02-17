@@ -112,7 +112,7 @@ public final class MediaType {
     public int hashCode() {
         LOGGER.trace(">< hashCode");
 
-        return id * name.hashCode();
+        return this.id * this.name.hashCode();
     }
 
     /**

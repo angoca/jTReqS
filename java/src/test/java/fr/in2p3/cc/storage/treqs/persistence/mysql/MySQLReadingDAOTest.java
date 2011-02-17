@@ -65,7 +65,6 @@ import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
-import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
@@ -162,12 +161,9 @@ public final class MySQLReadingDAOTest {
 
     /**
      * Tries to update a null reading.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testFirstUpdate02() throws TReqSException {
+    public void testFirstUpdate02() {
         String message = "MessageFirstUpdate";
         Reading reading = null;
 
@@ -266,11 +262,9 @@ public final class MySQLReadingDAOTest {
     /**
      * Tests negative limit.
      *
-     * @throws AbstractPersistanceException
-     *             Never.
      */
     @Test
-    public void testGetNewRequests02() throws AbstractPersistanceException {
+    public void testGetNewRequests02() {
         int limit = -5;
         boolean failed = false;
         try {
@@ -348,13 +342,9 @@ public final class MySQLReadingDAOTest {
 
     /**
      * Tests id negative.
-     *
-     * @throws AbstractPersistanceException
-     *             Never.
      */
     @Test
-    public void testSetRequestStatusById01()
-            throws AbstractPersistanceException {
+    public void testSetRequestStatusById01() {
         int id = -1;
 
         RequestStatus status = RequestStatus.SUBMITTED;
@@ -377,13 +367,9 @@ public final class MySQLReadingDAOTest {
 
     /**
      * Tests the status null.
-     *
-     * @throws AbstractPersistanceException
-     *             Never.
      */
     @Test
-    public void testSetRequestStatusById02()
-            throws AbstractPersistanceException {
+    public void testSetRequestStatusById02() {
         int id = 0;
 
         RequestStatus status = null;
@@ -406,13 +392,9 @@ public final class MySQLReadingDAOTest {
 
     /**
      * Tests the message null.
-     *
-     * @throws AbstractPersistanceException
-     *             Never.
      */
     @Test
-    public void testSetRequestStatusById03()
-            throws AbstractPersistanceException {
+    public void testSetRequestStatusById03() {
         int id = 0;
 
         RequestStatus status = RequestStatus.SUBMITTED;
@@ -435,13 +417,9 @@ public final class MySQLReadingDAOTest {
 
     /**
      * Tests the message empty.
-     *
-     * @throws AbstractPersistanceException
-     *             Never.
      */
     @Test
-    public void testSetRequestStatusById04()
-            throws AbstractPersistanceException {
+    public void testSetRequestStatusById04() {
         int id = 0;
 
         RequestStatus status = RequestStatus.SUBMITTED;
@@ -465,14 +443,11 @@ public final class MySQLReadingDAOTest {
     /**
      * Good change.
      *
-     * @throws SQLException
-     *             Never.
      * @throws TReqSException
      *             Never.
      */
     @Test
-    public void testSetRequestStatusById05() throws SQLException,
-            TReqSException {
+    public void testSetRequestStatusById05() throws TReqSException {
         int id = 0;
 
         RequestStatus status = RequestStatus.SUBMITTED;
@@ -551,12 +526,9 @@ public final class MySQLReadingDAOTest {
 
     /**
      * Tries to update a null reading.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testUpdate01() throws TReqSException {
+    public void testUpdate01() {
         RequestStatus status = RequestStatus.CREATED;
         Calendar endTime = new GregorianCalendar();
         Reading reading = null;
@@ -775,12 +747,9 @@ public final class MySQLReadingDAOTest {
      *
      * @throws TReqSException
      *             Never.
-     * @throws SQLException
-     *             Never.
      */
     @Test
-    public void testUpdateUnfinishedRequests01() throws TReqSException,
-            SQLException {
+    public void testUpdateUnfinishedRequests01() throws TReqSException {
         int actual = new MySQLReadingDAO().updateUnfinishedRequests();
         int expected = 0;
 

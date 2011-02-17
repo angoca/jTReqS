@@ -49,6 +49,9 @@
     <version>1.5.1-SNAPSHOT</version>
     <artifactId>jtreqs-server-parent</artifactId>
   </parent>
+  <properties>
+    <hpssRoot>${env.HPSS_ROOT}</hpssRoot>
+  </properties>
 
   <!-- Build Settings -->
   <!-- "Project Build" contains more elements than just the BaseBuild set -->
@@ -80,7 +83,7 @@
           <!-- Compilation configuration -->
           <compilerProvider>generic</compilerProvider>
           <compilerStartOptions>
-            <compilerStartOption>-DLINUX -fPIC -O -Wall -I/opt/hpss/include/
+            <compilerStartOption>-DLINUX -fPIC -O -Wall -I${hpssRoot}/include/
               -Itarget/native/javah/</compilerStartOption>
           </compilerStartOptions>
           <sources>
@@ -94,7 +97,7 @@
           </sources>
 
           <linkerStartOptions>
-            <linkerStartOption>-shared -lc -ldl -L/opt/hpss/lib -lhpss
+            <linkerStartOption>-shared -lc -ldl -L${hpssRoot}/lib -lhpss
               -lhpssunixauth</linkerStartOption>
           </linkerStartOptions>
 

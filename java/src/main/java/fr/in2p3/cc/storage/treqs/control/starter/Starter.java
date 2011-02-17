@@ -121,8 +121,8 @@ public final class Starter {
     /**
      * Description of the command option: Database create tables.
      */
-    private static final String DATABASE_CREATE_DESCRIPTION = "Create the " +
-            "tables in the database.";
+    private static final String DATABASE_CREATE_DESCRIPTION = "Create the "
+            + "tables in the database.";
     /**
      * Short name for the command option: Database script.
      */
@@ -228,7 +228,7 @@ public final class Starter {
 
         CommandLineParser parser = new PosixParser();
 
-        CommandLine cli = parser.parse(options, arguments);
+        CommandLine cli = parser.parse(this.options, arguments);
 
         LOGGER.trace("< prepareCommandOptions");
 
@@ -280,7 +280,7 @@ public final class Starter {
             if (cli.hasOption(DATABASE_SCRIPT_LONG_COMMAND_OPTION)) {
                 System.out.println(AbstractDAOFactory.getDAOFactoryInstance()
                         .dumpStructure());
-            } else if (cli.hasOption(DATABASE_CREATE_LONG_COMMAND_OPTION)){
+            } else if (cli.hasOption(DATABASE_CREATE_LONG_COMMAND_OPTION)) {
                 // Initialize the database if necessary.
                 AbstractDAOFactory.getDAOFactoryInstance().initialize();
             } else {

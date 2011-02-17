@@ -67,7 +67,7 @@ public class WatchdogException extends TReqSException {
      *            Exception that describes the problem.
      */
     public WatchdogException(final IOException e) {
-        super();
+        super(e);
 
         LOGGER.trace(">< Instance creation");
     }

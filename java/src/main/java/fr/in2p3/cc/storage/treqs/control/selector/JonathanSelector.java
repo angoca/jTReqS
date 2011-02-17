@@ -217,6 +217,7 @@ public final class JonathanSelector implements Selector {
                         } else {
                             LOGGER.warn("This is weird");
                             assert false : "No queue selected, mmm?";
+                            ret = currentlySelected;
                         }
                         LOGGER.debug("Selected queue: {}", ret.getTape()
                                 .getName());
@@ -266,8 +267,8 @@ public final class JonathanSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    synchronized User selectBestUser(final List<Queue> queuesMap,
-            final Resource resource) throws NoQueuesDefinedException {
+    User selectBestUser(final List<Queue> queuesMap, final Resource resource)
+            throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";
@@ -278,42 +279,43 @@ public final class JonathanSelector implements Selector {
             assert false : "No queues, weird";
 
             throw new NoQueuesDefinedException();
-        } else {
+        }
 
-            Map<User, Float> usersScores = new HashMap<User, Float>();
+        Map<User, Float> usersScores = new HashMap<User, Float>();
 
-            // For each waiting user, get its allocation and its used resources.
+        // For each waiting user, get its allocation and its used resources.
 
-            // First get the list of queues
+        // First get the list of queues
 
-            // Browse the list of queues and compute the users scores
-            LOGGER.debug("Computing Score: (total allocation) "
-                    + "* (user allocation) - (used resources)");
-            Iterator<Queue> queues = queuesMap.iterator();
-            while (queues.hasNext()) {
-                Queue queue = queues.next();
-                this.calculateUserScore(resource, usersScores, queue);
+        // Browse the list of queues and compute the users scores
+        LOGGER.debug("Computing Score: (total allocation) "
+                + "* (user allocation) - (used resources)");
+        Iterator<Queue> queues = queuesMap.iterator();
+        while (queues.hasNext()) {
+            Queue queue = queues.next();
+            this.calculateUserScore(resource, usersScores, queue);
+        }
+
+        // Catch the best
+        Iterator<User> users = usersScores.keySet().iterator();
+        // This assures that bestUser will have a value.
+        bestUser = users.next();
+        while (users.hasNext()) {
+            User key = users.next();
+            if (resource.getUserAllocation(key) < 0) {
+                // The share for this user has been set to a negative
+                // value.
+                // This means that we have to skip this user
+                LOGGER.warn("User {} has a negative share. His queues are "
+                        + "hold.", key.getName());
+            } else if (bestUser != null
+                    && usersScores.get(key) > usersScores.get(bestUser)) {
+                bestUser = key;
             }
-
-            // Catch the best
-            Iterator<User> users = usersScores.keySet().iterator();
-            // This assures that bestUser will have a value.
-            bestUser = users.next();
-            while (users.hasNext()) {
-                User key = users.next();
-                if (resource.getUserAllocation(key) < 0) {
-                    // The share for this user has been set to a negative
-                    // value.
-                    // This means that we have to skip this user
-                    LOGGER.warn("User {} has a negative share. His queues are "
-                            + "hold.", key.getName());
-                } else if (bestUser != null
-                        && usersScores.get(key) > usersScores.get(bestUser)) {
-                    bestUser = key;
-                }
-            }
+        }
+        if (bestUser != null) {
             // We have to check that the best user has positive share
-            if (bestUser != null && resource.getUserAllocation(bestUser) < 0) {
+            if (resource.getUserAllocation(bestUser) < 0) {
                 LOGGER.warn(
                         "User {} has a negative share. We should never get "
                                 + "here.", bestUser.getName());

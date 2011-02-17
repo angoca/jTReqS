@@ -47,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
-import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
@@ -283,12 +282,9 @@ public final class ConfiguratorTest {
 
     /**
      * Tests an inexistent value from the default properties.
-     *
-     * @throws KeyNotFoundException
-     *             Never.
      */
     @Test
-    public void testLoadDefaultsInexistant01() throws KeyNotFoundException {
+    public void testLoadDefaultsInexistant01() {
         boolean failed = false;
         try {
             Configurator.getInstance().getStringValue("UNKNOWN", "KEY");
@@ -305,12 +301,9 @@ public final class ConfiguratorTest {
 
     /**
      * Reads a file.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testReadFile01() throws TReqSException {
+    public void testReadFile01() {
         boolean failed = false;
         try {
             System.setProperty(Constants.CONFIGURATION_FILE, "INEXISTANT_FILE");

@@ -80,8 +80,7 @@ public final class StagerTest {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(StagerTest.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(StagerTest.class);
 
     /**
      * Sets the global configuration.
@@ -258,13 +257,13 @@ public final class StagerTest {
 
             @Override
             public void run() {
-                LOGGER.info("Starting " + getName());
+                StagerTest.LOGGER.info("Starting " + getName());
                 try {
                     Thread.sleep(StagerTest.FIFTY);
                 } catch (InterruptedException e) {
                     LOGGER.error("Error sleeping", e);
                 }
-                LOGGER.warn("Concluding stager");
+                StagerTest.LOGGER.warn("Concluding stager");
                 stager.conclude();
             }
         };

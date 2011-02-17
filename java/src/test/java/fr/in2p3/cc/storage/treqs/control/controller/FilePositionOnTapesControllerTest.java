@@ -97,12 +97,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tests to add a fpot with file null.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAddFpot01FileNull() throws TReqSException {
+    public void testAddFpot01FileNull() {
         File file = null;
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
         User user = new User("userName");
@@ -124,12 +121,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tests to add a fpot with null tape.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAddFpot02TapeNull() throws TReqSException {
+    public void testAddFpot02TapeNull() {
         File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = null;
@@ -152,12 +146,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tries to add an fpot with negative position.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAddFpot03TapeNegative() throws TReqSException {
+    public void testAddFpot03TapeNegative() {
         File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
@@ -180,12 +171,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tries to add an fpot with negative position.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testAddFpot04UserNull() throws TReqSException {
+    public void testAddFpot04UserNull() {
         File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
@@ -230,12 +218,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tests to create a fpot with file null.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreateFpot01FileNull() throws TReqSException {
+    public void testCreateFpot01FileNull() {
         File file = null;
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
         User user = new User("userName");
@@ -257,12 +242,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tests to create a fpot with null tape.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreateFpot02TapeNull() throws TReqSException {
+    public void testCreateFpot02TapeNull() {
         File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = null;
@@ -285,12 +267,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tries to create an fpot with negative position.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreateFpot03TapeNegative() throws TReqSException {
+    public void testCreateFpot03TapeNegative() {
         File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
@@ -313,12 +292,9 @@ public final class FilePositionOnTapesControllerTest {
 
     /**
      * Tries to create an fpot with negative position.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testCreateFpot04UserNull() throws TReqSException {
+    public void testCreateFpot04UserNull() {
         File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
         Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));

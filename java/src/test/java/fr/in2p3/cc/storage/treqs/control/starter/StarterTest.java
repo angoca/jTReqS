@@ -76,8 +76,7 @@ public final class StarterTest {
     /**
      * Logger.
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(StarterTest.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(StarterTest.class);
 
     /**
      * Sets the env for the tests.

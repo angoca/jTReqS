@@ -105,7 +105,7 @@ public abstract class AbstractHSMBridge {
     protected final String getKeytabPath() {
         LOGGER.trace(">< getKeytabPath");
 
-        return keytabPath;
+        return this.keytabPath;
     }
 
     /**

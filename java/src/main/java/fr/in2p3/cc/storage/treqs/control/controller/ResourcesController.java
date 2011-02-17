@@ -36,6 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.control.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -120,6 +121,7 @@ public final class ResourcesController {
         LOGGER.trace("> create instance");
 
         this.share = new MultiValueMap();
+        this.resources = new ArrayList<Resource>();
 
         LOGGER.trace("< create instance");
     }
@@ -135,8 +137,13 @@ public final class ResourcesController {
             throws TReqSException {
         LOGGER.trace("> getMediaAllocations");
 
+        // This helps to pass the garbage collector.
+        this.resources.clear();
+        // Recreates the list.
         this.resources = AbstractDAOFactory.getDAOFactoryInstance()
                 .getConfigurationDAO().getMediaAllocations();
+
+        assert this.resources != null;
 
         LOGGER.trace("< getMediaAllocations");
 
@@ -150,16 +157,14 @@ public final class ResourcesController {
      * @throws TReqSException
      *             If there is a problem acceding the data source.
      */
-    public MultiMap getResourceAllocation() throws TReqSException {
+    public synchronized MultiMap getResourceAllocation() throws TReqSException {
         LOGGER.trace("> getResourceAllocation");
 
-        synchronized (share) {
-            // This helps to pass the garbage collector.
-            this.share.clear();
-            // Recreates the share map.
-            this.share = AbstractDAOFactory.getDAOFactoryInstance()
-                    .getConfigurationDAO().getResourceAllocation();
-        }
+        // This helps to pass the garbage collector.
+        this.share.clear();
+        // Recreates the share map.
+        this.share = AbstractDAOFactory.getDAOFactoryInstance()
+                .getConfigurationDAO().getResourceAllocation();
 
         assert this.share != null;
 

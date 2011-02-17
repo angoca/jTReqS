@@ -73,8 +73,8 @@ import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
+import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockPersistanceException;
 import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockReadingDAO;
-import fr.in2p3.cc.storage.treqs.persistence.mock.exception.MockPersistanceException;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
@@ -100,24 +100,18 @@ public final class DispatcherTest {
 
     /**
      * Setups the environment for all.
-     *
-     * @throws TReqSException
-     *             If there is any problem,
      */
     @BeforeClass
-    public static void oneTimeSetUp() throws TReqSException {
+    public static void oneTimeSetUp() {
         System.setProperty(Constants.CONFIGURATION_FILE,
                 MainTests.PROPERTIES_FILE);
     }
 
     /**
      * Destroys all after the tests.
-     *
-     * @throws TReqSException
-     *             If there is any problem.
      */
     @AfterClass
-    public static void oneTimeTearDown() throws TReqSException {
+    public static void oneTimeTearDown() {
         HSMMockBridge.destroyInstance();
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
@@ -167,12 +161,9 @@ public final class DispatcherTest {
 
     /**
      * Tries to set a negative max files.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testMaxFileBeforeMessage01() throws TReqSException {
+    public void testMaxFileBeforeMessage01() {
         boolean failed = false;
         try {
             Dispatcher.getInstance().setMaxFilesBeforeMessage((short) -1);
@@ -275,12 +266,9 @@ public final class DispatcherTest {
 
     /**
      * Tests to returns an exception when getting the new requests.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testRetrieveNewRequest05() throws TReqSException {
+    public void testRetrieveNewRequest05() {
         AbstractPersistanceException exception = new MockPersistanceException(
                 new SQLException("NO-MESSAGE"));
         MockReadingDAO.setNewRequestsException(exception);
@@ -737,12 +725,9 @@ public final class DispatcherTest {
      * Tries to set a negative quantity of seconds between loops.
      * <p>
      * This method is slow because it waits a loop for the dispatcher.
-     *
-     * @throws TReqSException
-     *             Never.
      */
     @Test
-    public void testSecondsBetweenLoops01() throws TReqSException {
+    public void testSecondsBetweenLoops01() {
         boolean failed = false;
         try {
             Dispatcher.getInstance().setSecondsBetweenLoops((byte) -1);

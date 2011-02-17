@@ -40,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.model.User;
-import fr.in2p3.cc.storage.treqs.model.exception.InvalidParameterException;
 
 /**
  * Represents a file request. One file can be requested several times, so each
@@ -94,12 +93,9 @@ final class FileRequest {
      *            User requesting the file.
      * @param tries
      *            Number of retries.
-     * @throws InvalidParameterException
-     *             When redefining the name.
      */
     public FileRequest(final int fileRequestId, final String requestedFilename,
-            final User requesterUser, final byte tries)
-            throws InvalidParameterException {
+            final User requesterUser, final byte tries) {
         LOGGER.trace("> Creating instance.");
 
         assert fileRequestId > 0;
