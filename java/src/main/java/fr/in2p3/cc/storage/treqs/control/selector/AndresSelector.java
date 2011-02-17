@@ -269,8 +269,8 @@ public final class AndresSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    synchronized User selectBestUser(final List<Queue> queuesMap,
-            final Resource resource) throws NoQueuesDefinedException {
+    User selectBestUser(final List<Queue> queuesMap, final Resource resource)
+            throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";
