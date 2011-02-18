@@ -75,8 +75,8 @@ public final class JonathanSelector implements Selector {
      * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ! */selectBestQueue(final List<Queue> queues,
-            final Resource resource) throws TReqSException {
+    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
@@ -118,8 +118,9 @@ public final class JonathanSelector implements Selector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    Queue/* ? */selectBestQueueForUser(final List<Queue> queues,
-            final Resource resource, final User user) throws TReqSException {
+    Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource, final User/* ! */user)
+            throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
 
         assert queues != null : "queues null";
@@ -164,7 +165,7 @@ public final class JonathanSelector implements Selector {
      */
     private Queue/* ? */checkQueue(final Resource/* ! */resource,
             final User/* ! */user, final Queue/* ? */currentlySelected,
-            final Queue queue) throws TReqSException {
+            final Queue/* ! */queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null : "resource null";
@@ -356,8 +357,9 @@ public final class JonathanSelector implements Selector {
      * @param queue
      *            Queue to analyze.
      */
-    private void calculateUserScore(final Resource resource,
-            final Map<User, Float> usersScores, final Queue queue) {
+    private void calculateUserScore(final Resource/* ! */resource,
+            final Map<User, Float>/* <!,!>! */usersScores,
+            final Queue/* ! */queue) {
         LOGGER.trace("> checkUser");
 
         assert resource != null : "resource null";
