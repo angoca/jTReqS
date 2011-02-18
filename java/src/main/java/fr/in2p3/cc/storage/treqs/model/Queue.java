@@ -114,7 +114,10 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * before suspension. At the moment of the suspension, if there was a
  * <i>created</i> queue, the files from the created one will be inserted in the
  * <i>temporarily suspended</i> and the <i>created</i> one will be passed as
- * <i>ended</i>. <br>
+ * <i>ended</i>. The done and failed files from the <i>temporarily suspended</i>
+ * will be passed to the created one. If there were not a <i>created</i> one at
+ * the suspension time, then a new queue will be created just to hold the done
+ * and failed request.<br>
  * TODO v2.0 Do this, the fusion and reactivation is not yet done.<br>
  * The head position is 0, because a tape is rewound when not used after a few
  * seconds. It means, that this queue will received new files. <br>
@@ -157,7 +160,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <li>CREATED -> ACTIVATED</li>
  * <li>ACTIVATED -> ENDED</li>
  * <li>ACTIVATED -> TEMPORARILY_SUSPENDED (Merged with a <i>created</i> queue if
- * exists)</li>
+ * exists, or create one to hold the done and failed requests.)</li>
  * <li>TEMPORARILY_SUSPENDED -> CREATED, However the creation time is not
  * changed.</li>
  * <li>CREATED -> ENDED (When the <i>created</i> one was merged with the
@@ -169,20 +172,27 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <i>activated</i> state, and another one containing files before the current
  * head position. Both queues have to be merged by QueuesController. The
  * <i>suspended</i> one, will receive all the requests from the <i>created</i>
- * one. And the <i>created</i> one will pass to ENDED state.
+ * one. And the <i>created</i> one will receive the done and failed requests and
+ * also it will pass to ENDED state.
  * <p>
  * The owner of the queue is the user owning the most reading objects. If there
  * are several users with the same quantity of reading objects, the last one
  * will be selected.
  * <p>
- * The creation time is when the queue has been created (the first demand of a
- * file contained in the associated tape.) Then, when the queue is chosen by the
- * Activator, the queue writes the activation time. Eventually, the queue could
- * be temporarily suspended, and then the suspension time is written.<br>
- * At this time, if a queue in created state existed, it should have been merged
- * with the temporarily suspended. The created one will pass to ended, and the
- * end time will be written. This second queue will not have activation time.
- * When a queue has processed all its files, it will write the end time.
+ * <ul>
+ * <li>
+ * The <b>creation time</b> is when the queue has been created (the first demand
+ * of a file contained in the associated tape.)</li>
+ * <li>Then, when the queue is chosen by the Activator, the queue writes the
+ * <b>activation time</b>.</li>
+ * <li>Eventually, the queue could be temporarily suspended, and then the
+ * <b>suspension time</b> is written. At this time, if a queue in created state
+ * exists, it should have been merged with the temporarily suspended. The
+ * created one will pass to ended, and the end time will be written. This second
+ * queue will not have activation time.</li>
+ * <li>When a queue has processed all its files, it will write the <b>end
+ * time</b>.</li>
+ * </ul>
  * <p>
  * There is a known issue when there is only one stager active, and then the
  * queue receives new requests located physically after the processed one.
