@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +75,8 @@ public final class JonathanSelector implements Selector {
      * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ! */selectBestQueue(final List<Queue> queues,
-            final Resource resource) throws TReqSException {
+    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
@@ -117,24 +118,25 @@ public final class JonathanSelector implements Selector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    Queue/* ? */selectBestQueueForUser(final List<Queue> queues,
-            final Resource resource, final User user) throws TReqSException {
+    Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource, final User/* ! */user)
+            throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
 
         assert queues != null : "queues null";
         assert resource != null : "resource null";
         assert user != null : "user null";
 
-        Queue ret = null;
+        Queue best = null;
         // First get the list of queues
         int length = queues.size();
         for (int j = 0; j < length; j++) {
             Queue queue = queues.get(j);
-            ret = this.checkQueue(resource, user, ret, queue);
+            best = this.checkQueue(resource, user, best, queue);
         }
 
-        if (ret != null) {
-            LOGGER.info("Best queue for {} is on tape {}", user.getName(), ret
+        if (best != null) {
+            LOGGER.info("Best queue for {} is on tape {}", user.getName(), best
                     .getTape().getName());
         } else {
             LOGGER.info("No queue could be selected");
@@ -142,7 +144,7 @@ public final class JonathanSelector implements Selector {
 
         LOGGER.trace("< selectBestQueueForUser");
 
-        return ret;
+        return best;
     }
 
     /**
@@ -161,9 +163,9 @@ public final class JonathanSelector implements Selector {
      * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
-    private Queue/* ? */checkQueue(final Resource resource, final User user,
-            final Queue/* ? */currentlySelected, final Queue queue)
-            throws TReqSException {
+    private Queue/* ? */checkQueue(final Resource/* ! */resource,
+            final User/* ! */user, final Queue/* ? */currentlySelected,
+            final Queue/* ! */queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null : "resource null";
@@ -230,12 +232,11 @@ public final class JonathanSelector implements Selector {
                     ret = currentlySelected;
                 }
             } else {
-                LOGGER.debug("Different media type: current queue {} "
+                LOGGER.error("Different media type: current queue {} "
                         + "searched {}", queue.getTape().getMediaType()
                         .getName(), resource.getMediaType().getName());
                 // Return the currently selected or null.
                 ret = currentlySelected;
-                LOGGER.error("Different type of tape");
                 assert false : "This should never happen, the list of tapes is "
                         + "the correct type";
             }
@@ -267,8 +268,8 @@ public final class JonathanSelector implements Selector {
      * @throws NoQueuesDefinedException
      *             When there are not any defined queues.
      */
-    User selectBestUser(final List<Queue> queuesMap, final Resource resource)
-            throws NoQueuesDefinedException {
+    User/* ? */selectBestUser(final List<Queue>/* <!>! */queuesMap,
+            final Resource/* ! */resource) throws NoQueuesDefinedException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";
@@ -299,29 +300,40 @@ public final class JonathanSelector implements Selector {
         // Catch the best
         Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
-        bestUser = users.next();
-        while (users.hasNext()) {
-            User key = users.next();
-            if (resource.getUserAllocation(key) < 0) {
-                // The share for this user has been set to a negative
-                // value.
-                // This means that we have to skip this user
-                LOGGER.warn("User {} has a negative share. His queues are "
-                        + "hold.", key.getName());
-            } else if (bestUser != null
-                    && usersScores.get(key) > usersScores.get(bestUser)) {
-                bestUser = key;
+        try {
+            bestUser = users.next();
+            float bestScore = usersScores.get(bestUser);
+            LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
+            while (users.hasNext()) {
+                User user = users.next();
+                float score = usersScores.get(user);
+                LOGGER.info("Score: {}\t{}", user.getName(), score);
+                // TODO v2.0 This is wrong, the first user could have a
+                // negative share.
+                if (resource.getUserAllocation(user) < 0) {
+                    // The share for this user has been set to a negative
+                    // value.
+                    // This means that we have to skip this user
+                    LOGGER.warn("User {} has a negative share. His queues are "
+                            + "hold.", user.getName());
+                } else if (score > bestScore) {
+                    bestUser = user;
+                    bestScore = score;
+                }
             }
-        }
-        if (bestUser != null) {
+
             // We have to check that the best user has positive share
             if (resource.getUserAllocation(bestUser) < 0) {
                 LOGGER.warn(
                         "User {} has a negative share. We should never get "
                                 + "here.", bestUser.getName());
+                assert false;
             }
 
             LOGGER.debug("Best user: {}", bestUser.getName());
+        } catch (NoSuchElementException e) {
+            LOGGER.error("Houston, we have a problem.");
+            throw e;
         }
 
         assert bestUser != null : "bestUser null";
@@ -332,7 +344,11 @@ public final class JonathanSelector implements Selector {
     }
 
     /**
-     * Calculates the score for a user.
+     * Calculates the score for a user with the next formula.
+     * <p>
+     * <code>
+     * Value = #TotalDrives * #Reserved - #Used
+     * </code>
      *
      * @param resource
      *            Type of associated resource.
@@ -341,8 +357,9 @@ public final class JonathanSelector implements Selector {
      * @param queue
      *            Queue to analyze.
      */
-    private void calculateUserScore(final Resource resource,
-            final Map<User, Float> usersScores, final Queue queue) {
+    private void calculateUserScore(final Resource/* ! */resource,
+            final Map<User, Float>/* <!,!>! */usersScores,
+            final Queue/* ! */queue) {
         LOGGER.trace("> checkUser");
 
         assert resource != null : "resource null";

@@ -41,6 +41,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents the type of media. A type of media could be T10K-A.
+ * <p>
+ * TODO v2.0 Make difference between T10K and T10K Sport, because the algorithm
+ * for the selector could use this values when using the best queue according
+ * for the best reading speed.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
