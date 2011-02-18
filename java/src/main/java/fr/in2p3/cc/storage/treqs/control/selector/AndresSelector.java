@@ -36,6 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.control.selector;
 
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -45,19 +46,76 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Implementation of the algorithm to choose the best queue.
  * <p>
- * This implementation was proposed by Andres Gomez. This is a smooth variation
- * of the Jonathan selector, but it assures that a queue is returned for the
- * important users.
+ * This implementation was proposed by Andres Gomez.
+ * <p>
+ * The formula used to compare the score of both queues is:<br>
+ * <code>
+ * score = z ** 2 + y / (a ** 2) * sin (pi * x / c - pi) / (pi * x / c - pi)
+ * </code> <br>
+ * where
+ * <ul>
+ * <li><i>z</i> is the time in minutes,</li>
+ * <li><i>y</i> is the file size average in MB,</li>
+ * <li><i>x</i> is the quantity of files to read.</li>
+ * </ul>
+ * The constants are:
+ * <ul>
+ * <li><i>a</i> is the limited time,</li>
+ * <li><i>c</i> is the best quantity of files to stage.</li>
+ * </ul>
+ * <p>
+ * This formula was designed with the aid of Renaud Vernet
+ * (renaud.vernet@cc.in2p3.fr): sin(x)/x
+ * <p>
+ * In this formula, the first component is quadratic to assure that it grows
+ * rapidly after the limit of time. It means that if the queue is too old (older
+ * than the limited time), it will be the next to chose. It does not care if the
+ * queue is not "interesting" (one small file to read): z ** 2
+ * <p>
+ * The factor of the second component permits to amplify the score. This is
+ * useful specially when the ratio is higher. Bigger the ratio is, faster the
+ * data will be read, because the drive will arrive to the optimal speed to read
+ * files. This value is linear, so after the limited time, the second component
+ * will not influence the decision, there will be just the time: y / (a ** 2)
+ * <p>
+ * The other part of the second component permits to chose a queue according to
+ * the file size average. When the quantity of files is near the given middle,
+ * it means that the quantity of files is not that big, so the drive could
+ * arrive to read at a good speed: sin (pi * x / c - pi) / (pi * x / c - pi)
+ * <p>
+ * The criteria to design this formula were:
+ * <ul>
+ * <li>When there is a high concurrency, and there is a queue that will read
+ * just one small file, it should take the higher priority after the limit of
+ * time.</li>
+ * <li>When the ratio between quantity of bytes and quantity to files to read is
+ * high, it means that big files will be read, meaning that the drive will
+ * arrive to the maximal reading speed.</li>
+ * </ul>
+ * <p>
+ * TODO v2.0 This algorithm uses the average size of the files to stage, and the
+ * best reading speed for a drive. However, depending on the technology, the
+ * best reading speed is different for different drives, and in a same drive,
+ * different types of tapes (lengths) could have different best reading speed.
+ * Then, it would be interesting to make difference between different tape
+ * technologies used in a same media type.
+ * <p>
+ * TODO v2.0 This algorithm could use a flag to use or not the fair share. That
+ * means if the flag is activated, then the selector will select a best user, if
+ * not, then the selector will chose a queue directly, regardless the owner.
  *
  * @author Andres Gomez
  * @since 1.5
@@ -77,24 +135,30 @@ public final class AndresSelector implements Selector {
      * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ! */selectBestQueue(final List<Queue> queues,
-            final Resource resource) throws TReqSException {
+    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
         assert resource != null : "resource null";
 
         Queue ret = null;
-        User bestUser = this.selectBestUser(queues, resource);
-        if (bestUser == null) {
-            // There is not non-blocked user among the waiting
-            // queues, just do nothing and break the while loop,
-            // otherwise, it is doomed to infinite loop
-            LOGGER.error("There is not Best User. "
-                    + "This should never happen - 3.");
-            assert false : "Not best user";
+        String fairShare = Configurator.getInstance().getStringValue(
+                "SELECTOR", "FAIR_SHARE");
+        if (fairShare.equals("YES")) {
+            User bestUser = this.selectBestUser(queues, resource);
+            if (bestUser == null) {
+                // There is not non-blocked user among the waiting
+                // queues, just do nothing and break the while loop,
+                // otherwise, it is doomed to infinite loop
+                LOGGER.error("There is not Best User. "
+                        + "This should never happen - 3.");
+                assert false : "Not best user";
+            } else {
+                ret = this.selectBestQueueForUser(queues, resource, bestUser);
+            }
         } else {
-            ret = this.selectBestQueueForUser(queues, resource, bestUser);
+            ret = this.selectBestQueueWithoutUser(queues);
         }
 
         assert ret != null : "The returned queue is null";
@@ -102,6 +166,45 @@ public final class AndresSelector implements Selector {
         LOGGER.trace("< selectBestQueue");
 
         return ret;
+    }
+
+    /**
+     * Selects a queue without taking care of the users.
+     *
+     * @param queues
+     *            Set of queues.
+     * @return The best queue.
+     * @throws TReqSException
+     *             If there is a problem while doing the calculation.
+     */
+    private Queue/* ! */selectBestQueueWithoutUser(
+            final List<Queue>/* <!>! */queues) throws TReqSException {
+        LOGGER.trace("> selectBestQueueWithoutUser");
+
+        assert queues != null : "queues null";
+
+        Queue best = null;
+        // First get the list of queues
+        int length = queues.size();
+        if (length > 1) {
+            best = queues.get(0);
+            for (int j = 1; j < length; j++) {
+                Queue queue = queues.get(j);
+                if (best != null) {
+                    best = this.compareQueue(best, queue);
+                } else {
+                    best = queue;
+                }
+            }
+        }
+
+        if (best != null) {
+            LOGGER.info("Best queue is on tape {}", best.getTape().getName());
+        }
+
+        LOGGER.trace("> selectBestQueueWithoutUser");
+
+        return best;
     }
 
     /**
@@ -120,8 +223,9 @@ public final class AndresSelector implements Selector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    Queue/* ? */selectBestQueueForUser(final List<Queue> queues,
-            final Resource resource, final User user) throws TReqSException {
+    Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource, final User/* ! */user)
+            throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
 
         assert queues != null : "queues null";
@@ -157,48 +261,84 @@ public final class AndresSelector implements Selector {
     /**
      * Compares the two queue to see which one can be selected. Both of them are
      * eligible.
+     * <p>
+     *
      *
      * @param bestQueue
      *            This is the best queue at the moment.
      * @param currentQueue
      *            The currently analyzed queue.
      * @return The new best queue.
+     * @throws TReqSException
+     *             Problem in the configurator.
      */
     private Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
-            final Queue/* ! */currentQueue) {
+            final Queue/* ! */currentQueue) throws TReqSException {
         LOGGER.trace("> compareQueue");
 
         assert bestQueue != null : "Current best queue null";
         assert currentQueue != null : "Current queue null";
 
-        Queue newBest = null;
+        final double bestQueueScore = this.calculateQueueScore(bestQueue);
+        final double currentQueueScore = this.calculateQueueScore(currentQueue);
 
-        if (bestQueue.getCreationTime().getTimeInMillis() >= currentQueue
-                .getCreationTime().getTimeInMillis()) {
-            // Select the oldest queue.
-            LOGGER.debug("It is better the new one {} than the "
-                    + "selected one {}", currentQueue.getTape().getName(),
-                    bestQueue.getTape().getName());
+        Queue newBest = null;
+        if (bestQueueScore < currentQueueScore) {
             newBest = currentQueue;
-        } else if (bestQueue.getCreationTime().getTimeInMillis() < currentQueue
-                .getCreationTime().getTimeInMillis()) {
-            LOGGER.debug("It is better the already selected {} "
-                    + "than the new one {}", currentQueue.getTape().getName(),
-                    bestQueue.getTape().getName());
-            newBest = bestQueue;
         } else {
-            LOGGER.warn("This is weird, there must be a selected queue.");
-            assert false : "No queue selected, mmm?";
+            newBest = bestQueue;
         }
-        if (newBest != null) {
-            LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
-        }
+
+        LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
 
         assert newBest != null : "Best queue null";
 
         LOGGER.trace("< compareQueue");
 
         return newBest;
+    }
+
+    /**
+     * Calculates the score of the queue with the described function.
+     *
+     * @param queue
+     *            Queue to analyze.
+     * @return Score of the queue.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem with the configuration.
+     */
+    private double calculateQueueScore(final Queue/* ! */queue)
+            throws ProblematicConfiguationFileException {
+        LOGGER.trace("> calculateQueueScore");
+
+        assert queue != null;
+
+        final short a = Configurator.getInstance().getShortValue("ANDRES",
+                "LIMITED_TIME", (short) 180);
+        final short c = Configurator.getInstance().getShortValue("ANDRES",
+                "AVERAGE_FILE", (short) 180);
+        final double pi = Math.PI;
+
+        // The elapsed time in minutes from the creation time.
+        final long z = new GregorianCalendar().getTimeInMillis()
+                - queue.getCreationTime().getTimeInMillis()
+                * Constants.MILLISECONDS * 60;
+        // File average.
+        final long y = queue.getByteSize() / queue.getRequestsSize();
+        // Quantity of files to read.
+        final long x = queue.getRequestsSize();
+
+        final double first = Math.pow(z, 2);
+
+        final double secondA = y / (Math.pow(a, 2));
+
+        final double secondB = Math.sin(pi * x / c - pi) / (pi * x / c - pi);
+
+        final double score = first + secondA * secondB;
+
+        LOGGER.trace("< calculateQueueScore");
+
+        return score;
     }
 
     /**
@@ -360,8 +500,9 @@ public final class AndresSelector implements Selector {
      * @param queue
      *            Queue to analyze.
      */
-    private void calculateUserScore(final Resource resource,
-            final Map<User, Float> usersScores, final Queue queue) {
+    private void calculateUserScore(final Resource/* ! */resource,
+            final Map<User, Float>/* <!,!>! */usersScores,
+            final Queue/* ! */queue) {
         LOGGER.trace("> checkUser");
 
         assert resource != null : "resource null";
