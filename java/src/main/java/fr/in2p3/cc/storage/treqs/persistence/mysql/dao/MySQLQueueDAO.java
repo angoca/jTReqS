@@ -229,6 +229,7 @@ public final class MySQLQueueDAO implements QueueDAO {
         try {
             switch (status) {
             case ACTIVATED:
+                assert nbDone == 0 && nbFailed == 0;
                 statement = MySQLBroker.getInstance().getPreparedStatement(
                         MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
                 // Insert activation time
@@ -236,6 +237,7 @@ public final class MySQLQueueDAO implements QueueDAO {
                         new Timestamp(time.getTimeInMillis()));
                 break;
             case CREATED:
+                assert nbDone == 0 && nbFailed == 0;
                 // This call could be done when the queue is unsuspended.
                 LOGGER.error("This is an invalid state call.");
                 assert false;
