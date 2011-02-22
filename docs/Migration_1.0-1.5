@@ -1,3 +1,6 @@
+---------------------------------------
+-- REQUESTS
+-----------
 -- Trigger for current database TReqS 1.0
 drop trigger if exists t1;
 
@@ -74,6 +77,11 @@ end@
 
 \d ;
 
+
+---------------------------------------
+-- QUEUES
+---------
+
 drop trigger if exists updateQueues;
 
 \d @
@@ -141,41 +149,50 @@ end@
 \d ;
 
 
+---------------------------------------
+-- HEART_BEAT
+-------------
 
-
-insert into requests (hpss_file, status, user, client) values ('file2', 10, "angoca", "localhost");
-
-update jrequests set submission_time = now(), message = 'hola2' where id = 40;
-
-select * from requests where id >= 81240;
-
-INSERT INTO jqueues(status, name, nb_reqs, mediatype_id, owner, byte_size, creation_time) VALUES (200, "ITABCD", 0, 1, "andres", 0, now());
-
-update jqueues set nb_reqs = 1 where id = 14;
-
-select * from jqueues;
-
-(while read x ; do echo $RANDOM $x ; done) < IT6575 | sort -n | tail -10 | awk '{print $2,"."}'
-
-
-
-
-
-drop trigger if exists t1;
-drop trigger if exists replicateNewRequestsBefore;
-drop trigger if exists replicateNewRequestsAfter;
+drop trigger if exists insertHeartBeat;
 
 \d @
 
-create trigger t1 before insert on requests for each row
+create trigger insertHeartBeat before insert on heart_beat for each row
 begin
-    if new.user = "xrdmgr" then
-        set new.status := 14 ;
-        set new.message := "Automatically changed - 20110213153000";
-    elseif new.hpss_file in (select file from blacklist) then
-        set new.message := "Problem in tape";
-        set new.status := 16;
-    end if;
+    insert into treqsconfig.heartbeat (pid, start_time) values (new.pid, new.start_time);
 end@
 
 \d ;
+
+drop trigger if exists updateHeartBeat;
+
+\d @
+
+create trigger updateHeartBeat before update on heart_beat for each row
+begin
+    update treqsconfig.heartbeat \
+            set last_time = new.last_time;
+end@
+
+\d ;
+
+drop trigger if exists deleteHeartBeat;
+
+\d @
+
+create trigger deleteHeartBeat before delete on heart_beat for each row
+begin
+    delete from treqsconfig.heartbeat;
+end@
+
+\d ;
+
+
+---------------------------------------
+-- TEST
+-------
+
+insert into requests (hpss_file, user, client) values ('file2', "angoca", "localhost");
+
+(while read x ; do echo $RANDOM $x ; done) < IT6575 | sort -n | tail -10 | awk '{print $2,"."}'
+
