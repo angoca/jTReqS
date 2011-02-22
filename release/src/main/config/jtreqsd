@@ -1,0 +1,119 @@
+#
+# Copyright      Jonathan Schaeffer 2009-2010,
+#                CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
+# Contributors   Andres Gomez,
+#                CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
+#
+# This software is a computer program whose purpose is to schedule, sort
+# and submit file requests to the hierarchical storage system HPSS.
+#
+# This software is governed by the CeCILL license under French law and
+# abiding by the rules of distribution of free software.  You can  use,
+# modify and/or redistribute the software under the terms of the CeCILL
+# license as circulated by CEA, CNRS and INRIA at the following URL
+# "http://www.cecill.info".
+#
+# As a counterpart to the access to the source code and rights to copy,
+# modify and redistribute granted by the license, users are provided only
+# with a limited warranty  and the software's author,  the holder of the
+# economic rights, and the successive licensors have only limited
+# liability.
+#
+# In this respect, the user's attention is drawn to the risks associated
+# with loading,  using,  modifying and/or developing or reproducing the
+# software by the user in light of its specific status of free software,
+# that may mean  that it is complicated to manipulate,  and  that  also
+# therefore means  that it is reserved for developers  and  experienced
+# professionals having in-depth computer knowledge. Users are therefore
+# encouraged to load and test the software's suitability as regards their
+# requirements in conditions enabling the security of their systems and/or
+# data to be ensured and,  more generally, to use and operate it in the
+# same conditions as regards security.
+#
+# The fact that you are presently reading this means that you have had
+# knowledge of the CeCILL license and that you accept its terms.
+
+# Sets the environment.
+export JAVA_HOME=${JAVA_HOME:-/usr/java/jdk1.6.0_22}
+export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
+export JTREQS_INSTALL_DIR=${JTREQS_INSTALL_DIR:-/opt/jtreqs}
+
+JTREQS_USER=treqs
+PAGSH_PFIX="/usr/afsws/bin/pagsh -c"
+PROG=jtreqs2
+JTREQS_PID=`ps -eo pid,user,args | grep ${PROG} | sed 's/^ *//' | cut -f1 -d" "`
+
+# For SELinux we need to use 'runuser' not 'su'
+if [ -x /sbin/runuser ]
+then
+  SU=runuser
+else
+  SU=su
+fi
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+start(){
+  RETVAL=0
+  echo -n $"Starting jTReqS: "
+  touch /var/lock/subsys/jtreqs.id
+#  if [ -z ${JTREQS_PID} ]; then
+    echo su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/etc/registerInfo.sh &" >> /var/log/jtreqs/jtreqs-console.log
+    echo su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/bin/jtreqs.sh --config ${JTREQS_INSTALL_DIR}/etc/jtreqs.conf.properties &" >> /var/log/jtreqs/jtreqs-console.log
+    RETVAL=$?
+    [ ${RETVAL} = 0 ] && success start || failure start
+#  else
+#    echo -n "jTReqS already running (pid: ${JTREQS_PID})"
+#    failure start
+#  fi
+  return ${RETVAL}
+}
+
+stop(){
+  echo -n $"Stopping jTReqS: "
+  killproc ${PROG} -TERM
+  RETVAL=$?
+  sleep 5
+  killproc ${PROG} > /dev/null 2>&1
+  echo
+  rm -f /var/lock/subsys/jtreqs.id
+  return ${RETVAL}
+}
+
+# Sums the quantity of jtreqs processes.
+status(){
+  numproc=`ps -ef | grep ${PROG} | wc -l`
+  if [ $numproc -gt 1 ]; then
+    echo "jTReqS is running, but multiple instance (weird)."
+  elif [ $numproc -eq 0 ]; then
+    echo "jTReqS is running. pid: " ${JTREQS_PID}
+  else
+    echo "jTReqS is stopped."
+  fi
+}
+
+restart(){
+  stop
+  start
+}
+
+case "$1" in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status
+    ;;
+  restart)
+    restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    exit 1
+esac
+
+exit ${RETVAL}
