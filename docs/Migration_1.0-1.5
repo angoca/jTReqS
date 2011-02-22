@@ -9,12 +9,12 @@ drop trigger if exists replicateNewRequestsAfter;
 -- Changes the request before insertion.
 create trigger replicateNewRequestsBefore before insert on requests for each row
 begin
-    if new.user = "xrdmgr" then
-        set new.status := 11 ;
-        set new.message := "Requests replicated for jTReqS 1.5";
-    elseif new.hpss_file in (select file from blacklist) then
+    if new.hpss_file in (select file from blacklist) then
         set new.status := 16;
         set new.message := "Problem in tape";
+    else
+        set new.status := 11 ;
+        set new.message := "Requests replicated for jTReqS 1.5";
     end if;
 end@
 
