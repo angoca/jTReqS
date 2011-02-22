@@ -85,13 +85,29 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * all, but this kind of problems appear when there is a problem with the
  * database, so the application has to be restarted.
  * <p>
- * TODO v2.0 this class has to use threads. La implementación sería así. Se leen
- * todos los nuevos objetos de la base de datos y se ponen en una lista. Los
- * objetos se deben pedir ordenados por propietario. Después se toman los datos
- * de un propietario y se pasan a una segunda lista, y así hasta desocupa. Cada
- * una se las segunda lista corresponde a las solicitudes de cada usuario. Por
- * cada usuario se va a pedir la info con el algoritmo de escoger el mejor
- * usuado.
+ * TODO v2.0 this class has to use threads. The implementation will be like
+ * this:<br>
+ * All the new requests are read from the databases and they are put in a list.
+ * After that, the requests are passed to a set of list, each one for a
+ * different user. Each of the second list represents the requests from a same
+ * client. After that, there are two possibilities:
+ * <ul>
+ * <li>The requests are processed sequentially, and the user to pick is selected
+ * via the algorithm of best user from the Selector. This permits to privilege
+ * the users that do not have a lot of requests against the user that has
+ * thousand of requests (for example a prestaging.</li>
+ * <li>Each of those list are processed in a separated thread. This will lead to
+ * create another object called Analyzer, and it will process sequentially the
+ * requests from a single user. This means, that if a user has a lot of
+ * requests, it will be limited by its own requests, and it will not depend on
+ * the others. This has an impact in the parallelism, because it has to check
+ * the points where the queues are created and assigned to assure that is thread
+ * safe. This possibility also will reduce the complexity of this class
+ * Dispatcher, by reducing the coupling and specializing the two possible
+ * classed: Dispatcher and Analyzer. The quantity of Analyzer will be
+ * configuration parameter, and it could be or not be possible to have several
+ * Analyzer for the same user.</li>
+ * </ul>
  *
  * @author Jonathan Schaeffer
  * @since 1.0

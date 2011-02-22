@@ -1,9 +1,5 @@
-
-UPDATE requests SET status = 16 WHERE status BETWEEN 10 AND 12
-
-
-
 -- Trigger for current database TReqS 1.0
+drop trigger if exists t1;
 
 drop trigger if exists replicateNewRequestsBefore;
 drop trigger if exists replicateNewRequestsAfter;
@@ -14,14 +10,11 @@ drop trigger if exists replicateNewRequestsAfter;
 create trigger replicateNewRequestsBefore before insert on requests for each row
 begin
     if new.user = "xrdmgr" then
-        set new.status := 14 ;
-        set new.message := "Automatically changed - 20101126153000";
+        set new.status := 11 ;
+        set new.message := "Requests replicated for jTReqS 1.5";
     elseif new.hpss_file in (select file from blacklist) then
         set new.status := 16;
         set new.message := "Problem in tape";
-    else
-        set new.status := 11 ;
-        set new.message := "Requests replicated for jTReqS 1.5";
     end if;
 end@
 
@@ -88,8 +81,14 @@ drop trigger if exists updateQueues;
 -- Replicates the modification of the request.
 create trigger updateQueues after update on jqueues for each row
 begin
+    declare nb_jobs smallint;
+    if new.nb_reqs = 0 then
+        set nb_jobs := new.nb_reqs_done + new.nb_reqs_failed;
+    else
+        set nb_jobs := new.nb_reqs;
+    end if;
     update queues set \
-            nbjobs = new.nb_reqs, \
+            nbjobs = nb_jobs, \
             nbdone = new.nb_reqs_done, \
             nbfailed = new.nb_reqs_failed, \
             status = new.status / 10, \
@@ -157,3 +156,26 @@ update jqueues set nb_reqs = 1 where id = 14;
 select * from jqueues;
 
 (while read x ; do echo $RANDOM $x ; done) < IT6575 | sort -n | tail -10 | awk '{print $2,"."}'
+
+
+
+
+
+drop trigger if exists t1;
+drop trigger if exists replicateNewRequestsBefore;
+drop trigger if exists replicateNewRequestsAfter;
+
+\d @
+
+create trigger t1 before insert on requests for each row
+begin
+    if new.user = "xrdmgr" then
+        set new.status := 14 ;
+        set new.message := "Automatically changed - 20110213153000";
+    elseif new.hpss_file in (select file from blacklist) then
+        set new.message := "Problem in tape";
+        set new.status := 16;
+    end if;
+end@
+
+\d ;
