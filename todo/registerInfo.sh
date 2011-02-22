@@ -38,6 +38,8 @@
 # This script starts treqs and registers some information about the
 # environment where it is run
 
+# TODO v2.0 include this in the Starter, rather than have this in a script.
+
 DBUSER="treqshb"
 DBNAME="treqsconf"
 
