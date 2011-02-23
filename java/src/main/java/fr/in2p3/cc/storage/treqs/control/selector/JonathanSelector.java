@@ -56,6 +56,13 @@ import fr.in2p3.cc.storage.treqs.model.User;
  * Implementation of the algorithm to choose the best queue.
  * <p>
  * This implementation was proposed by Jonathan Schaeffer.
+ * <p>
+ * The best queue between two queues is the oldest one.<br/>
+ * The best user is selected with the formula:
+ * <p>
+ * <code>
+ * Value = #TotalDrives * #Reserved - #Used
+ * </code>
  *
  * @author Andres Gomez
  * @since 1.5
