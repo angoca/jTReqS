@@ -42,9 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.model.Queue;
-import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 
 /**
@@ -57,7 +55,7 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
  * @author Andres Gomez
  * @since 1.5
  */
-public final class FifoSelector implements Selector {
+public class FifoSelector extends Selector {
     /**
      * Logger.
      */
@@ -90,66 +88,14 @@ public final class FifoSelector implements Selector {
         return ret;
     }
 
-    /**
-     * Selects a queue without taking care of the users.
+    /*
+     * (non-Javadoc)
      *
-     * @param queues
-     *            Set of queues.
-     * @param resource
-     *            Type of resource to analyze.
-     * @return The best queue.
-     * @throws TReqSException
-     *             If there is a problem while doing the calculation.
+     * @see
+     * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
+     * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
-    private Queue/* ! */selectBestQueueWithoutUser(
-            final List<Queue>/* <!>! */queues, final Resource/* ! */resource)
-            throws TReqSException {
-        LOGGER.trace("> selectBestQueueWithoutUser");
-
-        assert queues != null : "queues null";
-        assert resource != null : "resource null";
-
-        Queue best = null;
-        // First get the list of queues
-        int length = queues.size();
-        if (length > 1) {
-            best = queues.get(0);
-            for (int j = 1; j < length; j++) {
-                Queue queue = queues.get(j);
-                if (this.checkQueue(resource, queue)) {
-                    if (best != null) {
-                        best = this.compareQueue(best, queue);
-                    } else {
-                        best = queue;
-                    }
-                }
-            }
-        }
-
-        if (best != null) {
-            LOGGER.info("Best queue is on tape {}", best.getTape().getName());
-        }
-
-        LOGGER.trace("> selectBestQueueWithoutUser");
-
-        return best;
-    }
-
-    /**
-     * Compares the two queue to see which one can be selected. Both of them are
-     * eligible.
-     * <p>
-     *
-     *
-     * @param bestQueue
-     *            This is the best queue at the moment.
-     * @param currentQueue
-     *            The currently analyzed queue.
-     * @return The new best queue.
-     * @throws TReqSException
-     *             Problem in the configurator.
-     */
-    private Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
+    protected final Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
             final Queue/* ! */currentQueue) throws TReqSException {
         LOGGER.trace("> compareQueue");
 
@@ -187,60 +133,4 @@ public final class FifoSelector implements Selector {
         return newBest;
     }
 
-    /**
-     * Checks if the queue has to be selected.
-     *
-     * @param resource
-     *            Type of resource.
-     * @param queue
-     *            Currently analyzed queue.
-     * @return true if the queue could be taken in account for comparison.
-     * @throws TReqSException
-     *             If there is a problem getting the configuration.
-     */
-    private boolean checkQueue(final Resource/* ! */resource,
-            final Queue/* ! */queue) throws TReqSException {
-        LOGGER.trace("> checkQueue");
-
-        assert resource != null : "resource null";
-        assert queue != null : "queue null";
-
-        boolean ret = false;
-
-        // The queue concerns the given resource.
-        if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
-            // The queue is in created state.
-            if (queue.getStatus() == QueueStatus.CREATED) {
-                // Check if the tape for this queue is not already used by
-                // another active queue.
-                if (QueuesController.getInstance().exists(
-                        queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
-                    // There is another active queue for this tape. Just
-                    // pick another one.
-                    LOGGER.debug("Another queue on this tape" + " ({})"
-                            + " is already active. Trying next queue.", queue
-                            .getTape().getName());
-                } else {
-                    // This is a queue for the given user, for the media
-                    // type of the given resource, that is in created state
-                    // and there is not another queue in activated state.
-                    ret = true;
-                }
-            } else {
-                LOGGER.info("The analyzed queue is in other state: {} - {}",
-                        queue.getTape().getName(), queue.getStatus());
-            }
-        } else {
-            LOGGER.error("Different media type: current queue {} "
-                    + "searched {}", queue.getTape().getMediaType().getName(),
-                    resource.getMediaType().getName());
-            assert false : "This should never happen, the list of tapes is "
-                    + "the correct type";
-        }
-
-
-        LOGGER.trace("< checkQueue - {}", ret);
-
-        return ret;
-    }
 }
