@@ -90,8 +90,8 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
 -c native/src/main/c/HPSSBroker.c
      $ gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I bin/ \
 -DLINUX -Wall -fPIC -o bin/NativeBridge.o -c native/src/main/c/NativeBridge.c
-This is the MOST important line of code of this project (because of this, this
-project could have been thrown to the garbage.)
+  This is the MOST important line of code of this project (because of this, this
+  project could have been thrown to the garbage.)
      $ ld -shared -L/opt/hpss/lib -lhpss -lhpssunixauth \
 -o bin/libNativeBridge.so bin/HPSSBroker.o bin/NativeBridge.o
 
