@@ -55,6 +55,7 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
+import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.Instantiator;
 import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
@@ -105,7 +106,7 @@ public final class QueuesController {
      * @throws TReqSException
      *             If there is a problem reading the configuration.
      */
-    public static QueuesController getInstance() throws TReqSException {
+    public static QueuesController/* ! */getInstance() throws TReqSException {
         LOGGER.trace("> getInstance");
 
         if (instance == null) {
@@ -128,10 +129,6 @@ public final class QueuesController {
      * How much time a queue can be suspended.
      */
     private short suspendTimeForQueues;
-    /**
-     * Algorithm to select the queue to activate.
-     */
-    private Selector selector;
 
     /**
      * Constructor.
@@ -150,18 +147,6 @@ public final class QueuesController {
                 Constants.SECTION_QUEUE, Constants.SUSPEND_DURATION,
                 DefaultProperties.DEFAULT_SUSPEND_DURATION);
 
-        String selectorName = DefaultProperties.DEFAULT_SELECTOR;
-        try {
-            selectorName = Configurator.getInstance().getStringValue(
-                    Constants.SECTION_QUEUE, Constants.SELECTOR);
-        } catch (KeyNotFoundException e) {
-            LOGGER.debug("No setting for {}.{}, default "
-                    + "value will be used: {}", new Object[] {
-                    Constants.SECTION_QUEUE, Constants.SELECTOR, selectorName });
-        }
-
-        this.selector = Instantiator.getSelector(selectorName);
-
         LOGGER.trace("< create QueuesController");
     }
 
@@ -179,8 +164,9 @@ public final class QueuesController {
      * @throws TReqSException
      *             Never.
      */
-    public Queue addFilePositionOnTape(final FilePositionOnTape fpot,
-            final byte retry) throws TReqSException {
+    public Queue/* ! */addFilePositionOnTape(
+            final FilePositionOnTape/* ! */fpot, final byte retry)
+            throws TReqSException {
         LOGGER.trace("> addFilePositionOnTape");
 
         assert fpot != null;
@@ -259,6 +245,8 @@ public final class QueuesController {
             }
         }
 
+        assert queue != null;
+
         LOGGER.trace("< addFilePositionOnTape");
 
         return queue;
@@ -327,7 +315,7 @@ public final class QueuesController {
      *            List of resources that keep the quantity of used drives.
      * @return Quantity of active queues.
      */
-    public short countUsedResources(final List<Resource> resources) {
+    public short countUsedResources(final List<Resource>/* <!>! */resources) {
         LOGGER.trace("> countUsedResources");
 
         assert resources != null;
@@ -377,7 +365,7 @@ public final class QueuesController {
      *             If there is a problem while checking the existence of a
      *             queue.
      */
-    public short countWaitingQueues(final MediaType media)
+    public short countWaitingQueues(final MediaType/* ! */media)
             throws TReqSException {
         LOGGER.trace("> countWaitingQueues");
 
@@ -424,7 +412,7 @@ public final class QueuesController {
      * @throws TReqSException
      *             If there is a problem building the queue.
      */
-    Queue create(final FilePositionOnTape fpot, final byte retries)
+    Queue/* ! */create(final FilePositionOnTape/* ! */fpot, final byte retries)
             throws TReqSException {
         LOGGER.trace("> create");
 
@@ -439,6 +427,8 @@ public final class QueuesController {
         this.queuesMap.put(fpot.getTape().getName(), retQueue);
         LOGGER.info("Queue created for tape {}", fpot.getTape().getName());
 
+        assert retQueue != null;
+
         LOGGER.trace("< create");
 
         return retQueue;
@@ -451,7 +441,7 @@ public final class QueuesController {
      *            the tape name.
      * @return true if at least one queue exists.
      */
-    boolean exists(final String name) {
+    boolean exists(final String/* ! */name) {
         LOGGER.trace("> exists");
 
         assert name != null && !name.equals("");
@@ -474,7 +464,8 @@ public final class QueuesController {
      *            the queue status.
      * @return The queue, NULL if no queue was found.
      */
-    public Queue exists(final String name, final QueueStatus status) {
+    public Queue/* ? */exists(final String/* ! */name,
+            final QueueStatus/* ! */status) {
         LOGGER.trace("> exists");
 
         assert name != null && !name.equals("");
@@ -501,12 +492,43 @@ public final class QueuesController {
     }
 
     /**
+     * Tests the existence of a queue in the given state and whose owner is the
+     * given user.
+     *
+     * @param user
+     *            Owner of the queue.
+     * @param status
+     *            Status of the queue.
+     * @return True is exist, otherwise false.
+     */
+    public boolean exists(final User/* ! */user, final QueueStatus/* ! */status) {
+        LOGGER.trace("> exists");
+
+        assert user != null : "user null";
+        assert status != null : "status null";
+
+        boolean ret = false;
+        @SuppressWarnings("unchecked")
+        Iterator<Queue> iterator = this.queuesMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Queue queue = iterator.next();
+            if (queue.getOwner().equals(user) && queue.getStatus() == status) {
+                ret = true;
+            }
+        }
+
+        LOGGER.trace("< exists");
+
+        return ret;
+    }
+
+    /**
      * Retrieves the list of queues of the controller.
      *
      * @return Map of queues.
      */
     @SuppressWarnings("unchecked")
-    MultiMap getQueues() {
+    MultiMap/* <!>! */getQueues() {
         LOGGER.trace("> getQueues");
 
         MultiMap copy = new MultiValueMap();
@@ -524,7 +546,7 @@ public final class QueuesController {
      *            the tape to search for.
      * @return the bounds of a range that includes all the queues on tape name.
      */
-    Collection<Queue> getQueuesOnTape(final String name) {
+    Collection<Queue>/* <!>! */getQueuesOnTape(final String/* ! */name) {
         LOGGER.trace("> getQueuesOnTape");
 
         assert name != null && !name.equals("");
@@ -533,6 +555,37 @@ public final class QueuesController {
         Collection<Queue> ret = (Collection<Queue>) this.queuesMap.get(name);
 
         LOGGER.trace("< getQueuesOnTape");
+
+        return ret;
+    }
+
+    /**
+     * Instantiates a selector dynamically. This permits to change the selector
+     * in hot, without recycling the application.
+     *
+     * @return The selector defined in the configuration file, or the default
+     *         one.
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    private Selector/* ! */getSelector() throws TReqSException {
+        LOGGER.trace("> getSelector");
+
+        String selectorName = DefaultProperties.DEFAULT_SELECTOR;
+        try {
+            selectorName = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_SELECTOR, Constants.SELECTOR_NAME);
+        } catch (KeyNotFoundException e) {
+            LOGGER.debug("No setting for {}.{}, default "
+                    + "value will be used: {}", new Object[] {
+                    Constants.SECTION_SELECTOR, Constants.SELECTOR_NAME,
+                    selectorName });
+        }
+        Selector ret = Instantiator.getSelector(selectorName);
+
+        assert ret != null : "Selector cannot be null";
+
+        LOGGER.trace("< getSelector");
 
         return ret;
     }
@@ -547,9 +600,11 @@ public final class QueuesController {
      * @throws TReqSException
      *             If there a problem using the selector.
      */
-    public Queue/* ! */getBestQueue(final Resource resource)
+    public Queue/* ? */getBestQueue(final Resource/* ! */resource)
             throws TReqSException {
         LOGGER.trace("< getBestQueue");
+
+        assert resource != null;
 
         List<Queue> queues = new ArrayList<Queue>();
 
@@ -568,7 +623,9 @@ public final class QueuesController {
             }
         }
 
-        Queue ret = this.selector.selectBestQueue(queues, resource);
+        Queue ret = this.getSelector().selectBestQueue(queues, resource);
+
+        assert ret != null;
 
         LOGGER.trace("< getBestQueue");
 
@@ -584,7 +641,7 @@ public final class QueuesController {
      * @param status
      *            Status of the queue.
      */
-    public void remove(final String name, final QueueStatus status) {
+    public void remove(final String/* ! */name, final QueueStatus/* ! */status) {
         LOGGER.trace("> remove");
 
         assert name != null && !name.equals("");
