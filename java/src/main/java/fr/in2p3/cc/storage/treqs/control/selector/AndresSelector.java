@@ -167,7 +167,7 @@ public final class AndresSelector implements Selector {
                 ret = this.selectBestQueueForUser(queues, resource, bestUser);
             }
         } else {
-            ret = this.selectBestQueueWithoutUser(queues);
+            ret = this.selectBestQueueWithoutUser(queues, resource);
         }
 
         assert ret != null : "The returned queue is null";
@@ -182,15 +182,19 @@ public final class AndresSelector implements Selector {
      *
      * @param queues
      *            Set of queues.
+     * @param resource
+     *            Type of resource to analyze.
      * @return The best queue.
      * @throws TReqSException
      *             If there is a problem while doing the calculation.
      */
     private Queue/* ! */selectBestQueueWithoutUser(
-            final List<Queue>/* <!>! */queues) throws TReqSException {
+            final List<Queue>/* <!>! */queues, final Resource/* ! */resource)
+            throws TReqSException {
         LOGGER.trace("> selectBestQueueWithoutUser");
 
         assert queues != null : "queues null";
+        assert resource != null : "resource null";
 
         Queue best = null;
         // First get the list of queues
@@ -199,10 +203,12 @@ public final class AndresSelector implements Selector {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
                 Queue queue = queues.get(j);
-                if (best != null) {
-                    best = this.compareQueue(best, queue);
-                } else {
-                    best = queue;
+                if (this.checkQueue(resource, queue)) {
+                    if (best != null) {
+                        best = this.compareQueue(best, queue);
+                    } else {
+                        best = queue;
+                    }
                 }
             }
         }
@@ -244,13 +250,23 @@ public final class AndresSelector implements Selector {
         Queue best = null;
         // First get the list of queues
         int length = queues.size();
-        for (int j = 0; j < length; j++) {
-            Queue queue = queues.get(j);
-            if (this.checkQueue(resource, user, queue)) {
-                if (best != null) {
-                    best = this.compareQueue(best, queue);
-                } else {
-                    best = queue;
+        if (length > 1) {
+            best = queues.get(0);
+            for (int j = 1; j < length; j++) {
+                Queue queue = queues.get(j);
+                // The queue belong to this user.
+                if (queue.getOwner().equals(user)) {
+                    if (this.checkQueue(resource, queue)) {
+                        if (best != null) {
+                            best = this.compareQueue(best, queue);
+                        } else {
+                            best = queue;
+                        }
+                    } else {
+                        LOGGER.debug(
+                                "Different owner: current queue {} searched {}",
+                                queue.getOwner().getName(), user.getName());
+                    }
                 }
             }
         }
@@ -355,8 +371,6 @@ public final class AndresSelector implements Selector {
      *
      * @param resource
      *            Type of resource.
-     * @param user
-     *            User that owns the queue.
      * @param queue
      *            Currently analyzed queue.
      * @return true if the queue could be taken in account for comparison.
@@ -364,52 +378,43 @@ public final class AndresSelector implements Selector {
      *             If there is a problem getting the configuration.
      */
     private boolean checkQueue(final Resource/* ! */resource,
-            final User/* ! */user, final Queue/* ! */queue)
-            throws TReqSException {
+            final Queue/* ! */queue) throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null : "resource null";
-        assert user != null : "user null";
         assert queue != null : "queue null";
 
         boolean ret = false;
 
-        // The queue belong to this user.
-        if (queue.getOwner().equals(user)) {
-            // The queue concerns the given resource.
-            if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
-                // The queue is in created state.
-                if (queue.getStatus() == QueueStatus.CREATED) {
-                    // Check if the tape for this queue is not already used by
-                    // another active queue.
-                    if (QueuesController.getInstance().exists(
-                            queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
-                        // There is another active queue for this tape. Just
-                        // pick another one.
-                        LOGGER.debug("Another queue on this tape" + " ({})"
-                                + " is already active. Trying next queue.",
-                                queue.getTape().getName());
-                    } else {
-                        // This is a queue for the given user, for the media
-                        // type of the given resource, that is in created state
-                        // and there is not another queue in activated state.
-                        ret = true;
-                    }
+        // The queue concerns the given resource.
+        if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
+            // The queue is in created state.
+            if (queue.getStatus() == QueueStatus.CREATED) {
+                // Check if the tape for this queue is not already used by
+                // another active queue.
+                if (QueuesController.getInstance().exists(
+                        queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
+                    // There is another active queue for this tape. Just
+                    // pick another one.
+                    LOGGER.debug("Another queue on this tape" + " ({})"
+                            + " is already active. Trying next queue.", queue
+                            .getTape().getName());
                 } else {
-                    LOGGER.info(
-                            "The analyzed queue is in other state: {} - {}",
-                            queue.getTape().getName(), queue.getStatus());
+                    // This is a queue for the given user, for the media
+                    // type of the given resource, that is in created state
+                    // and there is not another queue in activated state.
+                    ret = true;
                 }
             } else {
-                LOGGER.error("Different media type: current queue {} "
-                        + "searched {}", queue.getTape().getMediaType()
-                        .getName(), resource.getMediaType().getName());
-                assert false : "This should never happen, the list of tapes is "
-                        + "the correct type";
+                LOGGER.info("The analyzed queue is in other state: {} - {}",
+                        queue.getTape().getName(), queue.getStatus());
             }
         } else {
-            LOGGER.debug("Different owner: current queue {} searched {}", queue
-                    .getOwner().getName(), user.getName());
+            LOGGER.error("Different media type: current queue {} "
+                    + "searched {}", queue.getTape().getMediaType().getName(),
+                    resource.getMediaType().getName());
+            assert false : "This should never happen, the list of tapes is "
+                    + "the correct type";
         }
 
         LOGGER.trace("< checkQueue - {}", ret);
