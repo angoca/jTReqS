@@ -106,8 +106,8 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * arrive to the maximal reading speed.</li>
  * <li>When there are a lot of files from a same tape that are going to be read,
  * it means that the tape will rest a lot of time mounted in the drive.</li>
- * <il>A lot of files to read from a tape means that the tape will be a lot of
- * time, but probably not reading at the maximal speed.</il>
+ * <li>A lot of files to read from a tape means that the tape will be a lot of
+ * time, but probably not reading at the maximal speed.</li>
  * </ul>
  * <p>
  * TODO v2.0 This algorithm uses the average size of the files to stage, and the
