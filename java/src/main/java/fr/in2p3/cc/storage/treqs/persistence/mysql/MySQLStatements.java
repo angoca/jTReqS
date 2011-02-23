@@ -252,7 +252,7 @@ public final class MySQLStatements {
      */
     public static final String SQL_HEART_BEAT_INSERT = "INSERT INTO "
             + HEART_BEAT + " (" + HEART_BEAT_PID + ", " + HEART_BEAT_START_TIME
-            + ") VALUES (?, NOW())";
+            + ", " + HEART_BEAT_LAST_TIME + ") VALUES (?, NOW(), NOW())";
 
     /**
      * Changes the last beat of the application.
@@ -459,9 +459,9 @@ public final class MySQLStatements {
     /**
      * SQL statement to retrieve the quantity of drives available for use.
      */
-    public static final String SQL_MEDIATYPES_SELECT = "SELECT " + MEDIATYPES_ID
-            + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES + " FROM "
-            + MEDIATYPES;
+    public static final String SQL_MEDIATYPES_SELECT = "SELECT "
+            + MEDIATYPES_ID + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES
+            + " FROM " + MEDIATYPES;
 
     /**
      * Default constructor hidden.
