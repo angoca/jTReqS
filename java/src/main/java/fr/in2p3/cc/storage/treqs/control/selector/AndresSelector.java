@@ -110,6 +110,11 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * time, but probably not reading at the maximal speed.</li>
  * </ul>
  * <p>
+ * This algorithm HAD a big problem when the selected best user has all its
+ * queues activated. Then, the best queue part will try to chose a queue for
+ * this user, but this user does not need more queues, so the other users will
+ * not be selected. This produces an error log "Unable to chose best queue".
+ * <p>
  * TODO v2.0 This algorithm uses the average size of the files to stage, and the
  * best reading speed for a drive. However, depending on the technology, the
  * best reading speed is different for different drives, and in a same drive,
@@ -148,8 +153,8 @@ public final class AndresSelector implements Selector {
 
         Queue ret = null;
         String fairShare = Configurator.getInstance().getStringValue(
-                "SELECTOR", "FAIR_SHARE");
-        if (fairShare.equals("YES")) {
+                Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
+        if (fairShare.equalsIgnoreCase(Constants.YES)) {
             User bestUser = this.selectBestUser(queues, resource);
             if (bestUser == null) {
                 // There is not non-blocked user among the waiting
@@ -420,11 +425,11 @@ public final class AndresSelector implements Selector {
      * @param resource
      *            Type of resource to analyze.
      * @return the user
-     * @throws NoQueuesDefinedException
-     *             When there are not any defined queues.
+     * @throws TReqSException
+     *             If there is a problem retrieving a queue in created state.
      */
     User/* ! */selectBestUser(final List<Queue>/* <!>! */queuesMap,
-            final Resource/* ! */resource) throws NoQueuesDefinedException {
+            final Resource/* ! */resource) throws TReqSException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";
@@ -444,8 +449,8 @@ public final class AndresSelector implements Selector {
         // First get the list of queues
 
         // Browse the list of queues and compute the users scores
-        LOGGER.debug("Computing Score: (total allocation) "
-                + "* (user allocation) - (used resources)");
+        LOGGER.debug("Computing Score: (user allocation - used resources) "
+                + "* (user allocation + 1)");
         Iterator<Queue> queues = queuesMap.iterator();
         while (queues.hasNext()) {
             Queue queue = queues.next();
@@ -456,11 +461,11 @@ public final class AndresSelector implements Selector {
         Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
         try {
-            bestUser = users.next();
+            bestUser = getNextPossibleUser(users);
             float bestScore = usersScores.get(bestUser);
             LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
             while (users.hasNext()) {
-                User user = users.next();
+                User user = getNextPossibleUser(users);
                 float score = usersScores.get(user);
                 LOGGER.info("Score: {}\t{}", user.getName(), score);
                 if (score > bestScore) {
@@ -488,6 +493,36 @@ public final class AndresSelector implements Selector {
         LOGGER.trace("< selectBestUser - {}", bestUser.getName());
 
         return bestUser;
+    }
+
+    /**
+     * Returns a users that has queues in created state.
+     *
+     * @param users
+     *            Iterator of users.
+     * @return User that has at least one queue in created state.
+     * @throws TReqSException
+     *             If there is a problem with queuesController.
+     */
+    private User/* ! */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+            throws TReqSException {
+        LOGGER.trace("> getNextPossibleUser");
+
+        assert users != null : "users null";
+
+        User ret = null;
+        User tmp = users.next();
+        while (ret == null && users.hasNext()) {
+            if (QueuesController.getInstance().exists(tmp, QueueStatus.CREATED)) {
+                ret = tmp;
+            }
+        }
+
+        assert ret != null : "No user with queues in created state, weird";
+
+        LOGGER.trace("< getNextPossibleUser");
+
+        return ret;
     }
 
     /**

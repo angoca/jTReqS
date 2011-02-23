@@ -81,6 +81,10 @@ public final class Constants {
      */
     public static final String DISPATCHER_INTERVAL = "DISPATCHER_INTERVAL";
     /**
+     * If the selector has to do a fair share.
+     */
+    public static final String FAIR_SHARE = "FAIR_SHARE";
+    /**
      * Quantity of new requests to ask to the database simultaneously.
      */
     public static final String FETCH_MAX = "FETCH_MAX";
@@ -179,9 +183,13 @@ public final class Constants {
      */
     public static final String SECTION_READING = "READING";
     /**
+     * Section in the configuration file for the Reading.
+     */
+    public static final String SECTION_SELECTOR = "SELECTOR";
+    /**
      * Parameter to select the selector type.
      */
-    public static final String SELECTOR = "SELECTOR";
+    public static final String SELECTOR_NAME = "SELECTOR";
     /**
      * Quantity of simultaneous stagers asking for files of the same tap to
      * HPSS.
@@ -199,6 +207,10 @@ public final class Constants {
      * Interval for the watchdog.
      */
     public static final String WATCHDOG_INTERVAL = "WATCHDOG_INTERVAL";
+    /**
+     * The word yes.
+     */
+    public static final String YES = "yes";
     /**
      * There was a problem with the dispatcher.
      */
