@@ -45,8 +45,9 @@
 # @author Pierre-Emmanuel Brinette
 
 
-PID_FILE="/var/lock/subsys/jtreqs.id"
-JTREQS_INIT=/etc/init.d/jtreqsd
+LOCK_FILE="/var/lock/subsys/jtreqs.id"
+#JTREQS_INIT=/etc/init.d/jtreqsd
+JTREQS_INIT="sh ./jtreqsd"
 
 # Properties to check the last heart beat.
 OK='ok'
@@ -54,10 +55,11 @@ BAD='bad'
 # Quantity of minutes to consider a heartbeat as old.
 INTERVAL=3
 SQL_SELECT="SELECT IF (last_time > DATE_SUB(NOW(), INTERVAL ${INTERVAL} MINUTE), \"${OK}\", \"${BAD}\") FROM heart_beat ;"
-DBUSER=jtreqs
-DBNAME=jtreqs
-DBPASSWD=jtreqs
+DBUSER=treqs
+DBNAME=treqsjobs
+DBPASSWD=bah5eVit
 
+rc=0
 check_db=no
 verbose=0
 
@@ -72,24 +74,27 @@ while [ "${1#-}" != "$1" -a $# -gt 0 ] ; do
 done
 
 # Checks if the file exists (Administrative status)
-if [ -e  ${PID_FILE} ] ; then
+if [ -e  ${LOCK_FILE} ] ; then
     if [ ${verbose} -eq 1 ] ; then
         echo - The service should be active.
     fi
 
     # Checks the jTReqS status
     status=`${JTREQS_INIT} status`
+    RETVAL=$?
 
 # TODO PIDOF?? or not?
 # TODO /sbin/service ou comment?
-    if [ "${status}" != "jTReqS is started." ] ; then
+    if [ "${RETVAL}" -ne 0 ] ; then
         if [ ${verbose} -eq 1 ] ; then
             echo - The service is not started.
         fi
 
         # The service should be running but it is not,
         # then restart it.
-        $JTREQS_INIT restart
+        ${JTREQS_INIT} restart
+
+        rc=1
     elif [ ${check_db} = "yes" ] ; then
         if [ ${verbose} -eq 1 ] ; then
             echo - The service is started.
@@ -104,12 +109,16 @@ if [ -e  ${PID_FILE} ] ; then
                 echo - Restarting the service because the heartbeat is too old.
             fi
             # The service has an old heartbeat
-            $JTREQS_INIT restart
+            ${JTREQS_INIT} restart
+
+            rc=1
         else
             if [ ${verbose} -eq 1 ] ; then
                 echo - The service has a good heartbeat.
             fi
         fi
+    elif [ ${verbose} -eq 1 ] ; then
+                echo - The service is running.
     fi
 else
     # The file does not exist, then do nothing.
@@ -118,3 +127,4 @@ else
     fi
 fi
 
+exit ${rc}

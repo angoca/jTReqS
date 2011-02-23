@@ -50,10 +50,9 @@ export JTREQS_INSTALL_DIR=${JTREQS_INSTALL_DIR:-/opt/jtreqs}
 
 JTREQS_USER=treqs
 PAGSH_PFIX="/usr/afsws/bin/pagsh -c"
-PROG=jtreqs2
+PROG=jtreqs
 # File for the administrative status.
-PID_FILE=/var/lock/subsys/jtreqs.id
-JTREQS_PID=`ps -eo pid,user,args | grep -v grep | grep ${PROG} | sed 's/^ *//' | cut -f1 -d" "`
+LOCK_FILE=/var/lock/subsys/jtreqs.id
 LOG_FILE=/var/log/jtreqs/jtreqs-console.log
 
 # For SELinux we need to use 'runuser' not 'su'
@@ -67,46 +66,73 @@ fi
 # Source function library.
 . /etc/rc.d/init.d/functions
 
+pid_of_jtreqs(){
+  #ps -eo pid,user,args | awk -v proc="${PROG}" '$NF == proc {print $1}'
+  pidof ${PROG}
+}
+
+JTREQS_PID=`pid_of_jtreqs`
+
 start(){
-  RETVAL=0
-  echo $"Starting jTReqS: "
-  # Administrative status.
-  touch ${PID_FILE}
-  if [ -z ${JTREQS_PID} ]; then
-    echo su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/etc/registerInfo.sh &" >> ${LOG_FILE}
-    echo su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/bin/jtreqs.sh --config ${JTREQS_INSTALL_DIR}/etc/jtreqs.conf.properties &" >> ${LOG_FILE}
-    RETVAL=$?
-  else
-    echo -n "jTReqS already running (pid: ${JTREQS_PID})"
+  echo -n "Starting jTReqS: "
+  if [ ! -x ${JTREQS_INSTALL_DIR}/bin/jtreqs.sh ] ; then
+    failure
+    echo
+    echo "jTReqS not found"
+    return 1
   fi
+  RETVAL=0
+  if [ -z "${JTREQS_PID}" ]; then
+    #su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/etc/registerInfo.sh &" >> ${LOG_FILE}
+    su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/bin/jtreqs.sh &" >> ${LOG_FILE}
+    #su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/bin/jtreqs.sh --config ${JTREQS_INSTALL_DIR}/etc/jtreqs.conf.properties &" >> ${LOG_FILE}
+    JTREQS_PID=`pid_of_jtreqs`
+    if [ -n "${JTREQS_PID}" ] ; then
+      success
+    else
+      failure
+    fi
+  else
+    echo "jTReqS already running (pid: ${JTREQS_PID})"
+  fi
+
+  # Administrative status.
+  touch ${LOCK_FILE}
+
   echo
   return ${RETVAL}
 }
 
 stop(){
   echo -n $"Stopping jTReqS: "
+
   killproc ${PROG} -TERM
   RETVAL=$?
-  sleep 5
-  killproc ${PROG} > /dev/null 2>&1
-  echo
+  # sleep 5
+
   # Administrative status.
-  rm -f ${PID_FILE}
+  rm -f ${LOCK_FILE}
+
+  echo
   return ${RETVAL}
 }
 
 # Sums the quantity of jtreqs processes.
 status(){
-  numproc=`ps -ef | grep -v grep | grep ${PROG} | wc -l`
-  if [ $numproc -gt 0 ]; then
-    echo "jTReqS is started."
+  JTREQS_PID=`pid_of_jtreqs`
+  if [ -n "${JTREQS_PID}" ]; then
+    echo "jTReqS is running."
+    RETVAL=0
   else
     echo "jTReqS is stopped."
+    RETVAL=1
   fi
+  return ${RETVAL}
 }
 
 restart(){
   stop
+  sleep 1
   start
 }
 
