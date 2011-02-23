@@ -1272,9 +1272,19 @@ public final class QueuesControllerTest {
      */
     @Test(expected = AssertionError.class)
     public void testExist05() throws TReqSException {
-        QueuesController.getInstance().exists(null, QueueStatus.CREATED);
+        QueuesController.getInstance().exists((User)null, QueueStatus.CREATED);
     }
 
+    /**
+     * Test a null exist.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test(expected = AssertionError.class)
+    public void testExist05a() throws TReqSException {
+        QueuesController.getInstance().exists((String)null, QueueStatus.CREATED);
+    }
     /**
      * Test an empty string.
      *
