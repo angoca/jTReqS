@@ -35,28 +35,30 @@
 # knowledge of the CeCILL license and that you accept its terms.
 
 
-# This script checks if treqs is still running
-# If not, restart it and print a message
-# The heartbeat table is updated accordingly
+# This script checks if jtreqs is still running by two three criteria:
+# - Administrative status file.
+# - Process id.
+# - Heartbeat in the database (which is updated by the application.)
 #
 # @author Jonathan Schaeffer
 # @author Andres Gomez
 # @author Pierre-Emmanuel Brinette
 
 
-#pid_file="/var/lock/subsys/treqs.id"
-pid_file="/tmp/treqs.id"
-#jtreqs_init=/etc/init.d/jtreqs
-jtreqs_init=echo
+PID_FILE="/var/lock/subsys/jtreqs.id"
+JTREQS_INIT=/etc/init.d/jtreqsd
 
 # Properties to check the last heart beat.
+OK='ok'
+BAD='bad'
+# Quantity of minutes to consider a heartbeat as old.
+INTERVAL=3
+SQL_SELECT="SELECT IF (last_time > DATE_SUB(NOW(), INTERVAL ${INTERVAL} MINUTE), \"${OK}\", \"${BAD}\") FROM heart_beat ;"
+DBUSER=jtreqs
+DBNAME=jtreqs
+DBPASSWD=jtreqs
+
 check_db=no
-ok='ok'
-bad='bad'
-interval=3
-sql_select="SELECT IF (last_time > DATE_SUB(NOW(), INTERVAL ${interval} MINUTE), \"${ok}\", \"${bad}\") FROM heart_beat ;"
-dbuser=jtreqs
-dbname=jtreqs
 verbose=0
 
 # Processes the arguments.
@@ -69,44 +71,43 @@ while [ "${1#-}" != "$1" -a $# -gt 0 ] ; do
     shift 1
 done
 
-# Checks if the file exists.
-if [ -e  ${pid_file} ] ; then
+# Checks if the file exists (Administrative status)
+if [ -e  ${PID_FILE} ] ; then
     if [ ${verbose} -eq 1 ] ; then
-        echo - The service should be active
+        echo - The service should be active.
     fi
 
-    # Checks the TReqS status
-    status=`${jtreqs_init} status`
+    # Checks the jTReqS status
+    status=`${JTREQS_INIT} status`
 
-status="jTReqS is STARTED"
 # TODO PIDOF?? or not?
 # TODO /sbin/service ou comment?
-    if [ "${status}" != "jTReqS is STARTED" ] ; then
+    if [ "${status}" != "jTReqS is started." ] ; then
         if [ ${verbose} -eq 1 ] ; then
-            echo - The service is not started
+            echo - The service is not started.
         fi
 
         # The service should be running but it is not,
         # then restart it.
-        $jtreqs_init restart
+        $JTREQS_INIT restart
     elif [ ${check_db} = "yes" ] ; then
         if [ ${verbose} -eq 1 ] ; then
-            echo - The service is started
+            echo - The service is started.
         fi
 
         # The service is started, then checks the heart beat.
-        result=`echo ${sql_select} | mysql -u $dbuser -p"jtreqs" $dbname | tail -1`
+        result=`echo ${SQL_SELECT} | mysql -u $DBUSER -p$DBPASSWD $DBNAME | tail -1`
 
         # Checks if the service is fine.
-        if [ "${result}" != "${ok}" ] ; then
+        if [ "${result}" != "${OK}" ] ; then
             if [ ${verbose} -eq 1 ] ; then
-                echo - Restarting the service because on an old heartbeat
+                echo - Restarting the service because the heartbeat is too old.
             fi
             # The service has an old heartbeat
-            $jtreqs_init restart
+            $JTREQS_INIT restart
         else
             if [ ${verbose} -eq 1 ] ; then
-                echo - The service has a good heartbeat
+                echo - The service has a good heartbeat.
             fi
         fi
     fi
