@@ -973,7 +973,7 @@ public final class Queue implements Comparable<Queue> {
                 this.insertNotRegisteredFile(reading);
             } else {
                 // The file is already in the queue.
-                LOGGER.warn("Queue {} already has a reading for file {}", this
+                LOGGER.info("Queue {} already has a reading for file {}", this
                         .getTape().getName(), fpot.getFile().getName());
                 if (!this.readingList.get((short) fpot.getPosition())
                         .getMetaData().getFile().getName()
