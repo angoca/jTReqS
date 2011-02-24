@@ -509,11 +509,17 @@ public final class QueuesController {
 
         boolean ret = false;
         @SuppressWarnings("unchecked")
-        Iterator<Queue> iterator = this.queuesMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Queue queue = iterator.next();
-            if (queue.getOwner().equals(user) && queue.getStatus() == status) {
-                ret = true;
+        Iterator<String> iterator = this.queuesMap.keySet().iterator();
+        while (iterator.hasNext() && !ret) {
+            String key = iterator.next();
+            @SuppressWarnings("unchecked")
+            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
+                    .get(key)).iterator();
+            while (iterator2.hasNext() && !ret) {
+                Queue queue = iterator2.next();
+                if (queue.getOwner().equals(user) && queue.getStatus() == status) {
+                    ret = true;
+                }
             }
         }
 
