@@ -393,7 +393,7 @@ public final class Queue implements Comparable<Queue> {
         }
 
         this.changeToActivated();
-        LOGGER.warn("Queue {} activated.", this.getTape().getName());
+        LOGGER.info("Queue {} activated.", this.getTape().getName());
         AbstractDAOFactory
                 .getDAOFactoryInstance()
                 .getQueueDAO()
@@ -691,7 +691,7 @@ public final class Queue implements Comparable<Queue> {
                         || (fs == RequestStatus.ON_DISK)) {
                     this.changeToEnded();
 
-                    LOGGER.warn("Queue {} ended", this.getTape().getName());
+                    LOGGER.info("Queue {} ended", this.getTape().getName());
                     AbstractDAOFactory
                             .getDAOFactoryInstance()
                             .getQueueDAO()

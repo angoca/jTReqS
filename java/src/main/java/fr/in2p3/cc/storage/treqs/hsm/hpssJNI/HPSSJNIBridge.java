@@ -199,7 +199,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             ret = NativeBridge.getInstance().getFileProperties(name);
         } catch (JNIException e) {
             int code = processException(e);
-            LOGGER.error("jni code " + code);
+            LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOENT.getCode()) {
                 throw new HSMNotExistingFileException(code);
             } else if (code == HPSSErrorCode.HPSS_EISDIR.getCode()) {
@@ -333,7 +333,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             NativeBridge.getInstance().stage(file.getName(), file.getSize());
         } catch (JNIException e) {
             int code = processException(e);
-            LOGGER.error("jni code " + code);
+            LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOSPACE.getCode()) {
                 throw new HSMResourceException(code);
             } else if (code == HPSSErrorCode.HPSS_ENOENT.getCode()) {
