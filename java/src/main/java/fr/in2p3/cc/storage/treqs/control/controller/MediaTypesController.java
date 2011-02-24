@@ -207,7 +207,7 @@ public final class MediaTypesController extends AbstractController {
                 LOGGER.debug("T10K-B");
                 ret = (MediaType) this.getObjectMap().get("T10K-B");
             } else {
-                LOGGER.error("Unknown media type");
+                LOGGER.error("Unknown media type: '{}'", storageName);
                 assert false;
             }
         }
