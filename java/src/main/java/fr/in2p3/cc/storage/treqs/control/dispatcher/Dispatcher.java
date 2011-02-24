@@ -287,12 +287,76 @@ public final class Dispatcher extends AbstractProcess {
     }
 
     /**
+     * Checks if the exception is about an empty file.
+     *
+     * @param fileRequest
+     *            Request.
+     * @param e
+     *            Exception to analyze.
+     */
+    private void checkIfEmptyFile(final FileRequest/* ! */fileRequest,
+            final AbstractHSMException/* ! */e) {
+        LOGGER.trace("> checkIfEmptyFile");
+    
+        assert fileRequest != null;
+        assert e != null;
+    
+        if (!(e instanceof HSMEmptyFileException)
+                && !(e instanceof HSMDirectoryException)) {
+            this.processException(e, fileRequest);
+        } else {
+            // The file is empty.
+            try {
+                AbstractDAOFactory
+                        .getDAOFactoryInstance()
+                        .getReadingDAO()
+                        .setRequestStatusById(fileRequest.getId(),
+                                RequestStatus.ON_DISK, e.getErrorCode(),
+                                e.getMessage());
+            } catch (TReqSException e1) {
+                LOGGER.error("Error trying to update request status", e);
+            }
+        }
+    
+        LOGGER.trace("< checkIfEmptyFile");
+    }
+
+    /**
+     * Checks if the file is on disk.
+     *
+     * @param fileRequest
+     *            Request being processed.
+     * @param cont
+     *            Value to continue.
+     * @param fileProperties
+     *            Properties of the request.
+     * @return If the process has to continue.
+     */
+    private boolean checkOnDisk(final FileRequest/* ! */fileRequest,
+            boolean cont, final HSMHelperFileProperties/* ! */fileProperties) {
+        LOGGER.trace("> checkOnDisk {}", cont);
+
+        String requestTape = fileProperties.getTapeName();
+        boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
+        LOGGER.debug("Comparing {} and {}, and the equals is {}", new Object[] {
+                requestTape, Constants.FILE_ON_DISK, equals });
+        if (cont && fileProperties != null && equals) {
+            this.fileOnDisk(fileRequest);
+            cont = false;
+        }
+
+        LOGGER.trace("< checkOnDisk {}", cont);
+
+        return cont;
+    }
+
+    /**
      * Process the case when a file is already on disk.
      *
      * @param request
      *            Request that asks for the file.
      */
-    private void fileOnDisk(final FileRequest request) {
+    private void fileOnDisk(final FileRequest/* ! */request) {
         LOGGER.trace("> fileOnDisk");
 
         assert request != null;
@@ -333,7 +397,7 @@ public final class Dispatcher extends AbstractProcess {
      * @throws TReqSException
      *             If there is a problem in any component.
      */
-    private MultiMap getNewRequests() throws TReqSException {
+    private MultiMap/* <!,!>! */getNewRequests() throws TReqSException {
         LOGGER.trace("> getNewRequests");
 
         // newRequests will be returned at the end
@@ -376,8 +440,8 @@ public final class Dispatcher extends AbstractProcess {
      * @throws TReqSException
      *             If there a problem retrieving the objects.
      */
-    private void getNewRequestsInner(final MultiMap newRequests,
-            final List<PersistenceHelperFileRequest> listNewRequests)
+    private void getNewRequestsInner(final MultiMap/* ! */newRequests,
+            final List<PersistenceHelperFileRequest>/* <!>! */listNewRequests)
             throws TReqSException {
         LOGGER.trace("> getNewRequestsInner");
 
@@ -406,6 +470,44 @@ public final class Dispatcher extends AbstractProcess {
     }
 
     /**
+     * Returns the type of media.
+     *
+     * @param fileRequest
+     *            File request.
+     * @param fileProperties
+     *            Properties of the file.
+     * @param media
+     *            Media type.
+     * @param cont
+     *            if the execution has to continue.
+     * @return
+     * @throws TReqSException
+     */
+    private MediaType/* ? */getMediaType(final FileRequest/* ! */fileRequest,
+            final HSMHelperFileProperties/* ! */fileProperties, boolean cont)
+            throws TReqSException {
+        LOGGER.trace("> getMediaType");
+    
+        assert fileRequest != null;
+        assert fileProperties != null;
+    
+        MediaType media = null;
+        if (cont && fileProperties != null) {
+            // Now, try to find out the media type.
+            try {
+                media = MediaTypesController.getInstance().getMediaType(
+                        fileProperties.getTapeName());
+            } catch (NotMediaTypeDefinedException e) {
+                this.logReadingException(e, fileRequest);
+            }
+        }
+    
+        LOGGER.trace("< getMediaType");
+    
+        return media;
+    }
+
+    /**
      * Retrieves the quantity of milliseconds between loops.
      *
      * @return Quantity of seconds between loops.
@@ -414,6 +516,140 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.trace(">< getSecondsBetweenLoops");
 
         return this.millisBetweenLoops;
+    }
+
+    /**
+     * Processes the inner part of the loop while processing the new requests.
+     * <p>
+     * This method is very complex, and to try to divide in several method could
+     * lead to misunderstandings. It is very long, but prevents to call several
+     * times the same things.
+     * <p>
+     * If there is a problem in any step, the file will not be processed.
+     *
+     * @param fileRequest
+     *            Request to process.
+     * @throws TReqSException
+     *             If there is a problem while processing the requests.
+     */
+    private void innerProcess(final FileRequest/* ! */fileRequest)
+            throws TReqSException {
+        LOGGER.trace("> innerProcess");
+    
+        assert fileRequest != null;
+    
+        boolean cont = true;
+        HSMHelperFileProperties fileProperties = null;
+        MediaType media = null;
+    
+        // Try to find a corresponding File object
+        File file = (File) FilesController.getInstance().exists(
+                fileRequest.getName());
+        if (file == null) {
+            // The object file has to be created.
+    
+            // TODO v2.0 The next lines are repeated.
+            // Get the file properties from HSM.
+            try {
+                fileProperties = HSMFactory.getHSMBridge().getFileProperties(
+                        fileRequest.getName());
+            } catch (AbstractHSMException e) {
+                this.checkIfEmptyFile(fileRequest, e);
+                cont = false;
+            }
+            cont = this.checkOnDisk(fileRequest, cont, fileProperties);
+            // The file is not in disk.
+            media = this.getMediaType(fileRequest, fileProperties, cont);
+            if (media != null) {
+                // We have all information to create a new file object.
+                file = FilesController.getInstance().add(fileRequest.getName(),
+                        fileProperties.getSize());
+            } else {
+                cont = false;
+            }
+        } else {
+            // The file is already registered in the application.
+    
+            // Maybe the metadata of the file has to be updated
+            FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+                    .getInstance().exists(file.getName());
+            if (fpot == null) {
+                LOGGER.error("No FilePostionOnTape references this File. This "
+                        + "should never happen - 2.");
+                cont = false;
+                // FIXME v2.0 This suppression is not synchronous. Careful.
+                // This should be unified with the previous 'exists'.
+                FilesController.getInstance().remove(file.getName());
+            }
+            if (cont && fpot != null) {
+                if (fpot.isMetadataOutdated()) {
+                    LOGGER.info("Refreshing metadata of file {}",
+                            fileRequest.getName());
+                    // TODO v2.0 The next lines are repeated.
+                    try {
+                        fileProperties = HSMFactory.getHSMBridge()
+                                .getFileProperties(fileRequest.getName());
+                    } catch (AbstractHSMException e) {
+                        this.checkIfEmptyFile(fileRequest, e);
+                        cont = false;
+                    }
+                    cont = this.checkOnDisk(fileRequest, cont, fileProperties);
+                    // The file is not in disk.
+                    media = this
+                            .getMediaType(fileRequest, fileProperties, cont);
+                    if (media != null) {
+                        // Updates the file size if it has changed.
+                        fpot.getFile().setSize(fileProperties.getSize());
+                    } else {
+                        cont = false;
+                    }
+                } else {
+                    fileProperties = new HSMHelperFileProperties(fpot.getTape()
+                            .getName(), fpot.getPosition(), fpot.getFile()
+                            .getSize());
+                    media = fpot.getTape().getMediaType();
+                }
+            }
+        }
+        if (cont) {
+            this.submitRequest(fileProperties, media, file, fileRequest);
+        }
+    
+        LOGGER.trace("< innerProcess");
+    }
+
+    /**
+     * Logs the error in the database.
+     *
+     * @param exception
+     *            Exception to log.
+     * @param request
+     *            FileRequest that had a problem.
+     */
+    private void logReadingException(final TReqSException/* ! */exception,
+            final FileRequest/* ! */request) {
+        LOGGER.trace("> logReadingException");
+    
+        assert exception != null;
+        assert request != null;
+    
+        int code = 0;
+        if (exception instanceof AbstractHSMException) {
+            AbstractHSMException e = (AbstractHSMException) exception;
+            code = e.getErrorCode();
+        }
+    
+        try {
+            AbstractDAOFactory
+                    .getDAOFactoryInstance()
+                    .getReadingDAO()
+                    .setRequestStatusById(request.getId(),
+                            RequestStatus.FAILED, code, exception.getMessage());
+        } catch (TReqSException e1) {
+            LOGGER.error("Error trying to update request status", exception);
+        }
+    
+        LOGGER.trace("< logReadingException");
     }
 
     /*
@@ -453,7 +689,8 @@ public final class Dispatcher extends AbstractProcess {
      *             If there is a problem while processing the requests.
      */
     @SuppressWarnings("unchecked")
-    private void process(final MultiMap newRequests) throws TReqSException {
+    private void process(final MultiMap/* ! */newRequests)
+            throws TReqSException {
         LOGGER.trace("> process");
 
         assert newRequests != null;
@@ -485,167 +722,6 @@ public final class Dispatcher extends AbstractProcess {
     }
 
     /**
-     * Processes the inner part of the loop while processing the new requests.
-     * <p>
-     * This method is very complex, and to try to divide in several method could
-     * lead to misunderstandings. It is very long, but prevents to call several
-     * times the same things.
-     * <p>
-     * If there is a problem in any step, the file will not be processed.
-     *
-     * @param fileRequest
-     *            Request to process.
-     * @throws TReqSException
-     *             If there is a problem while processing the requests.
-     */
-    private void innerProcess(final FileRequest fileRequest)
-            throws TReqSException {
-        LOGGER.trace("> innerProcess");
-
-        assert fileRequest != null;
-
-        boolean cont = true;
-        HSMHelperFileProperties fileProperties = null;
-        MediaType media = null;
-
-        // Try to find a corresponding File object
-        File file = (File) FilesController.getInstance().exists(
-                fileRequest.getName());
-        if (file == null) {
-            // The object file has to be created.
-
-            // TODO v2.0 The next lines are repeated.
-            // Get the file properties from HSM.
-            try {
-                fileProperties = HSMFactory.getHSMBridge().getFileProperties(
-                        fileRequest.getName());
-            } catch (AbstractHSMException e) {
-                if (!(e instanceof HSMEmptyFileException)
-                        && !(e instanceof HSMDirectoryException)) {
-                    this.processException(e, fileRequest);
-                    cont = false;
-                } else {
-                    // The file is empty.
-                    try {
-                        AbstractDAOFactory
-                                .getDAOFactoryInstance()
-                                .getReadingDAO()
-                                .setRequestStatusById(fileRequest.getId(),
-                                        RequestStatus.ON_DISK,
-                                        e.getErrorCode(), e.getMessage());
-                    } catch (TReqSException e1) {
-                        LOGGER.error("Error trying to update request "
-                                + "status", e);
-                    }
-                    cont = false;
-                }
-            }
-            cont = this.checkOnDisk(fileRequest, cont, fileProperties);
-            // The file is not registered in the application and it is not in
-            // disk.
-            if (cont && fileProperties != null) {
-                // Now, try to find out the media type.
-                try {
-                    media = MediaTypesController.getInstance().getMediaType(
-                            fileProperties.getTapeName());
-                } catch (NotMediaTypeDefinedException e) {
-                    this.logReadingException(e, fileRequest);
-                }
-                if (media == null) {
-                    cont = false;
-                }
-            }
-            if (cont && fileProperties != null) {
-                // We have all information to create a new file object.
-                file = FilesController.getInstance().add(fileRequest.getName(),
-                        fileProperties.getSize());
-            }
-        } else {
-            // The file is already registered in the application.
-            // Maybe the metadata of the file has to be updated
-            FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
-                    .getInstance().exists(file.getName());
-            if (fpot == null) {
-                LOGGER.error("No FilePostionOnTape references this File. This "
-                        + "should never happen - 2.");
-                cont = false;
-                // FIXME v2.0 This suppression is not synchronous. Careful.
-                // This should be unified with the previous 'exists'.
-                FilesController.getInstance().remove(file.getName());
-            }
-            if (cont && fpot != null) {
-                if (fpot.isMetadataOutdated()) {
-                    LOGGER.info("Refreshing metadata of file {}",
-                            fileRequest.getName());
-                    // TODO v2.0 The next lines are repeated.
-                    try {
-                        fileProperties = HSMFactory.getHSMBridge()
-                                .getFileProperties(fileRequest.getName());
-                    } catch (AbstractHSMException e1) {
-                        this.processException(e1, fileRequest);
-                        cont = false;
-                    }
-                    if (cont
-                            && fileProperties != null
-                            && fileProperties.getTapeName() == Constants.FILE_ON_DISK) {
-                        this.fileOnDisk(fileRequest);
-                        cont = false;
-                    }
-                    if (cont && fileProperties != null) {
-                        media = MediaTypesController.getInstance()
-                                .getMediaType(fileProperties.getTapeName());
-                        if (media == null) {
-                            cont = false;
-                        }
-                    }
-                    if (cont && fileProperties != null) {
-                        fpot.getFile().setSize(fileProperties.getSize());
-                    }
-                } else {
-                    fileProperties = new HSMHelperFileProperties(fpot.getTape()
-                            .getName(), fpot.getPosition(), fpot.getFile()
-                            .getSize());
-                    media = fpot.getTape().getMediaType();
-                }
-            }
-        }
-        if (cont) {
-            this.submitRequest(fileProperties, media, file, fileRequest);
-        }
-
-        LOGGER.trace("< innerProcess");
-    }
-
-    /**
-     * Checks if the file is on disk.
-     *
-     * @param fileRequest
-     *            Request being processed.
-     * @param cont
-     *            Value to continue.
-     * @param fileProperties
-     *            Properties of the request.
-     * @return If the process has to continue.
-     */
-    private boolean checkOnDisk(final FileRequest fileRequest, boolean cont,
-            HSMHelperFileProperties fileProperties) {
-        LOGGER.trace("> checkOnDisk");
-
-        String requestTape = fileProperties.getTapeName();
-        boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
-        LOGGER.debug("Comparing {} and {}, and the equals is {}", new Object[] {
-                requestTape, Constants.FILE_ON_DISK, equals });
-        if (cont && fileProperties != null && equals) {
-            this.fileOnDisk(fileRequest);
-            cont = false;
-        }
-
-        LOGGER.trace("< checkOnDisk");
-
-        return cont;
-    }
-
-    /**
      * Process a generated exception, writing the problem in the database. It
      * just write the problem in the database, but it does not stop the
      * application.
@@ -655,52 +731,18 @@ public final class Dispatcher extends AbstractProcess {
      * @param request
      *            Problematic request
      */
-    private void processException(final AbstractHSMException exception,
-            final FileRequest request) {
+    private void processException(final AbstractHSMException/* ! */exception,
+            final FileRequest/* ! */request) {
         LOGGER.trace("> processException");
-
+    
         assert exception != null;
         assert request != null;
-
-        LOGGER.warn("Setting FileRequest {} as failed: {}", request.getId(),
+    
+        LOGGER.info("Setting FileRequest {} as failed: {}", request.getId(),
                 exception.getMessage());
         this.logReadingException(exception, request);
-
+    
         LOGGER.trace("< processException");
-    }
-
-    /**
-     * Logs the error in the database.
-     *
-     * @param exception
-     *            Exception to log.
-     * @param request
-     *            FileRequest that had a problem.
-     */
-    private void logReadingException(final TReqSException exception,
-            final FileRequest request) {
-        LOGGER.trace("> logReadingException");
-
-        assert exception != null;
-        assert request != null;
-
-        int code = 0;
-        if (exception instanceof AbstractHSMException) {
-            AbstractHSMException e = (AbstractHSMException) exception;
-            code = e.getErrorCode();
-        }
-
-        try {
-            AbstractDAOFactory
-                    .getDAOFactoryInstance()
-                    .getReadingDAO()
-                    .setRequestStatusById(request.getId(),
-                            RequestStatus.FAILED, code, exception.getMessage());
-        } catch (TReqSException e1) {
-            LOGGER.error("Error trying to update request status", exception);
-        }
-
-        LOGGER.trace("< logReadingException");
     }
 
     /**
@@ -814,9 +856,10 @@ public final class Dispatcher extends AbstractProcess {
      * @throws TReqSException
      *             If there is a problem adding an object.
      */
-    private void submitRequest(final HSMHelperFileProperties fileProperties,
-            final MediaType media, final File file, final FileRequest request)
-            throws TReqSException {
+    private void submitRequest(
+            final HSMHelperFileProperties/* ! */fileProperties,
+            final MediaType/* ! */media, final File/* ! */file,
+            final FileRequest/* ! */request) throws TReqSException {
         LOGGER.trace("> submitRequest");
 
         assert fileProperties != null;
