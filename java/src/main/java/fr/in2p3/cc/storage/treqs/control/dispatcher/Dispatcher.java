@@ -540,13 +540,7 @@ public final class Dispatcher extends AbstractProcess {
                     cont = false;
                 }
             }
-            if (cont
-                    && fileProperties != null
-                    && fileProperties.getTapeName().equals(
-                            Constants.FILE_ON_DISK)) {
-                this.fileOnDisk(fileRequest);
-                cont = false;
-            }
+            cont = this.checkOnDisk(fileRequest, cont, fileProperties);
             // The file is not registered in the application and it is not in
             // disk.
             if (cont && fileProperties != null) {
@@ -620,6 +614,35 @@ public final class Dispatcher extends AbstractProcess {
         }
 
         LOGGER.trace("< innerProcess");
+    }
+
+    /**
+     * Checks if the file is on disk.
+     *
+     * @param fileRequest
+     *            Request being processed.
+     * @param cont
+     *            Value to continue.
+     * @param fileProperties
+     *            Properties of the request.
+     * @return If the process has to continue.
+     */
+    private boolean checkOnDisk(final FileRequest fileRequest, boolean cont,
+            HSMHelperFileProperties fileProperties) {
+        LOGGER.trace("> checkOnDisk");
+
+        String requestTape = fileProperties.getTapeName();
+        boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
+        LOGGER.debug("Comparing {} and {}, and the equals is {}", new Object[] {
+                requestTape, Constants.FILE_ON_DISK, equals });
+        if (cont && fileProperties != null && equals) {
+            this.fileOnDisk(fileRequest);
+            cont = false;
+        }
+
+        LOGGER.trace("< checkOnDisk");
+
+        return cont;
     }
 
     /**
