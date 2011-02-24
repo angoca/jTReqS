@@ -2121,7 +2121,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String notExpectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2162,7 +2162,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2204,7 +2204,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 1, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String expectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2246,7 +2246,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String expectedContains3 = "end time: ";
