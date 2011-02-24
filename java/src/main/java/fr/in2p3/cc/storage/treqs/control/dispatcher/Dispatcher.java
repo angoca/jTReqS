@@ -297,27 +297,19 @@ public final class Dispatcher extends AbstractProcess {
     private void checkIfEmptyFile(final FileRequest/* ! */fileRequest,
             final AbstractHSMException/* ! */e) {
         LOGGER.trace("> checkIfEmptyFile");
-    
+
         assert fileRequest != null;
         assert e != null;
-    
+
         if (!(e instanceof HSMEmptyFileException)
                 && !(e instanceof HSMDirectoryException)) {
             this.processException(e, fileRequest);
         } else {
             // The file is empty.
-            try {
-                AbstractDAOFactory
-                        .getDAOFactoryInstance()
-                        .getReadingDAO()
-                        .setRequestStatusById(fileRequest.getId(),
-                                RequestStatus.ON_DISK, e.getErrorCode(),
-                                e.getMessage());
-            } catch (TReqSException e1) {
-                LOGGER.error("Error trying to update request status", e);
-            }
+            this.writeRequestStatus(fileRequest, e.getMessage(),
+                    e.getErrorCode(), RequestStatus.ON_DISK);
         }
-    
+
         LOGGER.trace("< checkIfEmptyFile");
     }
 
@@ -363,17 +355,9 @@ public final class Dispatcher extends AbstractProcess {
 
         LOGGER.info("File {} is on disk, set the request as done",
                 request.getName());
-        try {
-            AbstractDAOFactory
-                    .getDAOFactoryInstance()
-                    .getReadingDAO()
-                    .setRequestStatusById(request.getId(),
-                            RequestStatus.ON_DISK, 0,
-                            "File is already on disk.");
-        } catch (TReqSException e) {
-            LOGGER.error("Error trying to update request status: {}",
-                    e.getMessage());
-        }
+
+        this.writeRequestStatus(request, "File is already on disk.", 0,
+                RequestStatus.ON_DISK);
 
         LOGGER.trace("< fileOnDisk");
     }
@@ -487,10 +471,10 @@ public final class Dispatcher extends AbstractProcess {
             final HSMHelperFileProperties/* ! */fileProperties, boolean cont)
             throws TReqSException {
         LOGGER.trace("> getMediaType");
-    
+
         assert fileRequest != null;
         assert fileProperties != null;
-    
+
         MediaType media = null;
         if (cont && fileProperties != null) {
             // Now, try to find out the media type.
@@ -498,12 +482,12 @@ public final class Dispatcher extends AbstractProcess {
                 media = MediaTypesController.getInstance().getMediaType(
                         fileProperties.getTapeName());
             } catch (NotMediaTypeDefinedException e) {
-                this.logReadingException(e, fileRequest);
+                this.logFailReadingException(e, fileRequest);
             }
         }
-    
+
         LOGGER.trace("< getMediaType");
-    
+
         return media;
     }
 
@@ -535,19 +519,19 @@ public final class Dispatcher extends AbstractProcess {
     private void innerProcess(final FileRequest/* ! */fileRequest)
             throws TReqSException {
         LOGGER.trace("> innerProcess");
-    
+
         assert fileRequest != null;
-    
+
         boolean cont = true;
         HSMHelperFileProperties fileProperties = null;
         MediaType media = null;
-    
+
         // Try to find a corresponding File object
         File file = (File) FilesController.getInstance().exists(
                 fileRequest.getName());
         if (file == null) {
             // The object file has to be created.
-    
+
             // TODO v2.0 The next lines are repeated.
             // Get the file properties from HSM.
             try {
@@ -569,7 +553,7 @@ public final class Dispatcher extends AbstractProcess {
             }
         } else {
             // The file is already registered in the application.
-    
+
             // Maybe the metadata of the file has to be updated
             FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
                     .getInstance().exists(file.getName());
@@ -614,7 +598,7 @@ public final class Dispatcher extends AbstractProcess {
         if (cont) {
             this.submitRequest(fileProperties, media, file, fileRequest);
         }
-    
+
         LOGGER.trace("< innerProcess");
     }
 
@@ -626,29 +610,22 @@ public final class Dispatcher extends AbstractProcess {
      * @param request
      *            FileRequest that had a problem.
      */
-    private void logReadingException(final TReqSException/* ! */exception,
+    private void logFailReadingException(final TReqSException/* ! */exception,
             final FileRequest/* ! */request) {
         LOGGER.trace("> logReadingException");
-    
+
         assert exception != null;
         assert request != null;
-    
+
         int code = 0;
         if (exception instanceof AbstractHSMException) {
             AbstractHSMException e = (AbstractHSMException) exception;
             code = e.getErrorCode();
         }
-    
-        try {
-            AbstractDAOFactory
-                    .getDAOFactoryInstance()
-                    .getReadingDAO()
-                    .setRequestStatusById(request.getId(),
-                            RequestStatus.FAILED, code, exception.getMessage());
-        } catch (TReqSException e1) {
-            LOGGER.error("Error trying to update request status", exception);
-        }
-    
+
+        this.writeRequestStatus(request, exception.getMessage(), code,
+                RequestStatus.FAILED);
+
         LOGGER.trace("< logReadingException");
     }
 
@@ -734,14 +711,14 @@ public final class Dispatcher extends AbstractProcess {
     private void processException(final AbstractHSMException/* ! */exception,
             final FileRequest/* ! */request) {
         LOGGER.trace("> processException");
-    
+
         assert exception != null;
         assert request != null;
-    
+
         LOGGER.info("Setting FileRequest {} as failed: {}", request.getId(),
                 exception.getMessage());
-        this.logReadingException(exception, request);
-    
+        this.logFailReadingException(exception, request);
+
         LOGGER.trace("< processException");
     }
 
@@ -922,5 +899,40 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.warn("Dispatcher Stopped");
 
         LOGGER.trace("< toStart");
+    }
+
+    /**
+     * Writes the status for a request in the data source.
+     *
+     * @param request
+     *            Request to process.
+     * @param message
+     *            Related message.
+     * @param code
+     *            Error code.
+     * @param status
+     *            New status of the request.
+     */
+    private void writeRequestStatus(final FileRequest/* ! */request,
+            final String/* ! */message, int code,
+            final RequestStatus/* ! */status) {
+        LOGGER.trace("> writeRequestStatus");
+    
+        assert request != null;
+        assert message != null && !message.equals("");
+        assert status != null;
+    
+        try {
+            AbstractDAOFactory
+                    .getDAOFactoryInstance()
+                    .getReadingDAO()
+                    .setRequestStatusById(request.getId(), status, code,
+                            message);
+        } catch (TReqSException e) {
+            LOGGER.error("Error trying to update request status: {}",
+                    e.getMessage());
+        }
+    
+        LOGGER.trace("< writeRequestStatus");
     }
 }
