@@ -31,7 +31,7 @@ public final class NotMediaTypeDefinedException extends TReqSException {
      *            Name of the storage name.
      */
     public NotMediaTypeDefinedException(final String storageName) {
-        super(storageName);
+        super("Unknown media type: " + storageName);
 
         LOGGER.trace(">< Instance creation");
     }
