@@ -46,8 +46,7 @@
 
 
 LOCK_FILE="/var/lock/subsys/jtreqs.id"
-#JTREQS_INIT=/etc/init.d/jtreqsd
-JTREQS_INIT="sh ./jtreqsd"
+JTREQS_INIT=/etc/init.d/jtreqsd
 
 # Properties to check the last heart beat.
 OK='ok'
