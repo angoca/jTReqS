@@ -131,6 +131,10 @@ public final class Constants {
      */
     public static final int MILLISECONDS = 1000;
     /**
+     * The word no.
+     */
+    public static final String NO = "no";
+    /**
      * String that represent the name of the owner when a queue does not have an
      * owner.
      */
