@@ -549,10 +549,15 @@ public final class QueuesControllerTest {
 
     /**
      * Tries to retrieve the best user when there are not any registered queue.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             Never.
      */
     @Test
-    public void testBestUser01() {
+    public void testBestUser01() throws ProblematicConfiguationFileException {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        Configurator.getInstance().setValue(Constants.SECTION_SELECTOR,
+                Constants.FAIR_SHARE, Constants.YES);
 
         boolean failed = false;
         try {
@@ -1272,7 +1277,7 @@ public final class QueuesControllerTest {
      */
     @Test(expected = AssertionError.class)
     public void testExist05() throws TReqSException {
-        QueuesController.getInstance().exists((User)null, QueueStatus.CREATED);
+        QueuesController.getInstance().exists((User) null, QueueStatus.CREATED);
     }
 
     /**
@@ -1283,8 +1288,10 @@ public final class QueuesControllerTest {
      */
     @Test(expected = AssertionError.class)
     public void testExist05a() throws TReqSException {
-        QueuesController.getInstance().exists((String)null, QueueStatus.CREATED);
+        QueuesController.getInstance().exists((String) null,
+                QueueStatus.CREATED);
     }
+
     /**
      * Test an empty string.
      *
