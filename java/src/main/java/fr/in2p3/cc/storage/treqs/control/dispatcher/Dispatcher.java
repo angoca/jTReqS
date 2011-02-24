@@ -328,13 +328,16 @@ public final class Dispatcher extends AbstractProcess {
             boolean cont, final HSMHelperFileProperties/* ! */fileProperties) {
         LOGGER.trace("> checkOnDisk {}", cont);
 
-        String requestTape = fileProperties.getTapeName();
-        boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
-        LOGGER.debug("Comparing {} and {}, and the equals is {}", new Object[] {
-                requestTape, Constants.FILE_ON_DISK, equals });
-        if (cont && fileProperties != null && equals) {
-            this.fileOnDisk(fileRequest);
-            cont = false;
+        if (cont && fileProperties != null) {
+            String requestTape = fileProperties.getTapeName();
+            boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
+            LOGGER.debug(
+                    "Comparing {} and {}, and the equals is {}",
+                    new Object[] { requestTape, Constants.FILE_ON_DISK, equals });
+            if (equals) {
+                this.fileOnDisk(fileRequest);
+                cont = false;
+            }
         }
 
         LOGGER.trace("< checkOnDisk {}", cont);
@@ -468,12 +471,11 @@ public final class Dispatcher extends AbstractProcess {
      * @throws TReqSException
      */
     private MediaType/* ? */getMediaType(final FileRequest/* ! */fileRequest,
-            final HSMHelperFileProperties/* ! */fileProperties, boolean cont)
+            final HSMHelperFileProperties/* ? */fileProperties, boolean cont)
             throws TReqSException {
         LOGGER.trace("> getMediaType");
 
         assert fileRequest != null;
-        assert fileProperties != null;
 
         MediaType media = null;
         if (cont && fileProperties != null) {
@@ -917,11 +919,11 @@ public final class Dispatcher extends AbstractProcess {
             final String/* ! */message, int code,
             final RequestStatus/* ! */status) {
         LOGGER.trace("> writeRequestStatus");
-    
+
         assert request != null;
         assert message != null && !message.equals("");
         assert status != null;
-    
+
         try {
             AbstractDAOFactory
                     .getDAOFactoryInstance()
@@ -932,7 +934,7 @@ public final class Dispatcher extends AbstractProcess {
             LOGGER.error("Error trying to update request status: {}",
                     e.getMessage());
         }
-    
+
         LOGGER.trace("< writeRequestStatus");
     }
 }
