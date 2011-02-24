@@ -52,6 +52,9 @@ SOLUTION:
 Try to change the rights of the directory or existing files, in order to permit
 the user that is executing the application can write there.
 
+  # chown -R jtreqs /var/log/jtreqs
+  # chmod -R a+w /var/log/jtreqs
+
 OR
 
 Modify the loback.xml file changing the directory for the output of both log
