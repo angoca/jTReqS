@@ -54,6 +54,7 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
@@ -152,8 +153,12 @@ public final class AndresSelector extends Selector {
         assert resource != null : "resource null";
 
         Queue ret = null;
-        String fairShare = Configurator.getInstance().getStringValue(
-                Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
+        String fairShare = Constants.NO;
+        try {
+            fairShare = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
+        } catch (KeyNotFoundException e) {
+        }
         if (fairShare.equalsIgnoreCase(Constants.YES)) {
             User bestUser = this.selectBestUser(queues, resource);
             if (bestUser == null) {
@@ -205,7 +210,7 @@ public final class AndresSelector extends Selector {
         Queue best = null;
         // First get the list of queues
         int length = queues.size();
-        if (length > 1) {
+        if (length >= 1) {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
                 Queue queue = queues.get(j);
@@ -358,17 +363,18 @@ public final class AndresSelector extends Selector {
         Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
         try {
-            bestUser = getNextPossibleUser(users);
+            bestUser = this.getNextPossibleUser(users);
             float bestScore = usersScores.get(bestUser);
             LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
-            while (users.hasNext()) {
-                User user = getNextPossibleUser(users);
+            User user = this.getNextPossibleUser(users);
+            while (user != null) {
                 float score = usersScores.get(user);
                 LOGGER.info("Score: {}\t{}", user.getName(), score);
                 if (score > bestScore) {
                     bestUser = user;
                     bestScore = score;
                 }
+                user = this.getNextPossibleUser(users);
             }
 
             // We have to check that the best user has positive share
@@ -401,21 +407,22 @@ public final class AndresSelector extends Selector {
      * @throws TReqSException
      *             If there is a problem with queuesController.
      */
-    private User/* ! */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
             throws TReqSException {
         LOGGER.trace("> getNextPossibleUser");
 
         assert users != null : "users null";
 
         User ret = null;
-        User tmp = users.next();
-        while (ret == null && users.hasNext()) {
-            if (QueuesController.getInstance().exists(tmp, QueueStatus.CREATED)) {
-                ret = tmp;
-            }
+        if (users.hasNext()) {
+            do {
+                User tmp = users.next();
+                if (QueuesController.getInstance().exists(tmp,
+                        QueueStatus.CREATED)) {
+                    ret = tmp;
+                }
+            } while (ret == null && users.hasNext());
         }
-
-        assert ret != null : "No user with queues in created state, weird";
 
         LOGGER.trace("< getNextPossibleUser");
 
