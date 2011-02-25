@@ -52,7 +52,7 @@
   </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.5.2</version>
     <artifactId>jtreqs-server-parent</artifactId>
   </parent>
   <properties>
@@ -142,7 +142,7 @@
                 <include name="watchdog.sh" />
               </fileset>
             </copy>
-            <chmod dir="target/jtreqs/bin" perm="555" includes="*"></chmod>
+            <chmod dir="target/jtreqs/bin" perm="555" includes="*" />
           </target>
         </configuration>
         <executions>
