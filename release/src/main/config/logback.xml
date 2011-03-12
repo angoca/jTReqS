@@ -41,7 +41,7 @@
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       <!-- daily rollover -->
       <fileNamePattern>/var/log/jtreqs/jtreqs-trace.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
-      <!-- keep 1 days' worth of history -->
+      <!-- keep 4 days' worth of history -->
       <maxHistory>4</maxHistory>
     </rollingPolicy>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
