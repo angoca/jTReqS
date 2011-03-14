@@ -131,7 +131,7 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
      $ export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
      $ export LD_LIBRARY_PATH=`pwd`/bin:${HPSS_ROOT}/lib
      $ cd bin
-     $ sh jtreqs.sh
+     $ sh ./jtreqs.sh
 
 
 * Usage
