@@ -61,7 +61,7 @@ import fr.in2p3.cc.storage.treqs.tools.ConfiguratorTest;
 @SuiteClasses({ MediaTypeTest.class, FileRequestTest.class, FileTest.class,
         TapeTest.class, ResourceTest.class, UserTest.class,
         FilePositionOnTapeTest.class, ReadingTest.class, QueueTest.class,
-        StagerTest.class, ConfiguratorTest.class, FileRequestTest.class })
+        StagerTest.class, ConfiguratorTest.class })
 public final class UnitTests {
     // Nothing.
 }
