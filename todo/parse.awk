@@ -27,21 +27,21 @@ BEGIN {
 {
 
 	if ($0 ~ tape) {
-		if (/ Started./) { 
+		if (/ Staging\./) { 
 			if ($0 ~ stager1) {
-				print $2,$3,"\t1-s";
+				print $2,$3,"\t1-s",$12;
 			} else if ($0 ~ stager2) {
-				print $2,$3,"\t\t2-s";
+				print $2,$3,"\t\t2-s",$12;
 			} else if ($0 ~ stager3) {
-				print $2,$3,"\t\t\t3-s";
+				print $2,$3,"\t\t\t3-s",$12;
 			}
-		} else if (/successfully staged/) {
+		} else if (/ Succesfully staged/) {
                        if ($0 ~ stager1) {
-                                print $2,$3,"\t1-e";
+                                print $2,$3,"\t1-e",$12;
                         } else if ($0 ~ stager2) {
-                                print $2,$3,"\t\t2-e";
+                                print $2,$3,"\t\t2-e",$12;
                         } else if ($0 ~ stager3) {
-                                print $2,$3,"\t\t\t3-e";
+                                print $2,$3,"\t\t\t3-e",$12;
                         }
 		}
 	}
