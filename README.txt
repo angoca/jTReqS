@@ -36,13 +36,13 @@ for HPSS. This implementation is in Java.
  - Remove any existent maven artifact
      $ rm -rf ~/.m2/repository/
  - Compile the project with Maven.
-     $ mvn -P jTReqS
+     $ mvn
    There could be many test failures, and they are due to the local database
-   configuration. If you change the
-       file scr/test/resources/jtreqs.conf.test.properties
+   configuration. If you change the file:
+      java/scr/test/config/jtreqs.conf.test.properties
    you will not have these errors.
  - Copy/Move and extract the file
-     release/target/jtreqs.tar.gz
+      release/target/jtreqs.tar.gz
    to a good location.
 
 (Without Maven)
@@ -58,10 +58,10 @@ for HPSS. This implementation is in Java.
 vendor/apache/commons-cli-1.2/commons-cli-1.2.jar:\
 vendor/apache/commons-collections-3.2.1/commons-collections-3.2.1.jar:\
 vendor/apache/commons-configuration-1.6/commons-configuration-1.6.jar:\
-vendor/apache/commons-logging-1.1.1/commons-logging-1.1.1.jar:\
 vendor/apache/commons-lang-2.5/commons-lang-2.5.jar:\
-vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar:\
-vendor/mysql/mysql-connector-java-5.1.13/mysql-connector-java-5.1.13-bin.jar \
+vendor/apache/commons-logging-1.1.1/commons-logging-1.1.1.jar:\
+vendor/mysql/mysql-connector-java-5.1.13/mysql-connector-java-5.1.13-bin.jar:\
+vendor/slf4j/slf4j-1.6.1/slf4j-api-1.6.1.jar \
 java/src/main/java/fr/in2p3/cc/storage/treqs/*.java \
 java/src/main/java/fr/in2p3/cc/storage/treqs/control/*.java \
 java/src/main/java/fr/in2p3/cc/storage/treqs/control/activator/*.java \
@@ -100,13 +100,19 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
 
  - Create the database and give proper permissions to user <jtreqs>.
    > CREATE DATABASE jtreqs;
-   > GRANT SELECT, INSERT, UPDATE ON treqs.* TO 'jtreqs'@'localhost' IDENTIFIED BY 'cleverpassword'
+   > CREATE USER 'jtreqs'@'localhost' IDENTIFIED BY 'jtreqs';
+   For tests.
+   > GRANT ALL ON jtreqs.* TO 'jtreqs'@'localhost';
+   For production.
+   > GRANT SELECT, INSERT, UPDATE ON jtreqs.* TO 'jtreqs'@'localhost';
  - Modify the file
-     jtreqs/etc/jtreqs.conf.properties (bin/jtreqs.conf.properties)
+     jtreqs/etc/jtreqs.conf.properties
+     (or bin/jtreqs.conf.properties without maven)
    in order to connect to the database and connect to HPSS with a good set of
    credentials.
  - Setup the logger configuration in the file
-     jtreqs/etc/logback.xml (bin/logback.xml)
+     jtreqs/etc/logback.xml
+     (or bin/logback.xml without maven)
    if neccessary.
 
 
