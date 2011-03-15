@@ -144,7 +144,7 @@ public final class MySQLQueueDAO implements QueueDAO {
         } catch (SQLException e) {
             throw new MySQLExecuteException(e);
         }
-        LOGGER.info("New queue inserted with id " + id);
+        LOGGER.info("New queue inserted with id {} ({})", id, tapeName);
 
         assert id >= 0;
 
