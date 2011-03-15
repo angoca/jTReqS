@@ -36,6 +36,8 @@
  */
 package fr.in2p3.cc.storage.treqs.model;
 
+import java.util.GregorianCalendar;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +45,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
+import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 
 /**
  * Reads files from a queue as a new thread. This is the responsible to demand
@@ -100,12 +103,9 @@ public final class Stager extends AbstractProcess {
 
         if (this.queue.getStatus() == QueueStatus.ACTIVATED) {
             LOGGER.info("Stager {}: starting.", this.getName());
-            try {
-                this.stage();
-            } catch (TReqSException e) {
-                LOGGER.error("Error in Staging.", e);
-                // TODO v1.5.3 update the database
-            }
+
+            this.stage();
+
             LOGGER.debug("Staging process finished.");
         } else {
             LOGGER.info("Cannot work on a non-activated queue or queue "
@@ -150,28 +150,42 @@ public final class Stager extends AbstractProcess {
      * catch exceptions.
      * <p>
      * If the HSMResourceException is caught, then the queue is suspended.
-     *
-     * @throws TReqSException
-     *             If there is a problem retrieving the next reading, or dealing
-     *             with the queue.
      */
-    private void stage() throws TReqSException {
+    private void stage() {
         LOGGER.trace("> stage");
 
-        Reading nextReading = this.queue.getNextReading();
-        while (nextReading != null && this.keepOn()) {
-            try {
-                nextReading.stage();
-                LOGGER.debug("Thread {}: getting next file", this.getName());
-                nextReading = this.queue.getNextReading();
-            } catch (HSMResourceException e) {
-                // For instance, no space left on device should suspend
-                // the staging queue.
-                LOGGER.warn("No space left on device, suspending the queue.");
-                // Suspends the current queue.
-                this.queue.suspend();
-                // Exists from the loop.
-                nextReading = null;
+        Reading nextReading = null;
+        try {
+            nextReading = this.queue.getNextReading();
+            while (nextReading != null && this.keepOn()) {
+                try {
+                    nextReading.stage();
+                    LOGGER.debug("Thread {}: getting next file", this.getName());
+                    nextReading = this.queue.getNextReading();
+                } catch (HSMResourceException e) {
+                    // For instance, no space left on device should suspend
+                    // the staging queue.
+                    LOGGER.warn("No space left on device, suspending the queue.");
+                    // Suspends the current queue.
+                    this.queue.suspend();
+                    // Exists from the loop.
+                    nextReading = null;
+                }
+            }
+        } catch (TReqSException e) {
+            LOGGER.error("Error in Staging.", e);
+
+            if (nextReading != null) {
+                try {
+                    AbstractDAOFactory
+                            .getDAOFactoryInstance()
+                            .getReadingDAO()
+                            .update(nextReading, RequestStatus.FAILED,
+                                    new GregorianCalendar());
+                } catch (TReqSException e1) {
+                    LOGGER.error("Error logging problem for reading {}",
+                            nextReading.getMetaData().getPosition());
+                }
             }
         }
 
