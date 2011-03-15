@@ -293,7 +293,7 @@ public final class ActivatorTest {
         byte value = 3;
         Activator.getInstance().setMaxStagersPerQueue(value);
 
-        byte actual = Activator.getInstance().getMaxStagersPerQueue();
+        byte actual = Activator.getInstance().getStagersPerQueue();
 
         byte expected = value;
 
