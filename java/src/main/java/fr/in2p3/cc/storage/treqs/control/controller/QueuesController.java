@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.activator.Activator;
 import fr.in2p3.cc.storage.treqs.control.selector.Selector;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -196,15 +197,22 @@ public final class QueuesController {
                 // Avoid the reading head to go back and forth
                 // If current read position < file's position,
                 // then do not insert in this queue.
-                if (queue.getHeadPosition() <= fpot.getPosition()) {
+                final int activeStagers = StagersController.getInstance()
+                        .getActiveStagersForQueue(queue);
+                if (queue.getHeadPosition() <= fpot.getPosition()
+                        && activeStagers == Activator.getInstance()
+                                .getStagersPerQueue()) {
                     LOGGER.debug("Adding file to an active queue.");
 
                     queue.registerFPOT(fpot, retry);
                     foundQueue = true;
                 } else {
                     LOGGER.debug(
-                            "Active queue has passed the file's position: {}>{}",
-                            queue.getHeadPosition(), fpot.getPosition());
+                            "Active queue has passed the file's position: "
+                                    + "{}>{} or some stagers have been "
+                                    + "finished (active {}).",
+                            new Object[] { queue.getHeadPosition(),
+                                    fpot.getPosition(), activeStagers });
                 }
             }
 
@@ -517,7 +525,8 @@ public final class QueuesController {
                     .get(key)).iterator();
             while (iterator2.hasNext() && !ret) {
                 Queue queue = iterator2.next();
-                if (queue.getOwner().equals(user) && queue.getStatus() == status) {
+                if (queue.getOwner().equals(user)
+                        && queue.getStatus() == status) {
                     ret = true;
                 }
             }

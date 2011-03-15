@@ -104,6 +104,7 @@ public final class Stager extends AbstractProcess {
                 this.stage();
             } catch (TReqSException e) {
                 LOGGER.error("Error in Staging.", e);
+                // TODO v1.5.3 update the database
             }
             LOGGER.debug("Staging process finished.");
         } else {
@@ -113,6 +114,11 @@ public final class Stager extends AbstractProcess {
         }
 
         LOGGER.trace("< action");
+    }
+
+    public Queue/* ! */getQueue() {
+        LOGGER.trace(">< getQueue");
+        return this.queue;
     }
 
     /*
