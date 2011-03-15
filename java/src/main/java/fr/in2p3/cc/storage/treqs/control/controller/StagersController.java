@@ -202,6 +202,13 @@ public final class StagersController {
         return stager;
     }
 
+    /**
+     * Retrieves the quantity of active stagers for a given queue.
+     *
+     * @param queue
+     *            Queue to analyze.
+     * @return Quantity of active stagers for the given queue.
+     */
     public int getActiveStagersForQueue(final Queue/* ! */queue) {
         LOGGER.trace("> getActiveStagersForQueue");
 
@@ -216,9 +223,9 @@ public final class StagersController {
             }
         }
 
-        assert ret > 0;
+        assert ret >= 0;
 
-        LOGGER.trace("< getActiveStagersForQueue");
+        LOGGER.trace("< getActiveStagersForQueue: {}", ret);
 
         return ret;
     }
