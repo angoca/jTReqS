@@ -146,10 +146,6 @@ public final class Activator extends AbstractProcess {
      */
     private short maxStagers = 2;
     /**
-     * Max number of stager process per active queue.
-     */
-    private byte maxStagersPerQueue = 1;
-    /**
      * Maximum age of the resources metadata.
      */
     private short metadataTimeout;
@@ -161,6 +157,10 @@ public final class Activator extends AbstractProcess {
      * Deferred time between stagers.
      */
     private int millisBetweenStagers;
+    /**
+     * Max number of stager processes per active queue.
+     */
+    private byte stagersPerQueue = 1;
 
     /**
      * Creates the activator, establishing all the values.
@@ -271,18 +271,19 @@ public final class Activator extends AbstractProcess {
 
         boolean cont = true;
 
-        if (this.activeStagers > this.maxStagers - this.maxStagersPerQueue) {
-            LOGGER.warn("No stagers available to activate queue.");
+        if (this.activeStagers > this.maxStagers - this.stagersPerQueue) {
+            LOGGER.warn("No stagers available to activate queue. "
+                    + "({} > {} - {})", new Object[] { this.activeStagers,
+                    this.maxStagers, this.stagersPerQueue });
             cont = false;
         }
         if (cont) {
             queue.activate();
 
-            LOGGER.debug("Preparing {} stagers", this.maxStagersPerQueue);
+            LOGGER.debug("Preparing {} stagers", this.stagersPerQueue);
             int i;
-            for (i = 1; i <= this.maxStagersPerQueue; i++) {
-                LOGGER.info("Starting stager {} of {}", i,
-                        this.maxStagersPerQueue);
+            for (i = 1; i <= this.stagersPerQueue; i++) {
+                LOGGER.info("Starting stager {} of {}", i, this.stagersPerQueue);
 
                 Stager stager = StagersController.getInstance().create(queue);
 
@@ -345,12 +346,12 @@ public final class Activator extends AbstractProcess {
     /**
      * Getter.
      *
-     * @return Maximal quantity of stagers per queue.
+     * @return Quantity of stagers per queue.
      */
-    byte getMaxStagersPerQueue() {
+    public byte getStagersPerQueue() {
         LOGGER.trace(">< getStagersPerQueue");
 
-        return this.maxStagersPerQueue;
+        return this.stagersPerQueue;
     }
 
     /**
@@ -562,9 +563,9 @@ public final class Activator extends AbstractProcess {
 
         assert max > 0;
 
-        if (max < this.maxStagersPerQueue) {
+        if (max < this.stagersPerQueue) {
             throw new InvalidMaxException(InvalidMaxReasons.STAGERS, max,
-                    this.maxStagers, this.maxStagersPerQueue);
+                    this.maxStagers, this.stagersPerQueue);
         }
 
         this.maxStagers = max;
@@ -587,10 +588,10 @@ public final class Activator extends AbstractProcess {
 
         if (max > this.maxStagers) {
             throw new InvalidMaxException(InvalidMaxReasons.STAGERS_PER_QUEUE,
-                    max, this.maxStagers, this.maxStagersPerQueue);
+                    max, this.maxStagers, this.stagersPerQueue);
         }
 
-        this.maxStagersPerQueue = max;
+        this.stagersPerQueue = max;
 
         LOGGER.trace("< setStagersPerQueue");
     }
@@ -647,6 +648,8 @@ public final class Activator extends AbstractProcess {
     /**
      * Just browse periodically the list of users and queues to activate the
      * best queue.
+     *
+     * @see fr.in2p3.cc.storage.treqs.control.process.AbstractProcess#toStart()
      */
     @Override
     protected void toStart() {
