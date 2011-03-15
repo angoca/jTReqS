@@ -223,6 +223,10 @@ public final class Constants {
      * There was a problem with the activator.
      */
     public static final int ACTIVATOR_PROBLEM = -2;
+    /**
+     * Tests the existence and access to the keytab.
+     */
+    public static final String TEST_KEYTAB = "TEST_KEYTAB";
 
     /**
      * Invisible constructor.

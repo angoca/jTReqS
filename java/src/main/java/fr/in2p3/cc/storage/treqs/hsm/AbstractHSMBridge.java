@@ -157,24 +157,36 @@ public abstract class AbstractHSMBridge {
      *
      * @throws AbstractHSMException
      *             When the keytab cannot be read.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem.
      */
-    private void testKeytab() throws AbstractHSMException {
+    private void testKeytab() throws AbstractHSMException,
+            ProblematicConfiguationFileException {
         LOGGER.trace("> testKeytab");
 
         LOGGER.info("Testing keytab: {}", this.getKeytabPath());
 
-        java.io.File keytab = new java.io.File(this.getKeytabPath());
-        if (keytab.exists()) {
-            LOGGER.debug("Exists.");
-            if (keytab.canRead()) {
-                LOGGER.debug("Can be read.");
+        String test = Constants.YES;
+        try {
+            test = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_KEYTAB, Constants.TEST_KEYTAB);
+        } catch (KeyNotFoundException e) {
+            // Nothing.
+        }
+        if (test.equals(Constants.YES)) {
+            java.io.File keytab = new java.io.File(this.getKeytabPath());
+            if (keytab.exists()) {
+                LOGGER.debug("Exists.");
+                if (keytab.canRead()) {
+                    LOGGER.debug("Can be read.");
+                } else {
+                    LOGGER.error("Cannot be read: {}", keytab.getAbsolutePath());
+                    throw new HSMCannotReadKeytabException();
+                }
             } else {
-                LOGGER.error("Cannot be read: {}", keytab.getAbsolutePath());
-                throw new HSMCannotReadKeytabException();
+                LOGGER.error("It does not exist: {}", keytab.getAbsolutePath());
+                throw new HSMKeytabNotFoundException();
             }
-        } else {
-            LOGGER.error("It does not exist: {}", keytab.getAbsolutePath());
-            throw new HSMKeytabNotFoundException();
         }
 
         LOGGER.trace("< testKeytab");
