@@ -117,8 +117,8 @@ public class FifoSelector extends Selector {
                 .getCreationTime().getTimeInMillis()) {
             LOGGER.debug("It is better the already selected {} "
                     + "than the new one {} ({}<{})", new Object[] {
-                    currentQueue.getTape().getName(),
                     bestQueue.getTape().getName(),
+                    currentQueue.getTape().getName(),
                     bestQueue.getCreationTime().getTimeInMillis(),
                     currentQueue.getCreationTime().getTimeInMillis() });
             newBest = bestQueue;
