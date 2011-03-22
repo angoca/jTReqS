@@ -47,7 +47,7 @@
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
     <version>1.5.4-SNAPSHOT</version>
-    <artifactId>jtreqs-server-parent</artifactId>
+    <artifactId>jtreqs-server</artifactId>
   </parent>
   <properties>
     <hpssRoot>${env.HPSS_ROOT}</hpssRoot>
@@ -112,7 +112,7 @@
   </build>
 
   <!-- More Project Information -->
-  <name>jTReqS Server - Native part</name>
+  <name>jTReqS Server - Native C part</name>
   <description>
   Interface with HPSS. This is the JNI part of the project written in C.
   </description>
