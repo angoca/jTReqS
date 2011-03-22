@@ -45,7 +45,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
-import fr.in2p3.cc.storage.treqs.model.dao.RegisterDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.RegisterInformationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
 import fr.in2p3.cc.storage.treqs.tools.Instantiator;
@@ -92,11 +92,11 @@ public abstract class AbstractDAOFactory {
     public abstract ReadingDAO getReadingDAO();
 
     /**
-     * Returns the DAO for the register.
+     * Returns the DAO for the register information.
      *
      * @return The DAO for the register information.
      */
-    public abstract RegisterDAO getRegisterDAO();
+    public abstract RegisterInformationDAO getRegisterInformationDAO();
 
     /**
      * Starts the process of monitoring in the database.
