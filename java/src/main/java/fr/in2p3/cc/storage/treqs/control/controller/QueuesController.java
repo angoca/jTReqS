@@ -623,6 +623,32 @@ public final class QueuesController {
 
         assert resource != null;
 
+        List<Queue> queues = this.getCreatedQueuesForMediaType(resource);
+
+        Queue ret = this.getSelector().selectBestQueue(queues, resource);
+
+        assert ret != null;
+
+        LOGGER.trace("< getBestQueue");
+
+        return ret;
+
+    }
+
+    /**
+     * Returns the list of queues for a given media type that are in Created
+     * state.
+     *
+     * @param resource
+     *            Type of media.
+     * @return List of created queues.
+     */
+    List<Queue>/* <!>! */getCreatedQueuesForMediaType(
+            final Resource/* ! */resource) {
+        LOGGER.trace("< getCreatedQueuesForMediaType");
+
+        assert resource != null;
+
         List<Queue> queues = new ArrayList<Queue>();
 
         @SuppressWarnings("unchecked")
@@ -641,14 +667,11 @@ public final class QueuesController {
             }
         }
 
-        Queue ret = this.getSelector().selectBestQueue(queues, resource);
+        assert queues != null;
 
-        assert ret != null;
+        LOGGER.trace("< getCreatedQueuesForMediaType");
 
-        LOGGER.trace("< getBestQueue");
-
-        return ret;
-
+        return queues;
     }
 
     /**
