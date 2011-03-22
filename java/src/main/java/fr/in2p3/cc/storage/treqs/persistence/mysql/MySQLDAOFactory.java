@@ -43,11 +43,13 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.RegisterInformationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLQueueDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLReadingDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLRegisterInformationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLWatchDogDAO;
 
 /**
@@ -100,6 +102,19 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
         LOGGER.trace(">< getReadingDAO");
 
         return new MySQLReadingDAO();
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
+     */
+    @Override
+    public RegisterInformationDAO getRegisterInformationDAO() {
+        LOGGER.trace(">< getReadingDAO");
+
+        return new MySQLRegisterInformationDAO();
     }
 
     /*
