@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <!-- Copyright Jonathan Schaeffer 2009-2010, CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr> -->
 
   <!-- Contributors Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr> -->
@@ -48,7 +49,7 @@
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
     <version>1.5.4-SNAPSHOT</version>
-    <artifactId>jtreqs-server-parent</artifactId>
+    <artifactId>jtreqs-server</artifactId>
   </parent>
   <properties>
     <compileSource>1.6</compileSource>
@@ -58,6 +59,12 @@
   <!-- Build Settings -->
   <!-- "Project Build" contains more elements than just the BaseBuild set -->
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <testResources>
       <testResource>
         <directory>src/test/config</directory>
@@ -80,7 +87,7 @@
       <!-- mvn resources:testResources -->
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>2.4.3</version>
+        <version>2.5</version>
         <configuration>
           <encoding>${encoding}</encoding>
         </configuration>
@@ -163,8 +170,67 @@
     </plugins>
   </build>
 
+  <reporting>
+    <plugins>
+
+      <!-- Generates the main site with some description. -->
+      <!-- mvn site -->
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.3.1</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <!-- report>cim</report -->
+              <report>dependencies</report>
+              <report>dependency-convergence</report>
+              <report>dependency-management</report>
+              <report>index</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>mailing-list</report>
+              <report>plugin-management</report>
+              <report>plugins</report>
+              <report>project-team</report>
+              <report>scm</report>
+              <report>summary</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+
+      <!-- Executes the tests. -->
+      <!-- mvn surefire:test -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.8</version>
+        <configuration>
+          <!-- The application reads configuration files. -->
+          <workingDirectory>
+            ${project.build.testOutputDirectory}
+           </workingDirectory>
+        </configuration>
+      </plugin>
+
+      <!-- Generates a report of the executed tests. -->
+      <!-- mvn surefire-report:report -->
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>2.8</version>
+      </plugin>
+
+      <!-- mvn cobertura:cobertura -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.4</version>
+      </plugin>
+
+    </plugins>
+  </reporting>
+
   <!-- More Project Information -->
-  <name>jTReqS Server - Java sources</name>
+  <name>jTReqS Server - Java sources part</name>
   <description>
   This is the Java implementation. There are only java classes and the core of
   the application is here.
