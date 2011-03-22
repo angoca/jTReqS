@@ -137,6 +137,9 @@ public enum HPSSErrorCode {
     /**
      * ????. This error is unknown when using the application, and probably it
      * never occurs.
+     * <p>
+     * This error appears when the HSM is not available, or the file is locked,
+     * thus it cannot be read.
      */
     HPSS_EIO((byte) -5),
     /**
