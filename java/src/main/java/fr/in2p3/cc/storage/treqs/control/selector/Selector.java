@@ -182,6 +182,8 @@ public abstract class Selector {
             } else {
                 LOGGER.info("The analyzed queue is in other state: {} - {}",
                         queue.getTape().getName(), queue.getStatus());
+                assert false : "This should not happen because the list of "
+                        + "queues has queues only in created state.";
             }
         } else {
             LOGGER.error("Different media type: current queue {} "
