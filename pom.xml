@@ -33,7 +33,7 @@
 
   <!-- The Basics -->
   <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
-  <artifactId>jtreqs-server-parent</artifactId>
+  <artifactId>jtreqs-server</artifactId>
   <version>1.5.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <dependencies>
@@ -210,6 +210,7 @@
 
   <scm>
     <connection>scm:git:git://git.in2p3.fr/jtreqs</connection>
+    <developerConnection>scm:git:ssh://git.in2p3.fr/jtreqs</developerConnection>
     <tag>HEAD</tag>
     <url>https://git.in2p3.fr/public/jtreqs/</url>
   </scm>
