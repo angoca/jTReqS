@@ -42,7 +42,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * Manages register information insert and updates to the database.
  *
  * @author Andrés Gómez
- * @since 1.5
+ * @since 1.5.4
  */
 public interface RegisterInformationDAO {
 
