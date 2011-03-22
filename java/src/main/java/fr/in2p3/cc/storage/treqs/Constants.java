@@ -166,9 +166,9 @@ public final class Constants {
      */
     public static final String SECTION_HSM_BRIDGE = "HSM_BRIDGE";
     /**
-     * Section in the configuration file for the Keytab.
+     * Section in the configuration file for HPSS.
      */
-    public static final String SECTION_KEYTAB = "KEYTAB";
+    public static final String SECTION_KEYTAB = "HPSS";
     /**
      * Section in the configuration file for the Persistence.
      */
@@ -227,6 +227,11 @@ public final class Constants {
      * Tests the existence and access to the keytab.
      */
     public static final String TEST_KEYTAB = "TEST_KEYTAB";
+    /**
+     * Name to search the configuration file for HPSS.
+     */
+    public static final String HPSS_CONFIGURATION_FILE = "HPSS_CONFIGURATION_"
+            + "FILE";
 
     /**
      * Invisible constructor.
