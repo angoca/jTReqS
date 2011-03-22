@@ -129,16 +129,16 @@ public abstract class Selector {
      * <p>
      *
      *
-     * @param bestQueue
+     * @param best
      *            This is the best queue at the moment.
-     * @param currentQueue
+     * @param queue
      *            The currently analyzed queue.
      * @return The new best queue.
      * @throws TReqSException
      *             Problem in the configurator.
      */
-    protected abstract Queue compareQueue(Queue best, Queue queue)
-            throws TReqSException;
+    protected abstract Queue compareQueue(final Queue/* ! */best,
+            final Queue /* ! */queue) throws TReqSException;
 
     /**
      * Checks if the queue has to be selected.
