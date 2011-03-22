@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.control.exception.ControllerInsertException;
 abstract class AbstractController {
 
     /**
-     * Logger log4cxx.
+     * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(AbstractController.class);
