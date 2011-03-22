@@ -36,12 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.control.controller;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-
-import org.apache.commons.collections.MultiMap;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
@@ -83,29 +78,8 @@ public final class HelperControl {
      */
     public static List<Queue> getQueues(final Resource resource)
             throws TReqSException {
-        assert resource != null;
-
-        MultiMap queuesMap = QueuesController.getInstance().getQueues();
-        List<Queue> queues = new ArrayList<Queue>();
-
-        @SuppressWarnings("unchecked")
-        Iterator<String> iterator = queuesMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            @SuppressWarnings("unchecked")
-            Iterator<Queue> iterator2 = ((Collection<Queue>) queuesMap.get(key))
-                    .iterator();
-            while (iterator2.hasNext()) {
-                Queue queue = iterator2.next();
-                if (queue.getTape().getMediaType() == resource.getMediaType()) {
-                    queues.add(queue);
-                }
-            }
-        }
-
-        assert queues != null;
-
-        return queues;
+        return QueuesController.getInstance().getCreatedQueuesForMediaType(
+                resource);
     }
 
     /**
