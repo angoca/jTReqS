@@ -210,8 +210,8 @@ public final class QueuesController {
                     LOGGER.debug(
                             "Active queue has passed the file's position: "
                                     + "{}>{} or some stagers have been "
-                                    + "finished (active {}).",
-                            new Object[] { queue.getHeadPosition(),
+                                    + "finished (active {}).", new Object[] {
+                                    queue.getHeadPosition(),
                                     fpot.getPosition(), activeStagers });
                 }
             }
@@ -608,6 +608,8 @@ public final class QueuesController {
     /**
      * Chooses a queue to be activated. It calls the specific algorithm, the
      * given selector.
+     * <p>
+     * It calls the selector with a valid list of queues.
      *
      * @param resource
      *            Type of queue to select.
@@ -632,7 +634,8 @@ public final class QueuesController {
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
                 Queue queue = iterator2.next();
-                if (queue.getTape().getMediaType() == resource.getMediaType()) {
+                if (queue.getTape().getMediaType() == resource.getMediaType()
+                        && queue.getStatus() == QueueStatus.CREATED) {
                     queues.add(queue);
                 }
             }
