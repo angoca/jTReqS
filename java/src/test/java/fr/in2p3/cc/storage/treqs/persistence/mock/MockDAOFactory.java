@@ -42,11 +42,13 @@ import org.slf4j.LoggerFactory;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
+import fr.in2p3.cc.storage.treqs.model.dao.RegisterDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockQueueDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockReadingDAO;
+import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockRegisterDAO;
 import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockWatchDogDAO;
 
 /**
@@ -102,6 +104,16 @@ public final class MockDAOFactory extends AbstractDAOFactory {
         LOGGER.trace(">< getReadingDAO");
 
         return new MockReadingDAO();
+    }
+
+    /* (non-Javadoc)
+     * @see fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
+     */
+    @Override
+    public RegisterDAO getRegisterDAO() {
+        LOGGER.trace(">< getRegisterDAO");
+
+        return new MockRegisterDAO();
     }
 
     /*
