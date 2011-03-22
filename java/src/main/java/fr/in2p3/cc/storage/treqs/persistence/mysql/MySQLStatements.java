@@ -82,6 +82,18 @@ public final class MySQLStatements {
      */
     public static final String HEART_BEAT_START_TIME = "start_time";
     /**
+     * Informations table names;
+     */
+    static final String INFORMATIONS = "information";
+    /**
+     * Informations table: Name of the value.
+     */
+    static final String INFORMATIONS_NAME = "name";
+    /**
+     * Informations table: Value of the information.
+     */
+    static final String INFORMATIONS_VALUE = "value";
+    /**
      * Media type table name.
      */
     public static final String MEDIATYPES = "jmediatypes";
@@ -261,9 +273,32 @@ public final class MySQLStatements {
             + " SET " + HEART_BEAT_LAST_TIME + " = NOW()";
 
     /**
+     * SQL statement to insert a new information value in the database.
+     */
+    public static final String SQL_INFORMATIONS_INSERT = "INSERT INTO "
+            + INFORMATIONS + '(' + INFORMATIONS_NAME + ',' + INFORMATIONS_VALUE
+            + ") VALUES (?, ?)";
+
+    /**
+     * SQL statement to select a information value in the database.
+     * <p>
+     * It is necessary to concatenate at the end the name of the value to
+     * retrieve.
+     */
+    public static final String SQL_INFORMATIONS_SELECT = "SELECT "
+            + INFORMATIONS_NAME + " FROM " + INFORMATIONS + " WHERE "
+            + INFORMATIONS_NAME + " = ";
+    /**
+     * SQL statement to update an information value in the database.
+     */
+    public static final String SQL_INFORMATIONS_UPDATE = "UPDATE "
+            + INFORMATIONS + " SET " + INFORMATIONS_VALUE + " = ? WHERE "
+            + INFORMATIONS_NAME + " = ?";
+    /**
      * Word limit to limit the quantity of queries.
      */
     public static final String SQL_LIMIT = " LIMIT ";
+
     /**
      * SQL statement to insert a new queue in the database.
      * <p>
