@@ -365,6 +365,9 @@ public final class Queue implements Comparable<Queue> {
         this.id = AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
                 .insert(this);
 
+        LOGGER.info("Queue {} created (id {}).", this.getTape().getName(),
+                this.getId());
+
         // Registers the first file in the queue.
         this.registerFPOT(fpot, retries);
 
@@ -393,7 +396,8 @@ public final class Queue implements Comparable<Queue> {
         }
 
         this.changeToActivated();
-        LOGGER.info("Queue {} activated.", this.getTape().getName());
+        LOGGER.info("Queue {} activated (id {}).", this.getTape().getName(),
+                this.getId());
         AbstractDAOFactory
                 .getDAOFactoryInstance()
                 .getQueueDAO()
@@ -672,7 +676,7 @@ public final class Queue implements Comparable<Queue> {
      *             If the queue is in an invalid state. If the time is invalid.
      *             If the queue has been suspended too many times.
      */
-    private void finalizeQueue() throws TReqSException {
+    void finalizeQueue() throws TReqSException {
         LOGGER.trace("> finalizeQueue");
 
         this.countRequests();
@@ -691,7 +695,8 @@ public final class Queue implements Comparable<Queue> {
                         || (fs == RequestStatus.ON_DISK)) {
                     this.changeToEnded();
 
-                    LOGGER.info("Queue {} ended", this.getTape().getName());
+                    LOGGER.info("Queue {} ended ({})",
+                            this.getTape().getName(), this.getId());
                     AbstractDAOFactory
                             .getDAOFactoryInstance()
                             .getQueueDAO()
@@ -779,20 +784,9 @@ public final class Queue implements Comparable<Queue> {
      * Getter for the next Reading with SUBMITTED state. If there are files that
      * have not been processed, it will return the next one to process. If all
      * readings have been processed, it will return NULL; that means the queue
-     * is still in activated state, but at least one file is being read. It
-     * tries to finalize the queue if all Readings are in final state.
+     * is still in activated state, but at least one file is being read.
      * <p>
      * This function also updates the HeadPosition.
-     * <p>
-     * <b>Issue:</b> Context: When all stagers but one have finished their
-     * requests, and the only one still works in the last file.<br>
-     * Problem: There could be one or several new Readings (new FileRequests) at
-     * the end of the queue because the queue is in active state and their
-     * positions are after the head. In this case, all these new Readings will
-     * be processed by the only existing stager. This is not a big problem, but
-     * eventually, the tape could be rewound between two files due to
-     * concurrency when reading. Normally, there are simultaneous stagers to
-     * assure that the tape is not rewound, but in this case it is not assured.
      *
      * @return a Reading instance, or NULL if there are not Reading to process
      *         but the queue is still active.
@@ -838,11 +832,6 @@ public final class Queue implements Comparable<Queue> {
                 ret = reading;
                 found = true;
             }
-        }
-        if (!found) {
-            // There is not any reading to be processed, all files have been
-            // processed, but probably not all readings are in final state.
-            this.finalizeQueue();
         }
 
         LOGGER.trace("< getNextReading");
@@ -975,9 +964,8 @@ public final class Queue implements Comparable<Queue> {
                 // The file is already in the queue.
                 LOGGER.info("Queue {} already has a reading for file {}", this
                         .getTape().getName(), fpot.getFile().getName());
-                if (!this.readingList.get(fpot.getPosition())
-                        .getMetaData().getFile().getName()
-                        .equals(fpot.getFile().getName())) {
+                if (!this.readingList.get(fpot.getPosition()).getMetaData()
+                        .getFile().getName().equals(fpot.getFile().getName())) {
                     assert false : "Two different files in the same position";
                     // FIXME v2.0 this will happen when using aggregation.
                 }
@@ -1311,8 +1299,10 @@ public final class Queue implements Comparable<Queue> {
         // This will set the status to temporarily suspended, and in the
         // "suspensionTime" field will have the time when the queue can be
         // unsuspended (This is changed to CREATED by unsuspend.)
-        LOGGER.info("Queue {} suspended for {} seconds", this.getTape()
-                .getName(), this.getSuspendDuration());
+        LOGGER.info(
+                "Queue {} suspended (id {}) for {} seconds",
+                new Object[] { this.getTape().getName(), this.getId(),
+                        this.getSuspendDuration() });
 
         AbstractDAOFactory
                 .getDAOFactoryInstance()
