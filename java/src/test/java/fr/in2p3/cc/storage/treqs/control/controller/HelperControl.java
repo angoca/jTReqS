@@ -36,12 +36,9 @@
  */
 package fr.in2p3.cc.storage.treqs.control.controller;
 
-import java.util.List;
-
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Queue;
-import fr.in2p3.cc.storage.treqs.model.Resource;
 
 /**
  * Helper to access the methods of the controllers.
@@ -65,21 +62,6 @@ public final class HelperControl {
             final byte retries) throws TReqSException {
         return QueuesController.getInstance().addFilePositionOnTape(fpot,
                 retries);
-    }
-
-    /**
-     * Returns the queues.
-     *
-     * @param resource
-     *            Type of drive.
-     * @return List of queues.
-     * @throws TReqSException
-     *             If there is any problem.
-     */
-    public static List<Queue> getQueues(final Resource resource)
-            throws TReqSException {
-        return QueuesController.getInstance().getCreatedQueuesForMediaType(
-                resource);
     }
 
     /**
