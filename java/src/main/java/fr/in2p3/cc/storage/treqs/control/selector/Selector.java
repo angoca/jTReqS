@@ -100,16 +100,12 @@ public abstract class Selector {
         Queue best = null;
         // First get the list of queues
         int length = queues.size();
-        if (length > 1) {
+        if (length >= 1) {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
                 Queue queue = queues.get(j);
                 if (this.checkQueue(resource, queue)) {
-                    if (best != null) {
-                        best = this.compareQueue(best, queue);
-                    } else {
-                        best = queue;
-                    }
+                    best = this.compareQueue(best, queue);
                 }
             }
         }
@@ -118,7 +114,7 @@ public abstract class Selector {
             LOGGER.info("Best queue is on tape {}", best.getTape().getName());
         }
 
-        LOGGER.trace("> selectBestQueueWithoutUser");
+        LOGGER.trace("< selectBestQueueWithoutUser");
 
         return best;
     }
