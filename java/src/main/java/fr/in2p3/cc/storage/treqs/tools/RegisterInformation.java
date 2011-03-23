@@ -199,7 +199,7 @@ public class RegisterInformation {
         String mysqlConfFile = "Not defined.";
         try {
             mysqlConfFile = Configurator.getInstance().getStringValue(
-                    Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL);
+                    Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER);
         } catch (TReqSException e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
