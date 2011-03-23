@@ -36,8 +36,8 @@
  */
 package fr.in2p3.cc.storage.treqs.tools;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Scanner;
 
 import org.slf4j.Logger;
@@ -92,7 +92,7 @@ public class RegisterInformation {
             hostname();
             hpssHostname();
             mysqlHostname();
-        } catch (TReqSException e) {
+        } catch (Exception e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         }
@@ -110,13 +110,21 @@ public class RegisterInformation {
         LOGGER.trace("> appVersion");
 
         String appVersion = "Not defined.";
+
         Scanner scanner = null;
         try {
-            scanner = new Scanner(new FileInputStream("version.txt"));
-            if (scanner.hasNextLine()) {
-                appVersion = scanner.nextLine();
+            final ClassLoader loader = ClassLoader.getSystemClassLoader();
+            if (loader != null) {
+                URL url = loader.getResource("version.txt");
+                if (url != null) {
+                    InputStream inputStream = url.openStream();
+                    scanner = new Scanner(inputStream);
+                    if (scanner.hasNextLine()) {
+                        appVersion = scanner.nextLine();
+                    }
+                }
             }
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         } finally {
