@@ -193,7 +193,7 @@ public final class Constants {
     /**
      * Parameter to select the selector type.
      */
-    public static final String SELECTOR_NAME = "SELECTOR";
+    public static final String SELECTOR_NAME = "SELECTOR_NAME";
     /**
      * Quantity of simultaneous stagers asking for files of the same tap to
      * HPSS.
