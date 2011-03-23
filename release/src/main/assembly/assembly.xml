@@ -43,7 +43,7 @@
   <fileSets>
     <!-- Adds the license file. -->
     <fileSet>
-      <directory>../</directory>
+      <directory>target/jtreqs</directory>
       <includes>
         <include>LICENSE.txt</include>
         <include>README.txt</include>
