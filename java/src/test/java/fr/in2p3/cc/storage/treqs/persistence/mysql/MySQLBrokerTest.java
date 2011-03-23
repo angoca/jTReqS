@@ -68,9 +68,9 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 public final class MySQLBrokerTest {
 
     /**
-     * Driver.
+     * Server.
      */
-    private static final String DRIVER = "com.mysql.jdbc.Driver";
+    private static final String SERVER = "localhost";
     /**
      * Password.
      */
@@ -84,9 +84,9 @@ public final class MySQLBrokerTest {
      */
     private static final String TABLE_STRUCTURE = "(user char(32))";
     /**
-     * URL.
+     * Database name.
      */
-    private static final String URL = "jdbc:mysql://localhost/jtreqs";
+    private static final String DBNAME = "jtreqs";
     /**
      * User.
      */
@@ -135,9 +135,9 @@ public final class MySQLBrokerTest {
         MySQLBroker.destroyInstance();
 
         Configurator.getInstance().deleteValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER);
         Configurator.getInstance().deleteValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME);
         Configurator.getInstance().deleteValue(
                 Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
         Configurator.getInstance().deleteValue(
@@ -155,8 +155,8 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect01() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER,
-                "NO-DRIVER");
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                "NO-SERVER");
 
         boolean failed = false;
         try {
@@ -181,11 +181,11 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect02() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER,
-                DRIVER);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL,
-                "bad::url");
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME,
+                "badNameDB");
         boolean failed = false;
         try {
             MySQLBroker.getInstance().connect();
@@ -209,10 +209,10 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect03() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER,
-                DRIVER);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL, URL);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME, DBNAME);
         Configurator.getInstance().setValue(
                 Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER,
                 "bad-user");
@@ -240,10 +240,10 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect04() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER,
-                DRIVER);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL, URL);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME, DBNAME);
         Configurator.getInstance().setValue(
                 Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER, USER);
         Configurator.getInstance().setValue(
@@ -273,10 +273,10 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect05() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER,
-                DRIVER);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL, URL);
+                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME, DBNAME);
         Configurator.getInstance().setValue(
                 Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER, USER);
         Configurator.getInstance().setValue(

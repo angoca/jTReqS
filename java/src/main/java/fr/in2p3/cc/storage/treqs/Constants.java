@@ -57,17 +57,17 @@ public final class Constants {
      */
     public static final String AUTHENTICATION_TYPE = "AUTHENTICATION_TYPE";
     /**
-     * Driver used to connect to the database.
+     * Name of the database.
      */
-    public static final String DB_DRIVER = "DRIVER";
+    public static final String DB_NAME = "DATABASE";
     /**
      * Password to connect to the database.
      */
     public static final String DB_PASSWORD = "PASSWORD";
     /**
-     * Location of the database.
+     * Server where is hosted the database.
      */
-    public static final String DB_URL = "URL";
+    public static final String DB_SERVER = "SERVER";
     /**
      * User name to connect to the database.
      */

@@ -204,10 +204,15 @@ public final class MySQLBroker {
     public void connect() throws TReqSException {
         LOGGER.trace("> connect");
 
-        String url = Configurator.getInstance().getStringValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_URL);
-        String driver = Configurator.getInstance().getStringValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_DRIVER);
+        String url = "jdbc:mysql://"
+                + Configurator.getInstance().getStringValue(
+                        Constants.SECTION_PERSISTENCE_MYSQL,
+                        Constants.DB_SERVER)
+                + '/'
+                + Configurator.getInstance().getStringValue(
+                        Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME)
+                + "?useJvmCharsetConverters=true";
+        String driver = "com.mysql.jdbc.Driver";
         String user = Configurator.getInstance().getStringValue(
                 Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
         String password = Configurator.getInstance().getStringValue(
