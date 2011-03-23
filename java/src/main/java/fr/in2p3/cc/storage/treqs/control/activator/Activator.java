@@ -452,7 +452,7 @@ public final class Activator extends AbstractProcess {
                                         e.getMessage() });
                     }
                 } else {
-                    LOGGER.warn("Unable to choose a best queue.");
+                    LOGGER.error("Unable to choose a best queue.");
 
                     assert false : "It is impossible to not have a queue.";
                 }
