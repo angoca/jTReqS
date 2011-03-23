@@ -65,6 +65,13 @@
   <!-- Build Settings -->
   <!-- "Project Build" contains more elements than just the BaseBuild set -->
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+
     <plugins>
 
       <!-- Cleans the target directory. -->
@@ -125,6 +132,7 @@
             <property name="ant.regexp.regexpimpl" value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
 
             <copy file="../native/target/jtreqs-server-native.so" tofile="target/jtreqs/lib/libNativeBridge.so" />
+            <copy file="target/classes/version.txt" tofile="target/jtreqs/etc/version.txt" />
             <copy todir="target/jtreqs">
               <fileset dir="../">
                 <include name="README.txt" />
