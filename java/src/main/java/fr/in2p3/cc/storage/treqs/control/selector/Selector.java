@@ -114,6 +114,8 @@ public abstract class Selector {
             LOGGER.info("Best queue is on tape {}", best.getTape().getName());
         }
 
+        assert best != null;
+
         LOGGER.trace("< selectBestQueueWithoutUser");
 
         return best;
