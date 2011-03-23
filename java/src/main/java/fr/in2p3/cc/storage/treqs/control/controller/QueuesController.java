@@ -363,51 +363,6 @@ public final class QueuesController {
     }
 
     /**
-     * Counts the quantity of queues that are waiting to be activated for a
-     * given type of media.
-     *
-     * @param media
-     *            Type of the media to analyze.
-     * @return Quantity of waiting queues.
-     * @throws TReqSException
-     *             If there is a problem while checking the existence of a
-     *             queue.
-     */
-    public short countWaitingQueues(final MediaType/* ! */media)
-            throws TReqSException {
-        LOGGER.trace("> countWaitingQueues");
-
-        assert media != null;
-
-        short waiting = 0;
-        @SuppressWarnings("unchecked")
-        Iterator<String> iterator = this.queuesMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            @SuppressWarnings("unchecked")
-            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
-                    .get(key)).iterator();
-            while (iterator2.hasNext()) {
-                Queue queue = iterator2.next();
-                if (queue.getStatus() == QueueStatus.CREATED
-                        && queue.getTape().getMediaType().equals(media)
-                        && QueuesController.getInstance().exists(
-                                queue.getTape().getName(),
-                                QueueStatus.ACTIVATED) == null) {
-                    waiting++;
-                }
-            }
-        }
-
-        LOGGER.info("There are {} waiting queues on media type {}", waiting,
-                media.getName());
-
-        LOGGER.trace("< countWaitingQueues");
-
-        return waiting;
-    }
-
-    /**
      * Queue Creates a new Queue and inserts it in the instance of the multimap.
      * <p>
      * The new queue is created in CREATED state.
@@ -613,17 +568,17 @@ public final class QueuesController {
      *
      * @param resource
      *            Type of queue to select.
+     * @param queues
+     *            List of queues that could be selected
      * @return The best queue chosen by the selector.
      * @throws TReqSException
      *             If there a problem using the selector.
      */
-    public Queue/* ? */getBestQueue(final Resource/* ! */resource)
-            throws TReqSException {
+    public Queue/* ? */getBestQueue(final Resource/* ! */resource,
+            final List<Queue>/* <!>! */queues) throws TReqSException {
         LOGGER.trace("< getBestQueue");
 
         assert resource != null;
-
-        List<Queue> queues = this.getCreatedQueuesForMediaType(resource);
 
         Queue ret = this.getSelector().selectBestQueue(queues, resource);
 
@@ -636,45 +591,56 @@ public final class QueuesController {
     }
 
     /**
-     * Returns the list of queues for a given media type that are in Created
-     * state.
-     *
-     * @param resource
-     *            Type of media.
-     * @return List of created queues.
-     */
-    List<Queue>/* <!>! */getCreatedQueuesForMediaType(
-            final Resource/* ! */resource) {
-        LOGGER.trace("< getCreatedQueuesForMediaType");
+	 * Returns the list of queues that are waiting to be activated for a given
+	 * type of media.
+	 *
+	 * @param media
+	 *            Type of the media to analyze.
+	 * @return List of created queues.
+	 * @throws TReqSException
+	 *             If there is a problem while checking the existence of a
+	 *             queue.
+	 */
+	public List<Queue>/* <!>! */getWaitingQueues(final MediaType/* ! */media)
+	        throws TReqSException {
+	    LOGGER.trace("> getWaitingQueues");
+	
+	    assert media != null;
+	
+	    List<Queue> queues = new ArrayList<Queue>();
+	
+	    @SuppressWarnings("unchecked")
+	    Iterator<String> iterator = this.queuesMap.keySet().iterator();
+	    while (iterator.hasNext()) {
+	        String key = iterator.next();
+	        @SuppressWarnings("unchecked")
+	        Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
+	                .get(key)).iterator();
+	        while (iterator2.hasNext()) {
+	            Queue queue = iterator2.next();
+	            if (queue.getStatus() == QueueStatus.CREATED
+	                    && queue.getTape().getMediaType().equals(media)
+	                    && QueuesController.getInstance().exists(
+	                            queue.getTape().getName(),
+	                            QueueStatus.ACTIVATED) == null) {
+	                LOGGER.debug("Queue {} - {}", queue.getId(), queue
+	                        .getTape().getName());
+	                queues.add(queue);
+	            }
+	        }
+	    }
+	
+	    assert queues != null;
+	
+	    LOGGER.info("There are {} waiting queues on media type {}",
+	            queues.size(), media.getName());
+	
+	    LOGGER.trace("< getWaitingQueues");
+	
+	    return queues;
+	}
 
-        assert resource != null;
-
-        List<Queue> queues = new ArrayList<Queue>();
-
-        @SuppressWarnings("unchecked")
-        Iterator<String> iterator = this.queuesMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            String key = iterator.next();
-            @SuppressWarnings("unchecked")
-            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
-                    .get(key)).iterator();
-            while (iterator2.hasNext()) {
-                Queue queue = iterator2.next();
-                if (queue.getTape().getMediaType() == resource.getMediaType()
-                        && queue.getStatus() == QueueStatus.CREATED) {
-                    queues.add(queue);
-                }
-            }
-        }
-
-        assert queues != null;
-
-        LOGGER.trace("< getCreatedQueuesForMediaType");
-
-        return queues;
-    }
-
-    /**
+	/**
      * Removes a queue which is in a specific status.
      *
      * @param name
