@@ -47,7 +47,7 @@
   </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
-    <version>1.5.4.2</version>
+    <version>1.5.5-SNAPSHOT</version>
     <artifactId>jtreqs-server</artifactId>
   </parent>
   <properties>
