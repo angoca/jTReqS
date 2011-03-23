@@ -1,0 +1,1 @@
+jTReqS Server ${project.version}
