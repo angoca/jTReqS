@@ -85,6 +85,18 @@ final class InitDBStatements {
      */
     static final String HEART_BEAT_LAST_TIME = MySQLStatements.HEART_BEAT_LAST_TIME;
     /**
+     * Informations table names;
+     */
+    static final String INFORMATIONS = MySQLStatements.INFORMATIONS;
+    /**
+     * Informations table: Name of the value.
+     */
+    static final String INFORMATIONS_NAME = MySQLStatements.INFORMATIONS_NAME;
+    /**
+     * Informations table: Value of the information.
+     */
+    static final String INFORMATIONS_VALUE = MySQLStatements.INFORMATIONS_VALUE;
+    /**
      * Media type table name.
      */
     static final String MEDIATYPES = MySQLStatements.MEDIATYPES;
@@ -248,7 +260,7 @@ final class InitDBStatements {
     /**
      * Structure of the table allocations.
      */
-    static final String STRUCTURE_TABLE_ALLOCATIONS = "(" + ALLOCATIONS_ID
+    static final String STRUCTURE_TABLE_ALLOCATIONS = '(' + ALLOCATIONS_ID
             + " tinyint not null, " + ALLOCATIONS_USER
             + " varchar(32) not null, " + ALLOCATIONS_SHARE
             + " decimal(5,2) not null, " + "PRIMARY KEY (" + ALLOCATIONS_ID
@@ -259,14 +271,21 @@ final class InitDBStatements {
     /**
      * Structure of the table heart beat.
      */
-    static final String STRUCTURE_TABLE_HEART_BEAT = "(" + HEART_BEAT_PID
+    static final String STRUCTURE_TABLE_HEART_BEAT = '(' + HEART_BEAT_PID
             + " int not null, " + HEART_BEAT_START_TIME
             + " datetime not null, " + HEART_BEAT_LAST_TIME + " datetime)";
 
     /**
+     * Structure of the table informations.
+     */
+    static final String STRUCTURE_TABLE_INFORMATIONS = '(' + INFORMATIONS_NAME
+            + " varchar(128) not null, " + INFORMATIONS_VALUE
+            + " varchar(256) not null) ENGINE=InnoDB";
+
+    /**
      * Structure of the table media types.
      */
-    static final String STRUCTURE_TABLE_MEDIATYPES = "(" + MEDIATYPES_ID
+    static final String STRUCTURE_TABLE_MEDIATYPES = '(' + MEDIATYPES_ID
             + " tinyint not null, " + MEDIATYPES_NAME
             + " varchar(16) not null, " + MEDIATYPES_DRIVES
             + " smallint default 0 not null, " + "PRIMARY KEY  ("
@@ -276,7 +295,7 @@ final class InitDBStatements {
      * Structure of the table queues. The columns were sorted in order to have
      * the primary key at first, followed by the more volatile columns.
      */
-    static final String STRUCTURE_TABLE_QUEUES = "(" + QUEUES_ID
+    static final String STRUCTURE_TABLE_QUEUES = '(' + QUEUES_ID
             + " int not null auto_increment, " + QUEUES_NAME
             + " char(12) not null, " + QUEUES_CREATION_TIME
             + " datetime not null, " + QUEUES_MEDIATYPE_ID
@@ -299,7 +318,7 @@ final class InitDBStatements {
      * The requested file could have 1024 characters for the path and 256 for
      * the filename = 1280.
      */
-    static final String STRUCTURE_TABLE_REQUESTS = "(" + REQUESTS_ID
+    static final String STRUCTURE_TABLE_REQUESTS = '(' + REQUESTS_ID
             + " int not null auto_increment, " + REQUESTS_FILE
             + " varchar(1280) not null, " + REQUESTS_CREATION_TIME
             + " datetime not null, " + REQUESTS_USER

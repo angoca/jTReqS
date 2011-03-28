@@ -100,16 +100,12 @@ public abstract class Selector {
         Queue best = null;
         // First get the list of queues
         int length = queues.size();
-        if (length > 1) {
+        if (length >= 1) {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
                 Queue queue = queues.get(j);
                 if (this.checkQueue(resource, queue)) {
-                    if (best != null) {
-                        best = this.compareQueue(best, queue);
-                    } else {
-                        best = queue;
-                    }
+                    best = this.compareQueue(best, queue);
                 }
             }
         }
@@ -118,7 +114,9 @@ public abstract class Selector {
             LOGGER.info("Best queue is on tape {}", best.getTape().getName());
         }
 
-        LOGGER.trace("> selectBestQueueWithoutUser");
+        assert best != null;
+
+        LOGGER.trace("< selectBestQueueWithoutUser");
 
         return best;
     }
@@ -129,16 +127,16 @@ public abstract class Selector {
      * <p>
      *
      *
-     * @param bestQueue
+     * @param best
      *            This is the best queue at the moment.
-     * @param currentQueue
+     * @param queue
      *            The currently analyzed queue.
      * @return The new best queue.
      * @throws TReqSException
      *             Problem in the configurator.
      */
-    protected abstract Queue compareQueue(Queue best, Queue queue)
-            throws TReqSException;
+    protected abstract Queue compareQueue(final Queue/* ! */best,
+            final Queue /* ! */queue) throws TReqSException;
 
     /**
      * Checks if the queue has to be selected.
@@ -182,6 +180,8 @@ public abstract class Selector {
             } else {
                 LOGGER.info("The analyzed queue is in other state: {} - {}",
                         queue.getTape().getName(), queue.getStatus());
+                assert false : "This should not happen because the list of "
+                        + "queues has queues only in created state.";
             }
         } else {
             LOGGER.error("Different media type: current queue {} "

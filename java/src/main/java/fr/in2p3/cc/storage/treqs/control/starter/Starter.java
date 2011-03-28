@@ -55,6 +55,7 @@ import fr.in2p3.cc.storage.treqs.control.exception.ExecutionErrorException;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.RegisterInformation;
 import fr.in2p3.cc.storage.treqs.tools.Watchdog;
 
 /**
@@ -344,6 +345,9 @@ public final class Starter {
 
         // TODO v2.0 Check the PID of a same process to prevent two TReqS.
         // TODO v2.0 Check that the selector, DAO and hsm bridge could be loaded
+
+        // Gets and registers the info in the database.
+        RegisterInformation.exec();
 
         // Initializes the watchdog.
         Watchdog.getInstance();

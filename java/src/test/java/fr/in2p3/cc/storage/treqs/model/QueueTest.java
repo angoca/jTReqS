@@ -508,10 +508,16 @@ public final class QueueTest {
         reading = queue.getNextReading();
 
         Assert.assertTrue("All files staged, next reading", null == reading);
+        // The queue is still in Activated state because it is ended when the
+        // last stager ends, not with getNextReading.
         Assert.assertTrue("All files staged, queue state",
-                QueueStatus.ENDED == queue.getStatus());
+                QueueStatus.ACTIVATED == queue.getStatus());
         Assert.assertEquals("All files staged, position", position2,
                 queue.getHeadPosition());
+
+        queue.finalizeQueue();
+        Assert.assertTrue("All files staged, queue state",
+                QueueStatus.ENDED == queue.getStatus());
     }
 
     /**
@@ -583,10 +589,16 @@ public final class QueueTest {
 
         Assert.assertTrue("All files staged or failed, next reading",
                 null == reading);
+        // The queue is still in Activated state because it is ended when the
+        // last stager ends, not with getNextReading.
         Assert.assertTrue("All files staged or failed, queue state",
-                QueueStatus.ENDED == queue.getStatus());
+                QueueStatus.ACTIVATED == queue.getStatus());
         Assert.assertEquals("All files staged or failed, position", position2,
                 queue.getHeadPosition());
+
+        queue.finalizeQueue();
+        Assert.assertTrue("All files staged, queue state",
+                QueueStatus.ENDED == queue.getStatus());
     }
 
     /**
@@ -658,10 +670,16 @@ public final class QueueTest {
 
         Assert.assertTrue("All files staged or failed, next reading",
                 null == reading);
+        // The queue is still in Activated state because it is ended when the
+        // last stager ends, not with getNextReading.
         Assert.assertTrue("All files staged or failed, queue state",
-                QueueStatus.ENDED == queue.getStatus());
+                QueueStatus.ACTIVATED == queue.getStatus());
         Assert.assertEquals("All files staged or failed, position", position2,
                 queue.getHeadPosition());
+
+        queue.finalizeQueue();
+        Assert.assertTrue("All files staged, queue state",
+                QueueStatus.ENDED == queue.getStatus());
     }
 
     /**
@@ -732,10 +750,16 @@ public final class QueueTest {
         reading = queue.getNextReading();
 
         Assert.assertTrue("All files failed, next reading", null == reading);
+        // The queue is still in Activated state because it is ended when the
+        // last stager ends, not with getNextReading.
         Assert.assertTrue("All files failed, queue state",
-                QueueStatus.ENDED == queue.getStatus());
+                QueueStatus.ACTIVATED == queue.getStatus());
         Assert.assertEquals("All files failed, position", position2,
                 queue.getHeadPosition());
+
+        queue.finalizeQueue();
+        Assert.assertTrue("All files staged, queue state",
+                QueueStatus.ENDED == queue.getStatus());
     }
 
     /**

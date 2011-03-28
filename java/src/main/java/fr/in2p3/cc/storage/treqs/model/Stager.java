@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.controller.StagersController;
 import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
 import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
@@ -85,7 +86,7 @@ public final class Stager extends AbstractProcess {
         assert stagerQueue != null;
 
         super.setName("tape-" + System.currentTimeMillis() + '-' + id + '-'
-                + stagerQueue.getTape().getName());
+                + stagerQueue.getTape().getName() + '-' + stagerQueue.getId());
 
         this.queue = stagerQueue;
 
@@ -171,6 +172,13 @@ public final class Stager extends AbstractProcess {
                     // Exists from the loop.
                     nextReading = null;
                 }
+            }
+            final int qty = StagersController.getInstance()
+                    .getActiveStagersForQueue(this.queue);
+            // If all stagers associated to this queue have been finished, then
+            // finalize the queue.
+            if (qty <= 1) {
+                this.queue.finalizeQueue();
             }
         } catch (TReqSException e) {
             LOGGER.error("Error in Staging.", e);

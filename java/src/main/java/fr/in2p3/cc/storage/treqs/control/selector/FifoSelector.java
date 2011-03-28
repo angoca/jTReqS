@@ -75,6 +75,7 @@ public class FifoSelector extends Selector {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
+        assert queues.size() > 0 : "size 0";
         assert resource != null : "resource null";
 
         Queue ret = null;

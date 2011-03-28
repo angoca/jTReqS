@@ -427,15 +427,15 @@ public final class Activator extends AbstractProcess {
             Resource resource = resources.next();
             // while there is room to activate a queue, do it
             short freeResources = resource.countFreeResources();
-            short waitingQueues = QueuesController.getInstance()
-                    .countWaitingQueues(resource.getMediaType());
+            List<Queue> waitingQueues = QueuesController.getInstance()
+                    .getWaitingQueues(resource.getMediaType());
 
             boolean cont = true;
-            while ((freeResources > 0) && (waitingQueues > 0) && cont) {
+            while ((freeResources > 0) && (waitingQueues.size() > 0) && cont) {
                 LOGGER.debug("Still {} resources available", freeResources);
                 // Select best queue for the best user
                 Queue bestQueue = QueuesController.getInstance().getBestQueue(
-                        resource);
+                        resource, waitingQueues);
 
                 // Activate the best queue
                 if (bestQueue != null) {
@@ -452,11 +452,12 @@ public final class Activator extends AbstractProcess {
                                         e.getMessage() });
                     }
                 } else {
-                    LOGGER.warn("Unable to choose a best queue.");
+                    LOGGER.error("Unable to choose a best queue.");
 
                     assert false : "It is impossible to not have a queue.";
                 }
-                waitingQueues--;
+                waitingQueues = QueuesController.getInstance()
+                        .getWaitingQueues(resource.getMediaType());
                 freeResources--;
             }
         }

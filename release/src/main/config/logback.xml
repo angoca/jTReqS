@@ -79,7 +79,7 @@
     </filter>
     <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
       <pattern>
-        %d{ISO8601} [%thread] %-5level %logger{35} - %msg%n
+        %d{ISO8601} [%thread] %-5level %msg%n
       </pattern>
     </encoder>
   </appender>

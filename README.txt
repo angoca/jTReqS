@@ -19,9 +19,9 @@ for HPSS. This implementation is in Java.
 
  - Compilation Environment:
    o Linux.
-   o Java.
+   o Java (wih JAVA_HOME set).
    o gcc compiler.
-   o Maven (optional but recommended).
+   o Maven (optional but highly recommended).
 
  - Other:
    o a proper HPSS keytab.
@@ -53,6 +53,8 @@ for HPSS. This implementation is in Java.
      $ cp java/src/test/scripts/jtreqs.sh bin
      $ cp release/src/main/config/jtreqs.conf.properties bin
      $ cp release/src/main/config/logback.xml bin
+ - Create a file with the project version (if known).
+     $ echo jTReqS Server \${project.version} > bin/version.txt
  - Run javac over the source directory.
      $ javac -d bin -encoding UTF8 -cp \
 vendor/apache/commons-cli-1.2/commons-cli-1.2.jar:\
@@ -83,12 +85,12 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/persistence/mysql/*.java \
 java/src/main/java/fr/in2p3/cc/storage/treqs/persistence/mysql/dao/*.java \
 java/src/main/java/fr/in2p3/cc/storage/treqs/persistence/mysql/exception/*.java \
 java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
- - Create the native library
+ - Create the native library.
      $ javah -classpath bin/ -d bin/ \
 -jni fr.in2p3.cc.storage.treqs.hsm.hpssJNI.NativeBridge
      $ gcc -I /opt/hpss/include/ -DLINUX -fPIC -Wall -o bin/HPSSBroker.o \
 -c native/src/main/c/HPSSBroker.c
-     $ gcc -I /opt/jdk1.6.0_18/include/linux/ -I /opt/hpss/include/ -I bin/ \
+     $ gcc -I ${JAVA_HOME}/include/ -I /opt/hpss/include/ -I bin/ \
 -DLINUX -Wall -fPIC -o bin/NativeBridge.o -c native/src/main/c/NativeBridge.c
   This is the MOST important line of code of this project (because of this, this
   project could have been thrown to the garbage.)

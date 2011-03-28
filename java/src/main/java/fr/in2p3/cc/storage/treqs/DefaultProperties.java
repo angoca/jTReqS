@@ -61,12 +61,12 @@ public final class DefaultProperties {
      * Default HSM bridge.
      */
     public static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage."
-            + "treqs.hsm.command.HSMCommandBridge";
+            + "treqs.hsm.hpssJNI.HPSSJNIBridge";
     /**
      * Default selector.
      */
     public static final String DEFAULT_SELECTOR = "fr.in2p3.cc.storage.treqs."
-            + "control.selector.JonathanSelector";
+            + "control.selector.FifoSelector";
     /**
      * Time to rest in temporary suspended state.
      */

@@ -37,6 +37,7 @@
 package fr.in2p3.cc.storage.treqs.control.selector;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -165,8 +166,10 @@ public final class JonathanSelectorTest {
                 JonathanSelectorTest.TWENTY, tape, user);
         Queue queue = HelperControl.addFPOT(fpot, (byte) 1);
 
-        Queue actual = new JonathanSelector().selectBestQueueForUser(
-                HelperControl.getQueues(resource), resource, user);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                resource.getMediaType());
+        Queue actual = new JonathanSelector().selectBestQueueForUser(queues,
+                resource, user);
         Queue expected = queue;
 
         Assert.assertEquals(expected, actual);
@@ -196,8 +199,10 @@ public final class JonathanSelectorTest {
                 JonathanSelectorTest.TWENTY, tape2, user);
         HelperControl.addFPOT(fpot, (byte) 1);
 
-        Queue actual = new JonathanSelector().selectBestQueueForUser(
-                HelperControl.getQueues(resource), resource, user);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                resource.getMediaType());
+        Queue actual = new JonathanSelector().selectBestQueueForUser(queues,
+                resource, user);
         Queue expected = queue1;
 
         Assert.assertEquals(expected, actual);
@@ -237,8 +242,10 @@ public final class JonathanSelectorTest {
         // Tape 2
         Queue queue2 = HelperControl.addFPOT(fpot2, (byte) 1);
 
-        Queue actual = new JonathanSelector().selectBestQueueForUser(
-                HelperControl.getQueues(resource), resource, user);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                resource.getMediaType());
+        Queue actual = new JonathanSelector().selectBestQueueForUser(queues,
+                resource, user);
         Queue expected = queue2;
 
         Assert.assertEquals(expected, actual);
@@ -272,25 +279,42 @@ public final class JonathanSelectorTest {
      * @throws TReqSException
      *             Never.
      */
-    @Test(expected = AssertionError.class)
+    @Test
     public void testBestQueue06() throws TReqSException {
-        new JonathanSelector().selectBestQueueForUser(HelperControl
-                .getQueues(new Resource(MEDIA_TYPE_1, (byte) NUMBER_5)), null,
-                new User("username"));
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                MEDIA_TYPE_1);
 
+        boolean failed = false;
+        try {
+            new JonathanSelector().selectBestQueueForUser(queues, null,
+                    new User("username"));
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * Null user.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void testBestQueue07() {
+    public void testBestQueue07() throws TReqSException {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                resource.getMediaType());
 
         boolean failed = false;
         try {
-            new JonathanSelector().selectBestQueueForUser(
-                    HelperControl.getQueues(resource), resource, null);
+            new JonathanSelector().selectBestQueueForUser(queues, resource,
+                    null);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -329,23 +353,40 @@ public final class JonathanSelectorTest {
      * @throws TReqSException
      *             Never.
      */
-    @Test(expected = AssertionError.class)
+    @Test
     public void testBestUser02() throws TReqSException {
-        new JonathanSelector().selectBestUser(HelperControl
-                .getQueues(new Resource(MEDIA_TYPE_1, (byte) NUMBER_5)), null);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                MEDIA_TYPE_1);
+
+        boolean failed = false;
+        try {
+            new JonathanSelector().selectBestUser(queues, null);
+            failed = true;
+        } catch (Throwable e) {
+            if (!(e instanceof AssertionError)) {
+                failed = true;
+            }
+        }
+        if (failed) {
+            Assert.fail();
+        }
     }
 
     /**
      * No queues defined.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void testBestUser03() {
+    public void testBestUser03() throws TReqSException {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                resource.getMediaType());
 
         boolean failed = false;
         try {
-            new JonathanSelector().selectBestUser(
-                    HelperControl.getQueues(resource), resource);
+            new JonathanSelector().selectBestUser(queues, resource);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -374,9 +415,10 @@ public final class JonathanSelectorTest {
         HelperControl.addFPOT(fpot, (byte) 1);
         resource.setUserAllocation(user, (byte) NUMBER_5);
         resource.increaseUsedResources(user);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                resource.getMediaType());
 
-        User actual = new JonathanSelector().selectBestUser(
-                HelperControl.getQueues(resource), resource);
+        User actual = new JonathanSelector().selectBestUser(queues, resource);
         User expected = user;
 
         Assert.assertEquals(expected, actual);
@@ -412,9 +454,10 @@ public final class JonathanSelectorTest {
         resource.increaseUsedResources(user1);
         resource.increaseUsedResources(user1);
         resource.increaseUsedResources(user2);
+        List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
+                resource.getMediaType());
 
-        User actual = new JonathanSelector().selectBestUser(
-                HelperControl.getQueues(resource), resource);
+        User actual = new JonathanSelector().selectBestUser(queues, resource);
         User expected = user2;
         Assert.assertEquals(expected, actual);
     }

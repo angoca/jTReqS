@@ -43,12 +43,14 @@
   <fileSets>
     <!-- Adds the license file. -->
     <fileSet>
+      <directory>target/jtreqs</directory>
       <includes>
         <include>LICENSE.txt</include>
         <include>README.txt</include>
       </includes>
       <outputDirectory>/</outputDirectory>
     </fileSet>
+    <!-- Binaries directory -->
     <fileSet>
       <directory>target/jtreqs/bin</directory>
       <includes>
@@ -57,6 +59,7 @@
       <fileMode>0555</fileMode>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
+    <!-- Configurations directory -->
     <fileSet>
       <directory>target/jtreqs/etc</directory>
       <includes>
@@ -64,6 +67,8 @@
       </includes>
       <outputDirectory>etc</outputDirectory>
     </fileSet>
+    <!-- Libraries directory -->
+    <!-- Jars -->
     <fileSet>
       <directory>target/jtreqs/repo</directory>
       <includes>
@@ -71,12 +76,21 @@
       </includes>
       <outputDirectory>repo</outputDirectory>
     </fileSet>
+    <!-- SOs -->
     <fileSet>
       <directory>target/jtreqs/lib</directory>
       <includes>
         <include>**/*</include>
       </includes>
       <outputDirectory>lib</outputDirectory>
+    </fileSet>
+    <!-- Documentation directory -->
+    <fileSet>
+      <directory>target/jtreqs/doc</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+      <outputDirectory>doc</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

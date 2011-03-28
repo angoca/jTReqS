@@ -57,17 +57,17 @@ public final class Constants {
      */
     public static final String AUTHENTICATION_TYPE = "AUTHENTICATION_TYPE";
     /**
-     * Driver used to connect to the database.
+     * Name of the database.
      */
-    public static final String DB_DRIVER = "DRIVER";
+    public static final String DB_NAME = "DATABASE";
     /**
      * Password to connect to the database.
      */
     public static final String DB_PASSWORD = "PASSWORD";
     /**
-     * Location of the database.
+     * Server where is hosted the database.
      */
-    public static final String DB_URL = "URL";
+    public static final String DB_SERVER = "SERVER";
     /**
      * User name to connect to the database.
      */
@@ -166,9 +166,9 @@ public final class Constants {
      */
     public static final String SECTION_HSM_BRIDGE = "HSM_BRIDGE";
     /**
-     * Section in the configuration file for the Keytab.
+     * Section in the configuration file for HPSS.
      */
-    public static final String SECTION_KEYTAB = "KEYTAB";
+    public static final String SECTION_KEYTAB = "HPSS";
     /**
      * Section in the configuration file for the Persistence.
      */
@@ -193,7 +193,7 @@ public final class Constants {
     /**
      * Parameter to select the selector type.
      */
-    public static final String SELECTOR_NAME = "SELECTOR";
+    public static final String SELECTOR_NAME = "SELECTOR_NAME";
     /**
      * Quantity of simultaneous stagers asking for files of the same tap to
      * HPSS.
@@ -227,6 +227,11 @@ public final class Constants {
      * Tests the existence and access to the keytab.
      */
     public static final String TEST_KEYTAB = "TEST_KEYTAB";
+    /**
+     * Name to search the configuration file for HPSS.
+     */
+    public static final String HPSS_CONFIGURATION_FILE = "HPSS_CONFIGURATION_"
+            + "FILE";
 
     /**
      * Invisible constructor.

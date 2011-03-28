@@ -209,7 +209,7 @@ public final class StagersController {
      *            Queue to analyze.
      * @return Quantity of active stagers for the given queue.
      */
-    public int getActiveStagersForQueue(final Queue/* ! */queue) {
+    public synchronized int getActiveStagersForQueue(final Queue/* ! */queue) {
         LOGGER.trace("> getActiveStagersForQueue");
 
         assert queue != null;

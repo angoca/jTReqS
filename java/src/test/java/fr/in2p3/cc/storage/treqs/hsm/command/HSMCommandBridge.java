@@ -323,6 +323,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         final BufferedReader bfStreamError = new BufferedReader(readerError);
 
         String current = null;
+        // TODO v2.0 To use the object from tool-CommandExecuter (repeated code)
         current = this.processOutput(bfStreamError, true);
         current = this.processOutput(bfStreamOut, false);
         LOGGER.debug("Output: {}", current);

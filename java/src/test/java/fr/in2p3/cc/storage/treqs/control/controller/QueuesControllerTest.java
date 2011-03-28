@@ -604,7 +604,8 @@ public final class QueuesControllerTest {
 
         boolean failed = false;
         try {
-            QueuesController.getInstance().getBestQueue(resource);
+            QueuesController.getInstance().getBestQueue(resource,
+                    new ArrayList<Queue>());
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -1009,9 +1010,9 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testCountWaiting01() throws TReqSException {
-        short actual = QueuesController.getInstance().countWaitingQueues(
-                MEDIA_TYPE_1);
-        short expected = 0;
+        int actual = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE_1).size();
+        int expected = 0;
 
         Assert.assertEquals(expected, actual);
     }
@@ -1029,9 +1030,9 @@ public final class QueuesControllerTest {
         QueuesController.getInstance().addFilePositionOnTape(fpot,
                 (byte) QueuesControllerTest.THREE);
 
-        short actual = QueuesController.getInstance().countWaitingQueues(
-                MEDIA_TYPE_1);
-        short expected = 1;
+        int actual = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE_1).size();
+        int expected = 1;
 
         Assert.assertEquals(expected, actual);
     }
@@ -1050,9 +1051,9 @@ public final class QueuesControllerTest {
                 fpot, (byte) 1);
         Helper.activate(queue);
 
-        short actual = QueuesController.getInstance().countWaitingQueues(
-                MEDIA_TYPE_1);
-        short expected = 0;
+        int actual = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE_1).size();
+        int expected = 0;
 
         Assert.assertEquals(expected, actual);
     }
@@ -1072,9 +1073,9 @@ public final class QueuesControllerTest {
         Helper.activate(queue);
         Helper.end(queue);
 
-        short actual = QueuesController.getInstance().countWaitingQueues(
-                MEDIA_TYPE_1);
-        short expected = 0;
+        int actual = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE_1).size();
+        int expected = 0;
 
         Assert.assertEquals(expected, actual);
     }
@@ -1101,9 +1102,9 @@ public final class QueuesControllerTest {
         Helper.activate(queue);
         Helper.end(queue);
 
-        short actual = QueuesController.getInstance().countWaitingQueues(
-                MEDIA_TYPE_1);
-        short expected = 1;
+        int actual = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE_1).size();
+        int expected = 1;
 
         Assert.assertEquals(expected, actual);
     }
@@ -1131,9 +1132,9 @@ public final class QueuesControllerTest {
         Helper.activate(queue2);
         Helper.end(queue2);
 
-        short actual = QueuesController.getInstance().countWaitingQueues(
-                MEDIA_TYPE_2);
-        short expected = 0;
+        int actual = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE_2).size();
+        int expected = 0;
 
         Assert.assertEquals(expected, actual);
     }
@@ -1146,7 +1147,7 @@ public final class QueuesControllerTest {
      */
     @Test(expected = AssertionError.class)
     public void testCountWaiting07() throws TReqSException {
-        QueuesController.getInstance().countWaitingQueues(null);
+        QueuesController.getInstance().getWaitingQueues(null);
     }
 
     // TODO Tests: tests to count waiting queues for two queues of the same tape

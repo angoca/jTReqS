@@ -76,7 +76,8 @@ public final class MySQLInit {
 
         // Test the existence of the needed tables.
         boolean tableAllocationsFound = false;
-        boolean tableHeartBeat = false;
+        boolean tableHeartBeatFound = false;
+        boolean tableInformationsFound = false;
         boolean tableMediatypeFound = false;
         boolean tableQueuesFound = false;
         boolean tableRequestFound = false;
@@ -95,7 +96,10 @@ public final class MySQLInit {
                     tableAllocationsFound = true;
                 }
                 if (tablename.equals(InitDBStatements.HEART_BEAT)) {
-                    tableHeartBeat = true;
+                    tableHeartBeatFound = true;
+                }
+                if (tablename.equals(InitDBStatements.INFORMATIONS)) {
+                    tableInformationsFound = true;
                 }
                 if (tablename.equals(InitDBStatements.MEDIATYPES)) {
                     tableMediatypeFound = true;
@@ -132,9 +136,13 @@ public final class MySQLInit {
             createTable(InitDBStatements.REQUESTS,
                     InitDBStatements.STRUCTURE_TABLE_REQUESTS);
         }
-        if (!tableHeartBeat) {
+        if (!tableHeartBeatFound) {
             createTable(InitDBStatements.HEART_BEAT,
                     InitDBStatements.STRUCTURE_TABLE_HEART_BEAT);
+        }
+        if (!tableInformationsFound) {
+            createTable(InitDBStatements.INFORMATIONS,
+                    InitDBStatements.STRUCTURE_TABLE_INFORMATIONS);
         }
         MySQLBroker.getInstance().disconnect();
         MySQLBroker.destroyInstance();
@@ -202,6 +210,9 @@ public final class MySQLInit {
         structure += "\n" + InitDBStatements.CREATE_TABLE
                 + InitDBStatements.HEART_BEAT + " "
                 + InitDBStatements.STRUCTURE_TABLE_HEART_BEAT + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.INFORMATIONS + " "
+                + InitDBStatements.STRUCTURE_TABLE_INFORMATIONS + ";\n";
 
         LOGGER.trace("> dumpStructure");
 
