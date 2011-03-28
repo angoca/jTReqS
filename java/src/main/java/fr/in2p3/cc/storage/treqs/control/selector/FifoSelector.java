@@ -42,9 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.model.Queue;
-import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 
 /**
@@ -57,7 +55,7 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
  * @author Andres Gomez
  * @since 1.5
  */
-public final class FifoSelector implements Selector {
+public class FifoSelector extends Selector {
     /**
      * Logger.
      */
@@ -72,26 +70,16 @@ public final class FifoSelector implements Selector {
      * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ? */selectBestQueue(final List<Queue> queues,
-            final Resource resource) throws TReqSException {
+    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
         assert resource != null : "resource null";
 
         Queue ret = null;
-        // First get the list of queues
-        int length = queues.size();
-        for (int j = 0; j < length; j++) {
-            Queue queue = queues.get(j);
-            ret = this.checkQueue(resource, ret, queue);
-        }
 
-        if (ret != null) {
-            LOGGER.info("Best queue is on tape {}", ret.getTape().getName());
-        } else {
-            LOGGER.info("No queue could be selected");
-        }
+        ret = this.selectBestQueueWithoutUser(queues, resource);
 
         assert ret != null : "The returned queue is null";
 
@@ -100,97 +88,49 @@ public final class FifoSelector implements Selector {
         return ret;
     }
 
-    /**
-     * Checks if the queue has to be selected.
+    /*
+     * (non-Javadoc)
      *
-     * @param resource
-     *            Type of resource.
-     * @param currentlySelected
-     *            Queue currently selected. The first time is null.
-     * @param queue
-     *            Currently analyzed queue.
-     * @return Selected queue or null if the queue does not correspond to the
-     *         criteria. The returned queue must be in Created state.
-     * @throws TReqSException
-     *             If there is a problem getting the configuration.
+     * @see
+     * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
+     * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
-    private Queue/* ? */checkQueue(final Resource resource,
-            final Queue/* ? */currentlySelected, final Queue queue)
-            throws TReqSException {
-        LOGGER.trace("> checkQueue");
+    protected final Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
+            final Queue/* ! */currentQueue) throws TReqSException {
+        LOGGER.trace("> compareQueue");
 
-        assert resource != null : "resource null";
-        assert queue != null : "queue null";
+        assert bestQueue != null : "Current best queue null";
+        assert currentQueue != null : "Current queue null";
 
-        Queue ret = null;
-
-        if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
-            if (queue.getStatus() == QueueStatus.CREATED) {
-                // Check if the tape for this queue is not already used by
-                // another active queue.
-                if (QueuesController.getInstance().exists(
-                        queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
-                    // There is another active queue for this tape. Just
-                    // pick another one.
-                    LOGGER.debug("Another queue on this tape" + " ({})"
-                            + " is already active. Trying next queue.", queue
-                            .getTape().getName());
-                    // Return the currently selected or null.
-                    ret = currentlySelected;
-                } else {
-                    // This is a created one.
-
-                    // Return this one because there is not selected one.
-                    if (currentlySelected == null) {
-                        LOGGER.debug("Current queue is null");
-                        ret = queue;
-                    } else if (currentlySelected.getCreationTime()
-                            .getTimeInMillis() >= queue.getCreationTime()
-                            .getTimeInMillis()) {
-                        // Select the oldest queue.
-                        LOGGER.debug("It is better the new one {} than the "
-                                + "selected one {}", queue.getTape().getName(),
-                                currentlySelected.getTape().getName());
-                        ret = queue;
-                    } else if (currentlySelected.getCreationTime()
-                            .getTimeInMillis() < queue.getCreationTime()
-                            .getTimeInMillis()) {
-                        LOGGER.debug("It is better the already selected {} "
-                                + "than the new one {}", queue.getTape()
-                                .getName(), currentlySelected.getTape()
-                                .getName());
-                        ret = currentlySelected;
-                    } else {
-                        LOGGER.warn("This is weird");
-                        assert false : "No queue selected, mmm?";
-                        ret = currentlySelected;
-                    }
-                    LOGGER.debug("Selected queue: {}", ret.getTape().getName());
-                }
-            } else {
-                LOGGER.info("The analyzed queue is in other state: {} - {}",
-                        queue.getTape().getName(), queue.getStatus());
-                // Return the currently selected or null.
-                ret = currentlySelected;
-            }
-        } else {
-            LOGGER.debug("Different media type: current queue {} "
-                    + "searched {}", queue.getTape().getMediaType().getName(),
-                    resource.getMediaType().getName());
-            // Return the currently selected or null.
-            ret = currentlySelected;
-            LOGGER.error("Different type of tape");
-            assert false : "This should never happen, the list of tapes is "
-                    + "the correct type";
+        Queue newBest = null;
+        if (bestQueue.getCreationTime().getTimeInMillis() >= currentQueue
+                .getCreationTime().getTimeInMillis()) {
+            // Select the oldest queue.
+            LOGGER.debug("It is better the new one {} than the "
+                    + "selected one {} ({}>={})", new Object[] {
+                    currentQueue.getTape().getName(),
+                    bestQueue.getTape().getName(),
+                    bestQueue.getCreationTime().getTimeInMillis(),
+                    currentQueue.getCreationTime().getTimeInMillis() });
+            newBest = currentQueue;
+        } else if (bestQueue.getCreationTime().getTimeInMillis() < currentQueue
+                .getCreationTime().getTimeInMillis()) {
+            LOGGER.debug("It is better the already selected {} "
+                    + "than the new one {} ({}<{})", new Object[] {
+                    bestQueue.getTape().getName(),
+                    currentQueue.getTape().getName(),
+                    bestQueue.getCreationTime().getTimeInMillis(),
+                    currentQueue.getCreationTime().getTimeInMillis() });
+            newBest = bestQueue;
         }
 
-        if (ret != null) {
-            assert ret.getStatus() == QueueStatus.CREATED : "Invalid state "
-                    + ret.getStatus();
-        }
+        LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
 
-        LOGGER.trace("< checkQueue - {}", ret);
+        assert newBest != null : "Best queue null";
 
-        return ret;
+        LOGGER.trace("< compareQueue");
+
+        return newBest;
     }
+
 }

@@ -262,11 +262,11 @@ public final class Queue implements Comparable<Queue> {
     /**
      * List of files to read &lt;position, Reading of file&gt;.
      */
-    private TreeMap<Short, Reading> readingList;
+    private TreeMap<Integer, Reading> readingList;
     /**
      * Position of the head, corresponding to the current file being read.
      */
-    private short headPosition;
+    private int headPosition;
     /**
      * Unique Id of this queue given by the data source.
      */
@@ -339,12 +339,12 @@ public final class Queue implements Comparable<Queue> {
         assert retries >= 0;
 
         this.byteSize = 0;
-        this.readingList = new TreeMap<Short, Reading>();
+        this.readingList = new TreeMap<Integer, Reading>();
         this.numberDone = 0;
         this.numberFailed = 0;
         this.numberSuspensions = 0;
         this.tape = fpot.getTape();
-        this.headPosition = (short) 0;
+        this.headPosition = 0;
         // Then, it will be calculated.
         this.owner = null;
 
@@ -393,7 +393,7 @@ public final class Queue implements Comparable<Queue> {
         }
 
         this.changeToActivated();
-        LOGGER.warn("Queue {} activated.", this.getTape().getName());
+        LOGGER.info("Queue {} activated.", this.getTape().getName());
         AbstractDAOFactory
                 .getDAOFactoryInstance()
                 .getQueueDAO()
@@ -471,7 +471,7 @@ public final class Queue implements Comparable<Queue> {
         Map<User, Integer> ownersScores = new HashMap<User, Integer>();
 
         // Calculates the quantity of files per owner.
-        Iterator<Short> iterator = this.readingList.keySet().iterator();
+        Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
             User user = this.readingList.get(iterator.next()).getMetaData()
                     .getRequester();
@@ -555,12 +555,12 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        List<Short> positions = new ArrayList<Short>();
+        List<Integer> positions = new ArrayList<Integer>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
             Iterator keys = this.readingList.keySet().iterator();
             while (keys.hasNext()) {
-                short position = (Short) keys.next();
+                int position = (Integer) keys.next();
                 positions.add(position);
                 Reading reading = this.readingList.get(position);
                 String filename = reading.getMetaData().getFile().getName();
@@ -627,7 +627,7 @@ public final class Queue implements Comparable<Queue> {
 
         byte nbFailed = 0;
         byte nbDone = 0;
-        Iterator<Short> iterator = this.readingList.keySet().iterator();
+        Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
             switch (this.readingList.get(iterator.next()).getRequestStatus()) {
             case FAILED:
@@ -691,7 +691,7 @@ public final class Queue implements Comparable<Queue> {
                         || (fs == RequestStatus.ON_DISK)) {
                     this.changeToEnded();
 
-                    LOGGER.warn("Queue {} ended", this.getTape().getName());
+                    LOGGER.info("Queue {} ended", this.getTape().getName());
                     AbstractDAOFactory
                             .getDAOFactoryInstance()
                             .getQueueDAO()
@@ -758,7 +758,7 @@ public final class Queue implements Comparable<Queue> {
      *
      * @return Current position of the tape's head.
      */
-    public short getHeadPosition() {
+    public int getHeadPosition() {
         LOGGER.trace(">< getHeadPosition");
 
         return this.headPosition;
@@ -806,9 +806,9 @@ public final class Queue implements Comparable<Queue> {
         Reading ret = null;
         boolean found = false;
 
-        Iterator<Short> iterator = this.readingList.keySet().iterator();
+        Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext() && !found) {
-            Short key = iterator.next();
+            Integer key = iterator.next();
             Reading reading = this.readingList.get(key);
             if (reading.getRequestStatus() == RequestStatus.SUBMITTED) {
                 // This is the file to return
@@ -968,14 +968,14 @@ public final class Queue implements Comparable<Queue> {
         // for different files.
         boolean exists = false;
         synchronized (this.readingList) {
-            exists = this.readingList.containsKey((short) fpot.getPosition());
+            exists = this.readingList.containsKey(fpot.getPosition());
             if (!exists) {
                 this.insertNotRegisteredFile(reading);
             } else {
                 // The file is already in the queue.
-                LOGGER.warn("Queue {} already has a reading for file {}", this
+                LOGGER.info("Queue {} already has a reading for file {}", this
                         .getTape().getName(), fpot.getFile().getName());
-                if (!this.readingList.get((short) fpot.getPosition())
+                if (!this.readingList.get(fpot.getPosition())
                         .getMetaData().getFile().getName()
                         .equals(fpot.getFile().getName())) {
                     assert false : "Two different files in the same position";
@@ -1004,8 +1004,7 @@ public final class Queue implements Comparable<Queue> {
 
         assert reading != null;
 
-        this.readingList.put((short) reading.getMetaData().getPosition(),
-                reading);
+        this.readingList.put(reading.getMetaData().getPosition(), reading);
 
         this.byteSize += reading.getMetaData().getFile().getSize();
         this.calculateOwner();
@@ -1150,7 +1149,7 @@ public final class Queue implements Comparable<Queue> {
      *             If the head is trying to move back. If the head cannot be
      *             repositioned in this state.
      */
-    void setHeadPosition(final short position) throws InvalidParameterException {
+    void setHeadPosition(final int position) throws InvalidParameterException {
         LOGGER.trace("> setHeadPosition");
 
         assert position >= 0;

@@ -54,6 +54,7 @@
       <includes>
         <include>**/*</include>
       </includes>
+      <fileMode>0555</fileMode>
       <outputDirectory>bin</outputDirectory>
     </fileSet>
     <fileSet>
@@ -69,6 +70,13 @@
         <include>**/*</include>
       </includes>
       <outputDirectory>repo</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/jtreqs/lib</directory>
+      <includes>
+        <include>**/*</include>
+      </includes>
+      <outputDirectory>lib</outputDirectory>
     </fileSet>
   </fileSets>
 </assembly>

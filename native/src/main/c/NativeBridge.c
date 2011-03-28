@@ -40,6 +40,7 @@
 #include "ProcessException.h"
 
 #define cont (rc == HPSS_E_NOERROR)
+#define FILE_ON_DISK "DISK"
 
 // These definition are for a kind of logger.
 #define trace (LOGGER != NULL && strcmp(LOGGER, "TRACE") == 0)
@@ -86,6 +87,8 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
     printf("> JNI getFileProperties\n");
   }
 
+  memset((char*) tape, '\0', HPSS_PV_NAME_SIZE + 1);
+
   // Converts JavaString in char*.
   filename = (*env)->GetStringUTFChars(env, jFileName, JNI_FALSE);
 
@@ -107,7 +110,7 @@ JNIEXPORT jobject JNICALL Java_fr_in2p3_cc_storage_treqs_hsm_hpssJNI_NativeBridg
     // Prepares the value when the file is already in disk.
     if (storageLevel == 0) {
       // This is the value of the constant Constants.FILE_ON_DISK
-      strcpy(tape, "DISK");
+      strcpy(tape, FILE_ON_DISK);
     }
 
     // Returns the elements to java and release JNI components.

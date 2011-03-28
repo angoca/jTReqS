@@ -96,7 +96,7 @@ public final class InvalidParameterException extends TReqSException {
      */
     public InvalidParameterException(
             final InvalidParameterReasons fileBeforeHead,
-            final short headPosition, final int filePosition,
+            final int headPosition, final int filePosition,
             final String filename) {
         super("It's not possible to register a file " + filename
                 + " in position " + filePosition
@@ -126,7 +126,7 @@ public final class InvalidParameterException extends TReqSException {
      *            New invalid position of the head.
      */
     public InvalidParameterException(final InvalidParameterReasons headRewound,
-            final short currentPosition, final short newPosition) {
+            final int currentPosition, final int newPosition) {
         super("The new position " + newPosition
                 + " cannot be before the current head position "
                 + currentPosition);

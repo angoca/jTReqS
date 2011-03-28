@@ -234,6 +234,8 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      *             If there is a problem reading the configuration.
      */
     private HSMCommandBridge() throws TReqSException {
+        super ();
+
         LOGGER.trace("> create instance.");
 
         this.setKeytabPath(Configurator.getInstance().getStringValue(

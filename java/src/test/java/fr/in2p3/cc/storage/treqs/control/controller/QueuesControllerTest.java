@@ -55,6 +55,7 @@ import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.hsm.mock.HSMMockBridge;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.Helper;
@@ -62,6 +63,7 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
+import fr.in2p3.cc.storage.treqs.model.Stager;
 import fr.in2p3.cc.storage.treqs.model.Tape;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
@@ -228,6 +230,8 @@ public final class QueuesControllerTest {
      */
     @After
     public void tearDown() {
+        StagersController.getInstance().conclude();
+        StagersController.destroyInstance();
         QueuesController.destroyInstance();
         Configurator.destroyInstance();
         AbstractDAOFactory.destroyInstance();
@@ -279,15 +283,33 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testAddFile03ActivatedQueueAfter() throws TReqSException {
+        LOGGER.info("testAddFile03ActivatedQueueAfter");
         String filename1 = "filename1";
         String filename2 = "filename2";
+        String filename3 = "filename3";
+        String filenameNew = "filenameNew";
 
-        FilePositionOnTape fpot = new FilePositionOnTape(new File(filename1,
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File(filename1,
                 QueuesControllerTest.FIFTY), 0, TAPE_1, USER_1);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(new File(filename2,
+                QueuesControllerTest.FIFTY), 5, TAPE_1, USER_1);
+        FilePositionOnTape fpot3 = new FilePositionOnTape(new File(filename3,
+                QueuesControllerTest.FIFTY), 10, TAPE_1, USER_1);
         Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
-                fpot, (byte) 1);
+                fpot1, (byte) 1);
+        QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
+        QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
         Helper.activate(queue1);
-        Helper.getNextReading(queue1);
+        for (int i = 0; i < 3; i++) {
+            Stager stager = StagersController.getInstance().create(queue1);
+            HSMMockBridge.getInstance().setStageTime(200000);
+            stager.start();
+        }
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         Assert.assertTrue("Created queue", QueuesController.getInstance()
                 .exists(NAMETAPE_1, QueueStatus.CREATED) == null);
@@ -296,8 +318,8 @@ public final class QueuesControllerTest {
         Assert.assertTrue("Suspended queue", QueuesController.getInstance()
                 .exists(NAMETAPE_1, QueueStatus.TEMPORARILY_SUSPENDED) == null);
 
-        FilePositionOnTape fpotNew = new FilePositionOnTape(new File(filename2,
-                QueuesControllerTest.FIFTY), 25, TAPE_1, USER_1);
+        FilePositionOnTape fpotNew = new FilePositionOnTape(new File(
+                filenameNew, QueuesControllerTest.FIFTY), 25, TAPE_1, USER_1);
         Queue queue2 = QueuesController.getInstance().addFilePositionOnTape(
                 fpotNew, (byte) 1);
 
@@ -319,6 +341,7 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testAddFile04ActivatedQueueBefore() throws TReqSException {
+        LOGGER.info("testAddFile04ActivatedQueueBefore");
         String filename1 = "filename1";
         String filename2 = "filename2";
 
@@ -351,7 +374,7 @@ public final class QueuesControllerTest {
     }
 
     /**
-     * Tests to add a file in a already created queue.
+     * Tests to add a file in an already created queue.
      *
      * @throws TReqSException
      *             Never.
@@ -359,15 +382,34 @@ public final class QueuesControllerTest {
     @Test
     public void testAddFile05AlreadyActivatedQueueHomePosition()
             throws TReqSException {
+        LOGGER.info("testAddFile05AlreadyActivatedQueueHomePosition");
         String filename1 = "filename1";
         String filename2 = "filename2";
+        String filename3 = "filename3";
+        String filenameNew = "filenameNew";
 
-        FilePositionOnTape fpot = new FilePositionOnTape(new File(filename1,
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File(filename1,
                 QueuesControllerTest.FIFTY), QueuesControllerTest.FIFTY,
                 TAPE_1, USER_1);
+        FilePositionOnTape fpot2 = new FilePositionOnTape(new File(filename2,
+                QueuesControllerTest.FIFTY), 55, TAPE_1, USER_1);
+        FilePositionOnTape fpot3 = new FilePositionOnTape(new File(filename3,
+                QueuesControllerTest.FIFTY), 60, TAPE_1, USER_1);
         Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
-                fpot, (byte) 1);
+                fpot1, (byte) 1);
+        QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
+        QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
         Helper.activate(queue1);
+        for (int i = 0; i < 3; i++) {
+            Stager stager = StagersController.getInstance().create(queue1);
+            HSMMockBridge.getInstance().setStageTime(20000);
+            stager.start();
+        }
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         Assert.assertTrue("Created queue", QueuesController.getInstance()
                 .exists(NAMETAPE_1, QueueStatus.CREATED) == null);
@@ -376,8 +418,8 @@ public final class QueuesControllerTest {
         Assert.assertTrue("Suspended queue", QueuesController.getInstance()
                 .exists(NAMETAPE_1, QueueStatus.TEMPORARILY_SUSPENDED) == null);
 
-        FilePositionOnTape fpotNew = new FilePositionOnTape(new File(filename2,
-                QueuesControllerTest.FIFTY), 150, TAPE_1, USER_1);
+        FilePositionOnTape fpotNew = new FilePositionOnTape(new File(
+                filenameNew, QueuesControllerTest.FIFTY), 150, TAPE_1, USER_1);
         Queue queue2 = QueuesController.getInstance().addFilePositionOnTape(
                 fpotNew, (byte) 1);
 
@@ -398,6 +440,7 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testAddFile06Created() throws TReqSException {
+        LOGGER.info("testAddFile06Created");
         String filename = "filename";
 
         FilePositionOnTape fpot = new FilePositionOnTape(new File(filename,
@@ -549,10 +592,15 @@ public final class QueuesControllerTest {
 
     /**
      * Tries to retrieve the best user when there are not any registered queue.
+     *
+     * @throws ProblematicConfiguationFileException
+     *             Never.
      */
     @Test
-    public void testBestUser01() {
+    public void testBestUser01() throws ProblematicConfiguationFileException {
         Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        Configurator.getInstance().setValue(Constants.SECTION_SELECTOR,
+                Constants.FAIR_SHARE, Constants.YES);
 
         boolean failed = false;
         try {
@@ -1272,7 +1320,19 @@ public final class QueuesControllerTest {
      */
     @Test(expected = AssertionError.class)
     public void testExist05() throws TReqSException {
-        QueuesController.getInstance().exists(null, QueueStatus.CREATED);
+        QueuesController.getInstance().exists((User) null, QueueStatus.CREATED);
+    }
+
+    /**
+     * Test a null exist.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test(expected = AssertionError.class)
+    public void testExist05a() throws TReqSException {
+        QueuesController.getInstance().exists((String) null,
+                QueueStatus.CREATED);
     }
 
     /**

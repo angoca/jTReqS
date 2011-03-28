@@ -203,6 +203,34 @@ public final class StagersController {
     }
 
     /**
+     * Retrieves the quantity of active stagers for a given queue.
+     *
+     * @param queue
+     *            Queue to analyze.
+     * @return Quantity of active stagers for the given queue.
+     */
+    public int getActiveStagersForQueue(final Queue/* ! */queue) {
+        LOGGER.trace("> getActiveStagersForQueue");
+
+        assert queue != null;
+
+        int ret = 0;
+        final String tapeName = queue.getTape().getName();
+        for (Stager stager : this.stagers) {
+            if (stager.getProcessStatus() == ProcessStatus.STARTED
+                    && stager.getQueue().getTape().getName().equals(tapeName)) {
+                ret++;
+            }
+        }
+
+        assert ret >= 0;
+
+        LOGGER.trace("< getActiveStagersForQueue: {}", ret);
+
+        return ret;
+    }
+
+    /**
      * Waits for all threads to finish.
      */
     public void waitToFinish() {

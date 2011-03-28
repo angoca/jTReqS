@@ -45,22 +45,37 @@ import java.util.NoSuchElementException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.model.Queue;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.User;
+import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 
 /**
  * Implementation of the algorithm to choose the best queue.
  * <p>
  * This implementation was proposed by Jonathan Schaeffer.
+ * <p>
+ * The best queue between two queues is the oldest one.<br/>
+ * The best user is selected with the formula:
+ * <p>
+ * <code>
+ * Value = #TotalDrives * #Reserved - #Used
+ * </code>
+ * <p>
+ * This algorithm HAD a big problem when the selected best user has all its
+ * queues activated. Then, the best queue part will try to chose a queue for
+ * this user, but this user does not need more queues, so the other users will
+ * not be selected. This produces an error log "Unable to chose best queue".
  *
  * @author Andres Gomez
  * @since 1.5
  */
-public final class JonathanSelector implements Selector {
+public final class JonathanSelector extends FifoSelector {
     /**
      * Logger.
      */
@@ -83,16 +98,26 @@ public final class JonathanSelector implements Selector {
         assert resource != null : "resource null";
 
         Queue ret = null;
-        User bestUser = this.selectBestUser(queues, resource);
-        if (bestUser == null) {
-            // There is not non-blocked user among the waiting
-            // queues, just do nothing and break the while loop,
-            // otherwise, it is doomed to infinite loop
-            LOGGER.error("There is not Best User. "
-                    + "This should never happen - 3.");
-            assert false : "Not best user";
+        String fairShare = Constants.NO;
+        try {
+            fairShare = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
+        } catch (KeyNotFoundException e) {
+        }
+        if (fairShare.equalsIgnoreCase(Constants.YES)) {
+            User bestUser = this.selectBestUser(queues, resource);
+            if (bestUser == null) {
+                // There is not non-blocked user among the waiting
+                // queues, just do nothing and break the while loop,
+                // otherwise, it is doomed to infinite loop
+                LOGGER.error("There is not Best User. "
+                        + "This should never happen - 3.");
+                assert false : "Not best user";
+            } else {
+                ret = this.selectBestQueueForUser(queues, resource, bestUser);
+            }
         } else {
-            ret = this.selectBestQueueForUser(queues, resource, bestUser);
+            ret = this.selectBestQueueWithoutUser(queues, resource);
         }
 
         assert ret != null : "The returned queue is null";
@@ -130,9 +155,25 @@ public final class JonathanSelector implements Selector {
         Queue best = null;
         // First get the list of queues
         int length = queues.size();
-        for (int j = 0; j < length; j++) {
-            Queue queue = queues.get(j);
-            best = this.checkQueue(resource, user, best, queue);
+        if (length >= 1) {
+            best = queues.get(0);
+            for (int j = 1; j < length; j++) {
+                Queue queue = queues.get(j);
+                // The queue belong to this user.
+                if (queue.getOwner().equals(user)) {
+                    if (this.checkQueue(resource, queue)) {
+                        if (best != null) {
+                            best = this.compareQueue(best, queue);
+                        } else {
+                            best = queue;
+                        }
+                    } else {
+                        LOGGER.debug(
+                                "Different owner: current queue {} searched {}",
+                                queue.getOwner().getName(), user.getName());
+                    }
+                }
+            }
         }
 
         if (best != null) {
@@ -148,116 +189,6 @@ public final class JonathanSelector implements Selector {
     }
 
     /**
-     * Checks if the queue has to be selected.
-     *
-     * @param resource
-     *            Type of resource.
-     * @param user
-     *            User that owns the queue.
-     * @param currentlySelected
-     *            Queue currently selected. The first time is null.
-     * @param queue
-     *            Currently analyzed queue.
-     * @return Selected queue or null if the queue does not correspond to the
-     *         criteria. The returned queue must be in Created state.
-     * @throws TReqSException
-     *             If there is a problem getting the configuration.
-     */
-    private Queue/* ? */checkQueue(final Resource/* ! */resource,
-            final User/* ! */user, final Queue/* ? */currentlySelected,
-            final Queue/* ! */queue) throws TReqSException {
-        LOGGER.trace("> checkQueue");
-
-        assert resource != null : "resource null";
-        assert user != null : "user null";
-        assert queue != null : "queue null";
-
-        Queue ret = null;
-
-        // The queue belong to this user, it concerns the given resource
-        // and it is in created state.
-        if (queue.getOwner().equals(user)) {
-            if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
-                if (queue.getStatus() == QueueStatus.CREATED) {
-                    // Check if the tape for this queue is not already used by
-                    // another active queue.
-                    if (QueuesController.getInstance().exists(
-                            queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
-                        // There is another active queue for this tape. Just
-                        // pick another one.
-                        LOGGER.debug("Another queue on this tape" + " ({})"
-                                + " is already active. Trying next queue.",
-                                queue.getTape().getName());
-                        // Return the currently selected or null.
-                        ret = currentlySelected;
-                    } else {
-                        // This is a created one.
-
-                        // Return this one because there is not selected one.
-                        if (currentlySelected == null) {
-                            LOGGER.debug("Current queue is null");
-                            ret = queue;
-                        } else if (currentlySelected.getCreationTime()
-                                .getTimeInMillis() >= queue.getCreationTime()
-                                .getTimeInMillis()) {
-                            // Select the oldest queue.
-                            LOGGER.debug(
-                                    "It is better the new one {} than the "
-                                            + "selected one {}", queue
-                                            .getTape().getName(),
-                                    currentlySelected.getTape().getName());
-                            ret = queue;
-                        } else if (currentlySelected.getCreationTime()
-                                .getTimeInMillis() < queue.getCreationTime()
-                                .getTimeInMillis()) {
-                            LOGGER.debug(
-                                    "It is better the already selected {} "
-                                            + "than the new one {}", queue
-                                            .getTape().getName(),
-                                    currentlySelected.getTape().getName());
-                            ret = currentlySelected;
-                        } else {
-                            LOGGER.warn("This is weird");
-                            assert false : "No queue selected, mmm?";
-                            ret = currentlySelected;
-                        }
-                        LOGGER.debug("Selected queue: {}", ret.getTape()
-                                .getName());
-                    }
-                } else {
-                    LOGGER.info(
-                            "The analyzed queue is in other state: {} - {}",
-                            queue.getTape().getName(), queue.getStatus());
-                    // Return the currently selected or null.
-                    ret = currentlySelected;
-                }
-            } else {
-                LOGGER.error("Different media type: current queue {} "
-                        + "searched {}", queue.getTape().getMediaType()
-                        .getName(), resource.getMediaType().getName());
-                // Return the currently selected or null.
-                ret = currentlySelected;
-                assert false : "This should never happen, the list of tapes is "
-                        + "the correct type";
-            }
-        } else {
-            LOGGER.debug("Different owner: current queue {} searched {}", queue
-                    .getOwner().getName(), user.getName());
-            // Return the currently selected or null.
-            ret = currentlySelected;
-        }
-
-        if (ret != null) {
-            assert ret.getStatus() == QueueStatus.CREATED : "Invalid state "
-                    + ret.getStatus();
-        }
-
-        LOGGER.trace("< checkQueue - {}", ret);
-
-        return ret;
-    }
-
-    /**
      * Choose the best user candidate for activation.
      *
      * @param queuesMap
@@ -265,11 +196,11 @@ public final class JonathanSelector implements Selector {
      * @param resource
      *            Type of resource to analyze.
      * @return the user
-     * @throws NoQueuesDefinedException
-     *             When there are not any defined queues.
+     * @throws TReqSException
+     *             If there is a problem retrieving a queue in created state.
      */
-    User/* ? */selectBestUser(final List<Queue>/* <!>! */queuesMap,
-            final Resource/* ! */resource) throws NoQueuesDefinedException {
+    User/* ! */selectBestUser(final List<Queue>/* <!>! */queuesMap,
+            final Resource/* ! */resource) throws TReqSException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";
@@ -301,11 +232,11 @@ public final class JonathanSelector implements Selector {
         Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
         try {
-            bestUser = users.next();
+            bestUser = this.getNextPossibleUser(users);
             float bestScore = usersScores.get(bestUser);
             LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
-            while (users.hasNext()) {
-                User user = users.next();
+            User user = this.getNextPossibleUser(users);
+            while (user != null) {
                 float score = usersScores.get(user);
                 LOGGER.info("Score: {}\t{}", user.getName(), score);
                 // TODO v2.0 This is wrong, the first user could have a
@@ -320,6 +251,7 @@ public final class JonathanSelector implements Selector {
                     bestUser = user;
                     bestScore = score;
                 }
+                user = this.getNextPossibleUser(users);
             }
 
             // We have to check that the best user has positive share
@@ -341,6 +273,37 @@ public final class JonathanSelector implements Selector {
         LOGGER.trace("< selectBestUser - {}", bestUser.getName());
 
         return bestUser;
+    }
+
+    /**
+     * Returns a users that has queues in created state.
+     *
+     * @param users
+     *            Iterator of users.
+     * @return User that has at least one queue in created state.
+     * @throws TReqSException
+     *             If there is a problem with queuesController.
+     */
+    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+            throws TReqSException {
+        LOGGER.trace("> getNextPossibleUser");
+
+        assert users != null : "users null";
+
+        User ret = null;
+        if (users.hasNext()) {
+            do {
+                User tmp = users.next();
+                if (QueuesController.getInstance().exists(tmp,
+                        QueueStatus.CREATED)) {
+                    ret = tmp;
+                }
+            } while (ret == null && users.hasNext());
+        }
+
+        LOGGER.trace("< getNextPossibleUser");
+
+        return ret;
     }
 
     /**
@@ -391,5 +354,4 @@ public final class JonathanSelector implements Selector {
 
         LOGGER.trace("< checkUser");
     }
-
 }

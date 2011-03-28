@@ -52,14 +52,13 @@
   </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
-    <version>1.5.2-SNAPSHOT</version>
+    <version>1.5.4-SNAPSHOT</version>
     <artifactId>jtreqs-server-parent</artifactId>
   </parent>
   <properties>
     <logbackFile>logback.xml</logbackFile>
     <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
     <watchdog>watchdog.sh</watchdog>
-    <installDirectory>$JTREQS_INSTALL_DIR</installDirectory>
     <hpssRootDirectory>$HPSS_ROOT</hpssRootDirectory>
   </properties>
 
@@ -85,7 +84,7 @@
           <extraJvmArguments>
             -d64
             -Dlogback.configurationFile=${logbackFile}
-            -Djava.library.path=${hpssRootDirectory}/lib:${installDirectory}/repo/
+            -Djava.library.path=${hpssRootDirectory}/lib/:$BASEDIR/lib/
           </extraJvmArguments>
           <platforms>
             <platform>unix</platform>
@@ -130,12 +129,20 @@
                 <include name="LICENSE.txt" />
               </fileset>
             </copy>
-            <copy todir="target/jtreqs/docs">
-              <fileset dir="../docs">
+            <copy todir="target/jtreqs/doc">
+              <fileset dir="../doc">
                 <include name="errors.txt" />
                 <include name="Migration_1.0-1.5" />
               </fileset>
             </copy>
+            <copy todir="target/jtreqs/bin">
+              <fileset dir="src/main/scripts">
+                <include name="jtreqsd" />
+                <include name="registerInfo.sh" />
+                <include name="watchdog.sh" />
+              </fileset>
+            </copy>
+            <chmod dir="target/jtreqs/bin" perm="555" includes="*" />
           </target>
         </configuration>
         <executions>
@@ -173,7 +180,6 @@
         </executions>
       </plugin>
 
-      <!-- TODO change the .sh to executable -->
     </plugins>
   </build>
 

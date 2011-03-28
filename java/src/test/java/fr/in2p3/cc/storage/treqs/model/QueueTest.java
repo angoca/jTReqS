@@ -1268,6 +1268,30 @@ public final class QueueTest {
     }
 
     /**
+     * Tests to register a file in a very big position. Bigger that a short.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testRegisterFile16BigPosition() throws TReqSException {
+        String filename = "testBig";
+        int position = 100000;
+        String tapename = "tapename";
+        MediaType mediaType = new MediaType((byte) 1, "mediaType");
+
+        Tape tape = new Tape(tapename, mediaType);
+        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+                QueueTest.HUNDRED), QueueTest.TEN, tape, new User("username")),
+                (byte) THREE);
+        User owner = new User("user");
+
+        FilePositionOnTape fpot1 = new FilePositionOnTape(new File(filename,
+                QueueTest.TEN), position, tape, owner);
+        queue.registerFPOT(fpot1, (byte) 1);
+    }
+
+    /**
      * Tries to set a negative creation time.
      *
      * @throws TReqSException
@@ -2121,7 +2145,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String notExpectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2162,7 +2186,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2204,7 +2228,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 1, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String expectedContains2 = "suspension time: ";
         String notExpectedContains3 = "end time: ";
@@ -2246,7 +2270,7 @@ public final class QueueTest {
                 + "number of failed: 0, number of suspended: 0, "
                 + "max suspend retries: " + retries
                 + ", head position: 0, owner: " + username
-                + ", suspend duration: 60, creation time: ";
+                + ", suspend duration: 600, creation time: ";
         String expectedContains1 = "activation time: ";
         String notExpectedContains2 = "suspension time: ";
         String expectedContains3 = "end time: ";

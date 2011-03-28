@@ -54,6 +54,7 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.model.User;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
+import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
@@ -110,6 +111,11 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * time, but probably not reading at the maximal speed.</li>
  * </ul>
  * <p>
+ * This algorithm HAD a big problem when the selected best user has all its
+ * queues activated. Then, the best queue part will try to chose a queue for
+ * this user, but this user does not need more queues, so the other users will
+ * not be selected. This produces an error log "Unable to chose best queue".
+ * <p>
  * TODO v2.0 This algorithm uses the average size of the files to stage, and the
  * best reading speed for a drive. However, depending on the technology, the
  * best reading speed is different for different drives, and in a same drive,
@@ -124,7 +130,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * @author Andres Gomez
  * @since 1.5
  */
-public final class AndresSelector implements Selector {
+public final class AndresSelector extends Selector {
     /**
      * Logger.
      */
@@ -147,9 +153,13 @@ public final class AndresSelector implements Selector {
         assert resource != null : "resource null";
 
         Queue ret = null;
-        String fairShare = Configurator.getInstance().getStringValue(
-                "SELECTOR", "FAIR_SHARE");
-        if (fairShare.equals("YES")) {
+        String fairShare = Constants.NO;
+        try {
+            fairShare = Configurator.getInstance().getStringValue(
+                    Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
+        } catch (KeyNotFoundException e) {
+        }
+        if (fairShare.equalsIgnoreCase(Constants.YES)) {
             User bestUser = this.selectBestUser(queues, resource);
             if (bestUser == null) {
                 // There is not non-blocked user among the waiting
@@ -162,7 +172,7 @@ public final class AndresSelector implements Selector {
                 ret = this.selectBestQueueForUser(queues, resource, bestUser);
             }
         } else {
-            ret = this.selectBestQueueWithoutUser(queues);
+            ret = this.selectBestQueueWithoutUser(queues, resource);
         }
 
         assert ret != null : "The returned queue is null";
@@ -170,45 +180,6 @@ public final class AndresSelector implements Selector {
         LOGGER.trace("< selectBestQueue");
 
         return ret;
-    }
-
-    /**
-     * Selects a queue without taking care of the users.
-     *
-     * @param queues
-     *            Set of queues.
-     * @return The best queue.
-     * @throws TReqSException
-     *             If there is a problem while doing the calculation.
-     */
-    private Queue/* ! */selectBestQueueWithoutUser(
-            final List<Queue>/* <!>! */queues) throws TReqSException {
-        LOGGER.trace("> selectBestQueueWithoutUser");
-
-        assert queues != null : "queues null";
-
-        Queue best = null;
-        // First get the list of queues
-        int length = queues.size();
-        if (length > 1) {
-            best = queues.get(0);
-            for (int j = 1; j < length; j++) {
-                Queue queue = queues.get(j);
-                if (best != null) {
-                    best = this.compareQueue(best, queue);
-                } else {
-                    best = queue;
-                }
-            }
-        }
-
-        if (best != null) {
-            LOGGER.info("Best queue is on tape {}", best.getTape().getName());
-        }
-
-        LOGGER.trace("> selectBestQueueWithoutUser");
-
-        return best;
     }
 
     /**
@@ -227,7 +198,7 @@ public final class AndresSelector implements Selector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
+    private Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
             final Resource/* ! */resource, final User/* ! */user)
             throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
@@ -239,13 +210,23 @@ public final class AndresSelector implements Selector {
         Queue best = null;
         // First get the list of queues
         int length = queues.size();
-        for (int j = 0; j < length; j++) {
-            Queue queue = queues.get(j);
-            if (this.checkQueue(resource, user, queue)) {
-                if (best != null) {
-                    best = this.compareQueue(best, queue);
-                } else {
-                    best = queue;
+        if (length >= 1) {
+            best = queues.get(0);
+            for (int j = 1; j < length; j++) {
+                Queue queue = queues.get(j);
+                // The queue belong to this user.
+                if (queue.getOwner().equals(user)) {
+                    if (this.checkQueue(resource, queue)) {
+                        if (best != null) {
+                            best = this.compareQueue(best, queue);
+                        } else {
+                            best = queue;
+                        }
+                    } else {
+                        LOGGER.debug(
+                                "Different owner: current queue {} searched {}",
+                                queue.getOwner().getName(), user.getName());
+                    }
                 }
             }
         }
@@ -262,21 +243,14 @@ public final class AndresSelector implements Selector {
         return best;
     }
 
-    /**
-     * Compares the two queue to see which one can be selected. Both of them are
-     * eligible.
-     * <p>
+    /*
+     * (non-Javadoc)
      *
-     *
-     * @param bestQueue
-     *            This is the best queue at the moment.
-     * @param currentQueue
-     *            The currently analyzed queue.
-     * @return The new best queue.
-     * @throws TReqSException
-     *             Problem in the configurator.
+     * @see
+     * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
+     * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
-    private Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
+    protected Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
             final Queue/* ! */currentQueue) throws TReqSException {
         LOGGER.trace("> compareQueue");
 
@@ -346,73 +320,6 @@ public final class AndresSelector implements Selector {
     }
 
     /**
-     * Checks if the queue has to be selected.
-     *
-     * @param resource
-     *            Type of resource.
-     * @param user
-     *            User that owns the queue.
-     * @param queue
-     *            Currently analyzed queue.
-     * @return true if the queue could be taken in account for comparison.
-     * @throws TReqSException
-     *             If there is a problem getting the configuration.
-     */
-    private boolean checkQueue(final Resource/* ! */resource,
-            final User/* ! */user, final Queue/* ! */queue)
-            throws TReqSException {
-        LOGGER.trace("> checkQueue");
-
-        assert resource != null : "resource null";
-        assert user != null : "user null";
-        assert queue != null : "queue null";
-
-        boolean ret = false;
-
-        // The queue belong to this user.
-        if (queue.getOwner().equals(user)) {
-            // The queue concerns the given resource.
-            if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
-                // The queue is in created state.
-                if (queue.getStatus() == QueueStatus.CREATED) {
-                    // Check if the tape for this queue is not already used by
-                    // another active queue.
-                    if (QueuesController.getInstance().exists(
-                            queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
-                        // There is another active queue for this tape. Just
-                        // pick another one.
-                        LOGGER.debug("Another queue on this tape" + " ({})"
-                                + " is already active. Trying next queue.",
-                                queue.getTape().getName());
-                    } else {
-                        // This is a queue for the given user, for the media
-                        // type of the given resource, that is in created state
-                        // and there is not another queue in activated state.
-                        ret = true;
-                    }
-                } else {
-                    LOGGER.info(
-                            "The analyzed queue is in other state: {} - {}",
-                            queue.getTape().getName(), queue.getStatus());
-                }
-            } else {
-                LOGGER.error("Different media type: current queue {} "
-                        + "searched {}", queue.getTape().getMediaType()
-                        .getName(), resource.getMediaType().getName());
-                assert false : "This should never happen, the list of tapes is "
-                        + "the correct type";
-            }
-        } else {
-            LOGGER.debug("Different owner: current queue {} searched {}", queue
-                    .getOwner().getName(), user.getName());
-        }
-
-        LOGGER.trace("< checkQueue - {}", ret);
-
-        return ret;
-    }
-
-    /**
      * Choose the best user candidate for activation.
      *
      * @param queuesMap
@@ -420,11 +327,11 @@ public final class AndresSelector implements Selector {
      * @param resource
      *            Type of resource to analyze.
      * @return the user
-     * @throws NoQueuesDefinedException
-     *             When there are not any defined queues.
+     * @throws TReqSException
+     *             If there is a problem retrieving a queue in created state.
      */
-    User/* ! */selectBestUser(final List<Queue>/* <!>! */queuesMap,
-            final Resource/* ! */resource) throws NoQueuesDefinedException {
+    private User/* ! */selectBestUser(final List<Queue>/* <!>! */queuesMap,
+            final Resource/* ! */resource) throws TReqSException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";
@@ -444,8 +351,8 @@ public final class AndresSelector implements Selector {
         // First get the list of queues
 
         // Browse the list of queues and compute the users scores
-        LOGGER.debug("Computing Score: (total allocation) "
-                + "* (user allocation) - (used resources)");
+        LOGGER.debug("Computing Score: (user allocation - used resources) "
+                + "* (user allocation + 1)");
         Iterator<Queue> queues = queuesMap.iterator();
         while (queues.hasNext()) {
             Queue queue = queues.next();
@@ -456,17 +363,18 @@ public final class AndresSelector implements Selector {
         Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
         try {
-            bestUser = users.next();
+            bestUser = this.getNextPossibleUser(users);
             float bestScore = usersScores.get(bestUser);
             LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
-            while (users.hasNext()) {
-                User user = users.next();
+            User user = this.getNextPossibleUser(users);
+            while (user != null) {
                 float score = usersScores.get(user);
                 LOGGER.info("Score: {}\t{}", user.getName(), score);
                 if (score > bestScore) {
                     bestUser = user;
                     bestScore = score;
                 }
+                user = this.getNextPossibleUser(users);
             }
 
             // We have to check that the best user has positive share
@@ -488,6 +396,37 @@ public final class AndresSelector implements Selector {
         LOGGER.trace("< selectBestUser - {}", bestUser.getName());
 
         return bestUser;
+    }
+
+    /**
+     * Returns a users that has queues in created state.
+     *
+     * @param users
+     *            Iterator of users.
+     * @return User that has at least one queue in created state.
+     * @throws TReqSException
+     *             If there is a problem with queuesController.
+     */
+    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+            throws TReqSException {
+        LOGGER.trace("> getNextPossibleUser");
+
+        assert users != null : "users null";
+
+        User ret = null;
+        if (users.hasNext()) {
+            do {
+                User tmp = users.next();
+                if (QueuesController.getInstance().exists(tmp,
+                        QueueStatus.CREATED)) {
+                    ret = tmp;
+                }
+            } while (ret == null && users.hasNext());
+        }
+
+        LOGGER.trace("< getNextPossibleUser");
+
+        return ret;
     }
 
     /**

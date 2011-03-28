@@ -66,6 +66,8 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * SelectorTest.
+ * <p>
+ * TODO v2.0 tests with users and tapes and with only tapes.
  *
  * @author Andres Gomez
  */
