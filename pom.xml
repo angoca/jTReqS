@@ -34,7 +34,7 @@
   <!-- The Basics -->
   <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
   <artifactId>jtreqs-server</artifactId>
-  <version>1.5.4.2</version>
+  <version>1.5.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <dependencies>
       <dependency>
