@@ -165,7 +165,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         HSMHelperFileProperties properties;
         // Generating a random tape.
         String tape = "";
-        int randomized = (int) (Math.random() * TAPE_TYPES);
+        final int randomized = (int) (Math.random() * TAPE_TYPES);
         switch (randomized) {
         case 0:
             tape += "IT";
@@ -182,8 +182,8 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         tape += "000";
         tape += (int) (Math.random() * TAPE_NUMBER);
 
-        int position = (int) (Math.random() * FILE_POSITION) + 1;
-        long size = (int) (Math.random() * FILE_SIZE) + 1;
+        final int position = (int) (Math.random() * FILE_POSITION) + 1;
+        final long size = (int) (Math.random() * FILE_SIZE) + 1;
 
         properties = new HSMHelperFileProperties(tape, position, size);
 
@@ -209,14 +209,14 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         assert name != null && !name.equals("");
 
         // Takes the defined fileProperties that is going to be returned.
-        HSMHelperFileProperties ret = fileProperties;
+        final HSMHelperFileProperties ret = fileProperties;
 
         // Creates a new fileProperties randomly for the next call.
-        fileProperties = generateTape();
+        fileProperties = this.generateTape();
 
         if (filePropertiesException != null) {
             // Takes the exception.
-            AbstractHSMException toThrow = filePropertiesException;
+            final AbstractHSMException toThrow = filePropertiesException;
             // Clears the exception
             filePropertiesException = null;
             // Throw the predefined exception.
@@ -290,7 +290,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         LOGGER.trace("> stage");
 
         if (stageException != null) {
-            AbstractHSMException toThrow = stageException;
+            final AbstractHSMException toThrow = stageException;
             stageException = null;
             throw toThrow;
         }
@@ -299,7 +299,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
             synchronized (notifyObject) {
                 try {
                     notifyObject.wait();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -309,14 +309,14 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         long wait = 0;
         if (stageMillis == 0) {
-            wait = ((long) ((Math.random() * 7) + 2)) * Constants.MILLISECONDS;
+            wait = (long) (Math.random() * 7 + 2) * Constants.MILLISECONDS;
         } else {
             wait = stageMillis;
         }
         LOGGER.info("Fake staging starting ;) for {} millis", wait);
         try {
             Thread.sleep(wait);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.error("Error sleeping", e);
         }
         LOGGER.info("Fake staging done ;)");

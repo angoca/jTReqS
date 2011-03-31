@@ -55,9 +55,9 @@ public final class TapeTest {
      */
     @Test
     public void testConstructor01() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        Tape tape = new Tape(tapename, mediatype);
+        final String tapename = "tapename";
+        final MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final Tape tape = new Tape(tapename, mediatype);
 
         Assert.assertEquals("Complete constructor", mediatype,
                 tape.getMediaType());
@@ -68,13 +68,13 @@ public final class TapeTest {
      */
     @Test
     public void testConstructor02() {
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final MediaType mediatype = new MediaType((byte) 1, "T10K");
 
         boolean failed = false;
         try {
             new Tape(null, mediatype);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -89,14 +89,14 @@ public final class TapeTest {
      */
     @Test
     public void testConstructor03() {
-        String tapename = "";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final String tapename = "";
+        final MediaType mediatype = new MediaType((byte) 1, "T10K");
 
         boolean failed = false;
         try {
             new Tape(tapename, mediatype);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -111,13 +111,13 @@ public final class TapeTest {
      */
     @Test
     public void testConstructor04() {
-        String tapename = "tapename";
+        final String tapename = "tapename";
 
         boolean failed = false;
         try {
             new Tape(tapename, null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -132,13 +132,13 @@ public final class TapeTest {
      */
     @Test
     public void testToString01() {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "T10K");
-        Tape tape = new Tape(tapename, mediatype);
+        final String tapename = "tapename";
+        final MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final Tape tape = new Tape(tapename, mediatype);
 
-        String actual = tape.toString();
+        final String actual = tape.toString();
 
-        String expected = "Tape{ media type: " + mediatype.getName()
+        final String expected = "Tape{ media type: " + mediatype.getName()
                 + ", name: " + tapename + "}";
         Assert.assertEquals("toString", expected, actual);
     }

@@ -99,7 +99,7 @@ public final class Tape {
 
         boolean ret = false;
         if (obj instanceof Tape) {
-            Tape other = (Tape) obj;
+            final Tape other = (Tape) obj;
             if (this.name.equals(other.name)
                     && this.mediaType.equals(other.mediaType)) {
                 ret = true;
@@ -153,7 +153,7 @@ public final class Tape {
      */
     @Override
     public int hashCode() {
-        int ret = this.name.hashCode() - this.mediaType.getName().hashCode()
+        final int ret = this.name.hashCode() - this.mediaType.getName().hashCode()
         /* + this.statusUpdateTime.hashCode() */;
         return ret;
     }

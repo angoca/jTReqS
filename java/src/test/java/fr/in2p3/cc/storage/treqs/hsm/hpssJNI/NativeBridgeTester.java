@@ -63,9 +63,9 @@ public final class NativeBridgeTester {
     public static void main(final String[] args) {
         System.out.println("> Starting HPSSBridge");
 
-        String authType = "unix";
+        final String authType = "unix";
         String keyTab = "/var/hpss/etc/keytab.root";
-        String user = "root";
+        final String user = "root";
         String filename = "/hpss/in2p3.fr/group/ccin2p3/treqs/dummy";
         HSMHelperFileProperties helper = null;
 
@@ -93,7 +93,7 @@ public final class NativeBridgeTester {
 
             System.out.println(";)");
             NativeBridge.getInstance().endContext();
-        } catch (JNIException e) {
+        } catch (final JNIException e) {
             System.out.println(e.getMessage());
         }
 

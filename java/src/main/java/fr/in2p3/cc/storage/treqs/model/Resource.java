@@ -82,11 +82,11 @@ public final class Resource {
     /**
      * Resources currently used for a user.
      */
-    private Map<User, Byte> usedResources;
+    private final Map<User, Byte> usedResources;
     /**
      * Allocated resource for a user, as a fraction of TotalAllocation.
      */
-    private Map<User, Float> userAllocation;
+    private final Map<User, Float> userAllocation;
 
     /**
      * Constructs a resource with the necessary parameters.
@@ -119,10 +119,10 @@ public final class Resource {
 
         short resourceLeft = this.totalAllocation;
 
-        Set<User> keySet = this.usedResources.keySet();
-        Iterator<User> iterator = keySet.iterator();
+        final Set<User> keySet = this.usedResources.keySet();
+        final Iterator<User> iterator = keySet.iterator();
         while (iterator.hasNext()) {
-            User key = iterator.next();
+            final User key = iterator.next();
             resourceLeft -= this.usedResources.get(key);
         }
 
@@ -139,8 +139,8 @@ public final class Resource {
     public int getAge() {
         LOGGER.trace("> getAge");
 
-        Calendar now = new GregorianCalendar();
-        int seconds = (int) ((now.getTimeInMillis() - this.getTimestamp()
+        final Calendar now = new GregorianCalendar();
+        final int seconds = (int) ((now.getTimeInMillis() - this.getTimestamp()
                 .getTimeInMillis()) / Constants.MILLISECONDS);
 
         LOGGER.debug("Age: {}", seconds);
@@ -289,9 +289,9 @@ public final class Resource {
     public void resetUsedResources() {
         LOGGER.trace("> resetUsedResources");
 
-        Iterator<User> iterator = this.usedResources.keySet().iterator();
+        final Iterator<User> iterator = this.usedResources.keySet().iterator();
         while (iterator.hasNext()) {
-            User key = iterator.next();
+            final User key = iterator.next();
             this.usedResources.put(key, (byte) 0);
         }
 

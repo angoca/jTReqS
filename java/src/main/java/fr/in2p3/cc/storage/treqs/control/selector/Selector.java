@@ -83,7 +83,7 @@ public abstract class Selector {
         boolean ret = false;
 
         // The queue concerns the given resource.
-        if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
+        if (queue.getTape().getMediaType().equals(resource.getMediaType())) {
             // The queue is in created state.
             if (queue.getStatus() == QueueStatus.CREATED) {
                 // Check if the tape for this queue is not already used by
@@ -174,11 +174,11 @@ public abstract class Selector {
 
         Queue best = null;
         // First get the list of queues
-        int length = queues.size();
+        final int length = queues.size();
         if (length >= 1) {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
-                Queue queue = queues.get(j);
+                final Queue queue = queues.get(j);
                 if (this.checkQueue(resource, queue)) {
                     best = this.compareQueue(best, queue);
                 }

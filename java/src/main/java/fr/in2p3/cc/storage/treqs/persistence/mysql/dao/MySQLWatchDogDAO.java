@@ -90,7 +90,7 @@ public final class MySQLWatchDogDAO implements WatchDogDAO {
         MySQLBroker.getInstance().executeModification(
                 MySQLStatements.SQL_HEART_BEAT_DELETE_OLD);
         // Inserts new pid.
-        PreparedStatement statement = MySQLBroker.getInstance()
+        final PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(MySQLStatements.SQL_HEART_BEAT_INSERT);
 
         try {
@@ -99,7 +99,7 @@ public final class MySQLWatchDogDAO implements WatchDogDAO {
             statement.setInt(index++, pid);
 
             statement.execute();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         }
 

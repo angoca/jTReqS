@@ -36,8 +36,8 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
-import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 
 /**
  * Statements used to interact with the database.

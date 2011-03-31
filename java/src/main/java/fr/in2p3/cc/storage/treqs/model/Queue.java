@@ -273,11 +273,11 @@ public final class Queue implements Comparable<Queue> {
     /**
      * Unique Id of this queue given by the data source.
      */
-    private int id;
+    private final int id;
     /**
      * Maximal retries of suspensions permitted of the queue.
      */
-    private byte maxSuspendRetries;
+    private final byte maxSuspendRetries;
     /**
      * Number of requests successfully staged.
      */
@@ -297,7 +297,7 @@ public final class Queue implements Comparable<Queue> {
     /**
      * List of files to read &lt;position, Reading of file&gt;.
      */
-    private TreeMap<Integer, Reading> readingList;
+    private final TreeMap<Integer, Reading> readingList;
     /**
      * Status of this queue.
      */
@@ -317,7 +317,7 @@ public final class Queue implements Comparable<Queue> {
     /**
      * Associated tape.
      */
-    private Tape tape;
+    private final Tape tape;
 
     /**
      * Constructor that associates a tape with the Queue. This constructor also
@@ -420,9 +420,9 @@ public final class Queue implements Comparable<Queue> {
     private void calculateOwner() {
         LOGGER.trace("> calculateOwner");
 
-        Map<User, Integer> ownersScores = this.calculateOwnersScores();
+        final Map<User, Integer> ownersScores = this.calculateOwnersScores();
 
-        ArrayList<User> list = new ArrayList<User>();
+        final ArrayList<User> list = new ArrayList<User>();
         list.addAll(ownersScores.keySet());
 
         Collections.sort(list, new Comparator<User>() {
@@ -445,15 +445,15 @@ public final class Queue implements Comparable<Queue> {
         boolean found = false;
         User bestUser = null;
         // Takes the user with more files, and assigns it as queue's owner.
-        Iterator<User> iterator = list.iterator();
+        final Iterator<User> iterator = list.iterator();
         while (iterator.hasNext() && !found) {
-            User user = iterator.next();
-            Integer score = ownersScores.get(user);
+            final User user = iterator.next();
+            final Integer score = ownersScores.get(user);
             if (score >= max) {
                 max = score;
                 bestUser = user;
                 // One user has more than 50%+1 files of the queue.
-                if (max > (this.readingList.size() / 2)) {
+                if (max > this.readingList.size() / 2) {
                     // We are sure to have the major owner of the queue
                     found = true;
                 }
@@ -475,14 +475,14 @@ public final class Queue implements Comparable<Queue> {
     private Map<User, Integer> calculateOwnersScores() {
         LOGGER.trace("> calculateOwnersScores");
 
-        Map<User, Integer> ownersScores = new HashMap<User, Integer>();
+        final Map<User, Integer> ownersScores = new HashMap<User, Integer>();
 
         // Calculates the quantity of files per owner.
-        Iterator<Integer> iterator = this.readingList.keySet().iterator();
+        final Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
-            User user = this.readingList.get(iterator.next()).getMetaData()
+            final User user = this.readingList.get(iterator.next()).getMetaData()
                     .getRequester();
-            Integer score = ownersScores.get(user);
+            final Integer score = ownersScores.get(user);
             if (score != null) {
                 ownersScores.put(user, score + 1);
             } else {
@@ -544,7 +544,7 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> changeToSuspended");
 
         this.setStatus(QueueStatus.TEMPORARILY_SUSPENDED);
-        Calendar suspension = new GregorianCalendar();
+        final Calendar suspension = new GregorianCalendar();
         suspension.setTimeInMillis(System.currentTimeMillis()
                 + this.getSuspendDuration() * Constants.MILLISECONDS);
         this.setSuspensionTime(suspension);
@@ -562,15 +562,16 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        List<Integer> positions = new ArrayList<Integer>();
+        final List<Integer> positions = new ArrayList<Integer>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
+            final
             Iterator keys = this.readingList.keySet().iterator();
             while (keys.hasNext()) {
-                int position = (Integer) keys.next();
+                final int position = (Integer) keys.next();
                 positions.add(position);
-                Reading reading = this.readingList.get(position);
-                String filename = reading.getMetaData().getFile().getName();
+                final Reading reading = this.readingList.get(position);
+                final String filename = reading.getMetaData().getFile().getName();
 
                 // Removes the file position on tape.
                 FilePositionOnTapesController.getInstance().remove(filename);
@@ -582,10 +583,10 @@ public final class Queue implements Comparable<Queue> {
                 this.readingList.remove(positions.get(i));
             }
         }
-        String tapename = this.getTape().getName();
+        final String tapename = this.getTape().getName();
         // Removes the tape if there are not any Queue in created state for this
         // tape.
-        Queue created = QueuesController.getInstance().exists(tapename,
+        final Queue created = QueuesController.getInstance().exists(tapename,
                 QueueStatus.CREATED);
         if (created == null) {
             TapesController.getInstance().remove(tapename);
@@ -634,7 +635,7 @@ public final class Queue implements Comparable<Queue> {
 
         byte nbFailed = 0;
         byte nbDone = 0;
-        Iterator<Integer> iterator = this.readingList.keySet().iterator();
+        final Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
             switch (this.readingList.get(iterator.next()).getRequestStatus()) {
             case FAILED:
@@ -685,17 +686,17 @@ public final class Queue implements Comparable<Queue> {
         this.countRequests();
 
         // Asks for the item in the current position.
-        Reading currentReading = this.readingList.get(this.getHeadPosition());
+        final Reading currentReading = this.readingList.get(this.getHeadPosition());
 
         if (currentReading != null) {
             // Verifies if the current one is also the last one.
-            Reading last = this.readingList.get(this.readingList.lastKey());
+            final Reading last = this.readingList.get(this.readingList.lastKey());
             if (last == currentReading) {
-                RequestStatus fs = currentReading.getRequestStatus();
+                final RequestStatus fs = currentReading.getRequestStatus();
                 // The last file is in a final state.
-                if ((fs == RequestStatus.STAGED)
-                        || (fs == RequestStatus.FAILED)
-                        || (fs == RequestStatus.ON_DISK)) {
+                if (fs == RequestStatus.STAGED
+                        || fs == RequestStatus.FAILED
+                        || fs == RequestStatus.ON_DISK) {
                     this.changeToEnded();
 
                     LOGGER.info("Queue {} ended ({})",
@@ -814,10 +815,10 @@ public final class Queue implements Comparable<Queue> {
         Reading ret = null;
         boolean found = false;
 
-        Iterator<Integer> iterator = this.readingList.keySet().iterator();
+        final Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext() && !found) {
-            Integer key = iterator.next();
-            Reading reading = this.readingList.get(key);
+            final Integer key = iterator.next();
+            final Reading reading = this.readingList.get(key);
             if (reading.getRequestStatus() == RequestStatus.SUBMITTED) {
                 // This is the file to return
                 if (this.getStatus() == QueueStatus.ACTIVATED) {
@@ -991,12 +992,12 @@ public final class Queue implements Comparable<Queue> {
         assert fpot != null;
         assert fpot.getTape().getName().equals(this.getTape().getName());
 
-        if ((this.getStatus() != QueueStatus.CREATED)
-                && (this.getStatus() != QueueStatus.ACTIVATED)
-                && (this.getStatus() != QueueStatus.TEMPORARILY_SUSPENDED)) {
+        if (this.getStatus() != QueueStatus.CREATED
+                && this.getStatus() != QueueStatus.ACTIVATED
+                && this.getStatus() != QueueStatus.TEMPORARILY_SUSPENDED) {
             // We can't register a file in this queue.
-            String filename = fpot.getFile().getName();
-            String tapename = this.getTape().getName();
+            final String filename = fpot.getFile().getName();
+            final String tapename = this.getTape().getName();
             LOGGER.error("Unable to register file " + filename + " in Queue '"
                     + tapename + "' with status: " + this.getStatus());
             throw new InvalidStateException(InvalidStateReasons.REGISTER,
@@ -1042,7 +1043,7 @@ public final class Queue implements Comparable<Queue> {
         this.registerFileValidation(fpot);
 
         // Register the reading.
-        Reading reading = new Reading(fpot, retries, this);
+        final Reading reading = new Reading(fpot, retries, this);
 
         LOGGER.debug(
                 "Queue {} - {} Inserting the reading object at position {}",
@@ -1213,16 +1214,16 @@ public final class Queue implements Comparable<Queue> {
             throw new MaximalSuspensionTriesException();
         }
         // Currently created.
-        if (((this.getStatus() == QueueStatus.CREATED) && (newQueueStatus == QueueStatus.ACTIVATED))
+        if (this.getStatus() == QueueStatus.CREATED && newQueueStatus == QueueStatus.ACTIVATED
                 // Currently activated and new is ended.
-                || ((this.getStatus() == QueueStatus.ACTIVATED) && (newQueueStatus == QueueStatus.ENDED))
+                || this.getStatus() == QueueStatus.ACTIVATED && newQueueStatus == QueueStatus.ENDED
                 // Currently activated and new is temporarily suspended.
-                || ((this.getStatus() == QueueStatus.ACTIVATED) && (newQueueStatus == QueueStatus.TEMPORARILY_SUSPENDED))
+                || this.getStatus() == QueueStatus.ACTIVATED && newQueueStatus == QueueStatus.TEMPORARILY_SUSPENDED
                 // Currently suspended.
-                || ((this.getStatus() == QueueStatus.TEMPORARILY_SUSPENDED) && (newQueueStatus == QueueStatus.CREATED))
+                || this.getStatus() == QueueStatus.TEMPORARILY_SUSPENDED && newQueueStatus == QueueStatus.CREATED
                 // Currently created but the activated one was temporarily
                 // suspended
-                || ((this.getStatus() == QueueStatus.CREATED) && (newQueueStatus == QueueStatus.ENDED))) {
+                || this.getStatus() == QueueStatus.CREATED && newQueueStatus == QueueStatus.ENDED) {
             this.status = newQueueStatus;
             if (newQueueStatus == QueueStatus.TEMPORARILY_SUSPENDED) {
                 this.numberSuspensions++;

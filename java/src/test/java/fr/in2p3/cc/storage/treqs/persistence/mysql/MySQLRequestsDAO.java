@@ -72,13 +72,13 @@ public final class MySQLRequestsDAO {
      *             If there is a problem while deleting.
      */
     public static void deleteAll() throws TReqSException {
-        String sqlstatement = "delete from " + MySQLStatements.REQUESTS;
+        final String sqlstatement = "delete from " + MySQLStatements.REQUESTS;
         LOGGER.debug("The statement is: {}", sqlstatement);
         try {
-            int nrows = MySQLBroker.getInstance().executeModification(
+            final int nrows = MySQLBroker.getInstance().executeModification(
                     sqlstatement);
             LOGGER.info("Updated {} requests for file ", nrows);
-        } catch (AbstractMySQLException e) {
+        } catch (final AbstractMySQLException e) {
             LOGGER.error("MySQL error: {}", e.getMessage());
         }
     }
@@ -97,7 +97,7 @@ public final class MySQLRequestsDAO {
      */
     public static void insertRow(final String fileName, final String userName,
             final RequestStatus status) throws TReqSException {
-        String sqlstatement = "insert into " + MySQLStatements.REQUESTS + " ("
+        final String sqlstatement = "insert into " + MySQLStatements.REQUESTS + " ("
                 + MySQLStatements.REQUESTS_FILE + ", "
                 + MySQLStatements.REQUESTS_USER + ", "
                 + MySQLStatements.REQUESTS_STATUS + ", "
@@ -108,10 +108,10 @@ public final class MySQLRequestsDAO {
                 + ", now(), 'localhost', '1.5')";
         LOGGER.debug("The statement is: {}", sqlstatement);
         try {
-            int nrows = MySQLBroker.getInstance().executeModification(
+            final int nrows = MySQLBroker.getInstance().executeModification(
                     sqlstatement);
             LOGGER.info("Updated {} requests for file ", nrows);
-        } catch (AbstractMySQLException e) {
+        } catch (final AbstractMySQLException e) {
             LOGGER.error("MySQL error: {}", e.getMessage());
         }
     }

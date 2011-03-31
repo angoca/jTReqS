@@ -129,14 +129,14 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         assert e != null;
 
-        String message = e.getCode();
+        final String message = e.getCode();
         System.err.println(message);
-        int i = message.indexOf(':');
+        final int i = message.indexOf(':');
         int ret = -1;
-        String codeStr = message.substring(0, i);
+        final String codeStr = message.substring(0, i);
         try {
             ret = Short.parseShort(codeStr);
-        } catch (NumberFormatException e1) {
+        } catch (final NumberFormatException e1) {
             ret = -40000;
         }
 
@@ -182,8 +182,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             // hung.
             NativeBridge.getInstance().initContext(this.getAuthType(),
                     this.getKeytabPath(), this.getUser());
-        } catch (JNIException e) {
-            int code = processException(e);
+        } catch (final JNIException e) {
+            final int code = processException(e);
             if (code == HPSSErrorCode.HPSS_EPERM.getCode()) {
                 throw new HSMCredentialProblemException(code);
             } else if (code == HPSSErrorCode.HPSS_EIO.getCode()) {
@@ -229,8 +229,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             ret = NativeBridge.getInstance().getFileProperties(name);
             time = System.currentTimeMillis() - time;
             LOGGER.debug("native time getProperties: {}", time);
-        } catch (JNIException e) {
-            int code = processException(e);
+        } catch (final JNIException e) {
+            final int code = processException(e);
             LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOENT.getCode()) {
                 throw new HSMNotExistingFileException(code);
@@ -291,7 +291,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             type = Configurator.getInstance().getStringValue(
                     Constants.SECTION_KEYTAB, Constants.AUTHENTICATION_TYPE);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             LOGGER.info("No setting for {}.{}, default value will be used: {}",
                     new Object[] { Constants.SECTION_KEYTAB,
                             Constants.AUTHENTICATION_TYPE, type });
@@ -344,8 +344,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             NativeBridge.getInstance().stage(file.getName(), file.getSize());
             time = System.currentTimeMillis() - time;
             LOGGER.debug("native time stage: {}", time);
-        } catch (JNIException e) {
-            int code = processException(e);
+        } catch (final JNIException e) {
+            final int code = processException(e);
             LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOSPACE.getCode()) {
                 throw new HSMResourceException(code);

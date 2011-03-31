@@ -66,7 +66,7 @@ public final class HSMNativeBridgeContextBadUserTestNative {
      */
     @BeforeClass
     public static void oneTimeSetUp() {
-        String ldPath = "java.library.path";
+        final String ldPath = "java.library.path";
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
@@ -89,8 +89,8 @@ public final class HSMNativeBridgeContextBadUserTestNative {
                     HSMNativeBridgeTestNative.VALID_AUTH_TYPE,
                     HSMNativeBridgeTestNative.getValidKeytabPath(), "foo");
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testInit02BadUser " + code + " - "
                     + HPSSErrorCode.HPSS_EPERM.getCode());
             if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {

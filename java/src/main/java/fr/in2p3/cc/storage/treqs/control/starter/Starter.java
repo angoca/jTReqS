@@ -230,9 +230,9 @@ public final class Starter {
                 DATABASE_SCRIPT_LONG_COMMAND_OPTION, false,
                 DATABASE_SCRIPT_DESCRIPTION);
 
-        CommandLineParser parser = new PosixParser();
+        final CommandLineParser parser = new PosixParser();
 
-        CommandLine cli = parser.parse(this.options, arguments);
+        final CommandLine cli = parser.parse(this.options, arguments);
 
         LOGGER.trace("< prepareCommandOptions");
 
@@ -257,7 +257,7 @@ public final class Starter {
 
         LOGGER.info("Starting Server");
 
-        CommandLine cli = this.prepareCommandOptions(arguments);
+        final CommandLine cli = this.prepareCommandOptions(arguments);
 
         if (cli.hasOption(HELP_LONG_COMMAND_OPTION)) {
             this.showHelp();
@@ -266,7 +266,7 @@ public final class Starter {
             // First try to figure out the configuration file:
             // 1. from the command line.
             // 2. from the configuration file
-            String configurationFile = cli
+            final String configurationFile = cli
                     .getOptionValue(CONFIG_FILE_LONG_COMMAND_OPTION);
             if (configurationFile != null) {
                 System.setProperty(Constants.CONFIGURATION_FILE,
@@ -301,7 +301,7 @@ public final class Starter {
     private void showHelp() {
         LOGGER.trace("> showHelp");
 
-        HelpFormatter help = new HelpFormatter();
+        final HelpFormatter help = new HelpFormatter();
         help.printHelp("treqs", this.options);
 
         LOGGER.trace("< showHelp");
@@ -393,7 +393,7 @@ public final class Starter {
                 Thread.sleep(sleep);
                 Watchdog.getInstance().heartBeat();
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             // TODO v2.0 Catch any TERM signal in order to stop the application.
             // This signal will trigger the close function in all stagers, and
             // then cancel them to stop working. Also the Dispatcher and

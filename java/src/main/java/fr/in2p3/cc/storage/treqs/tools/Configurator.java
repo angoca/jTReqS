@@ -108,7 +108,7 @@ public final class Configurator {
     /**
      * The container of the configuration.
      */
-    private CompositeConfiguration properties;
+    private final CompositeConfiguration properties;
 
     /**
      * Constructor of the configurator where it defines the name of the
@@ -133,7 +133,7 @@ public final class Configurator {
             // file to use in a logger. This permits to know which is being used
             this.properties.addConfiguration(new HierarchicalINIConfiguration(
                     name));
-        } catch (ConfigurationException e) {
+        } catch (final ConfigurationException e) {
             throw new ProblematicConfiguationFileException(name, e);
         }
 
@@ -180,7 +180,7 @@ public final class Configurator {
         assert sec != null && !sec.equals("");
         assert key != null && !key.equals("");
 
-        byte value = this.properties.getByte(sec + "." + key, defaultValue);
+        final byte value = this.properties.getByte(sec + "." + key, defaultValue);
 
         LOGGER.trace("< getByteValue - {}", value);
 
@@ -206,7 +206,7 @@ public final class Configurator {
         assert sec != null && !sec.equals("");
         assert key != null && !key.equals("");
 
-        short value = this.properties.getShort(sec + "." + key, defaultValue);
+        final short value = this.properties.getShort(sec + "." + key, defaultValue);
 
         LOGGER.trace("< getShortValue - {}", value);
 
@@ -232,7 +232,7 @@ public final class Configurator {
         assert sec != null && !sec.equals("");
         assert key != null && !key.equals("");
 
-        String value = this.properties.getString(sec + "." + key);
+        final String value = this.properties.getString(sec + "." + key);
 
         if (value == null) {
             LOGGER.debug("Nothing found for String [" + sec + "]:" + key);

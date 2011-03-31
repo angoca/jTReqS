@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Executes commands returning the standard output.
- * 
+ *
  * @author Andres Gomez
  * @since 1.5.4
  */
@@ -58,7 +58,7 @@ public final class CommandExecuter {
 
     /**
      * Executes a command an returns the standard output.
-     * 
+     *
      * @return Standard output of the executed command.
      * @throws ExecuterException
      *             If there is any problem while executing.
@@ -71,7 +71,7 @@ public final class CommandExecuter {
 
         String ret = null;
         try {
-            Process process = Runtime.getRuntime().exec(command);
+            final Process process = Runtime.getRuntime().exec(command);
             final BufferedReader bfStreamOut = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
             final BufferedReader bfStreamErr = new BufferedReader(
@@ -79,7 +79,7 @@ public final class CommandExecuter {
 
             processOutput(bfStreamErr, true);
             ret = processOutput(bfStreamOut, false);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ExecuterException(e);
         }
 
@@ -92,7 +92,7 @@ public final class CommandExecuter {
 
     /**
      * Processes the output of a stream.
-     * 
+     *
      * @param stream
      *            Buffer where is the stream.
      * @param error
@@ -118,12 +118,12 @@ public final class CommandExecuter {
             } else if (!error && current == null) {
                 throw new ExecuterException();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ExecuterException(e);
         } finally {
             try {
                 stream.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new ExecuterException(e);
             }
         }

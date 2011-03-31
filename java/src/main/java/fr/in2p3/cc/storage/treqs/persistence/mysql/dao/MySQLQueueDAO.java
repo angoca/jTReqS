@@ -80,7 +80,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
         LOGGER.info("Cleaning unfinished queues");
 
-        int ret = MySQLBroker.getInstance().executeModification(
+        final int ret = MySQLBroker.getInstance().executeModification(
                 MySQLStatements.SQL_QUEUES_UPDATE_ABORT_ON_STARTUP);
 
         assert ret >= 0;
@@ -112,7 +112,7 @@ public final class MySQLQueueDAO implements QueueDAO {
                 .getTimeInMillis());
 
         int id = 0;
-        PreparedStatement statement = MySQLBroker.getInstance()
+        final PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(MySQLStatements.SQL_QUEUES_INSERT_QUEUE);
         try {
             int index = 1;
@@ -133,7 +133,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
             statement.execute();
 
-            ResultSet result = statement.getGeneratedKeys();
+            final ResultSet result = statement.getGeneratedKeys();
             if (result.next()) {
                 id = result.getInt(1);
                 result.close();
@@ -141,7 +141,7 @@ public final class MySQLQueueDAO implements QueueDAO {
                 result.close();
                 throw new MySQLNoGeneratedIdException();
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         }
         LOGGER.info("New queue inserted with id {} ({})", id, tapeName);
@@ -207,13 +207,13 @@ public final class MySQLQueueDAO implements QueueDAO {
             statement.execute();
 
             LOGGER.info("Updated queue " + id);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Error updating queue " + id);
             throw new MySQLExecuteException(e);
         } finally {
             try {
                 statement.close();
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 throw new MySQLExecuteException(e);
             }
         }
@@ -242,7 +242,7 @@ public final class MySQLQueueDAO implements QueueDAO {
         final int size = queue.getRequestsSize();
         final long byteSize = queue.getByteSize();
 
-        PreparedStatement statement = MySQLBroker.getInstance()
+        final PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(
                         MySQLStatements.SQL_QUEUES_UPDATE_ADD_REQUEST);
 
@@ -258,13 +258,13 @@ public final class MySQLQueueDAO implements QueueDAO {
             statement.setInt(index++, id);
 
             statement.execute();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Error updating queue " + id);
             throw new MySQLExecuteException(e);
         } finally {
             try {
                 statement.close();
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 throw new MySQLExecuteException(e);
             }
         }
@@ -329,7 +329,7 @@ public final class MySQLQueueDAO implements QueueDAO {
                 // Aborted queue exists only when the application starts.
                 assert false;
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         }
 

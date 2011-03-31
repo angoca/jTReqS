@@ -125,7 +125,7 @@ public final class ActivatorTest {
                 Activator.getInstance().waitToFinish();
             }
             Activator.destroyInstance();
-        } catch (ProblematicConfiguationFileException e) {
+        } catch (final ProblematicConfiguationFileException e) {
             e.printStackTrace();
         }
         QueuesController.destroyInstance();
@@ -140,7 +140,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().activate(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -161,11 +161,11 @@ public final class ActivatorTest {
         Activator.getInstance().setMaxStagers((short) 5);
         Activator.getInstance().setActiveStagers((short) 10);
 
-        File file = new File("filename", ActivatorTest.THREE_HUNDRED);
-        Tape tape = new Tape("tapename", MEDIA_TYPE_1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
+        final File file = new File("filename", ActivatorTest.THREE_HUNDRED);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
                 new User("username"));
-        Queue queue = QueuesController.getInstance().addFilePositionOnTape(
+        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
                 fpot, (byte) 1);
 
         Activator.getInstance().activate(queue);
@@ -184,11 +184,11 @@ public final class ActivatorTest {
      */
     @Test
     public void testActivate03() throws TReqSException {
-        File file = new File("filename", ActivatorTest.THREE_HUNDRED);
-        Tape tape = new Tape("tapename", MEDIA_TYPE_1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
+        final File file = new File("filename", ActivatorTest.THREE_HUNDRED);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
                 new User("username"));
-        Queue queue = QueuesController.getInstance().addFilePositionOnTape(
+        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
                 fpot, (byte) 1);
 
         Activator.getInstance().activate(queue);
@@ -210,20 +210,20 @@ public final class ActivatorTest {
         Activator.getInstance().setMaxStagersPerQueue((byte) 2);
         Activator.getInstance().setSecondsBetweenStagers((short) 1);
 
-        Tape tape = new Tape("tapename", MEDIA_TYPE_1);
-        User user = new User("username");
+        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final User user = new User("username");
 
-        File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
-        Queue queue = QueuesController.getInstance().addFilePositionOnTape(
+        final File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
+        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
                 fpot1, (byte) 1);
 
-        File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
+        final File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
 
-        File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
-        FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
+        final File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
+        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
 
         Activator.getInstance().activate(queue);
@@ -244,20 +244,20 @@ public final class ActivatorTest {
         Activator.getInstance().setMaxStagers((byte) 2);
         Activator.getInstance().setSecondsBetweenStagers((short) 1);
 
-        Tape tape = new Tape("tapename", MEDIA_TYPE_1);
-        User user = new User("username");
+        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final User user = new User("username");
 
-        File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
-        Queue queue = QueuesController.getInstance().addFilePositionOnTape(
+        final File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
+        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
                 fpot1, (byte) 1);
 
-        File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
+        final File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
 
-        File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
-        FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
+        final File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
+        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
 
         Activator.getInstance().activate(queue);
@@ -272,7 +272,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setActiveStagers((short) -1);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -290,12 +290,12 @@ public final class ActivatorTest {
      */
     @Test
     public void testMaxQueueStagers01() throws TReqSException {
-        byte value = 3;
+        final byte value = 3;
         Activator.getInstance().setMaxStagersPerQueue(value);
 
-        byte actual = Activator.getInstance().getStagersPerQueue();
+        final byte actual = Activator.getInstance().getStagersPerQueue();
 
-        byte expected = value;
+        final byte expected = value;
 
         Assert.assertEquals(expected, actual);
     }
@@ -309,7 +309,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setMaxStagersPerQueue((byte) -6);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -333,7 +333,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setMaxStagersPerQueue((byte) 125);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidMaxException)) {
                 failed = true;
             }
@@ -351,12 +351,12 @@ public final class ActivatorTest {
      */
     @Test
     public void testMaxStagers01() throws TReqSException {
-        short value = ActivatorTest.THREE_HUNDRED;
+        final short value = ActivatorTest.THREE_HUNDRED;
         Activator.getInstance().setMaxStagers(value);
 
-        short actual = Activator.getInstance().getMaxStagers();
+        final short actual = Activator.getInstance().getMaxStagers();
 
-        short expected = value;
+        final short expected = value;
 
         Assert.assertEquals(expected, actual);
     }
@@ -370,7 +370,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setMaxStagers((short) -6);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -394,7 +394,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setMaxStagers((short) 2);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidMaxException)) {
                 failed = true;
             }
@@ -427,12 +427,12 @@ public final class ActivatorTest {
     public void testRun01() throws TReqSException {
         Activator.getInstance().setSecondsBetweenLoops((short) 1);
 
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
             @Override
             public void run() {
                 try {
                     Thread.sleep(ActivatorTest.HUNDRED);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
                 try {
@@ -440,7 +440,7 @@ public final class ActivatorTest {
                     Activator.getInstance().waitToFinish();
                     Assert.assertTrue(Activator.getInstance()
                             .getProcessStatus() == ProcessStatus.STOPPED);
-                } catch (TReqSException e) {
+                } catch (final TReqSException e) {
                     e.printStackTrace();
                 }
 
@@ -452,7 +452,7 @@ public final class ActivatorTest {
         Activator.getInstance().run();
         try {
             Thread.sleep(ActivatorTest.HUNDRED);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -474,7 +474,7 @@ public final class ActivatorTest {
         Activator.getInstance().start();
         try {
             Thread.sleep(3000);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
         Activator.getInstance().conclude();
@@ -493,16 +493,16 @@ public final class ActivatorTest {
         Activator.getInstance().setSecondsBetweenLoops((short) 1);
         Activator.getInstance().refreshAllocations();
 
-        File file = new File("filename", 400);
-        Tape tape = new Tape("tapename", MEDIA_TYPE_1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 6, tape,
+        final File file = new File("filename", 400);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 6, tape,
                 new User("username"));
         QueuesController.getInstance().addFilePositionOnTape(fpot, (byte) 1);
         Activator.getInstance().start();
 
         try {
             Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
         Activator.getInstance().conclude();
@@ -516,12 +516,12 @@ public final class ActivatorTest {
      */
     @Test
     public void testSecondsBetweenLoops01() throws TReqSException {
-        short value = 2;
+        final short value = 2;
         Activator.getInstance().setSecondsBetweenLoops(value);
 
-        int actual = Activator.getInstance().getMillisBetweenLoops();
+        final int actual = Activator.getInstance().getMillisBetweenLoops();
 
-        int expected = value * Constants.MILLISECONDS;
+        final int expected = value * Constants.MILLISECONDS;
 
         Assert.assertEquals(expected, actual);
     }
@@ -535,7 +535,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setSecondsBetweenLoops((short) -6);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -553,12 +553,12 @@ public final class ActivatorTest {
      */
     @Test
     public void testSecondsBetweenStagers01() throws TReqSException {
-        short value = 2;
+        final short value = 2;
         Activator.getInstance().setSecondsBetweenStagers(value);
 
-        int actual = Activator.getInstance().getMillisBetweenStagers();
+        final int actual = Activator.getInstance().getMillisBetweenStagers();
 
-        int expected = value * Constants.MILLISECONDS;
+        final int expected = value * Constants.MILLISECONDS;
 
         Assert.assertEquals(expected, actual);
     }
@@ -572,7 +572,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setSecondsBetweenStagers((short) -6);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -591,7 +591,7 @@ public final class ActivatorTest {
         try {
             Activator.getInstance().setMetadataTimeout((short) 0);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -616,7 +616,7 @@ public final class ActivatorTest {
         Activator.getInstance().start();
         try {
             Thread.sleep(ActivatorTest.HUNDRED);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
         Activator.getInstance().conclude();

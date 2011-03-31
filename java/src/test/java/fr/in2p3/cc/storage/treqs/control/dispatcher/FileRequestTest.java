@@ -107,16 +107,16 @@ public final class FileRequestTest {
      */
     @Test
     public void testToString01() {
-        int id = 1;
-        String filename = "fileName";
-        String username = "Username";
-        byte retries = 2;
-        FileRequest freq = new FileRequest(id, filename, new User(username),
+        final int id = 1;
+        final String filename = "fileName";
+        final String username = "Username";
+        final byte retries = 2;
+        final FileRequest freq = new FileRequest(id, filename, new User(username),
                 retries);
 
-        String actual = freq.toString();
+        final String actual = freq.toString();
 
-        String expected = "FileRequest{ id: " + id + ", filename: " + filename
+        final String expected = "FileRequest{ id: " + id + ", filename: " + filename
                 + ", client: " + username + ", number of tries: " + retries
                 + "}";
 

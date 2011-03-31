@@ -69,6 +69,7 @@ public class FifoSelector extends Selector {
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
      * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
+    @Override
     protected final Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
             final Queue/* ! */currentQueue) throws TReqSException {
         LOGGER.trace("> compareQueue");

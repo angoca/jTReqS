@@ -80,7 +80,7 @@ public final class Instantiator {
             LOGGER.info("Class to instantiate {}", classname);
             clazz = Class.forName(classname);
 
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             throw new InstantiatorException(e);
         }
 
@@ -104,14 +104,14 @@ public final class Instantiator {
         LOGGER.trace("> getDataSourceAccess");
 
         // Retrieves the class.
-        Class<?> daoFactory = getClass(daoFactoryName);
+        final Class<?> daoFactory = getClass(daoFactoryName);
 
         // Instantiates the class calling the constructor.
         AbstractDAOFactory daoInst = null;
         try {
-            Constructor<?> constructor = daoFactory.getConstructor();
+            final Constructor<?> constructor = daoFactory.getConstructor();
             daoInst = (AbstractDAOFactory) constructor.newInstance();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new InstantiatorException(e);
         }
 
@@ -136,24 +136,24 @@ public final class Instantiator {
         LOGGER.trace("> instanciateClass");
 
         AbstractHSMBridge bridge = null;
-        Class<?> hsm = getClass(hsmBridgeClass);
+        final Class<?> hsm = getClass(hsmBridgeClass);
         if (hsm != null) {
             Method getInstance = null;
             try {
                 getInstance = hsm.getMethod("getInstance");
-            } catch (SecurityException e) {
+            } catch (final SecurityException e) {
                 throw new InstantiatorException(e);
-            } catch (NoSuchMethodException e) {
+            } catch (final NoSuchMethodException e) {
                 throw new InstantiatorException(e);
             }
             if (getInstance != null) {
                 try {
                     bridge = (AbstractHSMBridge) getInstance.invoke(null);
-                } catch (IllegalArgumentException e) {
+                } catch (final IllegalArgumentException e) {
                     throw new InstantiatorException(e);
-                } catch (IllegalAccessException e) {
+                } catch (final IllegalAccessException e) {
                     throw new InstantiatorException(e);
-                } catch (InvocationTargetException e) {
+                } catch (final InvocationTargetException e) {
                     throw new InstantiatorException(e);
                 }
             }
@@ -179,10 +179,10 @@ public final class Instantiator {
             throws InstantiatorException {
         LOGGER.trace("> getSelector");
 
-        Class<?> clazz = getClass(classname);
+        final Class<?> clazz = getClass(classname);
         Object selector;
         try {
-            Constructor<?> constructor = clazz.getConstructor();
+            final Constructor<?> constructor = clazz.getConstructor();
             selector = constructor.newInstance();
         } catch (final Exception e) {
             throw new InstantiatorException(e);

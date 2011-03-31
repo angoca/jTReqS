@@ -129,9 +129,9 @@ public final class StarterTest {
      */
     private void checkDatabaseWithStaged(final int expectedStaged,
             final int expectedNonStaged) throws SQLException, TReqSException {
-        RequestStatus status = RequestStatus.STAGED;
-        int actualStaged = this.countStatusRequest(status, true);
-        int actualNotStaged = this.countStatusRequest(status, false);
+        final RequestStatus status = RequestStatus.STAGED;
+        final int actualStaged = this.countStatusRequest(status, true);
+        final int actualNotStaged = this.countStatusRequest(status, false);
 
         LOGGER.error("Staged {}, Not staged {}", actualStaged, actualNotStaged);
         LOGGER.error("Activator {}, Dispatcher {}", Activator.getInstance()
@@ -161,13 +161,13 @@ public final class StarterTest {
         if (!equals) {
             compare = "!=";
         }
-        String query = "SELECT count(1) FROM " + MySQLRequestsDAO.REQUESTS
+        final String query = "SELECT count(1) FROM " + MySQLRequestsDAO.REQUESTS
                 + " WHERE " + MySQLRequestsDAO.REQUESTS_STATUS + ' ' + compare
                 + status.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         result.next();
-        int actual = result.getInt(1);
+        final int actual = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
         return actual;
     }
@@ -231,20 +231,20 @@ public final class StarterTest {
 
         this.checkDatabaseWithStaged(0, 0);
 
-        String fileName = "filename101Created";
-        String userName = "username1";
-        RequestStatus status = RequestStatus.CREATED;
+        final String fileName = "filename101Created";
+        final String userName = "username1";
+        final RequestStatus status = RequestStatus.CREATED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
         Starter.getInstance();
 
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
             @Override
             public synchronized void run() {
                 try {
                     LOGGER.error("Starting Starter.");
                     Starter.getInstance().toStart();
-                } catch (TReqSException e) {
+                } catch (final TReqSException e) {
                     e.printStackTrace();
                 }
             }
@@ -282,13 +282,13 @@ public final class StarterTest {
 
         this.checkDatabaseWithStaged(0, 0);
 
-        String fileName1 = "filename102SubmittedAndQueued";
-        String userName1 = "username1";
-        RequestStatus status1 = RequestStatus.SUBMITTED;
+        final String fileName1 = "filename102SubmittedAndQueued";
+        final String userName1 = "username1";
+        final RequestStatus status1 = RequestStatus.SUBMITTED;
         MySQLRequestsDAO.insertRow(fileName1, userName1, status1);
-        String fileName2 = "filename202SubmittedAndQueued";
-        String userName2 = "username2";
-        RequestStatus status2 = RequestStatus.QUEUED;
+        final String fileName2 = "filename202SubmittedAndQueued";
+        final String userName2 = "username2";
+        final RequestStatus status2 = RequestStatus.QUEUED;
         MySQLRequestsDAO.insertRow(fileName2, userName2, status2);
 
         Assert.assertTrue(this
@@ -297,13 +297,13 @@ public final class StarterTest {
 
         Starter.getInstance();
 
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
             @Override
             public synchronized void run() {
                 try {
                     LOGGER.error("Starting Starter.");
                     Starter.getInstance().toStart();
-                } catch (TReqSException e) {
+                } catch (final TReqSException e) {
                     e.printStackTrace();
                 }
             }

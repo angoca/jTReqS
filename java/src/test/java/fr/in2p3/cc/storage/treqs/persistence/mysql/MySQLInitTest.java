@@ -67,7 +67,7 @@ public final class MySQLInitTest {
         try {
             MySQLBroker.getInstance().executeModification(
                     "DROP TABLE IF EXISTS " + table);
-        } catch (AbstractMySQLException e) {
+        } catch (final AbstractMySQLException e) {
             e.printStackTrace();
         }
     }

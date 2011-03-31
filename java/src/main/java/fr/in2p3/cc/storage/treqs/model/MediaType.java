@@ -95,7 +95,7 @@ public final class MediaType {
 
         boolean ret = false;
         if (obj instanceof MediaType) {
-            MediaType media = (MediaType) obj;
+            final MediaType media = (MediaType) obj;
             if (media.getId() == this.getId()
                     && media.getName().equals(this.getName())) {
                 ret = true;

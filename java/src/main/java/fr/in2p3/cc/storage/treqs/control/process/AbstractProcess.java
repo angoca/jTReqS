@@ -231,22 +231,22 @@ public abstract class AbstractProcess extends Thread {
         assert processStatus != null;
 
         synchronized (this.status) {
-            ProcessStatus currentStatus = this.getProcessStatus();
+            final ProcessStatus currentStatus = this.getProcessStatus();
             if (
             // For kickstart.
-            (currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTING)
+            currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTING
                     // For oneLoop or run
-                    || (currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STARTED)
+                    || currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STARTED
                     // For conclude
-                    || (currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPING)
+                    || currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPING
                     // For run
-                    || (currentStatus == ProcessStatus.STOPPING && processStatus == ProcessStatus.STOPPED)
+                    || currentStatus == ProcessStatus.STOPPING && processStatus == ProcessStatus.STOPPED
                     // For oneLoop
-                    || (currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPED)
+                    || currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPED
                     // For conclude
-                    || (currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STOPPED)
+                    || currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STOPPED
                     // For restart
-                    || (currentStatus == ProcessStatus.STOPPED && processStatus == ProcessStatus.STARTING)) {
+                    || currentStatus == ProcessStatus.STOPPED && processStatus == ProcessStatus.STARTING) {
                 this.status = processStatus;
             } else if (currentStatus == ProcessStatus.STOPPING
                     && processStatus == ProcessStatus.STOPPING) {
@@ -283,12 +283,12 @@ public abstract class AbstractProcess extends Thread {
                 .getProcessStatus();
 
         while (this.getProcessStatus() != ProcessStatus.STOPPED) {
-            int wait = Constants.MILLISECONDS;
+            final int wait = Constants.MILLISECONDS;
             LOGGER.info("Waiting {} to be stopped for {} millis.",
                     this.getName(), wait);
             try {
                 Thread.sleep(wait);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 LOGGER.error("Error", e);
             }
         }

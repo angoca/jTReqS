@@ -43,7 +43,7 @@ import fr.in2p3.cc.storage.treqs.model.dao.RegisterInformationDAO;
 
 /**
  * Manages register information inserts into the database.
- * 
+ *
  * @author Andrés Gómez
  * @since 1.5.4
  */
@@ -56,7 +56,7 @@ public class MockRegisterInformationDAO implements RegisterInformationDAO {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.RegisterInformationDAO#insert(java
      * .lang.String, java.lang.String)

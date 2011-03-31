@@ -173,11 +173,11 @@ public abstract class AbstractHSMBridge {
         try {
             test = Configurator.getInstance().getStringValue(
                     Constants.SECTION_KEYTAB, Constants.TEST_KEYTAB);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             // Nothing.
         }
         if (test.equals(Constants.YES)) {
-            java.io.File keytab = new java.io.File(this.getKeytabPath());
+            final java.io.File keytab = new java.io.File(this.getKeytabPath());
             if (keytab.exists()) {
                 LOGGER.debug("Exists.");
                 if (keytab.canRead()) {

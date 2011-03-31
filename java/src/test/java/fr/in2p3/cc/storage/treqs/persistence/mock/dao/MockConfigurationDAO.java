@@ -101,11 +101,11 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
         LOGGER.trace("> getMediaAllocations");
 
         if (exception != null) {
-            AbstractPersistanceException toThrow = exception;
+            final AbstractPersistanceException toThrow = exception;
             exception = null;
             throw toThrow;
         }
-        ArrayList<Resource> drives = new ArrayList<Resource>();
+        final ArrayList<Resource> drives = new ArrayList<Resource>();
         byte id = 1;
         String name = "T10K-A";
         MediaType media = MediaTypesController.getInstance().add(name, id);
@@ -141,11 +141,11 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
         LOGGER.trace("> getResourceAllocation");
 
         if (exception != null) {
-            AbstractPersistanceException toThrow = exception;
+            final AbstractPersistanceException toThrow = exception;
             exception = null;
             throw toThrow;
         }
-        MultiMap values = new MultiValueMap();
+        final MultiMap values = new MultiValueMap();
         // T10KA
         values.put(new Float(MockConfigurationDAO.DOT_ONE),
                 new PersistenceHelperResourceAllocation("user1", 2));

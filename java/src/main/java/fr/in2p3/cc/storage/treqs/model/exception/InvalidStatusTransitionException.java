@@ -63,12 +63,12 @@ public final class InvalidStatusTransitionException extends TReqSException {
     /**
      * New status.
      */
-    private RequestStatus newStatus;
+    private final RequestStatus newStatus;
 
     /**
      * Old status.
      */
-    private RequestStatus oldStatus;
+    private final RequestStatus oldStatus;
 
     /**
      * Creates an exception with the old status and the new invalid status.
@@ -95,7 +95,7 @@ public final class InvalidStatusTransitionException extends TReqSException {
     public String toString() {
         LOGGER.trace("> toString");
 
-        String ret = "Invalid change of request status. From " + this.oldStatus
+        final String ret = "Invalid change of request status. From " + this.oldStatus
                 + " to " + this.newStatus;
 
         assert ret != null;

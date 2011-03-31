@@ -89,7 +89,7 @@ public abstract class AbstractDAOFactory {
             daoName = Configurator.getInstance()
                     .getStringValue(Constants.SECTION_PERSISTENCE,
                             Constants.PESISTENCE_FACTORY);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             LOGGER.debug("No setting for {}.{}, default "
                     + "value will be used: {}", new Object[] {
                     Constants.SECTION_PERSISTENCE,

@@ -169,7 +169,7 @@ public final class AndresSelector extends Selector {
 
         final double first = Math.pow(z, 2);
 
-        final double secondA = y / (Math.pow(a, 2));
+        final double secondA = y / Math.pow(a, 2);
 
         final double secondB = Math.sin(pi * x / c - pi) / (pi * x / c - pi);
 
@@ -206,10 +206,10 @@ public final class AndresSelector extends Selector {
         float score;
         if (queue.getStatus() == QueueStatus.CREATED) {
             // Just setting a default best user.
-            User user = queue.getOwner();
+            final User user = queue.getOwner();
             if (user != null) {
-                float reserved = resource.getUserAllocation(user);
-                int used = resource.getUsedResources(user);
+                final float reserved = resource.getUserAllocation(user);
+                final int used = resource.getUsedResources(user);
                 score = (reserved - used) * (reserved + 1);
                 usersScores.put(user, score);
                 LOGGER.debug("{} score: {} = ({} - {}) * ({} + 1)",
@@ -235,6 +235,7 @@ public final class AndresSelector extends Selector {
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
      * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
+    @Override
     protected Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
             final Queue/* ! */currentQueue) throws TReqSException {
         LOGGER.trace("> compareQueue");
@@ -279,7 +280,7 @@ public final class AndresSelector extends Selector {
         User ret = null;
         if (users.hasNext()) {
             do {
-                User tmp = users.next();
+                final User tmp = users.next();
                 if (QueuesController.getInstance().exists(tmp,
                         QueueStatus.CREATED)) {
                     ret = tmp;
@@ -312,10 +313,10 @@ public final class AndresSelector extends Selector {
         try {
             fairShare = Configurator.getInstance().getStringValue(
                     Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
         }
         if (fairShare.equalsIgnoreCase(Constants.YES)) {
-            User bestUser = this.selectBestUser(queues, resource);
+            final User bestUser = this.selectBestUser(queues, resource);
             if (bestUser == null) {
                 // There is not non-blocked user among the waiting
                 // queues, just do nothing and break the while loop,
@@ -364,11 +365,11 @@ public final class AndresSelector extends Selector {
 
         Queue best = null;
         // First get the list of queues
-        int length = queues.size();
+        final int length = queues.size();
         if (length >= 1) {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
-                Queue queue = queues.get(j);
+                final Queue queue = queues.get(j);
                 // The queue belong to this user.
                 if (queue.getOwner().equals(user)) {
                     if (this.checkQueue(resource, queue)) {
@@ -423,7 +424,7 @@ public final class AndresSelector extends Selector {
             throw new NoQueuesDefinedException();
         }
 
-        Map<User, Float> usersScores = new HashMap<User, Float>();
+        final Map<User, Float> usersScores = new HashMap<User, Float>();
 
         // For each waiting user, get its allocation and its used resources.
 
@@ -432,14 +433,14 @@ public final class AndresSelector extends Selector {
         // Browse the list of queues and compute the users scores
         LOGGER.debug("Computing Score: (user allocation - used resources) "
                 + "* (user allocation + 1)");
-        Iterator<Queue> queues = queuesMap.iterator();
+        final Iterator<Queue> queues = queuesMap.iterator();
         while (queues.hasNext()) {
-            Queue queue = queues.next();
+            final Queue queue = queues.next();
             this.calculateUserScore(resource, usersScores, queue);
         }
 
         // Catch the best
-        Iterator<User> users = usersScores.keySet().iterator();
+        final Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
         try {
             bestUser = this.getNextPossibleUser(users);
@@ -447,7 +448,7 @@ public final class AndresSelector extends Selector {
             LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
             User user = this.getNextPossibleUser(users);
             while (user != null) {
-                float score = usersScores.get(user);
+                final float score = usersScores.get(user);
                 LOGGER.info("Score: {}\t{}", user.getName(), score);
                 if (score > bestScore) {
                     bestUser = user;
@@ -465,7 +466,7 @@ public final class AndresSelector extends Selector {
             }
 
             LOGGER.debug("Best user: {}", bestUser.getName());
-        } catch (NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
             LOGGER.error("Houston, we have a problem.");
             throw e;
         }

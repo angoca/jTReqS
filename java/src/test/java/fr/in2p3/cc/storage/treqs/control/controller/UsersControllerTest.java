@@ -70,7 +70,7 @@ public final class UsersControllerTest {
         try {
             UsersController.getInstance().add(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -88,10 +88,10 @@ public final class UsersControllerTest {
      */
     @Test
     public void testAddUser01() throws TReqSException {
-        String username = "username";
+        final String username = "username";
         UsersController.getInstance().add(username);
 
-        User user = (User) UsersController.getInstance().exists(username);
+        final User user = (User) UsersController.getInstance().exists(username);
 
         Assert.assertEquals("add user", username, user.getName());
     }
@@ -105,7 +105,7 @@ public final class UsersControllerTest {
         try {
             UsersController.getInstance().create(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }

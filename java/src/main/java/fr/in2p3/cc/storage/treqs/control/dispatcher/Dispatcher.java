@@ -204,12 +204,12 @@ public final class Dispatcher extends AbstractProcess {
 
         this.setMaxFilesBeforeMessage(Constants.FILES_BEFORE_MESSAGE);
 
-        short maxReqs = Configurator.getInstance().getShortValue(
+        final short maxReqs = Configurator.getInstance().getShortValue(
                 Constants.SECTION_DISPATCHER, Constants.FETCH_MAX,
                 DefaultProperties.MAX_REQUESTS_DEFAULT);
         this.setMaxRequests(maxReqs);
 
-        short interval = Configurator.getInstance().getShortValue(
+        final short interval = Configurator.getInstance().getShortValue(
                 Constants.SECTION_DISPATCHER, Constants.DISPATCHER_INTERVAL,
                 DefaultProperties.SECONDS_BETWEEN_LOOPS);
         this.setSecondsBetweenLoops(interval);
@@ -230,7 +230,7 @@ public final class Dispatcher extends AbstractProcess {
 
         try {
             this.cleaningReferences();
-        } catch (Exception e2) {
+        } catch (final Exception e2) {
             LOGGER.error("Problem while cleaning references: {}. Stopping "
                     + "Dispatcher.", e2.getMessage());
             Starter.getInstance().toStop();
@@ -240,9 +240,9 @@ public final class Dispatcher extends AbstractProcess {
         if (this.keepOn()) {
             try {
                 this.retrieveNewRequests();
-            } catch (Exception e1) {
+            } catch (final Exception e1) {
                 if (e1 instanceof TReqSException) {
-                    TReqSException e = (TReqSException) e1;
+                    final TReqSException e = (TReqSException) e1;
                     LOGGER.error(
                             "Problem retrieving new requests: {}. Stopping "
                                     + "Dispatcher.", e.getMessage());
@@ -302,8 +302,8 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.trace("> checkOnDisk {}", cont);
 
         if (cont && fileProperties != null) {
-            String requestTape = fileProperties.getTapeName();
-            boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
+            final String requestTape = fileProperties.getTapeName();
+            final boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
             LOGGER.debug(
                     "Comparing {} and {}, and the equals is {}",
                     new Object[] { requestTape, Constants.FILE_ON_DISK, equals });
@@ -394,7 +394,7 @@ public final class Dispatcher extends AbstractProcess {
      * @throws TReqSException
      */
     private MediaType/* ? */getMediaType(final FileRequest/* ! */fileRequest,
-            final HSMHelperFileProperties/* ? */fileProperties, boolean cont)
+            final HSMHelperFileProperties/* ? */fileProperties, final boolean cont)
             throws TReqSException {
         LOGGER.trace("> getMediaType");
 
@@ -406,7 +406,7 @@ public final class Dispatcher extends AbstractProcess {
             try {
                 media = MediaTypesController.getInstance().getMediaType(
                         fileProperties.getTapeName());
-            } catch (NotMediaTypeDefinedException e) {
+            } catch (final NotMediaTypeDefinedException e) {
                 this.logFailReadingException(e, fileRequest);
             }
         }
@@ -439,14 +439,14 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.trace("> getNewRequests");
 
         // newRequests will be returned at the end
-        MultiMap newRequests = new MultiValueMap();
+        final MultiMap newRequests = new MultiValueMap();
         List<PersistenceHelperFileRequest> listRequests = null;
 
         LOGGER.info("Looking for new requests");
         try {
             listRequests = AbstractDAOFactory.getDAOFactoryInstance()
                     .getReadingDAO().getNewRequests(this.getMaxRequests());
-        } catch (AbstractPersistanceException e) {
+        } catch (final AbstractPersistanceException e) {
             LOGGER.error("Exception caught: {}", e.getMessage());
             throw e;
         }
@@ -486,18 +486,18 @@ public final class Dispatcher extends AbstractProcess {
         assert newRequests != null;
         assert listNewRequests != null;
 
-        Iterator<PersistenceHelperFileRequest> iterator = listNewRequests
+        final Iterator<PersistenceHelperFileRequest> iterator = listNewRequests
                 .iterator();
         while (iterator.hasNext()) {
-            PersistenceHelperFileRequest dbFileRequest = iterator.next();
+            final PersistenceHelperFileRequest dbFileRequest = iterator.next();
             LOGGER.debug(
                     "New request [{}] for file '{}' from user: '{}'",
                     new Object[] { dbFileRequest.getId(),
                             dbFileRequest.getFileName(),
                             dbFileRequest.getOwnerName() });
-            User owner = UsersController.getInstance().add(
+            final User owner = UsersController.getInstance().add(
                     dbFileRequest.getOwnerName());
-            FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
+            final FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
                     dbFileRequest.getFileName(), owner,
                     dbFileRequest.getNumberTries());
 
@@ -545,7 +545,7 @@ public final class Dispatcher extends AbstractProcess {
                         fileRequest.getName());
                 time = System.currentTimeMillis() - time;
                 LOGGER.debug("total time getProperties: {}", time);
-            } catch (AbstractHSMException e) {
+            } catch (final AbstractHSMException e) {
                 this.checkIfEmptyFile(fileRequest, e);
                 cont = false;
             }
@@ -563,7 +563,7 @@ public final class Dispatcher extends AbstractProcess {
             // The file is already registered in the application.
 
             // Maybe the metadata of the file has to be updated
-            FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+            final FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
                     .getInstance().exists(file.getName());
             if (fpot == null) {
                 LOGGER.error("No FilePostionOnTape references this File. This "
@@ -584,7 +584,7 @@ public final class Dispatcher extends AbstractProcess {
                                 .getFileProperties(fileRequest.getName());
                         time = System.currentTimeMillis() - time;
                         LOGGER.debug("total time getProperties: {}", time);
-                    } catch (AbstractHSMException e) {
+                    } catch (final AbstractHSMException e) {
                         this.checkIfEmptyFile(fileRequest, e);
                         cont = false;
                     }
@@ -630,7 +630,7 @@ public final class Dispatcher extends AbstractProcess {
 
         int code = 0;
         if (exception instanceof AbstractHSMException) {
-            AbstractHSMException e = (AbstractHSMException) exception;
+            final AbstractHSMException e = (AbstractHSMException) exception;
             code = e.getErrorCode();
         }
 
@@ -656,7 +656,7 @@ public final class Dispatcher extends AbstractProcess {
 
         try {
             this.action();
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             throw new RuntimeException(e);
         }
 
@@ -684,13 +684,13 @@ public final class Dispatcher extends AbstractProcess {
         assert newRequests != null;
 
         short counter = this.maxFilesBeforeMessage;
-        Iterator<String> iterator = newRequests.keySet().iterator();
+        final Iterator<String> iterator = newRequests.keySet().iterator();
         while (iterator.hasNext()) {
-            String filename = iterator.next();
-            Iterator<FileRequest> iterator2 = ((Collection<FileRequest>) newRequests
+            final String filename = iterator.next();
+            final Iterator<FileRequest> iterator2 = ((Collection<FileRequest>) newRequests
                     .get(filename)).iterator();
             while (iterator2.hasNext()) {
-                FileRequest fileRequest = iterator2.next();
+                final FileRequest fileRequest = iterator2.next();
 
                 counter--;
                 if (counter == 0) {
@@ -761,7 +761,7 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.trace("> retrieveNewRequest");
 
         // Get new requests
-        MultiMap newRequests = this.getNewRequests();
+        final MultiMap newRequests = this.getNewRequests();
         if (newRequests != null) {
 
             // Loop through the new requests.
@@ -855,10 +855,10 @@ public final class Dispatcher extends AbstractProcess {
         assert file != null;
         assert request != null;
 
-        Tape tape = TapesController.getInstance().add(
+        final Tape tape = TapesController.getInstance().add(
                 fileProperties.getTapeName(), media);
 
-        FilePositionOnTape fpot = FilePositionOnTapesController.getInstance()
+        final FilePositionOnTape fpot = FilePositionOnTapesController.getInstance()
                 .add(file, tape, fileProperties.getPosition(),
                         request.getUser());
 
@@ -892,16 +892,16 @@ public final class Dispatcher extends AbstractProcess {
                     // Waits before restart the process.
                     try {
                         Thread.sleep(this.getMillisBetweenLoops());
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         LOGGER.error("Message", e);
                     }
                 }
             }
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             try {
                 Starter.getInstance().toStop();
                 LOGGER.error("Stopping", t);
-            } catch (TReqSException e) {
+            } catch (final TReqSException e) {
                 LOGGER.error("Error", e);
                 System.exit(Constants.DISPATCHER_PROBLEM);
             }
@@ -925,7 +925,7 @@ public final class Dispatcher extends AbstractProcess {
      *            New status of the request.
      */
     private void writeRequestStatus(final FileRequest/* ! */request,
-            final String/* ! */message, int code,
+            final String/* ! */message, final int code,
             final RequestStatus/* ! */status) {
         LOGGER.trace("> writeRequestStatus");
 
@@ -939,7 +939,7 @@ public final class Dispatcher extends AbstractProcess {
                     .getReadingDAO()
                     .setRequestStatusById(request.getId(), status, code,
                             message);
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             LOGGER.error("Error trying to update request status: {}",
                     e.getMessage());
         }

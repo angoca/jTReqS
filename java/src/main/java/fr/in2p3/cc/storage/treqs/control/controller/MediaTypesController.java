@@ -136,7 +136,7 @@ public final class MediaTypesController extends AbstractController {
         synchronized (this.getObjectMap()) {
             media = (MediaType) this.exists(name);
             if (media == null) {
-                media = create(name, id);
+                media = this.create(name, id);
             }
         }
 
@@ -165,7 +165,7 @@ public final class MediaTypesController extends AbstractController {
         assert name != null && !name.equals("");
         assert id >= 0;
 
-        MediaType media = new MediaType(id, name);
+        final MediaType media = new MediaType(id, name);
         super.add(name, media);
 
         assert media != null;

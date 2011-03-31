@@ -89,9 +89,9 @@ public final class MySQLInit {
         assert tableName != null && !tableName.equals("");
         assert structure != null && !structure.equals("");
 
-        String statement = InitDBStatements.CREATE_TABLE + tableName + " "
+        final String statement = InitDBStatements.CREATE_TABLE + tableName + " "
                 + structure;
-        int ret = MySQLBroker.getInstance().executeModification(statement);
+        final int ret = MySQLBroker.getInstance().executeModification(statement);
         if (ret == 1) {
             LOGGER.info("Table {} created", tableName);
         }
@@ -154,13 +154,13 @@ public final class MySQLInit {
         // Search for the "current" table in the database.
         MySQLBroker.getInstance().connect();
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(
                 InitDBStatements.ALL_TABLES);
-        ResultSet result = (ResultSet) objects[1];
+        final ResultSet result = (ResultSet) objects[1];
 
         try {
             while (result.next()) {
-                String tablename = result.getString(1);
+                final String tablename = result.getString(1);
                 if (tablename.equals(InitDBStatements.ALLOCATIONS)) {
                     tableAllocationsFound = true;
                 }
@@ -181,7 +181,7 @@ public final class MySQLInit {
                 }
                 LOGGER.debug("Table found: {}", tablename);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);
@@ -193,24 +193,24 @@ public final class MySQLInit {
             LOGGER.error("Please configure the MediaTypes table");
         }
         if (!tableAllocationsFound) {
-            createTable(InitDBStatements.ALLOCATIONS,
+            this.createTable(InitDBStatements.ALLOCATIONS,
                     InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
             LOGGER.error("Please configure the Allocations table");
         }
         if (!tableQueuesFound) {
-            createTable(InitDBStatements.QUEUES,
+            this.createTable(InitDBStatements.QUEUES,
                     InitDBStatements.STRUCTURE_TABLE_QUEUES);
         }
         if (!tableRequestFound) {
-            createTable(InitDBStatements.REQUESTS,
+            this.createTable(InitDBStatements.REQUESTS,
                     InitDBStatements.STRUCTURE_TABLE_REQUESTS);
         }
         if (!tableHeartBeatFound) {
-            createTable(InitDBStatements.HEART_BEAT,
+            this.createTable(InitDBStatements.HEART_BEAT,
                     InitDBStatements.STRUCTURE_TABLE_HEART_BEAT);
         }
         if (!tableInformationsFound) {
-            createTable(InitDBStatements.INFORMATIONS,
+            this.createTable(InitDBStatements.INFORMATIONS,
                     InitDBStatements.STRUCTURE_TABLE_INFORMATIONS);
         }
         MySQLBroker.getInstance().disconnect();

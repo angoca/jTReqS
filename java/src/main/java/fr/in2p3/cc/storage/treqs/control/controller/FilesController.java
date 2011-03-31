@@ -154,15 +154,15 @@ public final class FilesController extends AbstractController {
         LOGGER.trace("> cleanup");
 
         int size = 0;
-        List<String> toRemove = new ArrayList<String>();
+        final List<String> toRemove = new ArrayList<String>();
         synchronized (this.getObjectMap()) {
             // Checks the references without fpots.
-            Iterator<String> iter = this.getObjectMap().keySet().iterator();
+            final Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {
-                String key = iter.next();
-                File file = (File) this.getObjectMap().get(key);
-                String filename = file.getName();
-                FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+                final String key = iter.next();
+                final File file = (File) this.getObjectMap().get(key);
+                final String filename = file.getName();
+                final FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
                         .getInstance().exists(filename);
                 if (fpot == null) {
                     toRemove.add(filename);
@@ -199,7 +199,7 @@ public final class FilesController extends AbstractController {
         assert name != null && !name.equals("");
         assert size >= 0;
 
-        File file = new File(name, size);
+        final File file = new File(name, size);
         super.add(name, file);
 
         assert file != null;

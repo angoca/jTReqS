@@ -98,8 +98,8 @@ public final class ConfiguratorTest {
      */
     @Test
     public void testDeleteValue01() throws ProblematicConfiguationFileException {
-        String sec = "test1";
-        String key = "keytest";
+        final String sec = "test1";
+        final String key = "keytest";
         Configurator.getInstance().deleteValue(sec, key);
     }
 
@@ -114,16 +114,16 @@ public final class ConfiguratorTest {
     @Test
     public void testDeleteValue02()
             throws ProblematicConfiguationFileException, KeyNotFoundException {
-        String sec = "test1";
-        String key = "keytest";
-        String value = "valuetest";
+        final String sec = "test1";
+        final String key = "keytest";
+        final String value = "valuetest";
         Configurator.getInstance().setValue(sec, key, value);
-        String actual = Configurator.getInstance().getStringValue(sec, key);
+        final String actual = Configurator.getInstance().getStringValue(sec, key);
         Assert.assertEquals(value, actual);
         Configurator.getInstance().deleteValue(sec, key);
         try {
             Configurator.getInstance().getStringValue(sec, key);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             LOGGER.error("Error sleeping", e);
         }
     }
@@ -137,7 +137,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().deleteValue(null, "KEY");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -156,7 +156,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().deleteValue("", "KEY");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -175,7 +175,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().deleteValue("SEC", null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -194,7 +194,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().deleteValue("SEC", "");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -213,7 +213,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().getStringValue(null, "KEY");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -232,7 +232,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().getStringValue("", "KEY");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -251,7 +251,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().getStringValue("SEC", null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -270,7 +270,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().getStringValue("SEC", "");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -289,7 +289,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().getStringValue("UNKNOWN", "KEY");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof KeyNotFoundException)) {
                 failed = true;
             }
@@ -309,7 +309,7 @@ public final class ConfiguratorTest {
             System.setProperty(Constants.CONFIGURATION_FILE, "INEXISTANT_FILE");
             Configurator.getInstance();
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof ProblematicConfiguationFileException)) {
                 failed = true;
             }
@@ -329,7 +329,7 @@ public final class ConfiguratorTest {
             System.setProperty(Constants.CONFIGURATION_FILE, "");
             Configurator.getInstance();
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -360,15 +360,15 @@ public final class ConfiguratorTest {
      */
     @Test
     public void testSetValue01() throws TReqSException {
-        String sec = "test1";
-        String key = "keytest";
-        String value = "valuetest";
+        final String sec = "test1";
+        final String key = "keytest";
+        final String value = "valuetest";
 
         boolean failed = false;
         try {
             Configurator.getInstance().getStringValue(sec, key);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof KeyNotFoundException)) {
                 failed = true;
             }
@@ -379,9 +379,9 @@ public final class ConfiguratorTest {
 
         Configurator.getInstance().setValue(sec, key, value);
 
-        String actual = Configurator.getInstance().getStringValue(sec, key);
+        final String actual = Configurator.getInstance().getStringValue(sec, key);
 
-        String expected = value;
+        final String expected = value;
 
         Assert.assertEquals(expected, actual);
     }
@@ -394,15 +394,15 @@ public final class ConfiguratorTest {
      */
     @Test
     public void testSetValue02() throws TReqSException {
-        String sec = "test1";
-        String key = "keytest";
-        String value = "valuetest";
+        final String sec = "test1";
+        final String key = "keytest";
+        final String value = "valuetest";
 
         Configurator.getInstance().setValue(sec, key, value);
 
-        String actual = Configurator.getInstance().getStringValue(sec, key);
+        final String actual = Configurator.getInstance().getStringValue(sec, key);
 
-        String expected = value;
+        final String expected = value;
 
         Assert.assertEquals(expected, actual);
     }
@@ -416,7 +416,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().setValue(null, "KEY", "VALUE");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -435,7 +435,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().setValue("", "KEY", "VALUE");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -454,7 +454,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().setValue("SEC", null, "VALUE");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -473,7 +473,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().setValue("SEC", "", "VALUE");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -492,7 +492,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().setValue("SEC", "KEY", null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -511,7 +511,7 @@ public final class ConfiguratorTest {
         try {
             Configurator.getInstance().setValue("SEC", "KEY", "");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }

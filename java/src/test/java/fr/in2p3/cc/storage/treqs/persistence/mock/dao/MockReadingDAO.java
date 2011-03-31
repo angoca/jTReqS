@@ -88,15 +88,15 @@ public final class MockReadingDAO implements ReadingDAO {
      */
     private static void createRequest(
             final List<PersistenceHelperFileRequest> requests) {
-        short id = (short) (Math.random() * Constants.MILLISECONDS + 1);
-        String filename = "path" + (int) (Math.random() * 10) + "/file"
+        final short id = (short) (Math.random() * Constants.MILLISECONDS + 1);
+        final String filename = "path" + (int) (Math.random() * 10) + "/file"
                 + (int) (Math.random() * 100);
         byte nbTries = (byte) ((int) (Math.random() * 10) - 9);
         if (nbTries <= 0) {
             nbTries = 1;
         }
-        String user = "user" + (int) (Math.random() * 10);
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+        final String user = "user" + (int) (Math.random() * 10);
+        final PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
                 id, filename, nbTries, user);
         requests.add(request);
     }
@@ -105,7 +105,7 @@ public final class MockReadingDAO implements ReadingDAO {
      * @return A created list of requests.
      */
     private static List<PersistenceHelperFileRequest> createRequests() {
-        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
+        final List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
         int qty = 0;
         if (qty != -1) {
             qty = quantityRequest;
@@ -182,12 +182,12 @@ public final class MockReadingDAO implements ReadingDAO {
         LOGGER.trace("> getNewRequests");
 
         if (newRequestException != null) {
-            AbstractPersistanceException toThrow = newRequestException;
+            final AbstractPersistanceException toThrow = newRequestException;
             newRequestException = null;
             throw toThrow;
         }
 
-        List<PersistenceHelperFileRequest> ret = newRequests;
+        final List<PersistenceHelperFileRequest> ret = newRequests;
         newRequests = createRequests();
 
         LOGGER.trace("< getNewRequests");
@@ -209,7 +209,7 @@ public final class MockReadingDAO implements ReadingDAO {
         LOGGER.trace("> setRequestStatusById-code");
 
         if (requestStatusByIdException != null) {
-            AbstractPersistanceException toThrow = requestStatusByIdException;
+            final AbstractPersistanceException toThrow = requestStatusByIdException;
             requestStatusByIdException = null;
             throw toThrow;
         }

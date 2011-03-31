@@ -170,7 +170,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @BeforeClass
     public static void oneTimeSetUp() {
-        String ldPath = "java.library.path";
+        final String ldPath = "java.library.path";
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
@@ -200,8 +200,8 @@ public final class HSMNativeBridgeTestNative {
         try {
             NativeBridge.getInstance().getFileProperties(DIRECTORY);
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties01Directory " + code + " - "
                     + HPSSErrorCode.HPSS_EISDIR.getCode());
             if (code != HPSSErrorCode.HPSS_EISDIR.getCode()) {
@@ -227,8 +227,8 @@ public final class HSMNativeBridgeTestNative {
         try {
             NativeBridge.getInstance().getFileProperties("/NoExistingFile");
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties02NotExistingFile " + code + " - "
                     + HPSSErrorCode.HPSS_ENOENT.getCode());
             if (code != HPSSErrorCode.HPSS_ENOENT.getCode()) {
@@ -332,8 +332,8 @@ public final class HSMNativeBridgeTestNative {
         try {
             NativeBridge.getInstance().getFileProperties(VALID_FILE_EMPTY);
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties08EmptyFile " + code + " - -30001");
             if (code != -30001) {
                 Assert.fail();

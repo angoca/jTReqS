@@ -163,7 +163,7 @@ public final class Stager extends AbstractProcess {
                     nextReading.stage();
                     LOGGER.debug("Thread {}: getting next file", this.getName());
                     nextReading = this.queue.getNextReading();
-                } catch (HSMResourceException e) {
+                } catch (final HSMResourceException e) {
                     // For instance, no space left on device should suspend
                     // the staging queue.
                     LOGGER.warn("No space left on device, suspending the queue.");
@@ -180,7 +180,7 @@ public final class Stager extends AbstractProcess {
             if (qty <= 1) {
                 this.queue.finalizeQueue();
             }
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             LOGGER.error("Error in Staging.", e);
 
             if (nextReading != null) {
@@ -190,7 +190,7 @@ public final class Stager extends AbstractProcess {
                             .getReadingDAO()
                             .update(nextReading, RequestStatus.FAILED,
                                     new GregorianCalendar());
-                } catch (TReqSException e1) {
+                } catch (final TReqSException e1) {
                     LOGGER.error("Error logging problem for reading {}",
                             nextReading.getMetaData().getPosition());
                 }

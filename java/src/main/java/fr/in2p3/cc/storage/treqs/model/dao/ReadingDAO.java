@@ -40,8 +40,8 @@ import java.util.Calendar;
 import java.util.List;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
-import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.Reading;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperFileRequest;
 
 /**

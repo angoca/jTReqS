@@ -89,13 +89,13 @@ public final class HSMCommandBridgeTest {
      */
     @Test
     public void testGetProperties01() {
-        String name = null;
+        final String name = null;
 
         boolean failed = false;
         try {
             HSMCommandBridge.getInstance().getFileProperties(name);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -110,13 +110,13 @@ public final class HSMCommandBridgeTest {
      */
     @Test
     public void testGetProperties02() {
-        String name = "";
+        final String name = "";
 
         boolean failed = false;
         try {
             HSMCommandBridge.getInstance().getFileProperties(name);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -134,16 +134,16 @@ public final class HSMCommandBridgeTest {
      */
     @Test
     public void testGetProperties03() throws TReqSException {
-        String name = "/hpss/filename";
-        long size = 564;
-        int position = 123;
-        String storageName = "IT9876";
-        HSMHelperFileProperties helper = HSMCommandBridge.getInstance()
+        final String name = "/hpss/filename";
+        final long size = 564;
+        final int position = 123;
+        final String storageName = "IT9876";
+        final HSMHelperFileProperties helper = HSMCommandBridge.getInstance()
                 .getFileProperties(name);
 
-        long actualSize = helper.getSize();
-        int actualPosition = helper.getPosition();
-        String actualStorageName = helper.getTapeName();
+        final long actualSize = helper.getSize();
+        final int actualPosition = helper.getPosition();
+        final String actualStorageName = helper.getTapeName();
 
         Assert.assertEquals(size, actualSize);
         Assert.assertEquals(position, actualPosition);
@@ -156,13 +156,13 @@ public final class HSMCommandBridgeTest {
      */
     @Test
     public void testStage01() {
-        File file = null;
+        final File file = null;
 
         boolean failed = false;
         try {
             HSMCommandBridge.getInstance().stage(file);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -180,9 +180,9 @@ public final class HSMCommandBridgeTest {
      */
     @Test
     public void testStage02() throws TReqSException {
-        String name = "name";
-        int size = 100;
-        File file = new File(name, size);
+        final String name = "name";
+        final int size = 100;
+        final File file = new File(name, size);
 
         HSMCommandBridge.getInstance().stage(file);
     }

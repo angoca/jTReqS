@@ -64,7 +64,7 @@ public final class HSMNativeBridgeContextBadAuthTestNative {
      */
     @BeforeClass
     public static void oneTimeSetUp() {
-        String ldPath = "java.library.path";
+        final String ldPath = "java.library.path";
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));

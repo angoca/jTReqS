@@ -83,7 +83,7 @@ public final class User {
 
         boolean ret = false;
         if (obj instanceof User) {
-            User user = (User) obj;
+            final User user = (User) obj;
             if (user.getName().equals(this.getName())) {
                 ret = true;
             }
@@ -114,7 +114,7 @@ public final class User {
     public int hashCode() {
         LOGGER.trace("> hashCode");
 
-        int ret = this.name.hashCode();
+        final int ret = this.name.hashCode();
 
         LOGGER.trace("< hashCode");
 

@@ -41,9 +41,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLInitTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBrokerTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLConfigurationDAOTest;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLInitTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLQueueDAOTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLReadingDAOTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;

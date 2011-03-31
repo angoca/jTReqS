@@ -143,15 +143,15 @@ public final class WatchdogTest {
         LOGGER.info("--> testHeartBeat01Null");
         Watchdog.getInstance();
 
-        String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
+        final String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " = " + MySQLStatements.HEART_BEAT_START_TIME + ", '"
                 + EQUALS + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result = (ResultSet) objects[1];
+        final ResultSet result = (ResultSet) objects[1];
         result.next();
-        String res = result.getString(1);
+        final String res = result.getString(1);
         if (result.wasNull()) {
             // There should be a heart beat.
             MySQLBroker.getInstance().terminateExecution(objects);
@@ -182,15 +182,15 @@ public final class WatchdogTest {
         Activator.getInstance().start();
         Watchdog.getInstance().heartBeat();
 
-        String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
+        final String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " = " + MySQLStatements.HEART_BEAT_START_TIME + ", '"
                 + EQUALS + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result = (ResultSet) objects[1];
+        final ResultSet result = (ResultSet) objects[1];
         result.next();
-        String res = result.getString(1);
+        final String res = result.getString(1);
         if (result.wasNull()) {
             // There should be a heart beat.
             MySQLBroker.getInstance().terminateExecution(objects);
@@ -221,15 +221,15 @@ public final class WatchdogTest {
         Dispatcher.getInstance().start();
         Watchdog.getInstance().heartBeat();
 
-        String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
+        final String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " = " + MySQLStatements.HEART_BEAT_START_TIME + ", '"
                 + EQUALS + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result = (ResultSet) objects[1];
+        final ResultSet result = (ResultSet) objects[1];
         result.next();
-        String res = result.getString(1);
+        final String res = result.getString(1);
         if (result.wasNull()) {
             // There should be a heart beat.
             MySQLBroker.getInstance().terminateExecution(objects);
@@ -262,22 +262,22 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_START_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result2 = (ResultSet) objects2[1];
+        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
-        long startLong = result2.getTimestamp(1).getTime();
+        final long startLong = result2.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects2);
         try {
             Thread.sleep(Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
 
         query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME + " = "
                 + MySQLStatements.HEART_BEAT_START_TIME + ", '" + EQUALS
                 + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
-        Object[] objects4 = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result4 = (ResultSet) objects4[1];
+        final Object[] objects4 = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result4 = (ResultSet) objects4[1];
         result4.next();
         String res = result4.getString(1);
         if (result4.wasNull()) {
@@ -296,10 +296,10 @@ public final class WatchdogTest {
 
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
-        Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result1 = (ResultSet) objects1[1];
+        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
-        long first = result1.getTimestamp(1).getTime();
+        final long first = result1.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects1);
 
         LOGGER.warn("Started {} first {}", startLong, first);
@@ -308,8 +308,8 @@ public final class WatchdogTest {
         query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME + " = "
                 + MySQLStatements.HEART_BEAT_START_TIME + ", '" + EQUALS
                 + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
-        Object[] objects5 = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result5 = (ResultSet) objects5[1];
+        final Object[] objects5 = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result5 = (ResultSet) objects5[1];
         result5.next();
         res = result5.getString(1);
         if (result5.wasNull()) {
@@ -326,7 +326,7 @@ public final class WatchdogTest {
 
         try {
             Thread.sleep(Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
         Watchdog.getInstance().heartBeat();
@@ -334,11 +334,11 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        Object[] objects3 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects3 = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result3 = (ResultSet) objects3[1];
+        final ResultSet result3 = (ResultSet) objects3[1];
         result3.next();
-        long second = result3.getTimestamp(1).getTime();
+        final long second = result3.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects3);
 
         LOGGER.warn("First {} second {}", first, second);
@@ -364,7 +364,7 @@ public final class WatchdogTest {
 
         try {
             Thread.sleep(Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
 
@@ -372,17 +372,17 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result1 = (ResultSet) objects1[1];
+        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
-        long first = result1.getTimestamp(1).getTime();
+        final long first = result1.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects1);
 
         Activator.getInstance().conclude();
 
         try {
             Thread.sleep(Constants.MILLISECONDS + Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
         Watchdog.getInstance().heartBeat();
@@ -390,11 +390,11 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result2 = (ResultSet) objects2[1];
+        final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
-        long second = result2.getTimestamp(1).getTime();
+        final long second = result2.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects2);
 
         LOGGER.warn("First {} second {}", first, second);
@@ -420,7 +420,7 @@ public final class WatchdogTest {
 
         try {
             Thread.sleep(Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
 
@@ -428,17 +428,17 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result1 = (ResultSet) objects1[1];
+        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
-        long first = result1.getTimestamp(1).getTime();
+        final long first = result1.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects1);
 
         Dispatcher.getInstance().conclude();
 
         try {
             Thread.sleep(Constants.MILLISECONDS + Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
         Watchdog.getInstance().heartBeat();
@@ -446,11 +446,11 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result2 = (ResultSet) objects2[1];
+        final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
-        long second = result2.getTimestamp(1).getTime();
+        final long second = result2.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects2);
 
         LOGGER.warn("First {} second {}", first, second);
@@ -475,7 +475,7 @@ public final class WatchdogTest {
 
         try {
             Thread.sleep(Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
 
@@ -483,10 +483,10 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result1 = (ResultSet) objects1[1];
+        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
-        long first = result1.getTimestamp(1).getTime();
+        final long first = result1.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects1);
 
         Dispatcher.getInstance().conclude();
@@ -494,7 +494,7 @@ public final class WatchdogTest {
 
         try {
             Thread.sleep(Constants.MILLISECONDS + Constants.MILLISECONDS);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.info(e.getMessage());
         }
         Watchdog.getInstance().heartBeat();
@@ -502,11 +502,11 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result2 = (ResultSet) objects2[1];
+        final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
-        long second = result2.getTimestamp(1).getTime();
+        final long second = result2.getTimestamp(1).getTime();
         MySQLBroker.getInstance().terminateExecution(objects2);
 
         LOGGER.warn("First {} second {}", first, second);
@@ -526,19 +526,19 @@ public final class WatchdogTest {
         LOGGER.info("--> testStart01TestPid");
         Watchdog.getInstance();
 
-        String pid = ManagementFactory.getRuntimeMXBean().getName();
-        int index = pid.indexOf('@');
+        final String pid = ManagementFactory.getRuntimeMXBean().getName();
+        final int index = pid.indexOf('@');
         // Warning: It does not work with gij
-        String expected = pid.substring(0, index);
+        final String expected = pid.substring(0, index);
 
-        String query = "SELECT " + MySQLStatements.HEART_BEAT_PID + " FROM "
+        final String query = "SELECT " + MySQLStatements.HEART_BEAT_PID + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
-        ResultSet result = (ResultSet) objects[1];
+        final ResultSet result = (ResultSet) objects[1];
         result.next();
-        String actual = result.getString(1);
+        final String actual = result.getString(1);
         MySQLBroker.getInstance().terminateExecution(objects);
 
         Assert.assertEquals(expected, actual);

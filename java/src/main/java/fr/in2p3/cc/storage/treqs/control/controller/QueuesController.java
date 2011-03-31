@@ -124,7 +124,7 @@ public final class QueuesController {
     /**
      * The list of queues. Non-Unique key of the multimap is the Queue's name.
      */
-    private MultiMap queuesMap;
+    private final MultiMap queuesMap;
 
     /**
      * How much time a queue can be suspended.
@@ -271,16 +271,16 @@ public final class QueuesController {
         LOGGER.trace("> cleanDoneQueues");
 
         int cleaned = 0;
-        MultiMap toRemove = new MultiValueMap();
+        final MultiMap toRemove = new MultiValueMap();
         synchronized (this.queuesMap) {
             Iterator<String> iterName = this.queuesMap.keySet().iterator();
             // Checks the references to ended queues.
             while (iterName.hasNext()) {
-                String key = iterName.next();
-                Iterator<Queue> queues = ((Collection<Queue>) this.queuesMap
+                final String key = iterName.next();
+                final Iterator<Queue> queues = ((Collection<Queue>) this.queuesMap
                         .get(key)).iterator();
                 while (queues.hasNext()) {
-                    Queue queue = queues.next();
+                    final Queue queue = queues.next();
 
                     if (queue.getStatus() == QueueStatus.ENDED) {
                         LOGGER.debug("Queue {} is ended. Cleanup starting.",
@@ -296,12 +296,12 @@ public final class QueuesController {
             // Removes ended queues.
             iterName = toRemove.keySet().iterator();
             while (iterName.hasNext()) {
-                String key = iterName.next();
+                final String key = iterName.next();
 
-                Iterator<Queue> queues = ((Collection<Queue>) toRemove.get(key))
+                final Iterator<Queue> queues = ((Collection<Queue>) toRemove.get(key))
                         .iterator();
                 while (queues.hasNext()) {
-                    Queue queue = queues.next();
+                    final Queue queue = queues.next();
 
                     LOGGER.debug("Deleting {} {}", key, queue.toString());
                     this.queuesMap.remove(key, queue);
@@ -331,21 +331,23 @@ public final class QueuesController {
         short active = 0;
         // Iterating through all queues.
         @SuppressWarnings("unchecked")
+        final
         Iterator<String> iterator1 = this.queuesMap.keySet().iterator();
         while (iterator1.hasNext()) {
-            String key = iterator1.next();
+            final String key = iterator1.next();
             @SuppressWarnings("unchecked")
+            final
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
-                Queue queue = iterator2.next();
+                final Queue queue = iterator2.next();
                 // Counting active queues.
                 if (queue.getStatus() == QueueStatus.ACTIVATED) {
                     active++;
                     boolean found = false;
-                    Iterator<Resource> iterator3 = resources.iterator();
+                    final Iterator<Resource> iterator3 = resources.iterator();
                     while (iterator3.hasNext() && !found) {
-                        Resource resource = iterator3.next();
+                        final Resource resource = iterator3.next();
                         if (resource.getMediaType().equals(
                                 queue.getTape().getMediaType())) {
                             resource.increaseUsedResources(queue.getOwner());
@@ -384,7 +386,7 @@ public final class QueuesController {
         assert this.exists(fpot.getTape().getName(), QueueStatus.CREATED) == null : "A "
                 + "queue with status CREATED already exists.";
 
-        Queue retQueue = new Queue(fpot, retries);
+        final Queue retQueue = new Queue(fpot, retries);
         LOGGER.debug("Creating new queue on tape {}", fpot.getTape().getName());
         retQueue.setSuspendDuration(this.suspendTimeForQueues);
         this.queuesMap.put(fpot.getTape().getName(), retQueue);
@@ -409,7 +411,7 @@ public final class QueuesController {
 
         assert name != null && !name.equals("");
 
-        boolean ret = this.queuesMap.containsKey(name);
+        final boolean ret = this.queuesMap.containsKey(name);
 
         LOGGER.trace("< exists");
 
@@ -437,11 +439,12 @@ public final class QueuesController {
         Queue retQueue = null;
         boolean found = false;
         @SuppressWarnings("unchecked")
+        final
         Collection<Queue> ret = (Collection<Queue>) this.queuesMap.get(name);
         if (ret != null) {
-            Iterator<Queue> iterator = ret.iterator();
+            final Iterator<Queue> iterator = ret.iterator();
             while (iterator.hasNext() && !found) {
-                Queue queue = iterator.next();
+                final Queue queue = iterator.next();
                 if (queue.getStatus() == status) {
                     retQueue = queue;
                     found = true;
@@ -472,14 +475,16 @@ public final class QueuesController {
 
         boolean ret = false;
         @SuppressWarnings("unchecked")
+        final
         Iterator<String> iterator = this.queuesMap.keySet().iterator();
         while (iterator.hasNext() && !ret) {
-            String key = iterator.next();
+            final String key = iterator.next();
             @SuppressWarnings("unchecked")
+            final
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext() && !ret) {
-                Queue queue = iterator2.next();
+                final Queue queue = iterator2.next();
                 if (queue.getOwner().equals(user)
                         && queue.getStatus() == status) {
                     ret = true;
@@ -512,7 +517,7 @@ public final class QueuesController {
 
         assert resource != null;
 
-        Queue ret = this.getSelector().selectBestQueue(queues, resource);
+        final Queue ret = this.getSelector().selectBestQueue(queues, resource);
 
         assert ret != null;
 
@@ -531,7 +536,7 @@ public final class QueuesController {
     MultiMap/* <!>! */getQueues() {
         LOGGER.trace("> getQueues");
 
-        MultiMap copy = new MultiValueMap();
+        final MultiMap copy = new MultiValueMap();
         copy.putAll(this.queuesMap);
 
         LOGGER.trace("< getQueues");
@@ -552,6 +557,7 @@ public final class QueuesController {
         assert name != null && !name.equals("");
 
         @SuppressWarnings("unchecked")
+        final
         Collection<Queue> ret = (Collection<Queue>) this.queuesMap.get(name);
 
         LOGGER.trace("< getQueuesOnTape");
@@ -578,13 +584,13 @@ public final class QueuesController {
         try {
             selectorName = Configurator.getInstance().getStringValue(
                     Constants.SECTION_SELECTOR, Constants.SELECTOR_NAME);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             LOGGER.debug("No setting for {}.{}, default "
                     + "value will be used: {}", new Object[] {
                     Constants.SECTION_SELECTOR, Constants.SELECTOR_NAME,
                     selectorName });
         }
-        Selector ret = Instantiator.getSelector(selectorName);
+        final Selector ret = Instantiator.getSelector(selectorName);
 
         assert ret != null : "Selector cannot be null";
 
@@ -610,17 +616,19 @@ public final class QueuesController {
 
         assert media != null;
 
-        List<Queue> queues = new ArrayList<Queue>();
+        final List<Queue> queues = new ArrayList<Queue>();
 
         @SuppressWarnings("unchecked")
+        final
         Iterator<String> iterator = this.queuesMap.keySet().iterator();
         while (iterator.hasNext()) {
-            String key = iterator.next();
+            final String key = iterator.next();
             @SuppressWarnings("unchecked")
+            final
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
-                Queue queue = iterator2.next();
+                final Queue queue = iterator2.next();
                 if (queue.getStatus() == QueueStatus.CREATED
                         && queue.getTape().getMediaType().equals(media)
                         && QueuesController.getInstance().exists(
@@ -660,12 +668,13 @@ public final class QueuesController {
         boolean found = false;
         synchronized (this.queuesMap) {
             @SuppressWarnings("unchecked")
+            final
             Collection<Queue> queuesSameTape = (Collection<Queue>) this.queuesMap
                     .get(name);
             if (queuesSameTape != null) {
-                Iterator<Queue> iterator = queuesSameTape.iterator();
+                final Iterator<Queue> iterator = queuesSameTape.iterator();
                 while (iterator.hasNext() && !found) {
-                    Queue queue = iterator.next();
+                    final Queue queue = iterator.next();
                     if (queue.getStatus() == status) {
                         this.queuesMap.remove(name, queue);
                         found = true;
@@ -691,14 +700,16 @@ public final class QueuesController {
 
         this.suspendTimeForQueues = time;
         @SuppressWarnings("unchecked")
+        final
         Iterator<String> iterator = this.queuesMap.keySet().iterator();
         while (iterator.hasNext()) {
-            String key = iterator.next();
+            final String key = iterator.next();
             @SuppressWarnings("unchecked")
+            final
             Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
-                Queue queue = iterator2.next();
+                final Queue queue = iterator2.next();
                 queue.setSuspendDuration(time);
             }
         }

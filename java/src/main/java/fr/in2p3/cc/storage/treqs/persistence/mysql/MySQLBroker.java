@@ -95,7 +95,7 @@ public final class MySQLBroker {
         if (instance != null && instance.connected) {
             try {
                 instance.disconnect();
-            } catch (MySQLCloseException e) {
+            } catch (final MySQLCloseException e) {
                 LOGGER.error(e.getMessage());
             }
             LOGGER.info("Instance destroyed");
@@ -159,7 +159,7 @@ public final class MySQLBroker {
         if (result != null) {
             try {
                 result.close();
-            } catch (SQLException sqlEx) {
+            } catch (final SQLException sqlEx) {
                 LOGGER.error("SQLException: {}", sqlEx.getMessage());
                 LOGGER.error("SQLState: {}", sqlEx.getSQLState());
                 LOGGER.error("VendorError: {}", sqlEx.getErrorCode());
@@ -184,8 +184,8 @@ public final class MySQLBroker {
         if (stmt != null) {
             try {
                 stmt.close();
-            } catch (SQLException sqlEx) {
-                handleSQLException(sqlEx);
+            } catch (final SQLException sqlEx) {
+                this.handleSQLException(sqlEx);
                 throw new MySQLCloseException(sqlEx);
             }
         }
@@ -207,7 +207,7 @@ public final class MySQLBroker {
     public void connect() throws TReqSException {
         LOGGER.trace("> connect");
 
-        String url = "jdbc:mysql://"
+        final String url = "jdbc:mysql://"
                 + Configurator.getInstance().getStringValue(
                         Constants.SECTION_PERSISTENCE_MYSQL,
                         Constants.DB_SERVER)
@@ -215,10 +215,10 @@ public final class MySQLBroker {
                 + Configurator.getInstance().getStringValue(
                         Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME)
                 + "?useJvmCharsetConverters=true";
-        String driver = "com.mysql.jdbc.Driver";
-        String user = Configurator.getInstance().getStringValue(
+        final String driver = "com.mysql.jdbc.Driver";
+        final String user = Configurator.getInstance().getStringValue(
                 Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
-        String password = Configurator.getInstance().getStringValue(
+        final String password = Configurator.getInstance().getStringValue(
                 Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_PASSWORD);
 
         // There can be only a connection per instance.
@@ -226,7 +226,7 @@ public final class MySQLBroker {
             if (this.connection == null) {
                 try {
                     Class.forName(driver).newInstance();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     LOGGER.error("Exception: {}", e.getMessage());
                     throw new MySQLOpenException(e);
                 }
@@ -236,11 +236,11 @@ public final class MySQLBroker {
 
                     this.executeModification(SET_MODE_STRICT);
                     this.connected = true;
-                } catch (SQLException ex) {
-                    handleSQLException(ex);
+                } catch (final SQLException ex) {
+                    this.handleSQLException(ex);
                     try {
                         this.disconnect();
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         LOGGER.error("Problem connecting", e);
                     }
                     throw new MySQLOpenException(ex);
@@ -264,8 +264,8 @@ public final class MySQLBroker {
             if (this.connection != null) {
                 try {
                     this.connection.close();
-                } catch (SQLException ex) {
-                    handleSQLException(ex);
+                } catch (final SQLException ex) {
+                    this.handleSQLException(ex);
                     throw new MySQLCloseException(ex);
                 } finally {
                     this.connection = null;
@@ -303,15 +303,15 @@ public final class MySQLBroker {
                 statement = (Statement) this.connection.createStatement();
                 LOGGER.debug("Query: '{}'", query);
                 rows = statement.executeUpdate(query);
-            } catch (SQLException ex) {
-                handleSQLException(ex);
+            } catch (final SQLException ex) {
+                this.handleSQLException(ex);
                 throw new MySQLExecuteException(ex);
             } finally {
                 try {
                     if (statement != null) {
                         statement.close();
                     }
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     throw new MySQLExecuteException(e);
                 }
             }
@@ -351,9 +351,9 @@ public final class MySQLBroker {
                 stmt = (Statement) this.connection.createStatement();
                 LOGGER.debug("Query: '{}'", query);
                 rs = stmt.executeQuery(query);
-            } catch (SQLException ex) {
-                handleSQLException(ex);
-                closeResultSet(rs);
+            } catch (final SQLException ex) {
+                this.handleSQLException(ex);
+                this.closeResultSet(rs);
                 throw new MySQLExecuteException(ex);
             }
             ret = new Object[] { stmt, rs };
@@ -394,7 +394,7 @@ public final class MySQLBroker {
                 LOGGER.debug("Query: '{}'", query);
                 ret = this.connection.prepareStatement(query,
                         java.sql.Statement.RETURN_GENERATED_KEYS);
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 throw new MySQLExecuteException(e);
             }
         }
@@ -439,9 +439,9 @@ public final class MySQLBroker {
         assert objects != null;
         assert objects.length == 2;
 
-        closeResultSet((ResultSet) objects[1]);
+        this.closeResultSet((ResultSet) objects[1]);
         objects[1] = null;
-        closeStatement((Statement) objects[0]);
+        this.closeStatement((Statement) objects[0]);
         objects[0] = null;
 
         LOGGER.trace("< terminateExecution");
@@ -461,8 +461,8 @@ public final class MySQLBroker {
         try {
             ret = this.connected && this.connection != null
                     && !this.connection.isClosed();
-        } catch (SQLException e) {
-            handleSQLException(e);
+        } catch (final SQLException e) {
+            this.handleSQLException(e);
             throw new MySQLExecuteException(e);
         }
         if (!ret) {

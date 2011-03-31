@@ -139,23 +139,25 @@ public final class ResourcesController {
         assert user != null;
 
         boolean found = false;
-        Iterator<Resource> iter = this.resources.iterator();
+        final Iterator<Resource> iter = this.resources.iterator();
         while (iter.hasNext() && !found) {
-            Resource resource = iter.next();
-            int qty = resource.getUsedResources(user);
+            final Resource resource = iter.next();
+            final int qty = resource.getUsedResources(user);
             if (qty != 0) {
                 found = true;
             }
         }
         if (!found) {
             @SuppressWarnings("rawtypes")
+            final
             Iterator iterShare = this.share.values().iterator();
             while (iterShare.hasNext()) {
                 @SuppressWarnings("unchecked")
+                final
                 Iterator<PersistenceHelperResourceAllocation> iterList = ((Collection<PersistenceHelperResourceAllocation>) iterShare
                         .next()).iterator();
                 while (iterList.hasNext()) {
-                    PersistenceHelperResourceAllocation helper = iterList
+                    final PersistenceHelperResourceAllocation helper = iterList
                             .next();
                     if (user.equals(helper.getUsername())) {
                         found = true;

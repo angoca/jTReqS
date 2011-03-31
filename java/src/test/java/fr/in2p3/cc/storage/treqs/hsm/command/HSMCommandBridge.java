@@ -263,7 +263,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert name != null;
 
-        String command = HSM_GET_PROPERTIES_COMMAND + " "
+        final String command = HSM_GET_PROPERTIES_COMMAND + " "
                 + this.getKeytabPath() + " " + name;
 
         assert command != null;
@@ -285,7 +285,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert name != null;
 
-        String command = HSM_STAGE_COMMAND + " " + this.getKeytabPath() + " "
+        final String command = HSM_STAGE_COMMAND + " " + this.getKeytabPath() + " "
                 + name;
 
         assert command != null;
@@ -311,7 +311,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         LOGGER.debug("Execution from {}", System.getProperty("user.dir"));
 
-        String command = this.buildCommandGetProperties(name);
+        final String command = this.buildCommandGetProperties(name);
 
         LOGGER.debug(command);
         Process process = null;
@@ -337,7 +337,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         HSMHelperFileProperties ret = null;
         if (current != null) {
             // AbstractProcess the output.
-            ret = processGetPropertiesOutput(current);
+            ret = this.processGetPropertiesOutput(current);
         } else {
             throw new HSMCommandBridgeException();
         }
@@ -420,12 +420,12 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         HSMHelperFileProperties ret;
         try {
-            StringTokenizer tokens = new StringTokenizer(output);
-            long size = Long.parseLong(tokens.nextToken());
-            int position = Integer.parseInt(tokens.nextToken());
-            String tape = tokens.nextToken();
+            final StringTokenizer tokens = new StringTokenizer(output);
+            final long size = Long.parseLong(tokens.nextToken());
+            final int position = Integer.parseInt(tokens.nextToken());
+            final String tape = tokens.nextToken();
             ret = new HSMHelperFileProperties(tape, position, size);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new HSMUnknownOutputException(e);
         }
 
@@ -463,12 +463,12 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             } else if (!error && current == null) {
                 throw new HSMCommandBridgeException();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new HSMCommandBridgeException(e);
         } finally {
             try {
                 stream.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new HSMCommandBridgeException(e);
             }
         }
@@ -491,7 +491,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert file != null;
 
-        String command = this.buildCommandStage(file.getName());
+        final String command = this.buildCommandStage(file.getName());
 
         LOGGER.debug(command);
         Process process = null;
@@ -506,7 +506,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             // Wait for the process.
             // TODO Tests: in a parallel thread check if the thread is not hung.
             process.waitFor();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             throw new HSMCommandBridgeException(e);
         }
         LOGGER.debug("Exit code {}", process.exitValue());
@@ -521,7 +521,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
                     throw new HSMResourceException(
                             ErrorCodes.HSM_ENOSPACE.getId());
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new HSMCommandBridgeException(e);
             }
         }

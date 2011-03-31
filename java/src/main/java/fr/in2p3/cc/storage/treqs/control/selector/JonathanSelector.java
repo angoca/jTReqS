@@ -108,10 +108,10 @@ public final class JonathanSelector extends FifoSelector {
         float score;
         if (queue.getStatus() == QueueStatus.CREATED) {
             // Just setting a default best user.
-            User user = queue.getOwner();
+            final User user = queue.getOwner();
             if (user != null) {
-                score = (resource.getTotalAllocation() * resource
-                        .getUserAllocation(user))
+                score = resource.getTotalAllocation() * resource
+                        .getUserAllocation(user)
                         - resource.getUsedResources(user);
                 usersScores.put(user, score);
                 LOGGER.debug(
@@ -151,7 +151,7 @@ public final class JonathanSelector extends FifoSelector {
         User ret = null;
         if (users.hasNext()) {
             do {
-                User tmp = users.next();
+                final User tmp = users.next();
                 if (QueuesController.getInstance().exists(tmp,
                         QueueStatus.CREATED)) {
                     ret = tmp;
@@ -184,10 +184,10 @@ public final class JonathanSelector extends FifoSelector {
         try {
             fairShare = Configurator.getInstance().getStringValue(
                     Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
         }
         if (fairShare.equalsIgnoreCase(Constants.YES)) {
-            User bestUser = this.selectBestUser(queues, resource);
+            final User bestUser = this.selectBestUser(queues, resource);
             if (bestUser == null) {
                 // There is not non-blocked user among the waiting
                 // queues, just do nothing and break the while loop,
@@ -236,11 +236,11 @@ public final class JonathanSelector extends FifoSelector {
 
         Queue best = null;
         // First get the list of queues
-        int length = queues.size();
+        final int length = queues.size();
         if (length >= 1) {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
-                Queue queue = queues.get(j);
+                final Queue queue = queues.get(j);
                 // The queue belong to this user.
                 if (queue.getOwner().equals(user)) {
                     if (this.checkQueue(resource, queue)) {
@@ -295,7 +295,7 @@ public final class JonathanSelector extends FifoSelector {
             throw new NoQueuesDefinedException();
         }
 
-        Map<User, Float> usersScores = new HashMap<User, Float>();
+        final Map<User, Float> usersScores = new HashMap<User, Float>();
 
         // For each waiting user, get its allocation and its used resources.
 
@@ -304,14 +304,14 @@ public final class JonathanSelector extends FifoSelector {
         // Browse the list of queues and compute the users scores
         LOGGER.debug("Computing Score: (total allocation) "
                 + "* (user allocation) - (used resources)");
-        Iterator<Queue> queues = queuesMap.iterator();
+        final Iterator<Queue> queues = queuesMap.iterator();
         while (queues.hasNext()) {
-            Queue queue = queues.next();
+            final Queue queue = queues.next();
             this.calculateUserScore(resource, usersScores, queue);
         }
 
         // Catch the best
-        Iterator<User> users = usersScores.keySet().iterator();
+        final Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
         try {
             bestUser = this.getNextPossibleUser(users);
@@ -319,7 +319,7 @@ public final class JonathanSelector extends FifoSelector {
             LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
             User user = this.getNextPossibleUser(users);
             while (user != null) {
-                float score = usersScores.get(user);
+                final float score = usersScores.get(user);
                 LOGGER.info("Score: {}\t{}", user.getName(), score);
                 // TODO v2.0 This is wrong, the first user could have a
                 // negative share.
@@ -345,7 +345,7 @@ public final class JonathanSelector extends FifoSelector {
             }
 
             LOGGER.debug("Best user: {}", bestUser.getName());
-        } catch (NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
             LOGGER.error("Houston, we have a problem.");
             throw e;
         }

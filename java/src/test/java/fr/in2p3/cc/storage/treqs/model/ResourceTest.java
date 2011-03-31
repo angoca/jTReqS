@@ -80,13 +80,13 @@ public final class ResourceTest {
      */
     @Test
     public void testConstructor01() {
-        MediaType media = null;
+        final MediaType media = null;
 
         boolean failed = false;
         try {
             new Resource(media, (byte) ResourceTest.TEN);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -101,7 +101,7 @@ public final class ResourceTest {
      */
     @Test
     public void testConstructor02() {
-        MediaType media = new MediaType((byte) 1, "1");
+        final MediaType media = new MediaType((byte) 1, "1");
 
         new Resource(media, (byte) ResourceTest.TEN);
     }
@@ -111,13 +111,13 @@ public final class ResourceTest {
      */
     @Test
     public void testConstructor03() {
-        MediaType media = new MediaType((byte) 1, "1");
+        final MediaType media = new MediaType((byte) 1, "1");
 
         boolean failed = false;
         try {
             new Resource(media, (byte) -ResourceTest.TEN);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -132,13 +132,13 @@ public final class ResourceTest {
      */
     @Test
     public void testConstructor04() {
-        MediaType media = new MediaType((byte) 1, "1");
+        final MediaType media = new MediaType((byte) 1, "1");
 
         boolean failed = false;
         try {
             new Resource(media, (byte) 0);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -156,11 +156,11 @@ public final class ResourceTest {
      */
     @Test
     public void testGetAge01() throws InterruptedException {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         LOGGER.error("Sleeping for 2 seconds.");
         Thread.sleep(2 * Constants.MILLISECONDS);
-        int age = resource.getAge();
+        final int age = resource.getAge();
         Assert.assertTrue("Age bigger than 1 second", age > 1);
     }
 
@@ -169,16 +169,16 @@ public final class ResourceTest {
      */
     @Test
     public void testGetUsedResource01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUsedResources(user1, val);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FOUR);
 
-        byte actual = resource.getUsedResources(user1);
+        final byte actual = resource.getUsedResources(user1);
 
-        byte expected = val;
+        final byte expected = val;
 
         Assert.assertEquals(expected, actual);
     }
@@ -189,16 +189,16 @@ public final class ResourceTest {
      */
     @Test
     public void testGetUsedResource02() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUsedResources(user1, val);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FOUR);
 
-        byte actual = resource.getUsedResources(new User("user3"));
+        final byte actual = resource.getUsedResources(new User("user3"));
 
-        byte expected = -1;
+        final byte expected = -1;
 
         Assert.assertEquals(expected, actual);
     }
@@ -208,10 +208,10 @@ public final class ResourceTest {
      */
     @Test
     public void testGetUsedResource03() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUsedResources(user1, val);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FOUR);
 
@@ -219,7 +219,7 @@ public final class ResourceTest {
         try {
             resource.getUsedResources(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -234,16 +234,16 @@ public final class ResourceTest {
      */
     @Test
     public void testGetUserAllocation01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUserAllocation(user1, val);
         resource.setUserAllocation(new User("user2"), (byte) ResourceTest.FOUR);
 
-        float actual = resource.getUserAllocation(user1);
+        final float actual = resource.getUserAllocation(user1);
 
-        float expected = val;
+        final float expected = val;
 
         Assert.assertEquals(expected, actual);
     }
@@ -253,16 +253,16 @@ public final class ResourceTest {
      */
     @Test
     public void testGetUserAllocation02() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUserAllocation(user1, val);
         resource.setUserAllocation(new User("user2"), (byte) ResourceTest.FOUR);
 
-        float actual = resource.getUserAllocation(new User("user3"));
+        final float actual = resource.getUserAllocation(new User("user3"));
 
-        float expected = 0;
+        final float expected = 0;
 
         Assert.assertEquals(expected, actual);
     }
@@ -272,10 +272,10 @@ public final class ResourceTest {
      */
     @Test
     public void testGetUserAllocation03() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUserAllocation(user1, val);
         resource.setUserAllocation(new User("user2"), (byte) ResourceTest.FOUR);
 
@@ -283,7 +283,7 @@ public final class ResourceTest {
         try {
             resource.getUserAllocation(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -298,16 +298,16 @@ public final class ResourceTest {
      */
     @Test
     public void testIncrease01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUsedResources(user1, val);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FOUR);
 
-        byte actual = resource.increaseUsedResources(user1);
+        final byte actual = resource.increaseUsedResources(user1);
 
-        byte expected = (byte) (val + 1);
+        final byte expected = (byte) (val + 1);
 
         Assert.assertEquals(expected, actual);
     }
@@ -317,10 +317,10 @@ public final class ResourceTest {
      */
     @Test
     public void testIncrease02() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        User user1 = new User("user1");
-        byte val = ResourceTest.THREE;
+        final User user1 = new User("user1");
+        final byte val = ResourceTest.THREE;
         resource.setUsedResources(user1, val);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FOUR);
 
@@ -328,7 +328,7 @@ public final class ResourceTest {
         try {
             resource.increaseUsedResources(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -343,7 +343,7 @@ public final class ResourceTest {
      */
     @Test
     public void testOtherMethods01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         resource.setUsedResources(new User("user1"), (byte) ResourceTest.THREE);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FOUR);
@@ -356,7 +356,7 @@ public final class ResourceTest {
      */
     @Test
     public void testOtherMethods02() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         resource.resetUsedResources();
@@ -367,9 +367,9 @@ public final class ResourceTest {
      */
     @Test
     public void testResourceFree01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
-        short freeResources = resource.countFreeResources();
+        final short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == ResourceTest.TEN);
     }
@@ -379,11 +379,11 @@ public final class ResourceTest {
      */
     @Test
     public void testResourceFree02() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         resource.setUsedResources(new User("user1"), (byte) ResourceTest.FIVE);
         resource.setUsedResources(new User("user2"), (byte) ResourceTest.FIVE);
-        short freeResources = resource.countFreeResources();
+        final short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == 0);
     }
@@ -393,10 +393,10 @@ public final class ResourceTest {
      */
     @Test
     public void testResourceFree03() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         resource.setUsedResources(new User("user1"), (byte) 0);
-        short freeResources = resource.countFreeResources();
+        final short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == ResourceTest.TEN);
     }
@@ -406,10 +406,10 @@ public final class ResourceTest {
      */
     @Test
     public void testResourceFree04() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         resource.setUsedResources(new User("user1"), (byte) ResourceTest.FIVE);
-        short freeResources = resource.countFreeResources();
+        final short freeResources = resource.countFreeResources();
 
         Assert.assertTrue("free resources", freeResources == ResourceTest.FIVE);
     }
@@ -419,14 +419,14 @@ public final class ResourceTest {
      */
     @Test
     public void testSetMedia01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         boolean failed = false;
         try {
             resource.setMediaType(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -441,14 +441,14 @@ public final class ResourceTest {
      */
     @Test
     public void testSetTimestamp01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         boolean failed = false;
         try {
             resource.setTimestamp(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -463,14 +463,14 @@ public final class ResourceTest {
      */
     @Test
     public void testSetUsedResources01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         boolean failed = false;
         try {
             resource.setUsedResources(null, (byte) ResourceTest.FIVE);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -485,7 +485,7 @@ public final class ResourceTest {
      */
     @Test
     public void testSetUsedResources02() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         boolean failed = false;
@@ -493,7 +493,7 @@ public final class ResourceTest {
             resource.setUsedResources(new User("user"),
                     (byte) -ResourceTest.FIVE);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -508,7 +508,7 @@ public final class ResourceTest {
      */
     @Test
     public void testSetUsedResources03() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         resource.setUsedResources(new User("user"), (byte) ResourceTest.FIVE);
@@ -519,14 +519,14 @@ public final class ResourceTest {
      */
     @Test
     public void testSetUserallocation01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         boolean failed = false;
         try {
             resource.setUserAllocation(null, (byte) ResourceTest.FIVE);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -541,7 +541,7 @@ public final class ResourceTest {
      */
     @Test
     public void testSetUserallocation02() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         boolean failed = false;
@@ -549,7 +549,7 @@ public final class ResourceTest {
             resource.setUserAllocation(new User("user"),
                     (byte) -ResourceTest.FIVE);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -564,7 +564,7 @@ public final class ResourceTest {
      */
     @Test
     public void testSetUserallocation03() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
 
         resource.setUserAllocation(new User("user"), (byte) ResourceTest.FIVE);
@@ -575,7 +575,7 @@ public final class ResourceTest {
      */
     @Test
     public void testToString01() {
-        Resource resource = new Resource(new MediaType((byte) 1, "1"),
+        final Resource resource = new Resource(new MediaType((byte) 1, "1"),
                 (byte) ResourceTest.TEN);
         resource.toString();
     }

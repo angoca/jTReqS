@@ -108,7 +108,7 @@ abstract class AbstractController {
 
         assert key != null;
 
-        Object ret = this.objectMap.get(key);
+        final Object ret = this.objectMap.get(key);
 
         if (ret != null) {
             LOGGER.debug("Object '{}' already exists", key);

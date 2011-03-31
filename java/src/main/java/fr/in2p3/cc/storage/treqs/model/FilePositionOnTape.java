@@ -83,7 +83,7 @@ public final class FilePositionOnTape {
     /**
      * Maximal metadata age in seconds.
      */
-    private short maxMetadataAge;
+    private final short maxMetadataAge;
     /**
      * The last time the metadata was updated.
      */
@@ -210,9 +210,9 @@ public final class FilePositionOnTape {
         LOGGER.trace("> isMetadataOutdated");
 
         boolean outdated = true;
-        long max = this.metadataTimestamp.getTimeInMillis()
+        final long max = this.metadataTimestamp.getTimeInMillis()
                 + this.maxMetadataAge * Constants.MILLISECONDS;
-        long current = new GregorianCalendar().getTimeInMillis();
+        final long current = new GregorianCalendar().getTimeInMillis();
         if (max > current) {
             outdated = false;
         }

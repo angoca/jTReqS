@@ -126,18 +126,18 @@ public final class ReadingTest {
      */
     @Test
     public void testGetQueue01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", 1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", 1);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file,
                 ReadingTest.HUNDRED, tape, new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
 
-        Reading reading = new Reading(new FilePositionOnTape(new File(
+        final Reading reading = new Reading(new FilePositionOnTape(new File(
                 "filename", 1), ReadingTest.TEN, tape, new User("username")),
                 (byte) 1, queue);
 
-        Queue actual = reading.getQueue();
-        Queue expected = queue;
+        final Queue actual = reading.getQueue();
+        final Queue expected = queue;
         Assert.assertEquals(expected, actual);
     }
 
@@ -149,12 +149,12 @@ public final class ReadingTest {
      */
     @Test
     public void testMaxRetries01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", 1);
-        FilePositionOnTape fpot = new FilePositionOnTape(file,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", 1);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file,
                 ReadingTest.HUNDRED, tape, new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(
                 new FilePositionOnTape(new File("filename", 1),
                         ReadingTest.HUNDRED, tape, new User("username")),
                 (byte) 1, queue);
@@ -173,18 +173,18 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods02() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
             reading.setErrorMessage(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -202,18 +202,18 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods03() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
             reading.setErrorMessage("");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -231,18 +231,18 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods04() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
             reading.setNumberOfTries((byte) -5);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -260,12 +260,12 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods05() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         reading.setErrorCode((short) 2);
         reading.setErrorMessage("message");
@@ -279,15 +279,15 @@ public final class ReadingTest {
      */
     @Test
     public void testReadingConstructor01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        Queue queue = new Queue(new FilePositionOnTape(new File("filename",
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
                 ReadingTest.HUNDRED), 50, tape, new User("username")), (byte) 2);
 
         boolean failed = false;
         try {
             new Reading(null, (byte) 1, queue);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -308,11 +308,11 @@ public final class ReadingTest {
         Configurator.getInstance().deleteValue(Constants.SECTION_QUEUE,
                 Constants.MAX_READ_RETRIES);
 
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
 
         new Reading(fpot, (byte) 1, queue);
     }
@@ -325,12 +325,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStage01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         HSMMockBridge.getInstance().setStageTime(ReadingTest.HUNDRED);
 
@@ -347,14 +347,14 @@ public final class ReadingTest {
      */
     @Test
     public void testStage02() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
                 new Exception());
         HSMMockBridge.getInstance().setStageException(exception);
 
@@ -370,14 +370,14 @@ public final class ReadingTest {
      */
     @Test
     public void testStage03() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        AbstractHSMException exception = new HSMGeneralStageProblemException(
+        final AbstractHSMException exception = new HSMGeneralStageProblemException(
                 "General problem");
         HSMMockBridge.getInstance().setStageException(exception);
 
@@ -392,21 +392,21 @@ public final class ReadingTest {
      */
     @Test
     public void testStage04() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        AbstractHSMException exception = new HSMResourceException((short) 1);
+        final AbstractHSMException exception = new HSMResourceException((short) 1);
         HSMMockBridge.getInstance().setStageException(exception);
 
         boolean failed = false;
         try {
             reading.stage();
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof HSMResourceException)) {
                 failed = true;
             }
@@ -424,12 +424,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStageFailed01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.FAILED);
 
@@ -444,15 +444,15 @@ public final class ReadingTest {
      */
     @Test
     public void testStageMaxRetries01() throws TReqSException {
-        byte max = Configurator.getInstance().getByteValue(
+        final byte max = Configurator.getInstance().getByteValue(
                 Constants.SECTION_READING, Constants.MAX_READ_RETRIES,
                 DefaultProperties.MAX_READ_RETRIES);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, max, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, max, queue);
 
         reading.stage();
     }
@@ -465,12 +465,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStageMaxRetries02() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.STAGED);
 
@@ -485,12 +485,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStageQueued01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
 
         reading.stage();
@@ -506,12 +506,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetCreatedAfterFailed01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.FAILED);
 
@@ -519,7 +519,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -540,19 +540,19 @@ public final class ReadingTest {
 
     @Test
     public void testStateSetCreatedAfterQueued01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
 
         boolean failed = false;
         try {
             reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -572,12 +572,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetCreatedAfterStaged01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.STAGED);
 
@@ -585,7 +585,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -605,18 +605,18 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetCreatedAfterSubmitted01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
             reading.setFileRequestStatus(RequestStatus.CREATED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -636,12 +636,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetFailedAfterFailed01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.FAILED);
 
@@ -649,7 +649,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.FAILED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -669,12 +669,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetFailedAfterStaged01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.STAGED);
 
@@ -682,7 +682,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.FAILED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -702,18 +702,18 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetFailedAfterSubmitted01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
             reading.setFileRequestStatus(RequestStatus.FAILED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -733,12 +733,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetQueueAfterStaged01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.STAGED);
 
@@ -746,7 +746,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.QUEUED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -766,12 +766,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetQueuedAfterFailed01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.FAILED);
 
@@ -779,7 +779,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.QUEUED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -799,19 +799,19 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetQueuedAfterQueued01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
 
         boolean failed = false;
         try {
             reading.setFileRequestStatus(RequestStatus.QUEUED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -831,12 +831,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetStagedAfterFailed01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.FAILED);
 
@@ -844,7 +844,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.STAGED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -864,12 +864,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetStagedAfterStaged01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.STAGED);
 
@@ -877,7 +877,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.STAGED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -897,18 +897,18 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetStagedAfterSubmitted01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
             reading.setFileRequestStatus(RequestStatus.STAGED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -928,12 +928,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetSubmittedAfterFailed01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.FAILED);
 
@@ -941,7 +941,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.SUBMITTED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -961,12 +961,12 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetSubmittedAfterStaged01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
         reading.setFileRequestStatus(RequestStatus.QUEUED);
         reading.setFileRequestStatus(RequestStatus.STAGED);
 
@@ -974,7 +974,7 @@ public final class ReadingTest {
         try {
             reading.setFileRequestStatus(RequestStatus.SUBMITTED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -994,18 +994,18 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetSubmittedAfterSubmitted01() throws TReqSException {
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        Reading reading = new Reading(fpot, (byte) 1, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final Reading reading = new Reading(fpot, (byte) 1, queue);
 
         boolean failed = false;
         try {
             reading.setFileRequestStatus(RequestStatus.SUBMITTED);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof InvalidStatusTransitionException)) {
                 failed = true;
             }
@@ -1023,20 +1023,20 @@ public final class ReadingTest {
      */
     @Test
     public void testToString01() throws TReqSException {
-        String filename = "filename";
-        String tapename = "tapename";
-        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
-        File file = new File("filename", ReadingTest.HUNDRED);
-        FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
+        final String filename = "filename";
+        final String tapename = "tapename";
+        final Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
+        final File file = new File("filename", ReadingTest.HUNDRED);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
-        Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
-        int qid = 0;
-        byte nbtries = 1;
-        Reading reading = new Reading(fpot, nbtries, queue);
+        final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
+        final int qid = 0;
+        final byte nbtries = 1;
+        final Reading reading = new Reading(fpot, nbtries, queue);
 
-        String actual = reading.toString();
+        final String actual = reading.toString();
 
-        String expected = "Reading{ Starttime: null, Error code: 0, "
+        final String expected = "Reading{ Starttime: null, Error code: 0, "
                 + "Error message: , File state: SUBMITTED, Max retries: 3, "
                 + "Number of tries: " + nbtries + ", Queue id: " + qid
                 + ", File: " + filename + ", Tape: " + tapename + "}";

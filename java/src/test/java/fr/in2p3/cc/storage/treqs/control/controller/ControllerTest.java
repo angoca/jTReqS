@@ -72,7 +72,7 @@ public final class ControllerTest {
      */
     @Test
     public void testAdd01() throws TReqSException {
-        String tapename = "tapenameYes";
+        final String tapename = "tapenameYes";
         TapesController.getInstance().add(tapename,
                 new Tape(tapename, new MediaType((byte) 1, "media")));
 
@@ -81,7 +81,7 @@ public final class ControllerTest {
             TapesController.getInstance().add(tapename,
                     new Tape(tapename, new MediaType((byte) 1, "media")));
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof ControllerInsertException)) {
                 failed = true;
             }
@@ -96,14 +96,14 @@ public final class ControllerTest {
      */
     @Test
     public void testAdd02Null() {
-        String tapename = "tapenameYes";
+        final String tapename = "tapenameYes";
 
         boolean failed = false;
         try {
             TapesController.getInstance().add(null,
                     new Tape(tapename, new MediaType((byte) 1, "media")));
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -118,13 +118,13 @@ public final class ControllerTest {
      */
     @Test
     public void testAdd03Null() {
-        String tapename = "tapenameYes";
+        final String tapename = "tapenameYes";
 
         boolean failed = false;
         try {
             TapesController.getInstance().add(tapename, null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -142,11 +142,11 @@ public final class ControllerTest {
      */
     @Test
     public void testExist01Yes() throws TReqSException {
-        String tapename = "tapenameYes";
+        final String tapename = "tapenameYes";
         TapesController.getInstance().create(tapename,
                 new MediaType((byte) 1, "media"));
 
-        Tape tape = (Tape) TapesController.getInstance().exists(tapename);
+        final Tape tape = (Tape) TapesController.getInstance().exists(tapename);
 
         Assert.assertTrue("Existing object", tape != null);
     }
@@ -156,9 +156,9 @@ public final class ControllerTest {
      */
     @Test
     public void testExist02No() {
-        String tapename = "tapenameNo";
+        final String tapename = "tapenameNo";
 
-        Tape tape = (Tape) TapesController.getInstance().exists(tapename);
+        final Tape tape = (Tape) TapesController.getInstance().exists(tapename);
 
         Assert.assertTrue("Existing object", tape == null);
     }
@@ -172,7 +172,7 @@ public final class ControllerTest {
         try {
             TapesController.getInstance().exists(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -190,7 +190,7 @@ public final class ControllerTest {
      */
     @Test
     public void testRemove01() throws TReqSException {
-        String tapename = "tapenameYes";
+        final String tapename = "tapenameYes";
         TapesController.getInstance().create(tapename,
                 new MediaType((byte) 1, "media"));
 
@@ -212,7 +212,7 @@ public final class ControllerTest {
         try {
             TapesController.getInstance().remove(null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }

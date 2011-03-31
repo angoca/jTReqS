@@ -136,7 +136,7 @@ public final class UsersController extends AbstractController {
         synchronized (this.getObjectMap()) {
             user = (User) this.exists(userName);
             if (user == null) {
-                user = create(userName);
+                user = this.create(userName);
             }
         }
 
@@ -154,14 +154,14 @@ public final class UsersController extends AbstractController {
         LOGGER.trace("> cleanup");
 
         int size = 0;
-        List<String> toRemove = new ArrayList<String>();
+        final List<String> toRemove = new ArrayList<String>();
         synchronized (this.getObjectMap()) {
 
             // Checks the references of users.
-            Iterator<String> iter = this.getObjectMap().keySet().iterator();
+            final Iterator<String> iter = this.getObjectMap().keySet().iterator();
             while (iter.hasNext()) {
-                String name = iter.next();
-                User user = (User) this.getObjectMap().get(name);
+                final String name = iter.next();
+                final User user = (User) this.getObjectMap().get(name);
                 boolean exist = FilePositionOnTapesController.getInstance()
                         .exists(user);
                 if (!exist) {
@@ -200,7 +200,7 @@ public final class UsersController extends AbstractController {
 
         assert userName != null;
 
-        User user = new User(userName);
+        final User user = new User(userName);
         super.add(userName, user);
 
         LOGGER.trace("< create");

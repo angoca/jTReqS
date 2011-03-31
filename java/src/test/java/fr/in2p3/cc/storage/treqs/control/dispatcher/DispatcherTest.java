@@ -168,7 +168,7 @@ public final class DispatcherTest {
         try {
             Dispatcher.getInstance().setMaxFilesBeforeMessage((short) -1);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -235,7 +235,7 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest03() throws TReqSException {
-        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
                 new IOException(String.valueOf(1)));
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         MockReadingDAO.setQuantityRequests(1);
@@ -253,10 +253,10 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest04() throws TReqSException {
-        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
                 new IOException(String.valueOf(1)));
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
-        AbstractPersistanceException exception2 = new MockPersistanceException(
+        final AbstractPersistanceException exception2 = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setRequestStatusByIdException(exception2);
         MockReadingDAO.setQuantityRequests(1);
@@ -269,7 +269,7 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest05() {
-        AbstractPersistanceException exception = new MockPersistanceException(
+        final AbstractPersistanceException exception = new MockPersistanceException(
                 new SQLException("NO-MESSAGE"));
         MockReadingDAO.setNewRequestsException(exception);
 
@@ -278,7 +278,7 @@ public final class DispatcherTest {
             Dispatcher.getInstance().retrieveNewRequests();
             LOGGER.error("Error: it passed");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
                 failed = true;
             }
@@ -298,7 +298,7 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest06() throws TReqSException {
-        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
                 new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         MockReadingDAO.setQuantityRequests(1);
@@ -315,10 +315,10 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest07() throws TReqSException {
-        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
                 new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
-        AbstractPersistanceException exception2 = new MockPersistanceException(
+        final AbstractPersistanceException exception2 = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setRequestStatusByIdException(exception2);
         MockReadingDAO.setQuantityRequests(1);
@@ -355,7 +355,7 @@ public final class DispatcherTest {
     public void testRetrieveNewRequest09() throws TReqSException {
         HSMMockBridge.getInstance().setFileProperties(
                 new HSMHelperFileProperties(Constants.FILE_ON_DISK, 2, 40));
-        AbstractPersistanceException exception2 = new MockPersistanceException(
+        final AbstractPersistanceException exception2 = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setRequestStatusByIdException(exception2);
         MockReadingDAO.setQuantityRequests(1);
@@ -394,7 +394,7 @@ public final class DispatcherTest {
                 .setFileProperties(
                         new HSMHelperFileProperties("JT5678", 1,
                                 DispatcherTest.TWENTY));
-        AbstractPersistanceException exception = new MockPersistanceException(
+        final AbstractPersistanceException exception = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setNewRequestsException(exception);
         MockReadingDAO.setQuantityRequests(1);
@@ -404,7 +404,7 @@ public final class DispatcherTest {
             Dispatcher.getInstance().retrieveNewRequests();
             LOGGER.error("Error: it passed");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
                 failed = true;
             }
@@ -425,11 +425,11 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest12() throws TReqSException {
-        String filename = "filename1";
-        byte size = DispatcherTest.THREE;
-        String username = "owner";
-        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+        final String filename = "filename1";
+        final byte size = DispatcherTest.THREE;
+        final String username = "owner";
+        final List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
+        final PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
                 (short) 1, filename, size, username);
         requests.add(request);
         MockReadingDAO.setNewRequests(requests);
@@ -449,16 +449,16 @@ public final class DispatcherTest {
      */
     @Test
     public void testRetrieveNewRequest13() throws TReqSException {
-        String filename = "filename1";
-        byte size = DispatcherTest.THREE;
-        String username = "owner";
-        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+        final String filename = "filename1";
+        final byte size = DispatcherTest.THREE;
+        final String username = "owner";
+        final List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
+        final PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
                 (short) 1, filename, size, username);
         requests.add(request);
         MockReadingDAO.setNewRequests(requests);
-        File file = FilesController.getInstance().add(filename, size);
-        Tape tape = TapesController.getInstance().add("tapename",
+        final File file = FilesController.getInstance().add(filename, size);
+        final Tape tape = TapesController.getInstance().add("tapename",
                 new MediaType((byte) 1, "media1"));
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
@@ -480,19 +480,19 @@ public final class DispatcherTest {
     @Test
     public void testRetrieveNewRequest14() throws TReqSException,
             InterruptedException {
-        String filename = "filename1";
-        byte size = DispatcherTest.THREE;
-        String username = "owner";
+        final String filename = "filename1";
+        final byte size = DispatcherTest.THREE;
+        final String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "1");
-        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+        final List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
+        final PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
                 (short) 1, filename, size, username);
         requests.add(request);
         MockReadingDAO.setNewRequests(requests);
-        File file = FilesController.getInstance().add(filename, size);
-        Tape tape = TapesController.getInstance().add("tapename",
+        final File file = FilesController.getInstance().add(filename, size);
+        final Tape tape = TapesController.getInstance().add("tapename",
                 new MediaType((byte) 1, "media1"));
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
@@ -516,24 +516,24 @@ public final class DispatcherTest {
     @Test
     public void testRetrieveNewRequest15() throws TReqSException,
             InterruptedException {
-        String filename = "filename1";
-        byte size = DispatcherTest.THREE;
-        String username = "owner";
+        final String filename = "filename1";
+        final byte size = DispatcherTest.THREE;
+        final String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "1");
-        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+        final List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
+        final PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
                 (short) 1, filename, size, username);
         requests.add(request);
         MockReadingDAO.setNewRequests(requests);
-        File file = FilesController.getInstance().add(filename, size);
-        Tape tape = TapesController.getInstance().add("tapename",
+        final File file = FilesController.getInstance().add(filename, size);
+        final Tape tape = TapesController.getInstance().add("tapename",
                 new MediaType((byte) 1, "media1"));
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
 
-        AbstractHSMPropertiesException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMPropertiesException exception = new HSMGeneralPropertiesProblemException(
                 new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
         MockReadingDAO.setQuantityRequests(1);
@@ -555,19 +555,19 @@ public final class DispatcherTest {
     @Test
     public void testRetrieveNewRequest16() throws TReqSException,
             InterruptedException {
-        String filename = "filename1";
-        byte size = DispatcherTest.THREE;
-        String username = "owner";
+        final String filename = "filename1";
+        final byte size = DispatcherTest.THREE;
+        final String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "1");
-        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+        final List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
+        final PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
                 (short) 1, filename, size, username);
         requests.add(request);
         MockReadingDAO.setNewRequests(requests);
-        File file = FilesController.getInstance().add(filename, size);
-        Tape tape = TapesController.getInstance().add("tapename",
+        final File file = FilesController.getInstance().add(filename, size);
+        final Tape tape = TapesController.getInstance().add("tapename",
                 new MediaType((byte) 1, "media1"));
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
@@ -595,23 +595,23 @@ public final class DispatcherTest {
     @Test
     public void testRetrieveNewRequest17() throws TReqSException,
             InterruptedException {
-        String filename = "filename1";
-        byte size = DispatcherTest.THREE;
-        String username = "owner";
+        final String filename = "filename1";
+        final byte size = DispatcherTest.THREE;
+        final String username = "owner";
         Configurator.getInstance().setValue(
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "1");
-        List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+        final List<PersistenceHelperFileRequest> requests = new ArrayList<PersistenceHelperFileRequest>();
+        final PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
                 (short) 1, filename, size, username);
         requests.add(request);
         MockReadingDAO.setNewRequests(requests);
-        File file = FilesController.getInstance().add(filename, size);
-        Tape tape = TapesController.getInstance().add("tapename",
+        final File file = FilesController.getInstance().add(filename, size);
+        final Tape tape = TapesController.getInstance().add("tapename",
                 new MediaType((byte) 1, "media1"));
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
-        AbstractPersistanceException exception = new MockPersistanceException(
+        final AbstractPersistanceException exception = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setNewRequestsException(exception);
 
@@ -623,7 +623,7 @@ public final class DispatcherTest {
             Dispatcher.getInstance().retrieveNewRequests();
             LOGGER.error("Error: it passed");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MockPersistanceException)) {
                 failed = true;
             }
@@ -645,7 +645,7 @@ public final class DispatcherTest {
                 .setFileProperties(
                         new HSMHelperFileProperties("IS9510", 1,
                                 DispatcherTest.TWENTY));
-        AbstractPersistanceException exception = new MockPersistanceException(
+        final AbstractPersistanceException exception = new MockPersistanceException(
                 new SQLException());
         MockReadingDAO.setRequestStatusByIdException(exception);
         MockReadingDAO.setQuantityRequests(1);
@@ -663,7 +663,7 @@ public final class DispatcherTest {
      */
     @Test
     public void testRun01() throws TReqSException {
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
             /*
              * (non-Javadoc)
              *
@@ -673,12 +673,12 @@ public final class DispatcherTest {
             public void run() {
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
                 try {
                     Dispatcher.getInstance().conclude();
-                } catch (TReqSException e) {
+                } catch (final TReqSException e) {
                     e.printStackTrace();
                 }
             }
@@ -700,18 +700,18 @@ public final class DispatcherTest {
      */
     @Test
     public void testRun02() throws TReqSException {
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
 
             @Override
             public void run() {
                 try {
                     Thread.sleep(100);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
                 try {
                     Dispatcher.getInstance().conclude();
-                } catch (TReqSException e) {
+                } catch (final TReqSException e) {
                     e.printStackTrace();
                 }
             }
@@ -732,7 +732,7 @@ public final class DispatcherTest {
         try {
             Dispatcher.getInstance().setSecondsBetweenLoops((byte) -1);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -753,7 +753,7 @@ public final class DispatcherTest {
         Dispatcher.getInstance().start();
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             e.printStackTrace();
         }
         Dispatcher.getInstance().conclude();

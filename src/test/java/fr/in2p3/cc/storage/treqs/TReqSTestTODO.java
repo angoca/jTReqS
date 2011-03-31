@@ -156,8 +156,8 @@ public final class TReqSTestTODO {
     private void helperAssertState(final RequestStatus status,
             final int inStatus, final int notInStatus) throws SQLException,
             TReqSException {
-        int actual = helperCountStatusRequest(status, true);
-        int actualOther = helperCountStatusRequest(status, false);
+        final int actual = this.helperCountStatusRequest(status, true);
+        final int actualOther = this.helperCountStatusRequest(status, false);
         LOGGER.error("Asserting state {}: in {}, not in {}", new Object[] {
                 status.name(), actual, actualOther });
         Assert.assertEquals(inStatus, actual);
@@ -183,12 +183,12 @@ public final class TReqSTestTODO {
         if (!equals) {
             compare = "!=";
         }
-        String query = "SELECT count(*) FROM requests WHERE status " + compare
+        final String query = "SELECT count(*) FROM requests WHERE status " + compare
                 + status.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         result.next();
-        int actual = result.getInt(1);
+        final int actual = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
         return actual;
     }
@@ -247,7 +247,7 @@ public final class TReqSTestTODO {
 
         Activator.getInstance().start();
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops() / 2
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops() / 2
                 + HUNDRED;
         Thread.sleep(millis);
     }
@@ -348,13 +348,13 @@ public final class TReqSTestTODO {
         // Starts TReqS
         this.helperExecuteTReqS();
 
-        String fileName = "filename-12";
-        String userName = "username-12";
-        RequestStatus status = RequestStatus.CREATED;
+        final String fileName = "filename-12";
+        final String userName = "username-12";
+        final RequestStatus status = RequestStatus.CREATED;
         // Insert request
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -386,7 +386,7 @@ public final class TReqSTestTODO {
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         result.next();
-        int actualNotStaged = result.getInt(1);
+        final int actualNotStaged = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
 
         query = "SELECT count(1) FROM requests WHERE status = "
@@ -394,7 +394,7 @@ public final class TReqSTestTODO {
         objects = MySQLBroker.getInstance().executeSelect(query);
         result = (ResultSet) objects[1];
         result.next();
-        int actualStaged = result.getInt(1);
+        final int actualStaged = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
 
         LOGGER.error("testComponentsStartedCreated Staged {}, not Staged {}",
@@ -418,14 +418,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedFailed() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-16";
-        String userName = "username-16";
-        RequestStatus status = RequestStatus.FAILED;
+        final String fileName = "filename-16";
+        final String userName = "username-16";
+        final RequestStatus status = RequestStatus.FAILED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -434,10 +434,10 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM requests WHERE status != "
+        final String query = "SELECT * FROM requests WHERE status != "
                 + RequestStatus.FAILED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -461,14 +461,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedQueued() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-13";
-        String userName = "username-13";
-        RequestStatus status = RequestStatus.QUEUED;
+        final String fileName = "filename-13";
+        final String userName = "username-13";
+        final RequestStatus status = RequestStatus.QUEUED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -477,10 +477,10 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM requests WHERE status != "
+        final String query = "SELECT * FROM requests WHERE status != "
                 + RequestStatus.QUEUED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -504,14 +504,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedStaged() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-15";
-        String userName = "username-15";
-        RequestStatus status = RequestStatus.STAGED;
+        final String fileName = "filename-15";
+        final String userName = "username-15";
+        final RequestStatus status = RequestStatus.STAGED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -520,10 +520,10 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM requests WHERE status != "
+        final String query = "SELECT * FROM requests WHERE status != "
                 + RequestStatus.STAGED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -547,14 +547,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedSubmitted() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-14";
-        String userName = "username-14";
-        RequestStatus status = RequestStatus.SUBMITTED;
+        final String fileName = "filename-14";
+        final String userName = "username-14";
+        final RequestStatus status = RequestStatus.SUBMITTED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -563,11 +563,11 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM " + MySQLRequestsDAO.REQUESTS + " WHERE "
+        final String query = "SELECT * FROM " + MySQLRequestsDAO.REQUESTS + " WHERE "
                 + MySQLRequestsDAO.REQUESTS_STATUS + " != "
                 + RequestStatus.SUBMITTED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -591,9 +591,9 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentAlreadyStaged() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-6";
-        String userName = "username-6";
-        RequestStatus status = RequestStatus.STAGED;
+        final String fileName = "filename-6";
+        final String userName = "username-6";
+        final RequestStatus status = RequestStatus.STAGED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
         this.helperStartTReqS();
@@ -615,16 +615,16 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentFail() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-11";
-        String userName = "username-11";
-        RequestStatus status = RequestStatus.CREATED;
+        final String fileName = "filename-11";
+        final String userName = "username-11";
+        final RequestStatus status = RequestStatus.CREATED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
                 new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.FAILED, 1, 0);
     }
@@ -643,12 +643,12 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentFailed() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-7";
-        String userName = "username-7";
-        RequestStatus status = RequestStatus.FAILED;
+        final String fileName = "filename-7";
+        final String userName = "username-7";
+        final RequestStatus status = RequestStatus.FAILED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.FAILED, 1, 0);
     }
@@ -667,12 +667,12 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentQueued() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-3";
-        String userName = "username-3";
-        RequestStatus status = RequestStatus.QUEUED;
+        final String fileName = "filename-3";
+        final String userName = "username-3";
+        final RequestStatus status = RequestStatus.QUEUED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.STAGED, 1, 0);
     }
@@ -691,12 +691,12 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentsCreated() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-1";
-        String userName = "username-1";
-        RequestStatus status = RequestStatus.CREATED;
+        final String fileName = "filename-1";
+        final String userName = "username-1";
+        final RequestStatus status = RequestStatus.CREATED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.STAGED, 1, 0);
     }
@@ -715,12 +715,12 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentSubmitted() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-2";
-        String userName = "username-2";
-        RequestStatus status = RequestStatus.SUBMITTED;
+        final String fileName = "filename-2";
+        final String userName = "username-2";
+        final RequestStatus status = RequestStatus.SUBMITTED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.STAGED, 1, 0);
     }
@@ -753,7 +753,7 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.CREATED, 0, 0);
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = TWO_HUNDRED;
         long time = 1;
@@ -835,7 +835,7 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.CREATED, 0, 0);
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = TWO_HUNDRED;
         long time = Activator.getInstance().getMillisBetweenStagers() * 30
@@ -908,7 +908,7 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.CREATED, 0, 0);
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = TWO_HUNDRED;
         long time = 1;
@@ -985,12 +985,12 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 1);
 
         // Verifies that the activated queue is the one for the
-        String query = "SELECT status FROM requests WHERE hpss_file = '"
+        final String query = "SELECT status FROM requests WHERE hpss_file = '"
                 + fileName + "'";
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         result.next();
-        int actual = result.getInt(1);
+        final int actual = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
         Assert.assertEquals(12, actual);
 
@@ -1034,7 +1034,7 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.CREATED, 0, 0);
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = HUNDRED;
         long time = Activator.getInstance().getMillisBetweenStagers() * 9
@@ -1130,7 +1130,7 @@ public final class TReqSTestTODO {
         Activator.getInstance();
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = HUNDRED;
         String fileName = "fileInMappingLimit1";
@@ -1296,7 +1296,7 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.CREATED, 0, 0);
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = TWO_HUNDRED;
         long time = 1;

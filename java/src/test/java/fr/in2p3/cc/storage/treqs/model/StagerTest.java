@@ -125,13 +125,13 @@ public final class StagerTest {
      */
     @Test
     public void testRun01() throws TReqSException {
-        String tapename = "tapename";
-        Queue queue = new Queue(
+        final String tapename = "tapename";
+        final Queue queue = new Queue(
                 new FilePositionOnTape(new File("filename", 10),
                         StagerTest.FIFTY, new Tape(tapename, new MediaType(
                                 (byte) 1, "media")), new User("username")),
                 (byte) 3);
-        Stager stager = new Stager(1, queue);
+        final Stager stager = new Stager(1, queue);
 
         stager.run();
     }
@@ -144,13 +144,13 @@ public final class StagerTest {
      */
     @Test
     public void testRun02() throws TReqSException {
-        String tapename = "tapename";
-        Queue queue = new Queue(
+        final String tapename = "tapename";
+        final Queue queue = new Queue(
                 new FilePositionOnTape(new File("filename", 10),
                         StagerTest.FIFTY, new Tape(tapename, new MediaType(
                                 (byte) 1, "media")), new User("username")),
                 (byte) 3);
-        Stager stager = new Stager(1, queue);
+        final Stager stager = new Stager(1, queue);
 
         queue.activate();
 
@@ -165,13 +165,13 @@ public final class StagerTest {
      */
     @Test
     public void testRun03() throws TReqSException {
-        String tapename = "tapename";
-        File file = new File("filename", StagerTest.TWO_HUNDRED);
-        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
-        FilePositionOnTape fpot = new FilePositionOnTape(file, StagerTest.FIVE,
+        final String tapename = "tapename";
+        final File file = new File("filename", StagerTest.TWO_HUNDRED);
+        final Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, StagerTest.FIVE,
                 tape, new User("username"));
-        Queue queue = new Queue(fpot, (byte) 1);
-        Stager stager = new Stager(1, queue);
+        final Queue queue = new Queue(fpot, (byte) 1);
+        final Stager stager = new Stager(1, queue);
 
         queue.activate();
 
@@ -188,19 +188,19 @@ public final class StagerTest {
      */
     @Test
     public void testRun04() throws TReqSException {
-        String tapename = "tapename";
-        User user = new User("username");
-        File file1 = new File("filename1", StagerTest.TWO_HUNDRED);
-        File file2 = new File("filename2", StagerTest.TWO_HUNDRED);
-        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
-        FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+        final String tapename = "tapename";
+        final User user = new User("username");
+        final File file1 = new File("filename1", StagerTest.TWO_HUNDRED);
+        final File file2 = new File("filename2", StagerTest.TWO_HUNDRED);
+        final Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 StagerTest.FIVE, tape, user);
-        FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
                 StagerTest.FIFTY, tape, user);
-        Queue queue = new Queue(fpot1, (byte) 1);
+        final Queue queue = new Queue(fpot1, (byte) 1);
         queue.registerFPOT(fpot2, (byte) 1);
 
-        Stager stager = new Stager(1, queue);
+        final Stager stager = new Stager(1, queue);
 
         queue.activate();
 
@@ -217,16 +217,16 @@ public final class StagerTest {
      */
     @Test
     public void testSuspending01() throws TReqSException {
-        String tapename = "tapename";
-        User owner = new User("username");
-        File file = new File("filename", StagerTest.TWO_HUNDRED);
-        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
-        FilePositionOnTape fpot = new FilePositionOnTape(file, StagerTest.FIVE,
+        final String tapename = "tapename";
+        final User owner = new User("username");
+        final File file = new File("filename", StagerTest.TWO_HUNDRED);
+        final Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, StagerTest.FIVE,
                 tape, owner);
-        Queue queue = new Queue(fpot, (byte) 1);
+        final Queue queue = new Queue(fpot, (byte) 1);
         final Stager stager = new Stager(1, queue);
 
-        HSMResourceException exception = new HSMResourceException((short) 1);
+        final HSMResourceException exception = new HSMResourceException((short) 1);
         HSMMockBridge.getInstance().setStageException(exception);
 
         queue.activate();
@@ -242,25 +242,25 @@ public final class StagerTest {
      */
     @Test
     public void testToStop01() throws TReqSException {
-        String tapename = "tapename";
-        User owner = new User("username");
-        File file = new File("filename", StagerTest.TWO_HUNDRED);
-        Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
-        FilePositionOnTape fpot = new FilePositionOnTape(file, StagerTest.FIVE,
+        final String tapename = "tapename";
+        final User owner = new User("username");
+        final File file = new File("filename", StagerTest.TWO_HUNDRED);
+        final Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, StagerTest.FIVE,
                 tape, owner);
-        Queue queue = new Queue(fpot, (byte) 1);
+        final Queue queue = new Queue(fpot, (byte) 1);
         final Stager stager = new Stager(1, queue);
 
         queue.activate();
 
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
 
             @Override
             public void run() {
-                StagerTest.LOGGER.info("Starting " + getName());
+                StagerTest.LOGGER.info("Starting " + this.getName());
                 try {
                     Thread.sleep(StagerTest.FIFTY);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     LOGGER.error("Error sleeping", e);
                 }
                 StagerTest.LOGGER.warn("Concluding stager");
@@ -283,17 +283,17 @@ public final class StagerTest {
      */
     @Test
     public void testToString01() throws TReqSException {
-        String tapename = "tapename";
-        Queue queue = new Queue(
+        final String tapename = "tapename";
+        final Queue queue = new Queue(
                 new FilePositionOnTape(new File("filename", 10),
                         StagerTest.FIFTY, new Tape(tapename, new MediaType(
                                 (byte) 1, "media")), new User("username")),
                 (byte) 3);
-        Stager stager = new Stager(1, queue);
-        String actual = stager.toString();
+        final Stager stager = new Stager(1, queue);
+        final String actual = stager.toString();
 
-        String expectedStarts = "Stager{ thread: ";
-        String expectedEnds = ", queue: " + 0 + ", tape: " + tapename
+        final String expectedStarts = "Stager{ thread: ";
+        final String expectedEnds = ", queue: " + 0 + ", tape: " + tapename
                 + ", state: " + ProcessStatus.STARTING.name() + "}";
 
         Assert.assertTrue(actual.startsWith(expectedStarts));

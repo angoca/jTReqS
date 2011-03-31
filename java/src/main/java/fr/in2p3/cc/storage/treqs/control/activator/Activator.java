@@ -140,7 +140,7 @@ public final class Activator extends AbstractProcess {
     /**
      * List of drives allocations per media type.
      */
-    private List<Resource> allocations;
+    private final List<Resource> allocations;
     /**
      * Max number of stagers for overall activity.
      */
@@ -176,27 +176,27 @@ public final class Activator extends AbstractProcess {
         super("Activator");
         LOGGER.trace("> create activator");
 
-        short interval = Configurator.getInstance().getShortValue(
+        final short interval = Configurator.getInstance().getShortValue(
                 Constants.SECTION_ACTIVATOR, Constants.ACTIVATOR_INTERVAL,
                 DefaultProperties.SECONDS_BETWEEN_LOOPS);
         this.setSecondsBetweenLoops(interval);
 
-        short totalStagers = Configurator.getInstance().getShortValue(
+        final short totalStagers = Configurator.getInstance().getShortValue(
                 Constants.SECTION_ACTIVATOR, Constants.MAX_STAGERS,
                 DefaultProperties.MAX_STAGERS);
         this.setMaxStagers(totalStagers);
 
-        byte maxStagerPerQueue = Configurator.getInstance().getByteValue(
+        final byte maxStagerPerQueue = Configurator.getInstance().getByteValue(
                 Constants.SECTION_ACTIVATOR, Constants.STAGING_DEPTH,
                 DefaultProperties.STAGING_DEPTH);
         this.setMaxStagersPerQueue(maxStagerPerQueue);
 
-        short allocationsTimeout = Configurator.getInstance().getShortValue(
+        final short allocationsTimeout = Configurator.getInstance().getShortValue(
                 Constants.SECTION_ACTIVATOR, Constants.ALLOCATIONS_TIMEOUT,
                 DefaultProperties.ALLOCATIONS_TIMEOUT);
         this.setMetadataTimeout(allocationsTimeout);
 
-        byte timeStagers = Configurator.getInstance().getByteValue(
+        final byte timeStagers = Configurator.getInstance().getByteValue(
                 Constants.SECTION_ACTIVATOR, Constants.SECONDS_BETWEEN_STAGERS,
                 DefaultProperties.SECONDS_BETWEEN_STAGERS);
         this.setSecondsBetweenStagers(timeStagers);
@@ -229,7 +229,7 @@ public final class Activator extends AbstractProcess {
                         .getAge() > this.getMetadataTimeout())) {
             try {
                 this.refreshAllocations();
-            } catch (TReqSException e) {
+            } catch (final TReqSException e) {
                 LOGGER.error(e.getMessage());
                 Starter.getInstance().toStop();
                 throw new ActivatorException(e);
@@ -239,7 +239,7 @@ public final class Activator extends AbstractProcess {
             // Count the active queues and update the resources
             try {
                 this.countUsedResources();
-            } catch (TReqSException e) {
+            } catch (final TReqSException e) {
                 LOGGER.error(e.getMessage());
                 Starter.getInstance().toStop();
                 throw new ActivatorException(e);
@@ -249,7 +249,7 @@ public final class Activator extends AbstractProcess {
             // Loop through the resources
             try {
                 this.process();
-            } catch (TReqSException e) {
+            } catch (final TReqSException e) {
                 LOGGER.error(e.getMessage());
                 Starter.getInstance().toStop();
                 throw new ActivatorException(e);
@@ -292,7 +292,7 @@ public final class Activator extends AbstractProcess {
             for (i = 1; i <= this.stagersPerQueue; i++) {
                 LOGGER.info("Starting stager {} of {}", i, this.stagersPerQueue);
 
-                Stager stager = StagersController.getInstance().create(queue);
+                final Stager stager = StagersController.getInstance().create(queue);
 
                 LOGGER.debug("Thread started: {}", stager.getName());
                 stager.start();
@@ -300,7 +300,7 @@ public final class Activator extends AbstractProcess {
                     LOGGER.info("Sleeping between stagers, {} millis",
                             this.getMillisBetweenStagers());
                     Thread.sleep(this.getMillisBetweenStagers());
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     LOGGER.error("Message", e);
                 }
                 this.activeStagers++;
@@ -323,12 +323,12 @@ public final class Activator extends AbstractProcess {
         LOGGER.trace("> countUsedResources");
 
         // Reset all used resources
-        Iterator<Resource> iterator = this.allocations.iterator();
+        final Iterator<Resource> iterator = this.allocations.iterator();
         while (iterator.hasNext()) {
             iterator.next().resetUsedResources();
         }
 
-        short active = QueuesController.getInstance().countUsedResources(
+        final short active = QueuesController.getInstance().countUsedResources(
                 this.allocations);
         LOGGER.info("There are {} activated queues", active);
 
@@ -410,7 +410,7 @@ public final class Activator extends AbstractProcess {
 
         try {
             this.action();
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             throw new RuntimeException(e);
         }
 
@@ -429,19 +429,19 @@ public final class Activator extends AbstractProcess {
     private void process() throws TReqSException {
         LOGGER.trace("> process");
 
-        Iterator<Resource> resources = this.allocations.iterator();
+        final Iterator<Resource> resources = this.allocations.iterator();
         while (resources.hasNext()) {
-            Resource resource = resources.next();
+            final Resource resource = resources.next();
             // while there is room to activate a queue, do it
             short freeResources = resource.countFreeResources();
             List<Queue> waitingQueues = QueuesController.getInstance()
                     .getWaitingQueues(resource.getMediaType());
 
-            boolean cont = true;
-            while ((freeResources > 0) && (waitingQueues.size() > 0) && cont) {
+            final boolean cont = true;
+            while (freeResources > 0 && waitingQueues.size() > 0 && cont) {
                 LOGGER.debug("Still {} resources available", freeResources);
                 // Select best queue for the best user
-                Queue bestQueue = QueuesController.getInstance().getBestQueue(
+                final Queue bestQueue = QueuesController.getInstance().getBestQueue(
                         resource, waitingQueues);
 
                 // Activate the best queue
@@ -451,7 +451,7 @@ public final class Activator extends AbstractProcess {
                             .getName());
                     try {
                         this.activate(bestQueue);
-                    } catch (TReqSException e) {
+                    } catch (final TReqSException e) {
                         LOGGER.error(
                                 "Error activating queue {} in state {} - {}",
                                 new String[] { bestQueue.getTape().getName(),
@@ -488,24 +488,25 @@ public final class Activator extends AbstractProcess {
                 .getMediaAllocations());
 
         // Now get the shares from the data source.
-        MultiMap shares = ResourcesController.getInstance()
+        final MultiMap shares = ResourcesController.getInstance()
                 .getResourceAllocation();
 
         // Browse the resources
-        Iterator<Resource> resources = this.allocations.iterator();
+        final Iterator<Resource> resources = this.allocations.iterator();
         while (resources.hasNext()) {
-            Resource resource = resources.next();
+            final Resource resource = resources.next();
             // Find all shares for the current media type.
-            byte id = resource.getMediaType().getId();
+            final byte id = resource.getMediaType().getId();
             @SuppressWarnings("unchecked")
+            final
             Collection<PersistenceHelperResourceAllocation> shareRange = (Collection<PersistenceHelperResourceAllocation>) shares
                     .get(new Byte(id));
             if (shareRange != null) {
                 // Browse the shares for this media type and set the resources
-                Iterator<PersistenceHelperResourceAllocation> iterShares = shareRange
+                final Iterator<PersistenceHelperResourceAllocation> iterShares = shareRange
                         .iterator();
                 while (iterShares.hasNext()) {
-                    PersistenceHelperResourceAllocation resAlloc = iterShares
+                    final PersistenceHelperResourceAllocation resAlloc = iterShares
                             .next();
 
                     resource.setUserAllocation(UsersController.getInstance()
@@ -674,16 +675,16 @@ public final class Activator extends AbstractProcess {
                     // Waits before restart the process.
                     try {
                         Thread.sleep(this.getMillisBetweenLoops());
-                    } catch (InterruptedException e) {
+                    } catch (final InterruptedException e) {
                         LOGGER.error("message", e);
                     }
                 }
             }
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             try {
                 Starter.getInstance().toStop();
                 LOGGER.error("Stopping", t);
-            } catch (TReqSException e) {
+            } catch (final TReqSException e) {
                 LOGGER.error("Error", e);
                 System.exit(Constants.ACTIVATOR_PROBLEM);
             }

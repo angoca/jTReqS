@@ -66,7 +66,7 @@ public final class MySQLDAOHelper {
      */
     private static String getFileName() {
         String ret = "";
-        int size = (int) (Math.random() * 20) + 5;
+        final int size = (int) (Math.random() * 20) + 5;
         ret = new RandomString(size).nextString();
         return ret;
     }
@@ -102,12 +102,12 @@ public final class MySQLDAOHelper {
         // Cleans the database.
         MySQLRequestsDAO.deleteAll();
         // Inserts a random quantity of requests (more than 2, less than 7)
-        int size = (int) (Math.random() * 5) + 2;
+        final int size = (int) (Math.random() * 5) + 2;
         for (int i = 0; i < size; i++) {
-            String fileName = getFileName();
-            String userName = getUserName();
-            RequestStatus status = RequestStatus.CREATED;
-            LOGGER.warn("Generated: {} - {}, {}", new String[] { (i + 1) + "",
+            final String fileName = getFileName();
+            final String userName = getUserName();
+            final RequestStatus status = RequestStatus.CREATED;
+            LOGGER.warn("Generated: {} - {}, {}", new String[] { i + 1 + "",
                     fileName, userName });
             MySQLRequestsDAO.insertRow(fileName, userName, status);
         }

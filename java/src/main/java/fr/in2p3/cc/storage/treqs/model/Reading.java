@@ -132,7 +132,7 @@ public final class Reading {
         this.setNumberOfTries(triesNumber);
         this.setErrorCode((short) 0);
 
-        byte max = Configurator.getInstance().getByteValue(
+        final byte max = Configurator.getInstance().getByteValue(
                 Constants.SECTION_READING, Constants.MAX_READ_RETRIES,
                 DefaultProperties.MAX_READ_RETRIES);
         this.maxTries = max;
@@ -309,7 +309,7 @@ public final class Reading {
                     .getReadingDAO()
                     .update(this, RequestStatus.STAGED, new GregorianCalendar());
             LOGGER.info("File {} successfully staged.", filename);
-        } catch (AbstractHSMException e) {
+        } catch (final AbstractHSMException e) {
             LOGGER.warn("Error processing this file: {} {}", filename,
                     e.getMessage());
             if (e instanceof HSMResourceException) {
@@ -336,8 +336,8 @@ public final class Reading {
                 this.logsException("General error. Retrying " + filename, e,
                         RequestStatus.FAILED);
             }
-        } catch (Exception e) {
-            String mess = "Unexpected error while staging " + filename + ":"
+        } catch (final Exception e) {
+            final String mess = "Unexpected error while staging " + filename + ":"
                     + e.getMessage();
             this.logsException(mess, e, RequestStatus.FAILED);
             throw new StagerException(e);
@@ -394,17 +394,17 @@ public final class Reading {
 
         if (
         // Currently created and new submitted.
-        ((this.requestStatus == RequestStatus.CREATED) && (status == RequestStatus.SUBMITTED))
+        this.requestStatus == RequestStatus.CREATED && status == RequestStatus.SUBMITTED
                 // Currently created and new staged (on cache disk.)
-                || ((this.requestStatus == RequestStatus.CREATED) && (status == RequestStatus.ON_DISK))
+                || this.requestStatus == RequestStatus.CREATED && status == RequestStatus.ON_DISK
                 // Currently submitted and new queued.
-                || ((this.requestStatus == RequestStatus.SUBMITTED) && (status == RequestStatus.QUEUED))
+                || this.requestStatus == RequestStatus.SUBMITTED && status == RequestStatus.QUEUED
                 // Currently queued and new staged.
-                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.STAGED))
+                || this.requestStatus == RequestStatus.QUEUED && status == RequestStatus.STAGED
                 // Currently queued and new submitted (suspended.)
-                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.SUBMITTED))
+                || this.requestStatus == RequestStatus.QUEUED && status == RequestStatus.SUBMITTED
                 // Currently queued and new failed.
-                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.FAILED))) {
+                || this.requestStatus == RequestStatus.QUEUED && status == RequestStatus.FAILED) {
             this.requestStatus = status;
         } else {
             LOGGER.error("Invalid change of request status. "
@@ -474,7 +474,7 @@ public final class Reading {
     void stage() throws TReqSException {
         LOGGER.trace("> stage");
 
-        String filename = this.getMetaData().getFile().getName();
+        final String filename = this.getMetaData().getFile().getName();
 
         if (this.requestStatus == RequestStatus.QUEUED) {
             LOGGER.info("{} already submitted to the HSM.", filename);

@@ -162,7 +162,7 @@ public final class MySQLBrokerTest {
         try {
             MySQLBroker.getInstance().connect();
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
@@ -190,7 +190,7 @@ public final class MySQLBrokerTest {
         try {
             MySQLBroker.getInstance().connect();
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
@@ -221,7 +221,7 @@ public final class MySQLBrokerTest {
         try {
             MySQLBroker.getInstance().connect();
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
@@ -254,7 +254,7 @@ public final class MySQLBrokerTest {
         try {
             MySQLBroker.getInstance().connect();
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MySQLOpenException)) {
                 failed = true;
             }
@@ -320,13 +320,13 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testModify01() throws TReqSException {
-        String query = "";
+        final String query = "";
         MySQLBroker.getInstance().connect();
         boolean failed = false;
         try {
             MySQLBroker.getInstance().executeModification(query);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -345,13 +345,13 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testModify02() throws TReqSException {
-        String query = null;
+        final String query = null;
         MySQLBroker.getInstance().connect();
         boolean failed = false;
         try {
             MySQLBroker.getInstance().executeModification(query);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -367,12 +367,12 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testModify03() {
-        String query = "";
+        final String query = "";
         boolean failed = false;
         try {
             MySQLBroker.getInstance().executeModification(query);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -390,13 +390,13 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testModify04() throws TReqSException {
-        String query = "INVALID QUERY";
+        final String query = "INVALID QUERY";
         MySQLBroker.getInstance().connect();
         boolean failed = false;
         try {
             MySQLBroker.getInstance().executeModification(query);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
@@ -442,7 +442,7 @@ public final class MySQLBrokerTest {
 
         query = "INSERT INTO " + TABLE + " (USER) VALUES('1')";
         MySQLBroker.getInstance().connect();
-        int actual = MySQLBroker.getInstance().executeModification(query);
+        final int actual = MySQLBroker.getInstance().executeModification(query);
 
         query = "DROP TABLE " + TABLE;
         MySQLBroker.getInstance().executeModification(query);
@@ -466,7 +466,7 @@ public final class MySQLBrokerTest {
         MySQLBroker.getInstance().executeModification(query);
         query = "INSERT INTO " + TABLE + " (USER) VALUES('1')";
         MySQLBroker.getInstance().connect();
-        int actual = MySQLBroker.getInstance().executeModification(query);
+        final int actual = MySQLBroker.getInstance().executeModification(query);
 
         query = "DELETE FROM " + TABLE;
         MySQLBroker.getInstance().executeModification(query);
@@ -485,14 +485,14 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testSelect01() throws TReqSException {
-        String query = null;
+        final String query = null;
         MySQLBroker.getInstance().connect();
 
         boolean failed = false;
         try {
             MySQLBroker.getInstance().executeSelect(query);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -511,13 +511,13 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testSelect02() throws TReqSException {
-        String query = "";
+        final String query = "";
         MySQLBroker.getInstance().connect();
         boolean failed = false;
         try {
             MySQLBroker.getInstance().executeSelect(query);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -536,7 +536,7 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testSelect03() throws TReqSException {
-        String query = "show tables";
+        final String query = "show tables";
 
         MySQLBroker.getInstance().executeSelect(query);
     }
@@ -549,14 +549,14 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testSelect04() throws TReqSException {
-        String query = "INVALID QUERY";
+        final String query = "INVALID QUERY";
         MySQLBroker.getInstance().connect();
 
         boolean failed = false;
         try {
             MySQLBroker.getInstance().executeSelect(query);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof MySQLExecuteException)) {
                 failed = true;
             }
@@ -577,11 +577,11 @@ public final class MySQLBrokerTest {
      */
     @Test
     public void testSelect05() throws TReqSException, SQLException {
-        String query = "show tables";
+        final String query = "show tables";
         MySQLBroker.getInstance().connect();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        boolean next = result.next();
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
+        final boolean next = result.next();
         System.out.println(next);
         MySQLBroker.getInstance().terminateExecution(objects);
         MySQLBroker.getInstance().disconnect();

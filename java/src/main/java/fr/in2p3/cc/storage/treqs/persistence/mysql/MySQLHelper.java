@@ -76,7 +76,7 @@ public final class MySQLHelper {
      */
     public static void insertMediaType(final int id, final String name,
             final int qty) throws TReqSException {
-        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+        final String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
                 + " VALUES (" + id + ", \"" + name + "\", " + qty + ")";
         MySQLBroker.getInstance().executeModification(query);
     }

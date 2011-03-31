@@ -128,16 +128,16 @@ public final class Watchdog {
      *             If there is any problem while executing the command.
      */
     public static int getPID() throws WatchdogException {
-        byte[] bo = new byte[100];
-        String[] cmd = { "bash", "-c", "echo $PPID" };
+        final byte[] bo = new byte[100];
+        final String[] cmd = { "bash", "-c", "echo $PPID" };
         Process p;
         try {
             p = Runtime.getRuntime().exec(cmd);
             p.getInputStream().read(bo);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new WatchdogException(e);
         }
-        int ret = Integer.parseInt(new String(bo).trim());
+        final int ret = Integer.parseInt(new String(bo).trim());
         return ret;
     }
 
@@ -151,7 +151,7 @@ public final class Watchdog {
     private Watchdog() throws TReqSException {
         LOGGER.trace("> Watchdog");
 
-        int pid = Watchdog.getPID();
+        final int pid = Watchdog.getPID();
 
         AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().start(pid);
 
@@ -168,7 +168,7 @@ public final class Watchdog {
         LOGGER.trace("> heartBeat");
 
         boolean activator = false;
-        ProcessStatus activatorState = Activator.getInstance()
+        final ProcessStatus activatorState = Activator.getInstance()
                 .getProcessStatus();
         if (activatorState != ProcessStatus.STARTING
                 && activatorState != ProcessStatus.STOPPED) {
@@ -176,7 +176,7 @@ public final class Watchdog {
         }
 
         boolean dispatcher = false;
-        ProcessStatus dispatcherState = Dispatcher.getInstance()
+        final ProcessStatus dispatcherState = Dispatcher.getInstance()
                 .getProcessStatus();
         if (dispatcherState != ProcessStatus.STARTING
                 && dispatcherState != ProcessStatus.STOPPED) {
