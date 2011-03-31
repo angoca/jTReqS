@@ -127,6 +127,7 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
    dir of the installation:
    The install directory could be something like /opt/jtreqs
      $ export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
+     $ export LD_LIBRARY_PATH=${HPSS_ROOT}/lib
      $ sh jtreqs/bin/jtreqs.sh
 
    (When not using Maven)
