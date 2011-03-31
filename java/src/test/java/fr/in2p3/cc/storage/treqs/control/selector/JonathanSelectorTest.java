@@ -75,6 +75,15 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class JonathanSelectorTest {
     /**
+     * Media type 1 for tests.
+     */
+    private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
+            "T10K-a");
+    /**
+     * Number 5.
+     */
+    private static final int NUMBER_5 = 5;
+    /**
      * Number three hundred.
      */
     private static final int THREE_HUNDRED = 300;
@@ -82,15 +91,6 @@ public final class JonathanSelectorTest {
      * Number twenty.
      */
     private static final int TWENTY = 20;
-    /**
-     * Number 5.
-     */
-    private static final int NUMBER_5 = 5;
-    /**
-     * Media type 1 for tests.
-     */
-    private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
-            "T10K-a");
 
     /**
      * Setups the environment.

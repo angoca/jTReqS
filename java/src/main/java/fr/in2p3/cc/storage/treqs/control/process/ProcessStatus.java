@@ -48,20 +48,20 @@ public enum ProcessStatus {
      */
     CREATED,
     /**
+     * The process has been started.
+     */
+    STARTED,
+    /**
      * The process is waiting to be started. It is between the method create and
      * run. This state is more used in tests.
      */
     STARTING,
     /**
-     * The process has been started.
+     * The process has been stopped, all activity has been finished correctly.
      */
-    STARTED,
+    STOPPED,
     /**
      * The process is being stopped. The execution has to be finished.
      */
-    STOPPING,
-    /**
-     * The process has been stopped, all activity has been finished correctly.
-     */
-    STOPPED
+    STOPPING
 }

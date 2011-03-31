@@ -68,13 +68,17 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 public final class MySQLBrokerTest {
 
     /**
-     * Server.
+     * Database name.
      */
-    private static final String SERVER = "localhost";
+    private static final String DBNAME = "jtreqs";
     /**
      * Password.
      */
     private static final String PASSWORD = "jtreqs";
+    /**
+     * Server.
+     */
+    private static final String SERVER = "localhost";
     /**
      * Table for tests.
      */
@@ -83,10 +87,6 @@ public final class MySQLBrokerTest {
      * Table structure.
      */
     private static final String TABLE_STRUCTURE = "(user char(32))";
-    /**
-     * Database name.
-     */
-    private static final String DBNAME = "jtreqs";
     /**
      * User.
      */

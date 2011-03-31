@@ -59,6 +59,10 @@ public abstract class AbstractConfiguratorException extends TReqSException {
      */
     private static final long serialVersionUID = -8984526634793772647L;
     /**
+     * Name of the file.
+     */
+    private String filename;
+    /**
      * Name of the value.
      */
     private String key;
@@ -66,10 +70,6 @@ public abstract class AbstractConfiguratorException extends TReqSException {
      * Section of the value.
      */
     private String section;
-    /**
-     * Name of the file.
-     */
-    private String filename;
 
     /**
      * Constructor with the name of a file.

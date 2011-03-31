@@ -85,6 +85,11 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class DispatcherTest {
     /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DispatcherTest.class);
+    /**
      * Number three.
      */
     private static final int THREE = 3;
@@ -92,11 +97,6 @@ public final class DispatcherTest {
      * Number twenty.
      */
     private static final int TWENTY = 20;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(DispatcherTest.class);
 
     /**
      * Setups the environment for all.

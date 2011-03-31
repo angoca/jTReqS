@@ -51,14 +51,14 @@ import fr.in2p3.cc.storage.treqs.model.exception.InvalidStateException;
 public class NoQueuesDefinedException extends TReqSException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -1295272763635081598L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(InvalidStateException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -1295272763635081598L;
 
     /**
      * Default constructor.

@@ -77,29 +77,13 @@ public final class QueueTest {
      */
     private static final int FIVE = 5;
     /**
-     * Number three hundred fifty.
-     */
-    private static final int THREE_HUNDRED_FIFTY = 350;
-    /**
-     * Number two hundred fifty.
-     */
-    private static final int TWO_HUNDRED_FIFTY = 250;
-    /**
-     * Number one hundred fifty.
-     */
-    private static final int HUNDRED_FIFTY = 150;
-    /**
      * Number one hundred.
      */
     private static final int HUNDRED = 100;
     /**
-     * Number ten.
+     * Number one hundred fifty.
      */
-    private static final int TEN = 10;
-    /**
-     * Number three.
-     */
-    private static final int THREE = 3;
+    private static final int HUNDRED_FIFTY = 150;
     /**
      * Logger.
      */
@@ -109,6 +93,22 @@ public final class QueueTest {
      * Three thousands.
      */
     private static final int NUMBER_3000 = 3000;
+    /**
+     * Number ten.
+     */
+    private static final int TEN = 10;
+    /**
+     * Number three.
+     */
+    private static final int THREE = 3;
+    /**
+     * Number three hundred fifty.
+     */
+    private static final int THREE_HUNDRED_FIFTY = 350;
+    /**
+     * Number two hundred fifty.
+     */
+    private static final int TWO_HUNDRED_FIFTY = 250;
 
     /**
      * Destroys everything at the end.

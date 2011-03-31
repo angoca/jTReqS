@@ -49,6 +49,10 @@ public final class Constants {
      */
     public static final String ACTIVATOR_INTERVAL = "ACTIVATOR_INTERVAL";
     /**
+     * There was a problem with the activator.
+     */
+    public static final int ACTIVATOR_PROBLEM = -2;
+    /**
      * Timeout for the metadata of allocations.
      */
     public static final String ALLOCATIONS_TIMEOUT = "ALLOCATIONS_TIMEOUT";
@@ -56,6 +60,10 @@ public final class Constants {
      * Type of authentication against the HSM.
      */
     public static final String AUTHENTICATION_TYPE = "AUTHENTICATION_TYPE";
+    /**
+     * Name for the internal property for the name for the configuration file.
+     */
+    public static final String CONFIGURATION_FILE = "CONFIG_FILE";
     /**
      * Name of the database.
      */
@@ -73,13 +81,13 @@ public final class Constants {
      */
     public static final String DB_USER = "USERNAME";
     /**
-     * Name for the internal property for the name for the configuration file.
-     */
-    public static final String CONFIGURATION_FILE = "CONFIG_FILE";
-    /**
      * Quantity of seconds between two executions of the dispatcher.
      */
     public static final String DISPATCHER_INTERVAL = "DISPATCHER_INTERVAL";
+    /**
+     * There was a problem with the dispatcher.
+     */
+    public static final int DISPATCHER_PROBLEM = -1;
     /**
      * If the selector has to do a fair share.
      */
@@ -96,6 +104,11 @@ public final class Constants {
      * Quantity of files to process before showing a log message.
      */
     public static final short FILES_BEFORE_MESSAGE = 100;
+    /**
+     * Name to search the configuration file for HPSS.
+     */
+    public static final String HPSS_CONFIGURATION_FILE = "HPSS_CONFIGURATION_"
+            + "FILE";
     /**
      * Name of the main class of the implementation of the HSM bridge. Component
      * that will interact with the HSM.
@@ -204,6 +217,10 @@ public final class Constants {
      */
     public static final String SUSPEND_DURATION = "SUSPEND_DURATION";
     /**
+     * Tests the existence and access to the keytab.
+     */
+    public static final String TEST_KEYTAB = "TEST_KEYTAB";
+    /**
      * Section Watchdog.
      */
     public static final String WATCHDOG = "WATCHDOG";
@@ -215,23 +232,6 @@ public final class Constants {
      * The word yes.
      */
     public static final String YES = "yes";
-    /**
-     * There was a problem with the dispatcher.
-     */
-    public static final int DISPATCHER_PROBLEM = -1;
-    /**
-     * There was a problem with the activator.
-     */
-    public static final int ACTIVATOR_PROBLEM = -2;
-    /**
-     * Tests the existence and access to the keytab.
-     */
-    public static final String TEST_KEYTAB = "TEST_KEYTAB";
-    /**
-     * Name to search the configuration file for HPSS.
-     */
-    public static final String HPSS_CONFIGURATION_FILE = "HPSS_CONFIGURATION_"
-            + "FILE";
 
     /**
      * Invisible constructor.

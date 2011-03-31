@@ -72,11 +72,6 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  */
 public final class MySQLBroker {
     /**
-     * Mode for MySQL to validate all.
-     */
-    private static final String SET_MODE_STRICT = "set sql_mode "
-            + "= 'STRICT_ALL_TABLES'";
-    /**
      * Singleton instance.
      */
     private static MySQLBroker instance;
@@ -85,6 +80,11 @@ public final class MySQLBroker {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLBroker.class);
+    /**
+     * Mode for MySQL to validate all.
+     */
+    private static final String SET_MODE_STRICT = "set sql_mode "
+            + "= 'STRICT_ALL_TABLES'";
 
     /**
      * Destroys the only instance. ONLY for testing purposes.

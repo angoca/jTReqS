@@ -60,14 +60,14 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 public final class Watchdog {
 
     /**
+     * Singleton instance.
+     */
+    private static Watchdog instance;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Watchdog.class);
-    /**
-     * Singleton instance.
-     */
-    private static Watchdog instance;
 
     /**
      * Destroys the only instance. ONLY for testing purposes.

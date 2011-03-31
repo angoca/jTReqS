@@ -62,11 +62,6 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
  */
 public class RegisterInformation {
     /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(RegisterInformation.class);
-    /**
      * Variable that has the application version.
      */
     private static final String APP_VERSION = "ApplicationVersion";
@@ -78,6 +73,11 @@ public class RegisterInformation {
      * Variable that has the HPSS server hostname.
      */
     private static final String HPSS_HOSTNAME = "HPSSHostname";
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RegisterInformation.class);
     /**
      * Variable that has the MySQL hostname.
      */

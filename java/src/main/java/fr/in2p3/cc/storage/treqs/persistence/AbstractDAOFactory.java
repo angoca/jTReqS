@@ -61,14 +61,14 @@ import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 public abstract class AbstractDAOFactory {
 
     /**
+     * The singleton instance.
+     */
+    private static AbstractDAOFactory instance = null;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(AbstractDAOFactory.class);
-    /**
-     * The singleton instance.
-     */
-    private static AbstractDAOFactory instance = null;
 
     /**
      * Creates the DAO factory.

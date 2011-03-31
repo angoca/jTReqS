@@ -66,10 +66,6 @@ final class FileRequest {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FileRequest.class);
     /**
-     * User requesting the file.
-     */
-    private final User user;
-    /**
      * Unique Id of the request.
      */
     private final int id;
@@ -81,6 +77,10 @@ final class FileRequest {
      * Number of retries.
      */
     private byte numberTries;
+    /**
+     * User requesting the file.
+     */
+    private final User user;
 
     /**
      * Constructor with all parameters.

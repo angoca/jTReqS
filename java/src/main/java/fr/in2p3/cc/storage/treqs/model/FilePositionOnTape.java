@@ -89,14 +89,14 @@ public final class FilePositionOnTape {
      */
     private Calendar metadataTimestamp;
     /**
+     * The position of this file on the tape.
+     */
+    private int position;
+    /**
      * The user that asks for the file. If several at the same time, this will
      * contain the first one.
      */
     private User requesterUser;
-    /**
-     * The position of this file on the tape.
-     */
-    private int position;
     /**
      * References the tape of this file.
      */

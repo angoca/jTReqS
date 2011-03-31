@@ -66,15 +66,15 @@ public final class InvalidStateException extends TReqSException {
         REGISTER
     }
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -6062480558866198913L;
-
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(InvalidStateException.class);
+
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -6062480558866198913L;
 
     /**
      * Creates the exception when the queue cannot be activated.

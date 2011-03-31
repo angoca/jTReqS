@@ -64,19 +64,19 @@ public final class MockReadingDAO implements ReadingDAO {
             .getLogger(MockReadingDAO.class);
 
     /**
+     * Exception to throw as new request.
+     */
+    private static AbstractPersistanceException newRequestException;
+    /**
      * List of new requests.
      */
     private static List<PersistenceHelperFileRequest> newRequests = createRequests();
+
     /**
      * Quantity of request to generate. If the quantity is equal to -1, then the
      * quantity will be random.
      */
     private static int quantityRequest = -1;
-
-    /**
-     * Exception to throw as new request.
-     */
-    private static AbstractPersistanceException newRequestException;
     /**
      * Exception to throw.
      */

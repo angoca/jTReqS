@@ -46,14 +46,14 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
  */
 public final class NativeBridge {
     /**
-     * Instance of the singleton.
-     */
-    private static NativeBridge instance = null;
-
-    /**
      * Name of the library to load the HPSS JNI bridge.
      */
     private static final String HPSS_JNI_BRIDGE_LIBRARY = "NativeBridge";
+
+    /**
+     * Instance of the singleton.
+     */
+    private static NativeBridge instance = null;
 
     /**
      * Destroys the unique instance. This is useful only for testing purposes.

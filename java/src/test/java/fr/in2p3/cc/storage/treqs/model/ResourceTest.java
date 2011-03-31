@@ -62,18 +62,18 @@ public final class ResourceTest {
      */
     private static final int FOUR = 4;
     /**
-     * Number three.
+     * Logger.
      */
-    private static final int THREE = 3;
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(ResourceTest.class);
     /**
      * Number ten.
      */
     private static final int TEN = 10;
     /**
-     * Logger.
+     * Number three.
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ResourceTest.class);
+    private static final int THREE = 3;
 
     /**
      * Null media type.

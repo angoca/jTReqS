@@ -251,6 +251,10 @@ public final class Queue implements Comparable<Queue> {
     private static final Logger LOGGER = LoggerFactory.getLogger(Queue.class);
 
     /**
+     * Time when the queue is activated.
+     */
+    private Calendar activationTime;
+    /**
      * Quantity of byte to read. Sum of the file's sizes of all file.
      */
     private long byteSize;
@@ -262,10 +266,6 @@ public final class Queue implements Comparable<Queue> {
      * Time when the queue finish.
      */
     private Calendar endTime;
-    /**
-     * List of files to read &lt;position, Reading of file&gt;.
-     */
-    private TreeMap<Integer, Reading> readingList;
     /**
      * Position of the head, corresponding to the current file being read.
      */
@@ -295,13 +295,13 @@ public final class Queue implements Comparable<Queue> {
      */
     private User owner;
     /**
+     * List of files to read &lt;position, Reading of file&gt;.
+     */
+    private TreeMap<Integer, Reading> readingList;
+    /**
      * Status of this queue.
      */
     private QueueStatus status;
-    /**
-     * Time when the queue is activated.
-     */
-    private Calendar activationTime;
     /**
      * Duration in seconds of a suspension.
      */

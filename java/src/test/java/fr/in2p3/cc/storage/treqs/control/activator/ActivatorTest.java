@@ -71,10 +71,6 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 public final class ActivatorTest {
 
     /**
-     * Number three hundred.
-     */
-    private static final int THREE_HUNDRED = 300;
-    /**
      * Number one hundred.
      */
     private static final int HUNDRED = 100;
@@ -83,6 +79,10 @@ public final class ActivatorTest {
      */
     private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
             "T10K-a");
+    /**
+     * Number three hundred.
+     */
+    private static final int THREE_HUNDRED = 300;
 
     /**
      * Sets the general environment.

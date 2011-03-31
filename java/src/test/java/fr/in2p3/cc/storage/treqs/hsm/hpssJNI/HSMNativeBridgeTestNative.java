@@ -56,30 +56,24 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 public final class HSMNativeBridgeTestNative {
 
     /**
-     * Location of a valid keytab.
+     * Checks if the authentication was done.
      */
-    private static String validKeytabPath = System.getProperty("keytab");
-    static {
-        if (validKeytabPath == null) {
-            validKeytabPath = "/var/hpss/etc/keytab.treqs";
-        }
-    }
+    private static boolean authenticated = false;
+    /**
+     * Name of a directory.
+     */
+    static final String DIRECTORY = "/hpss";
 
     /**
-     * Name of the user related to the keytab.
+     * Logger.
      */
-    private static String validUsername = System.getProperty("userKeytab");
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMNativeBridgeTestNative.class);
 
-    static {
-        if (validUsername == null) {
-            validUsername = "treqs";
-        }
-    }
     /**
      * Authentication type for the valid keytab.
      */
     static final String VALID_AUTH_TYPE = "unix";
-
     /**
      * Name of a file that could be stored in tape.
      */
@@ -87,42 +81,48 @@ public final class HSMNativeBridgeTestNative {
             + "ccin2p3/treqs/dummy";
 
     /**
-     * Size of the valid file.
+     * Name of a file that is empty.
      */
-    static final long VALID_FILE_SIZE = 1000;
-    /**
-     * Name of a file that could be stored in tape.
-     */
-    static final String VALID_FILE_LOCKED = "/hpss/in2p3.fr/group/"
-            + "ccin2p3/treqs/dummy";
+    static final String VALID_FILE_EMPTY = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/empty";
+
     /**
      * Name of a file that is in an aggregation.
      */
     static final String VALID_FILE_IN_AGGREGA = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
     /**
-     * Name of a file that is empty.
+     * Name of a file that could be stored in tape.
      */
-    static final String VALID_FILE_EMPTY = "/hpss/in2p3.fr/group/"
-            + "ccin2p3/treqs/empty";
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMNativeBridgeTestNative.class);
-    /**
-     * Name of a directory.
-     */
-    static final String DIRECTORY = "/hpss";
+    static final String VALID_FILE_LOCKED = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/dummy";
     /**
      * Name of a file in a single hierarchy.
      */
     static final String VALID_FILE_SINGLE_HIERARCHY = "/hpss/in2p3.fr/"
             + "group/ccin2p3/treqs/dummy";
     /**
-     * Checks if the authentication was done.
+     * Size of the valid file.
      */
-    private static boolean authenticated = false;
+    static final long VALID_FILE_SIZE = 1000;
+    /**
+     * Location of a valid keytab.
+     */
+    private static String validKeytabPath = System.getProperty("keytab");
+    /**
+     * Name of the user related to the keytab.
+     */
+    private static String validUsername = System.getProperty("userKeytab");
+    static {
+        if (validKeytabPath == null) {
+            validKeytabPath = "/var/hpss/etc/keytab.treqs";
+        }
+    }
+    static {
+        if (validUsername == null) {
+            validUsername = "treqs";
+        }
+    }
     /**
      * Authenticates the user.
      *

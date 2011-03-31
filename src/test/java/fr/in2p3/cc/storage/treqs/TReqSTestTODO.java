@@ -75,25 +75,13 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class TReqSTestTODO {
     /**
-     * Number four.
-     */
-    private static final int FOUR = 4;
-    /**
-     * Number three.
-     */
-    private static final int THREE = 3;
-    /**
      * Number five.
      */
     private static final int FIVE = 5;
     /**
-     * Two hundred.
+     * Number four.
      */
-    private static final int TWO_HUNDRED = 200;
-    /**
-     * One thousand.
-     */
-    private static final int THOUSAND = 1000;
+    private static final int FOUR = 4;
     /**
      * One hundred.
      */
@@ -103,6 +91,18 @@ public final class TReqSTestTODO {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(TReqSTestTODO.class);
+    /**
+     * One thousand.
+     */
+    private static final int THOUSAND = 1000;
+    /**
+     * Number three.
+     */
+    private static final int THREE = 3;
+    /**
+     * Two hundred.
+     */
+    private static final int TWO_HUNDRED = 200;
 
     /**
      * Sets the environment and initializes the controllers.

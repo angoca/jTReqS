@@ -52,14 +52,14 @@ import org.slf4j.LoggerFactory;
 public class MySQLExecuteException extends AbstractMySQLException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -2824525900625129436L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLExecuteException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -2824525900625129436L;
 
     /**
      * Default constructor for extended exceptions.

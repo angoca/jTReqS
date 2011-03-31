@@ -52,6 +52,11 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.AbstractMySQLExcept
 public final class MySQLRequestsDAO {
 
     /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(MySQLRequestsDAO.class);
+    /**
      * Name for requests table.
      */
     public static final String REQUESTS = MySQLStatements.REQUESTS;
@@ -59,11 +64,6 @@ public final class MySQLRequestsDAO {
      * Name for the status column in requests table.
      */
     public static final String REQUESTS_STATUS = MySQLStatements.REQUESTS_STATUS;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(MySQLRequestsDAO.class);
 
     /**
      * Deletes all from the requests table.

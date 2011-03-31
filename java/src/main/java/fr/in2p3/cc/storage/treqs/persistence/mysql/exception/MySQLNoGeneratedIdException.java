@@ -48,14 +48,14 @@ import org.slf4j.LoggerFactory;
 public final class MySQLNoGeneratedIdException extends MySQLExecuteException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 5195970374062753963L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLNoGeneratedIdException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 5195970374062753963L;
 
     /**
      * Default constructor.

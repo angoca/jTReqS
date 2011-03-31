@@ -61,25 +61,25 @@ import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAll
 public final class MockConfigurationDAO implements ConfigurationDAO {
 
     /**
+     * Dot two.
+     */
+    private static final double DOT_ONE = 0.1;
+
+    /**
      * Dot one.
      */
     private static final double DOT_TWO = 0.2;
 
     /**
-     * Dot two.
+     * Exception to throw.
      */
-    private static final double DOT_ONE = 0.1;
+    private static MockPersistanceException exception = null;
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockConfigurationDAO.class);
-
-    /**
-     * Exception to throw.
-     */
-    private static MockPersistanceException exception = null;
 
     /**
      * Quantity of drives per type.

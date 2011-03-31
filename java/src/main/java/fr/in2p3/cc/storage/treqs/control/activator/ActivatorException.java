@@ -50,14 +50,14 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 public final class ActivatorException extends TReqSException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4474028385225286804L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ActivatorException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -4474028385225286804L;
 
     /**
      * Wraps an exception raised in the activator.

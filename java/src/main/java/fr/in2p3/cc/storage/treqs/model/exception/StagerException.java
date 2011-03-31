@@ -50,14 +50,14 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 public class StagerException extends TReqSException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 1095557555929940047L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(StagerException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 1095557555929940047L;
 
     /**
      * Wraps an exception thrown in the stager.

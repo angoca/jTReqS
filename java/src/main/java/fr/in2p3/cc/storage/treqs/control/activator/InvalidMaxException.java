@@ -65,24 +65,24 @@ public final class InvalidMaxException extends TReqSException {
         STAGERS_PER_QUEUE
     }
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 1958561609145251734L;
-
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(InvalidMaxException.class);
 
     /**
-     * Reason to create this exception.
+     * Generated ID.
      */
-    private final InvalidMaxReasons reason;
+    private static final long serialVersionUID = 1958561609145251734L;
+
     /**
      * New invalid max.
      */
     private final short max;
+    /**
+     * Reason to create this exception.
+     */
+    private final InvalidMaxReasons reason;
     /**
      * Max stagers.
      */

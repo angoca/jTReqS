@@ -74,13 +74,13 @@ public final class StagerTest {
      */
     private static final int FIVE = 5;
     /**
-     * Number two hundred.
-     */
-    private static final int TWO_HUNDRED = 200;
-    /**
      * Logger.
      */
     static final Logger LOGGER = LoggerFactory.getLogger(StagerTest.class);
+    /**
+     * Number two hundred.
+     */
+    private static final int TWO_HUNDRED = 200;
 
     /**
      * Sets the global configuration.

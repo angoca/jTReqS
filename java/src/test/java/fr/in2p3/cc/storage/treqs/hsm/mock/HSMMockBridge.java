@@ -54,21 +54,21 @@ import fr.in2p3.cc.storage.treqs.model.File;
  */
 public final class HSMMockBridge extends AbstractHSMBridge {
     /**
-     * Types of tapes.
+     * Max file position in tape.
      */
-    private static final int TAPE_TYPES = 4;
+    private static final int FILE_POSITION = 100;
     /**
      * Max file size.
      */
     private static final int FILE_SIZE = 10000;
     /**
-     * Max file position in tape.
+     * File properties to return in the next call.
      */
-    private static final int FILE_POSITION = 100;
+    private static HSMHelperFileProperties fileProperties;
     /**
-     * Max tape number.
+     * Exception to throw in the next call of get metadata.
      */
-    private static final int TAPE_NUMBER = 10;
+    private static AbstractHSMException filePropertiesException;
     /**
      * Instance of the singleton.
      */
@@ -80,27 +80,27 @@ public final class HSMMockBridge extends AbstractHSMBridge {
             .getLogger(HSMMockBridge.class);
 
     /**
-     * File properties to return in the next call.
+     * Object for synchronization.
      */
-    private static HSMHelperFileProperties fileProperties;
-
-    /**
-     * Exception to throw in the next call of get metadata.
-     */
-    private static AbstractHSMException filePropertiesException;
+    private static Object notifyObject;
 
     /**
      * Exception to throw in the next call of stage.
      */
     private static AbstractHSMException stageException;
+
     /**
      * Time of the stage.
      */
     private static long stageMillis;
     /**
-     * Object for synchronization.
+     * Max tape number.
      */
-    private static Object notifyObject;
+    private static final int TAPE_NUMBER = 10;
+    /**
+     * Types of tapes.
+     */
+    private static final int TAPE_TYPES = 4;
     /**
      * Destroys the only instance. ONLY for testing purposes.
      */

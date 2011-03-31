@@ -71,15 +71,15 @@ public final class InvalidParameterException extends TReqSException {
         INVALID_NEW_QUEUE_STATUS
     }
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4795338754047868534L;
-
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(InvalidParameterException.class);
+
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -4795338754047868534L;
 
     /**
      * Creates the exception when trying to move the head behind the current

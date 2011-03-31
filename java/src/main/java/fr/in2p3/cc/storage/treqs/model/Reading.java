@@ -76,10 +76,6 @@ public final class Reading {
      */
     private String errorMessage;
     /**
-     * Status of the last reading operation.
-     */
-    private RequestStatus requestStatus;
-    /**
      * Max number of retries.
      */
     private final byte maxTries;
@@ -88,17 +84,21 @@ public final class Reading {
      */
     private final FilePositionOnTape metaData;
     /**
-     * Number of reading tries.
-     */
-    private byte tries;
-    /**
      * The associated queue.
      */
     private final Queue queue;
     /**
+     * Status of the last reading operation.
+     */
+    private RequestStatus requestStatus;
+    /**
      * When the file started to be staged.
      */
     private Calendar startTime;
+    /**
+     * Number of reading tries.
+     */
+    private byte tries;
 
     /**
      * Sets all the initial parameters and updates the DAO. The file status is

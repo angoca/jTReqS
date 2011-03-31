@@ -82,22 +82,6 @@ public final class QueuesControllerTest {
      */
     private static final int FIFTY = 50;
     /**
-     * Number three hundred.
-     */
-    private static final int THREE_HUNDRED = 300;
-    /**
-     * Number twenty.
-     */
-    private static final int TWENTY = 20;
-    /**
-     * Number three.
-     */
-    private static final int THREE = 3;
-    /**
-     * Number ten.
-     */
-    private static final int TEN = 10;
-    /**
      * One hundred.
      */
     private static final int HUNDRED = 100;
@@ -128,6 +112,22 @@ public final class QueuesControllerTest {
      * Tape 1 for tests.
      */
     private static final Tape TAPE_1 = new Tape(NAMETAPE_1, MEDIA_TYPE_1);
+    /**
+     * Number ten.
+     */
+    private static final int TEN = 10;
+    /**
+     * Number three.
+     */
+    private static final int THREE = 3;
+    /**
+     * Number three hundred.
+     */
+    private static final int THREE_HUNDRED = 300;
+    /**
+     * Number twenty.
+     */
+    private static final int TWENTY = 20;
     /**
      * User 1 for tests.
      */

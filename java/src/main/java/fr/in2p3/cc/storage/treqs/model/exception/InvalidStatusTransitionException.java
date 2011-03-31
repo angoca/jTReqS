@@ -57,18 +57,18 @@ public final class InvalidStatusTransitionException extends TReqSException {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(InvalidStatusTransitionException.class);
     /**
-     * Old status.
+     * Generated ID.
      */
-    private RequestStatus oldStatus;
+    private static final long serialVersionUID = -2658791247113864625L;
     /**
      * New status.
      */
     private RequestStatus newStatus;
 
     /**
-     * Generated ID.
+     * Old status.
      */
-    private static final long serialVersionUID = -2658791247113864625L;
+    private RequestStatus oldStatus;
 
     /**
      * Creates an exception with the old status and the new invalid status.

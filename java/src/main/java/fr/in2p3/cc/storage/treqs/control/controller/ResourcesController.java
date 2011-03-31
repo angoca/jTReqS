@@ -61,14 +61,14 @@ import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAll
 public final class ResourcesController {
 
     /**
+     * Singleton instance.
+     */
+    private static ResourcesController instance;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ResourcesController.class);
-    /**
-     * Singleton instance.
-     */
-    private static ResourcesController instance;
 
     /**
      * Destroys the only instance. ONLY for testing purposes.

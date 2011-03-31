@@ -81,6 +81,11 @@ public final class MySQLReadingDAOTest {
      */
     private static final int HUNDRED = 100;
     /**
+     * Media type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 2,
+            "media1");
+    /**
      * 3.
      */
     private static final int NUMBER_3 = 3;
@@ -88,11 +93,6 @@ public final class MySQLReadingDAOTest {
      * 4.
      */
     private static final int NUMBER_4 = 4;
-    /**
-     * Media type.
-     */
-    private static final MediaType MEDIA_TYPE = new MediaType((byte) 2,
-            "media1");
 
     /**
      * Init the test.

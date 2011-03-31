@@ -78,14 +78,14 @@ public final class MySQLQueueDAOTest {
      */
     private static final int HUNDRED = 100;
     /**
-     * Number three.
-     */
-    private static final int THREE = 3;
-    /**
      * Media type.
      */
     private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
             "media1");
+    /**
+     * Number three.
+     */
+    private static final int THREE = 3;
 
     /**
      * Init the test.

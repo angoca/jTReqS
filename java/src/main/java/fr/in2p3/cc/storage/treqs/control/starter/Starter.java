@@ -97,6 +97,34 @@ public final class Starter {
      */
     private static final String CONFIG_FILE_SHORT_COMMAND_OPTION = "c";
     /**
+     * Short name for the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_COMMAND_OPTION = "dbc";
+    /**
+     * Description of the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_DESCRIPTION = "Create the "
+            + "tables in the database.";
+    /**
+     * Long name for the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_LONG_COMMAND_OPTION = "data"
+            + "base-create";
+    /**
+     * Short name for the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_COMMAND_OPTION = "db";
+    /**
+     * Description of the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_DESCRIPTION = "Shows the "
+            + "script to create the tables";
+    /**
+     * Long name for the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_LONG_COMMAND_OPTION = "data"
+            + "base-script";
+    /**
      * Description of the command option: Help.
      */
     private static final String HELP_COMMAND_DESCRIPTION = "Print this "
@@ -110,41 +138,13 @@ public final class Starter {
      */
     private static final String HELP_SHORT_COMMAND_OPTION = "h";
     /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
-    /**
-     * Short name for the command option: Database create tables.
-     */
-    private static final String DATABASE_CREATE_COMMAND_OPTION = "dbc";
-    /**
-     * Long name for the command option: Database create tables.
-     */
-    private static final String DATABASE_CREATE_LONG_COMMAND_OPTION = "data"
-            + "base-create";
-    /**
-     * Description of the command option: Database create tables.
-     */
-    private static final String DATABASE_CREATE_DESCRIPTION = "Create the "
-            + "tables in the database.";
-    /**
-     * Short name for the command option: Database script.
-     */
-    private static final String DATABASE_SCRIPT_COMMAND_OPTION = "db";
-    /**
-     * Long name for the command option: Database script.
-     */
-    private static final String DATABASE_SCRIPT_LONG_COMMAND_OPTION = "data"
-            + "base-script";
-    /**
-     * Description of the command option: Database script.
-     */
-    private static final String DATABASE_SCRIPT_DESCRIPTION = "Shows the "
-            + "script to create the tables";
-    /**
      * The singleton instance.
      */
     private static Starter instance = null;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
 
     /**
      * Destroys the only instance. ONLY for testing purposes.

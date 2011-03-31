@@ -53,15 +53,15 @@ import org.junit.runners.Suite.SuiteClasses;
         SystemTests.class })
 public final class MainTests {
     /**
-     * Mock persistence.
-     */
-    public static final String MOCK_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
-            + "persistence.mock.MockDAOFactory";
-    /**
      * Mock bridge.
      */
     public static final String MOCK_BRIDGE = "fr.in2p3.cc.storage.treqs."
             + "hsm.mock.HSMMockBridge";
+    /**
+     * Mock persistence.
+     */
+    public static final String MOCK_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
+            + "persistence.mock.MockDAOFactory";
     /**
      * Properties file.
      */
