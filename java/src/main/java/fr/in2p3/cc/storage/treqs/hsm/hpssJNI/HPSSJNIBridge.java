@@ -196,7 +196,10 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             // TODO v2.0 in a parallel thread check if the operation is not
             // hung.
+            long time = System.currentTimeMillis();
             ret = NativeBridge.getInstance().getFileProperties(name);
+            time = System.currentTimeMillis() - time;
+            LOGGER.debug("native time getProperties: {}", time);
         } catch (JNIException e) {
             int code = processException(e);
             LOGGER.info("jni code " + code);
@@ -330,7 +333,10 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             // TODO v2.0 in a parallel thread check if the operation is not
             // hung.
+            long time = System.currentTimeMillis();
             NativeBridge.getInstance().stage(file.getName(), file.getSize());
+            time = System.currentTimeMillis() - time;
+            LOGGER.debug("native time stage: {}", time);
         } catch (JNIException e) {
             int code = processException(e);
             LOGGER.info("jni code " + code);

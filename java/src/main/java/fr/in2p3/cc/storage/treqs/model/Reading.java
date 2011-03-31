@@ -258,7 +258,10 @@ public final class Reading {
                         Integer.toString(this.metaData.getPosition()) });
 
         try {
+            long time = System.currentTimeMillis();
             HSMFactory.getHSMBridge().stage(this.getMetaData().getFile());
+            time = System.currentTimeMillis() - time;
+            LOGGER.debug("total time stage: {}", time);
             this.setErrorMessage("Succesfully staged.");
             this.setFileRequestStatus(RequestStatus.STAGED);
             // Register the state in the database with staged status.

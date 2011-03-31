@@ -537,8 +537,11 @@ public final class Dispatcher extends AbstractProcess {
             // TODO v2.0 The next lines are repeated.
             // Get the file properties from HSM.
             try {
+                long time = System.currentTimeMillis();
                 fileProperties = HSMFactory.getHSMBridge().getFileProperties(
                         fileRequest.getName());
+                time = System.currentTimeMillis() - time;
+                LOGGER.debug("total time getProperties: {}", time);
             } catch (AbstractHSMException e) {
                 this.checkIfEmptyFile(fileRequest, e);
                 cont = false;
@@ -573,8 +576,11 @@ public final class Dispatcher extends AbstractProcess {
                             fileRequest.getName());
                     // TODO v2.0 The next lines are repeated.
                     try {
+                        long time = System.currentTimeMillis();
                         fileProperties = HSMFactory.getHSMBridge()
                                 .getFileProperties(fileRequest.getName());
+                        time = System.currentTimeMillis() - time;
+                        LOGGER.debug("total time getProperties: {}", time);
                     } catch (AbstractHSMException e) {
                         this.checkIfEmptyFile(fileRequest, e);
                         cont = false;
