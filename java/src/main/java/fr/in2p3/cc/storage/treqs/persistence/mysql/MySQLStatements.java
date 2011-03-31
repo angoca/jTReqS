@@ -410,7 +410,7 @@ public final class MySQLStatements {
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a request as queued. It means that the request
@@ -424,7 +424,7 @@ public final class MySQLStatements {
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a request that had a problem while staging. It
@@ -437,7 +437,7 @@ public final class MySQLStatements {
             + " = ?, " + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE
             + " = ?, " + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a request that could not have been staged due to
@@ -451,7 +451,7 @@ public final class MySQLStatements {
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a file request and indicate that the request has
@@ -465,8 +465,8 @@ public final class MySQLStatements {
             + REQUESTS_TAPE + " = ?, " + REQUESTS_POSITION + " = ?, "
             + REQUESTS_LEVEL + " = ?, " + REQUESTS_SIZE + " = ?, "
             + REQUESTS_ERRORCODE + " = 0, " + REQUESTS_SUBMISSION_TIME
-            + " = ? WHERE " + REQUESTS_FILE + " = ? AND " + REQUESTS_END_TIME
-            + " IS null";
+            + " = ? WHERE " + REQUESTS_FILE + " = ? AND " + REQUESTS_STATUS
+            + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update the unprocessed requests of a previous execution.
