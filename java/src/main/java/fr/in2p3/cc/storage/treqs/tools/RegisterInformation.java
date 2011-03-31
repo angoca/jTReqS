@@ -50,6 +50,12 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 /**
  * Register the information of the environment where the application is executed
  * into the data source.
+ * <p>
+ * TODO v2.0 Register the name of the database.
+ * <p>
+ * TODO v2.0 Register the name of the keytab (location).
+ * <p>
+ * TODO v2.0 Register the username for the keytab.
  *
  * @author Andres Gomez
  * @since 1.5.4

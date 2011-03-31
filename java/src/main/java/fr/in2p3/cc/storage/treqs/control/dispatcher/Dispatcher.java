@@ -190,6 +190,9 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Creates the dispatcher. Initializes the attributes.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving a configuration.

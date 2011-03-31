@@ -42,6 +42,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * Main class that get together all tests.
+ * <p>
+ * TODO v2.0 The native tests have to be included as part of the test in the
+ * complete application. Currently, they are executed independently.
  *
  * @author Andrés Gómez
  */

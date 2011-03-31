@@ -107,6 +107,9 @@ public abstract class AbstractDAOFactory {
 
     /**
      * Creates the DAO factory.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws TReqSException
      *             If there is a problem obtaining the configuration or

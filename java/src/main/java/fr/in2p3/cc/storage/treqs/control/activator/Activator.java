@@ -164,6 +164,9 @@ public final class Activator extends AbstractProcess {
 
     /**
      * Creates the activator, establishing all the values.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws TReqSException
      *             If there is a problem while retrieving the configuration
@@ -258,6 +261,10 @@ public final class Activator extends AbstractProcess {
 
     /**
      * Activates a queue. This function will also trigger the stagers.
+     * <p>
+     * TODO v2.0 It should activate a queue for a tape that is already in the
+     * drive (the already activated queue has finished.) Each time a queue is
+     * activate, a flag in the queue has to show this state.
      *
      * @param queue
      *            The queue to activate.

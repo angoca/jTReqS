@@ -60,10 +60,11 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 /**
  * Managing interactions with HPSS via JNI.
  * <p>
- * Currently (20101130), there is a problem with this implementation because the
- * HPSS client API cannot be loaded correctly. There is a problem when JNI loads
- * the C library, because it cannot find the exported symbols when importing the
- * authorization library via dlopen.
+ * TODO v2.0 This should permit to reload the configuration file and reestablish
+ * the connection environment.
+ * <p>
+ * TODO v2.0 Make a bridge with JNA instead of JNI (just for the exercise).
+ * However, the conversion will be easier and the API could be called directly.
  *
  * @author Andres Gomez
  * @since 1.5
@@ -247,6 +248,9 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
     /**
      * Sets the type of authentication used for HPSS.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving the value of the
@@ -272,6 +276,9 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     /**
      * Sets the user that will be used to authenticate the communication with
      * HPSS.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws KeyNotFoundException
      *             If the option could not be found.

@@ -91,6 +91,13 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * The stage script does not have output, it could be anything.
  * <p>
  * TODO Tests: process the output.
+ * <p>
+ * TODO v2.0 Directory: Shows all the entries of the directory. If the output
+ * has the string FILE, then this is a directory.
+ * <p>
+ * TODO v2.0 Empty: VOLID: ##DISK and Position: 0.
+ * <p>
+ * TODO v2.0 Not existent: It says does not exist.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -234,7 +241,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      *             If there is a problem reading the configuration.
      */
     private HSMCommandBridge() throws TReqSException {
-        super ();
+        super();
 
         LOGGER.trace("> create instance.");
 

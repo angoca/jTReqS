@@ -44,6 +44,10 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
  * <p>
  * TODO v2.0 The dates have to be server side or database side, but not both of
  * them.
+ * <p>
+ * TODO v2.0 Create an option that permits to dump the SQL queries of the
+ * application. This permits to see how the database is used, an eventually
+ * tuned it in a better way.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

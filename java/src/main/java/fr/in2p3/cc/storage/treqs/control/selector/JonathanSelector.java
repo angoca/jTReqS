@@ -277,6 +277,8 @@ public final class JonathanSelector extends FifoSelector {
 
     /**
      * Returns a users that has queues in created state.
+     * <p>
+     * TODO v2.0 Negative user means that the user has to be ignored/skipped.
      *
      * @param users
      *            Iterator of users.

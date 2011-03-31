@@ -104,6 +104,9 @@ public final class FilePositionOnTape {
 
     /**
      * Constructor with all parameters.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @param associatedFile
      *            Associated file.

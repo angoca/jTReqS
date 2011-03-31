@@ -134,7 +134,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * possible to add requests in this queue.<br>
  * It could be queues in any other state. <br>
  * A queue in this state is very short, because when a queue is completely
- * processed, it is immediatly deleted from the Queue's controller.</li>
+ * processed, it is immediately deleted from the Queue's controller.</li>
  * </ul>
  * <h3>New Requests</h3>
  * <p>
@@ -236,6 +236,9 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * Once the queue has finish processing all the requests, then it calls the
  * Controllers of different objects to remove the references. When the Queue has
  * been finished, there is not any reason to keep this information in memory.
+ * <p>
+ * TODO v2.0 To have a table with the unavailable tapes. This skips the reading
+ * of a file that is not currently available, and answer quickly.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

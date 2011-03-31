@@ -49,6 +49,9 @@ import fr.in2p3.cc.storage.treqs.DefaultProperties;
 /**
  * Reads the configuration from the properties file and then, keep that
  * information in memory.
+ * <p>
+ * TODO v2.0 Configure this class to load the configuration file periodically,
+ * this permits to have hot changes.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -126,6 +129,8 @@ public final class Configurator {
                 name = DefaultProperties.CONFIGURATION_PROPERTIES;
                 LOGGER.debug("No given file in System property");
             }
+            // TODO v2.0 Try to show the complete path of the configuration
+            // file to use in a logger. This permits to know which is being used
             this.properties.addConfiguration(new HierarchicalINIConfiguration(
                     name));
         } catch (ConfigurationException e) {

@@ -74,6 +74,9 @@ import fr.in2p3.cc.storage.treqs.tools.Watchdog;
  * TODO v2.0 jmx to lock a file
  * <p>
  * TODO v2.0 jmx to lock a user completely (cancel all related queues)
+ * <p>
+ * TODO v2.0 The started should have a monitoring of all threads started, and
+ * see if they are hung.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -344,7 +347,12 @@ public final class Starter {
         LOGGER.trace("> toStart");
 
         // TODO v2.0 Check the PID of a same process to prevent two TReqS.
-        // TODO v2.0 Check that the selector, DAO and hsm bridge could be loaded
+        // TODO v2.0 Check that the selector, DAO and HSM bridge could be
+        // loaded. This prevents the application to fail after a while when new
+        // requests arrive.
+        // TODO v2.0 Show a warning message when there are not defined drives
+        // in the database, instead of wait till the activator tries to activate
+        // a queue.
 
         // Gets and registers the info in the database.
         RegisterInformation.exec();
@@ -386,6 +394,10 @@ public final class Starter {
                 Watchdog.getInstance().heartBeat();
             }
         } catch (InterruptedException e) {
+            // TODO v2.0 Catch any TERM signal in order to stop the application.
+            // This signal will trigger the close function in all stagers, and
+            // then cancel them to stop working. Also the Dispatcher and
+            // Activator will be finished.
             throw new ExecutionErrorException(e);
         }
 

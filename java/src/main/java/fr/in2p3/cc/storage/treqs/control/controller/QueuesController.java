@@ -532,6 +532,9 @@ public final class QueuesController {
     /**
      * Instantiates a selector dynamically. This permits to change the selector
      * in hot, without recycling the application.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @return The selector defined in the configuration file, or the default
      *         one.
@@ -591,56 +594,56 @@ public final class QueuesController {
     }
 
     /**
-	 * Returns the list of queues that are waiting to be activated for a given
-	 * type of media.
-	 *
-	 * @param media
-	 *            Type of the media to analyze.
-	 * @return List of created queues.
-	 * @throws TReqSException
-	 *             If there is a problem while checking the existence of a
-	 *             queue.
-	 */
-	public List<Queue>/* <!>! */getWaitingQueues(final MediaType/* ! */media)
-	        throws TReqSException {
-	    LOGGER.trace("> getWaitingQueues");
-	
-	    assert media != null;
-	
-	    List<Queue> queues = new ArrayList<Queue>();
-	
-	    @SuppressWarnings("unchecked")
-	    Iterator<String> iterator = this.queuesMap.keySet().iterator();
-	    while (iterator.hasNext()) {
-	        String key = iterator.next();
-	        @SuppressWarnings("unchecked")
-	        Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
-	                .get(key)).iterator();
-	        while (iterator2.hasNext()) {
-	            Queue queue = iterator2.next();
-	            if (queue.getStatus() == QueueStatus.CREATED
-	                    && queue.getTape().getMediaType().equals(media)
-	                    && QueuesController.getInstance().exists(
-	                            queue.getTape().getName(),
-	                            QueueStatus.ACTIVATED) == null) {
-	                LOGGER.debug("Queue {} - {}", queue.getId(), queue
-	                        .getTape().getName());
-	                queues.add(queue);
-	            }
-	        }
-	    }
-	
-	    assert queues != null;
-	
-	    LOGGER.info("There are {} waiting queues on media type {}",
-	            queues.size(), media.getName());
-	
-	    LOGGER.trace("< getWaitingQueues");
-	
-	    return queues;
-	}
+     * Returns the list of queues that are waiting to be activated for a given
+     * type of media.
+     *
+     * @param media
+     *            Type of the media to analyze.
+     * @return List of created queues.
+     * @throws TReqSException
+     *             If there is a problem while checking the existence of a
+     *             queue.
+     */
+    public List<Queue>/* <!>! */getWaitingQueues(final MediaType/* ! */media)
+            throws TReqSException {
+        LOGGER.trace("> getWaitingQueues");
 
-	/**
+        assert media != null;
+
+        List<Queue> queues = new ArrayList<Queue>();
+
+        @SuppressWarnings("unchecked")
+        Iterator<String> iterator = this.queuesMap.keySet().iterator();
+        while (iterator.hasNext()) {
+            String key = iterator.next();
+            @SuppressWarnings("unchecked")
+            Iterator<Queue> iterator2 = ((Collection<Queue>) this.queuesMap
+                    .get(key)).iterator();
+            while (iterator2.hasNext()) {
+                Queue queue = iterator2.next();
+                if (queue.getStatus() == QueueStatus.CREATED
+                        && queue.getTape().getMediaType().equals(media)
+                        && QueuesController.getInstance().exists(
+                                queue.getTape().getName(),
+                                QueueStatus.ACTIVATED) == null) {
+                    LOGGER.debug("Queue {} - {}", queue.getId(), queue
+                            .getTape().getName());
+                    queues.add(queue);
+                }
+            }
+        }
+
+        assert queues != null;
+
+        LOGGER.info("There are {} waiting queues on media type {}",
+                queues.size(), media.getName());
+
+        LOGGER.trace("< getWaitingQueues");
+
+        return queues;
+    }
+
+    /**
      * Removes a queue which is in a specific status.
      *
      * @param name

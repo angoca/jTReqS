@@ -66,6 +66,9 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Tests of jTReqS execution.
+ * <p>
+ * TODO v2.0 This has to be included in the normal structure of the project.
+ * These tests have to be verified.
  *
  * @author Andrés Gómez
  */
@@ -1381,4 +1384,42 @@ public final class TReqSTestTODO {
 
     // TODO Tests: No database connection
     // TODO Tests: create an empty file and stage it
+
+    // TODO Tests: Check how the states are being change in the database. This
+    // permits to see that the database receives valid changes from the
+    // application. This could be enforced with a trigger.
+    // TODO Tests: Check that the application write a request as onDisk or
+    // staged when the media type is not recognized. This means that the media
+    // type is not registered in the database, and the application cannot
+    // control its access (it does not know the quantity of available drives)
+    // so it returns the request as in Disk, and show an error message in the
+    // log.
+
+    // TODO Tests: Test the application with not defined drives. This should
+    // show error messages, but continues the execution. The configuration
+    // should be done while active.
+
+    // TODO Tests: To do a test of trying to read a file that it is being
+    // written.
+    // TODO Tests: To do tests of reading an already open file.
+
+    // TODO Tests: Several (many) clients asking just one file each one. This
+    // test the performance of the database, and the scalability.
+    // TODO Tests: Simulate a big prestaging from the tests, in order to see
+    // how the components behave.
+
+    // TODO Tests: Aggregation has to be implemented and tested.
+    // TODO Tests: RAIT should be tested (RAID with tapes)
+
+    // TODO Tests: Stage more that 4 files from a tape to see how the components
+    // work (activator, selector)
+
+    // TODO Tests: Restage a file, once the metadata has been expired.
+    // TODO Tests: Select a best user when a queue has several users.
+    // TODO Tests: To do a tape mapping with inexistent users.
+    // TODO Tests: Stage a file with a user with negative share.
+    // TODO Tests: Start and stop the application several times, with things
+    // in the database.
+    // TODO Tests: SelectBestUser returns null, then do what? If the user has
+    // negative sharing but the tape has other users.
 }

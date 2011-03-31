@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents a user.
+ * <p>
+ * TODO v2.0 To have a table with the blocked users. This skips the reading
+ * of a file that is not currently available, and answer quickly.
  *
  * @author Jonathan Schaeffer
  * @since 1.0

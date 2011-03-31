@@ -69,6 +69,9 @@ public final class HSMFactory {
      * Retrieves the corresponding HSM bridge. This method checks the value of
      * MAIN.HSM_BRIDGE in the configuration file. If no value was specify, it
      * will return HPSS bridge as default.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @return The configured HSM bridge.
      * @throws ProblematicConfiguationFileException
