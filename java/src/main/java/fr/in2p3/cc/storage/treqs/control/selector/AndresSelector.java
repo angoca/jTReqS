@@ -198,9 +198,9 @@ public final class AndresSelector extends Selector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    private Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
-            final Resource/* ! */resource, final User/* ! */user)
-            throws TReqSException {
+    private Queue/* ? */selectBestQueueForUser(
+            final List<Queue>/* <!>! */queues, final Resource/* ! */resource,
+            final User/* ! */user) throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
 
         assert queues != null : "queues null";

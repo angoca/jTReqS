@@ -45,7 +45,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
  * Wraps an exception when executing a command.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.4
  */
@@ -63,7 +63,7 @@ public final class ExecuterException extends TReqSException {
 
     /**
      * Creates the exception with a descriptive message.
-     *
+     * 
      * @param message
      *            Message describing the problem.
      */
@@ -84,7 +84,7 @@ public final class ExecuterException extends TReqSException {
 
     /**
      * Creates the exception wrapping another exception.
-     *
+     * 
      * @param exception
      *            Wrapped exception.
      */

@@ -145,8 +145,7 @@ public abstract class AbstractHSMException extends TReqSException {
     /*
      * (non-Javadoc)
      *
-     * @see fr.in2p3.cc.storage.treqs.TReqSException#getMessage()
-     * CHECKSTYLE:OFF
+     * @see fr.in2p3.cc.storage.treqs.TReqSException#getMessage() CHECKSTYLE:OFF
      */
     @Override
     public String getMessage() {
@@ -154,6 +153,7 @@ public abstract class AbstractHSMException extends TReqSException {
 
         return "Code: " + this.errorcode + " - " + super.getMessage();
     }
+
     // CHECKSTYLE:ON
 
     /**

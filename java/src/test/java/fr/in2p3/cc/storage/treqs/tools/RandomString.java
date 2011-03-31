@@ -40,7 +40,7 @@ import java.util.Random;
 
 /**
  * Creates random strings.
- * 
+ *
  * @author Andrés Gómez
  * @since 1.5
  */
@@ -72,7 +72,7 @@ public final class RandomString {
 
     /**
      * Creates a string.
-     * 
+     *
      * @param length
      *            Quantity of characters in the string.
      */

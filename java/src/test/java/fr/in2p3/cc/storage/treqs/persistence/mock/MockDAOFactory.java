@@ -106,8 +106,11 @@ public final class MockDAOFactory extends AbstractDAOFactory {
         return new MockReadingDAO();
     }
 
-    /* (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
      */
     @Override
     public RegisterInformationDAO getRegisterInformationDAO() {

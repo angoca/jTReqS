@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
 
 /**
  * Manages the inserts of the register information to MySQL database.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.4
  */
@@ -65,7 +65,7 @@ public class MySQLRegisterInformationDAO implements RegisterInformationDAO {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.RegisterInformationDAO#insert(java
      * .lang.String, java.lang.String)

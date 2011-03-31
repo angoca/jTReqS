@@ -58,6 +58,7 @@ public final class ActivatorException extends TReqSException {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(ActivatorException.class);
+
     /**
      * Wraps an exception raised in the activator.
      *

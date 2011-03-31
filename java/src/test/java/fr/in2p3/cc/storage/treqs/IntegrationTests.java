@@ -48,7 +48,7 @@ import fr.in2p3.cc.storage.treqs.tools.WatchdogTest;
 
 /**
  * Integration tests. Several modules tested together.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)

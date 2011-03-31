@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Executes commands returning the standard output.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.4
  */
@@ -58,7 +58,7 @@ public final class CommandExecuter {
 
     /**
      * Executes a command an returns the standard output.
-     *
+     * 
      * @return Standard output of the executed command.
      * @throws ExecuterException
      *             If there is any problem while executing.
@@ -92,7 +92,7 @@ public final class CommandExecuter {
 
     /**
      * Processes the output of a stream.
-     *
+     * 
      * @param stream
      *            Buffer where is the stream.
      * @param error
@@ -101,8 +101,9 @@ public final class CommandExecuter {
      * @throws HSMCommandBridgeException
      *             If there is a problem processing the output.
      */
-    private static String/* ? */processOutput(final BufferedReader/* ! */stream,
-            final boolean error) throws ExecuterException {
+    private static String/* ? */processOutput(
+            final BufferedReader/* ! */stream, final boolean error)
+            throws ExecuterException {
         LOGGER.trace("> processOutput");
 
         assert stream != null;

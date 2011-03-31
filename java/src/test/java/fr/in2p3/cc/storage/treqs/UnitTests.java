@@ -54,7 +54,7 @@ import fr.in2p3.cc.storage.treqs.tools.ConfiguratorTest;
 
 /**
  * Unit tests. White box test.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)

@@ -39,7 +39,6 @@ package fr.in2p3.cc.storage.treqs.hsm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Raised when there is a problem while initializing the HSM access.
  *

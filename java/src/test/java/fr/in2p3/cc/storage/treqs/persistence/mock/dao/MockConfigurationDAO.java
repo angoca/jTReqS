@@ -90,9 +90,8 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      * T10KB  8
      * </code>
      *
-     * @see
-     *       fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
-     *       ()
+     * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
+     *      ()
      * @return The list of mock allocations.
      * @throws TReqSException
      *             Never.
@@ -132,7 +131,7 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      * </code>
      *
      * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#
-     *       getResourceAllocation()
+     *      getResourceAllocation()
      * @return Allocation per mock users.
      * @throws AbstractPersistanceException
      *             Never.

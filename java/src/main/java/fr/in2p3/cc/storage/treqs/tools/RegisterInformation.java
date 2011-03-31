@@ -56,7 +56,7 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
  * TODO v2.0 Register the name of the keytab (location).
  * <p>
  * TODO v2.0 Register the username for the keytab.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.4
  */
@@ -85,7 +85,7 @@ public class RegisterInformation {
 
     /**
      * Register the information in the database.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem while retrieving or inserting the
      *             values.
@@ -108,7 +108,7 @@ public class RegisterInformation {
 
     /**
      * Register the application version.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem while inserting the value.
      */
@@ -147,7 +147,7 @@ public class RegisterInformation {
 
     /**
      * Registers the hostname where the application is executed.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem while executing or registering.
      */
@@ -172,7 +172,7 @@ public class RegisterInformation {
 
     /**
      * Registers the HPSS server hostname.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem while executing or registering.
      */
@@ -203,7 +203,7 @@ public class RegisterInformation {
 
     /**
      * Registers the MySQL server hostname.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem while executing or registering.
      */

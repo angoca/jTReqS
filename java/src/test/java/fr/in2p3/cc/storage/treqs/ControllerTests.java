@@ -50,7 +50,7 @@ import fr.in2p3.cc.storage.treqs.control.controller.UsersControllerTest;
 
 /**
  * Tests on the controllers.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)

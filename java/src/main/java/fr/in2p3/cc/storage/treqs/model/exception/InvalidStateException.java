@@ -83,8 +83,7 @@ public final class InvalidStateException extends TReqSException {
      *            Reason of the exception.
      */
     public InvalidStateException(final InvalidStateReasons reason) {
-        super("Queue is not in CREATED state and it cannot be "
-                + "activated.");
+        super("Queue is not in CREATED state and it cannot be " + "activated.");
 
         LOGGER.trace("> Instance creation");
 
