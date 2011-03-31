@@ -151,8 +151,8 @@ public final class Configurator {
     public void deleteValue(final String sec, final String key) {
         LOGGER.trace("> deleteValue");
 
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
 
         if (this.properties != null) {
             this.properties.clearProperty(sec + "." + key);
@@ -177,8 +177,8 @@ public final class Configurator {
             final byte defaultValue) {
         LOGGER.trace("> getByteValue");
 
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
 
         final byte value = this.properties.getByte(sec + "." + key, defaultValue);
 
@@ -203,8 +203,8 @@ public final class Configurator {
             final short defaultValue) {
         LOGGER.trace("> getShortValue");
 
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
 
         final short value = this.properties.getShort(sec + "." + key, defaultValue);
 
@@ -229,8 +229,8 @@ public final class Configurator {
             throws KeyNotFoundException {
         LOGGER.trace("> getStringValue");
 
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
 
         final String value = this.properties.getString(sec + "." + key);
 
@@ -260,9 +260,9 @@ public final class Configurator {
             final String value) {
         LOGGER.trace("> setValue");
 
-        assert section != null && !section.equals("");
-        assert key != null && !key.equals("");
-        assert value != null && !value.equals("");
+        assert (section != null) && !section.equals("");
+        assert (key != null) && !key.equals("");
+        assert (value != null) && !value.equals("");
 
         this.properties.setProperty(section + "." + key, value);
 

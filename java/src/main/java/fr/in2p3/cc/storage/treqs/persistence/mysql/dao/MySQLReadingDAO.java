@@ -83,7 +83,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         LOGGER.trace("> firstUpdate");
 
         assert reading != null;
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
 
         final short statusId = reading.getRequestStatus().getId();
         final int queueId = reading.getQueue().getId();
@@ -255,7 +255,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
         assert id >= 0;
         assert status != null;
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
 
         final short statusId = status.getId();
         final Timestamp currentTimestamp = new Timestamp(

@@ -92,7 +92,7 @@ public final class MySQLBroker {
     public static void destroyInstance() {
         LOGGER.trace("> destroyInstance");
 
-        if (instance != null && instance.connected) {
+        if ((instance != null) && instance.connected) {
             try {
                 instance.disconnect();
             } catch (final MySQLCloseException e) {
@@ -336,7 +336,7 @@ public final class MySQLBroker {
     public Object[] executeSelect(final String query) throws TReqSException {
         LOGGER.trace("> executeSelect");
 
-        assert query != null && !query.equals("");
+        assert (query != null) && !query.equals("");
 
         ResultSet rs;
         Statement stmt;
@@ -459,7 +459,7 @@ public final class MySQLBroker {
 
         boolean ret;
         try {
-            ret = this.connected && this.connection != null
+            ret = this.connected && (this.connection != null)
                     && !this.connection.isClosed();
         } catch (final SQLException e) {
             this.handleSQLException(e);

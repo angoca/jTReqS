@@ -95,8 +95,8 @@ public final class Activator extends AbstractProcess {
         LOGGER.trace("> destroyInstance");
 
         if (instance != null) {
-            if (instance.getProcessStatus() == ProcessStatus.STARTING
-                    || instance.getProcessStatus() == ProcessStatus.STARTED) {
+            if ((instance.getProcessStatus() == ProcessStatus.STARTING)
+                    || (instance.getProcessStatus() == ProcessStatus.STARTED)) {
                 instance.conclude();
             }
             if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
@@ -225,8 +225,8 @@ public final class Activator extends AbstractProcess {
 
         // If necessary, refresh the resources allocations
         if (this.keepOn()
-                && (this.allocations.size() == 0 || this.allocations.get(0)
-                        .getAge() > this.getMetadataTimeout())) {
+                && ((this.allocations.size() == 0) || (this.allocations.get(0)
+                        .getAge() > this.getMetadataTimeout()))) {
             try {
                 this.refreshAllocations();
             } catch (final TReqSException e) {
@@ -438,7 +438,7 @@ public final class Activator extends AbstractProcess {
                     .getWaitingQueues(resource.getMediaType());
 
             final boolean cont = true;
-            while (freeResources > 0 && waitingQueues.size() > 0 && cont) {
+            while ((freeResources > 0) && (waitingQueues.size() > 0) && cont) {
                 LOGGER.debug("Still {} resources available", freeResources);
                 // Select best queue for the best user
                 final Queue bestQueue = QueuesController.getInstance().getBestQueue(

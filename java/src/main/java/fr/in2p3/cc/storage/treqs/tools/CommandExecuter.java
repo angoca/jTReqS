@@ -67,7 +67,7 @@ public final class CommandExecuter {
             throws ExecuterException {
         LOGGER.trace("> execute");
 
-        assert command != null && !command.equals("");
+        assert (command != null) && !command.equals("");
 
         String ret = null;
         try {
@@ -77,8 +77,8 @@ public final class CommandExecuter {
             final BufferedReader bfStreamErr = new BufferedReader(
                     new InputStreamReader(process.getErrorStream()));
 
-            processOutput(bfStreamErr, true);
-            ret = processOutput(bfStreamOut, false);
+            CommandExecuter.processOutput(bfStreamErr, true);
+            ret = CommandExecuter.processOutput(bfStreamOut, false);
         } catch (final IOException e) {
             throw new ExecuterException(e);
         }
@@ -112,10 +112,10 @@ public final class CommandExecuter {
         // Process the output.
         try {
             current = stream.readLine();
-            if (error && current != null) {
+            if (error && (current != null)) {
                 LOGGER.error(current);
                 throw new ExecuterException(current);
-            } else if (!error && current == null) {
+            } else if (!error && (current == null)) {
                 throw new ExecuterException();
             }
         } catch (final IOException e) {

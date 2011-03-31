@@ -169,8 +169,8 @@ public final class StagersController {
             final Stager stager = iterator.next();
             LOGGER.debug("Stager {} in status {}", stager.getName(), stager
                     .getProcessStatus().name());
-            if (stager.getProcessStatus() == ProcessStatus.STARTED
-                    || stager.getProcessStatus() == ProcessStatus.STARTING) {
+            if ((stager.getProcessStatus() == ProcessStatus.STARTED)
+                    || (stager.getProcessStatus() == ProcessStatus.STARTING)) {
                 stager.conclude();
             }
         }
@@ -217,7 +217,7 @@ public final class StagersController {
         int ret = 0;
         final String tapeName = queue.getTape().getName();
         for (final Stager stager : this.stagers) {
-            if (stager.getProcessStatus() == ProcessStatus.STARTED
+            if ((stager.getProcessStatus() == ProcessStatus.STARTED)
                     && stager.getQueue().getTape().getName().equals(tapeName)) {
                 ret++;
             }

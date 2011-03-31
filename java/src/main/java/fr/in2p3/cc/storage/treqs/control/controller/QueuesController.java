@@ -199,9 +199,9 @@ public final class QueuesController {
                 // then do not insert in this queue.
                 final int activeStagers = StagersController.getInstance()
                         .getActiveStagersForQueue(queue);
-                if (queue.getHeadPosition() <= fpot.getPosition()
-                        && activeStagers == Activator.getInstance()
-                                .getStagersPerQueue()) {
+                if ((queue.getHeadPosition() <= fpot.getPosition())
+                        && (activeStagers == Activator.getInstance()
+                                .getStagersPerQueue())) {
                     LOGGER.debug("Adding file to an active queue.");
 
                     queue.registerFPOT(fpot, retry);
@@ -409,7 +409,7 @@ public final class QueuesController {
     boolean exists(final String/* ! */name) {
         LOGGER.trace("> exists");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
 
         final boolean ret = this.queuesMap.containsKey(name);
 
@@ -433,7 +433,7 @@ public final class QueuesController {
             final QueueStatus/* ! */status) {
         LOGGER.trace("> exists");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert status != null;
 
         Queue retQueue = null;
@@ -486,7 +486,7 @@ public final class QueuesController {
             while (iterator2.hasNext() && !ret) {
                 final Queue queue = iterator2.next();
                 if (queue.getOwner().equals(user)
-                        && queue.getStatus() == status) {
+                        && (queue.getStatus() == status)) {
                     ret = true;
                 }
             }
@@ -554,7 +554,7 @@ public final class QueuesController {
     Collection<Queue>/* <!>! */getQueuesOnTape(final String/* ! */name) {
         LOGGER.trace("> getQueuesOnTape");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
 
         @SuppressWarnings("unchecked")
         final
@@ -629,11 +629,11 @@ public final class QueuesController {
                     .get(key)).iterator();
             while (iterator2.hasNext()) {
                 final Queue queue = iterator2.next();
-                if (queue.getStatus() == QueueStatus.CREATED
+                if ((queue.getStatus() == QueueStatus.CREATED)
                         && queue.getTape().getMediaType().equals(media)
-                        && QueuesController.getInstance().exists(
+                        && (QueuesController.getInstance().exists(
                                 queue.getTape().getName(),
-                                QueueStatus.ACTIVATED) == null) {
+                                QueueStatus.ACTIVATED) == null)) {
                     LOGGER.debug("Queue {} - {}", queue.getId(), queue
                             .getTape().getName());
                     queues.add(queue);
@@ -662,7 +662,7 @@ public final class QueuesController {
     public void remove(final String/* ! */name, final QueueStatus/* ! */status) {
         LOGGER.trace("> remove");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert status != null;
 
         boolean found = false;

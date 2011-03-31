@@ -128,7 +128,7 @@ public final class FilesController extends AbstractController {
     public File add(final String name, final long size) throws TReqSException {
         LOGGER.trace("> add");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert size >= 0;
 
         File file = null;
@@ -196,7 +196,7 @@ public final class FilesController extends AbstractController {
     File create(final String name, final long size) throws TReqSException {
         LOGGER.trace("> create");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert size >= 0;
 
         final File file = new File(name, size);

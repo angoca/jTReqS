@@ -70,7 +70,7 @@ public final class MockReadingDAO implements ReadingDAO {
     /**
      * List of new requests.
      */
-    private static List<PersistenceHelperFileRequest> newRequests = createRequests();
+    private static List<PersistenceHelperFileRequest> newRequests = MockReadingDAO.createRequests();
 
     /**
      * Quantity of request to generate. If the quantity is equal to -1, then the
@@ -113,7 +113,7 @@ public final class MockReadingDAO implements ReadingDAO {
             qty = (int) (Math.random() * 10) - 2;
         }
         for (int i = 0; i < qty; i++) {
-            createRequest(requests);
+            MockReadingDAO.createRequest(requests);
         }
         quantityRequest = -1;
 
@@ -147,7 +147,7 @@ public final class MockReadingDAO implements ReadingDAO {
      */
     public static void setQuantityRequests(final int qty) {
         quantityRequest = qty;
-        newRequests = createRequests();
+        newRequests = MockReadingDAO.createRequests();
     }
 
     /**
@@ -188,7 +188,7 @@ public final class MockReadingDAO implements ReadingDAO {
         }
 
         final List<PersistenceHelperFileRequest> ret = newRequests;
-        newRequests = createRequests();
+        newRequests = MockReadingDAO.createRequests();
 
         LOGGER.trace("< getNewRequests");
 

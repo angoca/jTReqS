@@ -104,8 +104,8 @@ public final class MySQLDAOHelper {
         // Inserts a random quantity of requests (more than 2, less than 7)
         final int size = (int) (Math.random() * 5) + 2;
         for (int i = 0; i < size; i++) {
-            final String fileName = getFileName();
-            final String userName = getUserName();
+            final String fileName = MySQLDAOHelper.getFileName();
+            final String userName = MySQLDAOHelper.getUserName();
             final RequestStatus status = RequestStatus.CREATED;
             LOGGER.warn("Generated: {} - {}, {}", new String[] { i + 1 + "",
                     fileName, userName });

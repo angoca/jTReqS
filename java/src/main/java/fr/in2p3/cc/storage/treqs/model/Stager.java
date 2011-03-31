@@ -158,7 +158,7 @@ public final class Stager extends AbstractProcess {
         Reading nextReading = null;
         try {
             nextReading = this.queue.getNextReading();
-            while (nextReading != null && this.keepOn()) {
+            while ((nextReading != null) && this.keepOn()) {
                 try {
                     nextReading.stage();
                     LOGGER.debug("Thread {}: getting next file", this.getName());

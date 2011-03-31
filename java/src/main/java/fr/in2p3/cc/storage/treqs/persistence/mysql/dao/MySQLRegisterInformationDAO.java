@@ -75,8 +75,8 @@ public class MySQLRegisterInformationDAO implements RegisterInformationDAO {
             throws TReqSException {
         LOGGER.trace("> insert {} {}", name, value);
 
-        assert name != null && !name.equals("");
-        assert value != null && !value.equals("");
+        assert (name != null) && !name.equals("");
+        assert (value != null) && !value.equals("");
 
         final String query = MySQLStatements.SQL_INFORMATIONS_SELECT + '\'' + name
                 + '\'';

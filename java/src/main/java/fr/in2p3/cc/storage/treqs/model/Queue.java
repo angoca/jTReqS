@@ -694,9 +694,9 @@ public final class Queue implements Comparable<Queue> {
             if (last == currentReading) {
                 final RequestStatus fs = currentReading.getRequestStatus();
                 // The last file is in a final state.
-                if (fs == RequestStatus.STAGED
-                        || fs == RequestStatus.FAILED
-                        || fs == RequestStatus.ON_DISK) {
+                if ((fs == RequestStatus.STAGED)
+                        || (fs == RequestStatus.FAILED)
+                        || (fs == RequestStatus.ON_DISK)) {
                     this.changeToEnded();
 
                     LOGGER.info("Queue {} ended ({})",
@@ -992,9 +992,9 @@ public final class Queue implements Comparable<Queue> {
         assert fpot != null;
         assert fpot.getTape().getName().equals(this.getTape().getName());
 
-        if (this.getStatus() != QueueStatus.CREATED
-                && this.getStatus() != QueueStatus.ACTIVATED
-                && this.getStatus() != QueueStatus.TEMPORARILY_SUSPENDED) {
+        if ((this.getStatus() != QueueStatus.CREATED)
+                && (this.getStatus() != QueueStatus.ACTIVATED)
+                && (this.getStatus() != QueueStatus.TEMPORARILY_SUSPENDED)) {
             // We can't register a file in this queue.
             final String filename = fpot.getFile().getName();
             final String tapename = this.getTape().getName();
@@ -1214,16 +1214,16 @@ public final class Queue implements Comparable<Queue> {
             throw new MaximalSuspensionTriesException();
         }
         // Currently created.
-        if (this.getStatus() == QueueStatus.CREATED && newQueueStatus == QueueStatus.ACTIVATED
+        if (((this.getStatus() == QueueStatus.CREATED) && (newQueueStatus == QueueStatus.ACTIVATED))
                 // Currently activated and new is ended.
-                || this.getStatus() == QueueStatus.ACTIVATED && newQueueStatus == QueueStatus.ENDED
+                || ((this.getStatus() == QueueStatus.ACTIVATED) && (newQueueStatus == QueueStatus.ENDED))
                 // Currently activated and new is temporarily suspended.
-                || this.getStatus() == QueueStatus.ACTIVATED && newQueueStatus == QueueStatus.TEMPORARILY_SUSPENDED
+                || ((this.getStatus() == QueueStatus.ACTIVATED) && (newQueueStatus == QueueStatus.TEMPORARILY_SUSPENDED))
                 // Currently suspended.
-                || this.getStatus() == QueueStatus.TEMPORARILY_SUSPENDED && newQueueStatus == QueueStatus.CREATED
+                || ((this.getStatus() == QueueStatus.TEMPORARILY_SUSPENDED) && (newQueueStatus == QueueStatus.CREATED))
                 // Currently created but the activated one was temporarily
                 // suspended
-                || this.getStatus() == QueueStatus.CREATED && newQueueStatus == QueueStatus.ENDED) {
+                || ((this.getStatus() == QueueStatus.CREATED) && (newQueueStatus == QueueStatus.ENDED))) {
             this.status = newQueueStatus;
             if (newQueueStatus == QueueStatus.TEMPORARILY_SUSPENDED) {
                 this.numberSuspensions++;
@@ -1356,7 +1356,7 @@ public final class Queue implements Comparable<Queue> {
         }
         ret += "}";
 
-        assert ret != null && !ret.equals("");
+        assert (ret != null) && !ret.equals("");
 
         LOGGER.trace("< toString");
 

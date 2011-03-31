@@ -73,7 +73,7 @@ public final class Instantiator {
             throws InstantiatorException {
         LOGGER.trace("> getClass");
 
-        assert classname != null && !classname.equals("");
+        assert (classname != null) && !classname.equals("");
 
         Class<?> clazz = null;
         try {
@@ -104,7 +104,7 @@ public final class Instantiator {
         LOGGER.trace("> getDataSourceAccess");
 
         // Retrieves the class.
-        final Class<?> daoFactory = getClass(daoFactoryName);
+        final Class<?> daoFactory = Instantiator.getClass(daoFactoryName);
 
         // Instantiates the class calling the constructor.
         AbstractDAOFactory daoInst = null;
@@ -136,7 +136,7 @@ public final class Instantiator {
         LOGGER.trace("> instanciateClass");
 
         AbstractHSMBridge bridge = null;
-        final Class<?> hsm = getClass(hsmBridgeClass);
+        final Class<?> hsm = Instantiator.getClass(hsmBridgeClass);
         if (hsm != null) {
             Method getInstance = null;
             try {
@@ -179,7 +179,7 @@ public final class Instantiator {
             throws InstantiatorException {
         LOGGER.trace("> getSelector");
 
-        final Class<?> clazz = getClass(classname);
+        final Class<?> clazz = Instantiator.getClass(classname);
         Object selector;
         try {
             final Constructor<?> constructor = clazz.getConstructor();

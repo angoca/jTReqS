@@ -416,12 +416,12 @@ public final class Starter {
         this.cont = false;
 
         // Starts the process of stopping.
-        if (Activator.getInstance().getProcessStatus() == ProcessStatus.STARTING
-                || Activator.getInstance().getProcessStatus() == ProcessStatus.STARTED) {
+        if ((Activator.getInstance().getProcessStatus() == ProcessStatus.STARTING)
+                || (Activator.getInstance().getProcessStatus() == ProcessStatus.STARTED)) {
             Activator.getInstance().conclude();
         }
-        if (Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTING
-                || Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTED) {
+        if ((Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTING)
+                || (Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTED)) {
             Dispatcher.getInstance().conclude();
         }
         StagersController.getInstance().conclude();

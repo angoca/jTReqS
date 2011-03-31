@@ -101,9 +101,9 @@ public final class HSMNativeBridgeContextTestNative {
                     + HPSSErrorCode.HPSS_EPERM.getCode() + ","
                     + HPSSErrorCode.HPSS_EIO.getCode() + ", "
                     + HPSSErrorCode.HPSS_EACCES.getCode());
-            if (code != HPSSErrorCode.HPSS_EPERM.getCode()
-                    && code != HPSSErrorCode.HPSS_EIO.getCode()
-                    && code != HPSSErrorCode.HPSS_EACCES.getCode()) {
+            if ((code != HPSSErrorCode.HPSS_EPERM.getCode())
+                    && (code != HPSSErrorCode.HPSS_EIO.getCode())
+                    && (code != HPSSErrorCode.HPSS_EACCES.getCode())) {
                 failed = true;
             }
         }

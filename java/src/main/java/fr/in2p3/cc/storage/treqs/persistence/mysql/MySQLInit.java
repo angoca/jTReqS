@@ -86,8 +86,8 @@ public final class MySQLInit {
             throws TReqSException {
         LOGGER.trace("> createTable");
 
-        assert tableName != null && !tableName.equals("");
-        assert structure != null && !structure.equals("");
+        assert (tableName != null) && !tableName.equals("");
+        assert (structure != null) && !structure.equals("");
 
         final String statement = InitDBStatements.CREATE_TABLE + tableName + " "
                 + structure;

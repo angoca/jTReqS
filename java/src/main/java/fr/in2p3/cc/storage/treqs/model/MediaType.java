@@ -76,7 +76,7 @@ public final class MediaType {
         LOGGER.trace("> Creating media type");
 
         assert mediaId >= 0;
-        assert mediaName != null && !mediaName.equals("");
+        assert (mediaName != null) && !mediaName.equals("");
 
         this.id = mediaId;
         this.name = mediaName;
@@ -96,7 +96,7 @@ public final class MediaType {
         boolean ret = false;
         if (obj instanceof MediaType) {
             final MediaType media = (MediaType) obj;
-            if (media.getId() == this.getId()
+            if ((media.getId() == this.getId())
                     && media.getName().equals(this.getName())) {
                 ret = true;
             }

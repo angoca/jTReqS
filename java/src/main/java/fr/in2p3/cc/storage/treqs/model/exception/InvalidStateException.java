@@ -87,7 +87,7 @@ public final class InvalidStateException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert reason != null && reason == InvalidStateReasons.ACTIVATE;
+        assert (reason != null) && (reason == InvalidStateReasons.ACTIVATE);
 
         LOGGER.trace("< Instance creation");
     }
@@ -112,9 +112,9 @@ public final class InvalidStateException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert reason != null && reason == InvalidStateReasons.REGISTER;
-        assert filename != null && !filename.equals("");
-        assert tapename != null && !tapename.equals("");
+        assert (reason != null) && (reason == InvalidStateReasons.REGISTER);
+        assert (filename != null) && !filename.equals("");
+        assert (tapename != null) && !tapename.equals("");
 
         LOGGER.trace("< Instance creation");
     }

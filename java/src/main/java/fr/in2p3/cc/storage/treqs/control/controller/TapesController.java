@@ -128,7 +128,7 @@ public final class TapesController extends AbstractController {
             throws ControllerInsertException {
         LOGGER.trace("> add");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert media != null;
 
         Tape tape = null;
@@ -197,7 +197,7 @@ public final class TapesController extends AbstractController {
             throws ControllerInsertException {
         LOGGER.trace("> create");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert media != null;
 
         final Tape tape = new Tape(name, media);

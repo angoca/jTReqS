@@ -246,7 +246,7 @@ public final class Reading {
             final RequestStatus daoState) throws TReqSException {
         LOGGER.trace("> logsException");
 
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
         assert exception != null;
         assert daoState != null;
 
@@ -369,7 +369,7 @@ public final class Reading {
     void setErrorMessage(final String message) {
         LOGGER.trace("> setErrorMessage");
 
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
 
         this.errorMessage = message;
 
@@ -394,17 +394,17 @@ public final class Reading {
 
         if (
         // Currently created and new submitted.
-        this.requestStatus == RequestStatus.CREATED && status == RequestStatus.SUBMITTED
+        ((this.requestStatus == RequestStatus.CREATED) && (status == RequestStatus.SUBMITTED))
                 // Currently created and new staged (on cache disk.)
-                || this.requestStatus == RequestStatus.CREATED && status == RequestStatus.ON_DISK
+                || ((this.requestStatus == RequestStatus.CREATED) && (status == RequestStatus.ON_DISK))
                 // Currently submitted and new queued.
-                || this.requestStatus == RequestStatus.SUBMITTED && status == RequestStatus.QUEUED
+                || ((this.requestStatus == RequestStatus.SUBMITTED) && (status == RequestStatus.QUEUED))
                 // Currently queued and new staged.
-                || this.requestStatus == RequestStatus.QUEUED && status == RequestStatus.STAGED
+                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.STAGED))
                 // Currently queued and new submitted (suspended.)
-                || this.requestStatus == RequestStatus.QUEUED && status == RequestStatus.SUBMITTED
+                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.SUBMITTED))
                 // Currently queued and new failed.
-                || this.requestStatus == RequestStatus.QUEUED && status == RequestStatus.FAILED) {
+                || ((this.requestStatus == RequestStatus.QUEUED) && (status == RequestStatus.FAILED))) {
             this.requestStatus = status;
         } else {
             LOGGER.error("Invalid change of request status. "

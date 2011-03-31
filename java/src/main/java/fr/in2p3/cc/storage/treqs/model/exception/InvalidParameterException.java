@@ -101,8 +101,8 @@ public final class InvalidParameterException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert headRewound != null
-                && headRewound == InvalidParameterReasons.HEAD_REWOUND;
+        assert (headRewound != null)
+                && (headRewound == InvalidParameterReasons.HEAD_REWOUND);
         assert currentPosition > 0;
         assert newPosition >= 0;
 
@@ -132,11 +132,11 @@ public final class InvalidParameterException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert fileBeforeHead != null
-                && fileBeforeHead == InvalidParameterReasons.FILE_BEFORE_HEAD;
+        assert (fileBeforeHead != null)
+                && (fileBeforeHead == InvalidParameterReasons.FILE_BEFORE_HEAD);
         assert headPosition > 0;
         assert filePosition >= 0;
-        assert filename != null && !filename.equals("");
+        assert (filename != null) && !filename.equals("");
 
         LOGGER.trace("< Instance creation");
     }
@@ -159,8 +159,8 @@ public final class InvalidParameterException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert reason != null
-                && reason == InvalidParameterReasons.INVALID_NEW_QUEUE_STATUS;
+        assert (reason != null)
+                && (reason == InvalidParameterReasons.INVALID_NEW_QUEUE_STATUS);
         assert currentQueueStatus != null;
         assert newQueueStatus != null;
 

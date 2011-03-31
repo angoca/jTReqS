@@ -91,7 +91,7 @@ public abstract class TReqSException extends Exception {
 
         LOGGER.trace("> Instance creation");
 
-        assert mess != null && !mess.equals("");
+        assert (mess != null) && !mess.equals("");
 
         LOGGER.trace("< Instance creation");
     }

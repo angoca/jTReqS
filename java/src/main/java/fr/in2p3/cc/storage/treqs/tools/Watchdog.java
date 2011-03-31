@@ -170,16 +170,16 @@ public final class Watchdog {
         boolean activator = false;
         final ProcessStatus activatorState = Activator.getInstance()
                 .getProcessStatus();
-        if (activatorState != ProcessStatus.STARTING
-                && activatorState != ProcessStatus.STOPPED) {
+        if ((activatorState != ProcessStatus.STARTING)
+                && (activatorState != ProcessStatus.STOPPED)) {
             activator = Activator.getInstance().keepOn();
         }
 
         boolean dispatcher = false;
         final ProcessStatus dispatcherState = Dispatcher.getInstance()
                 .getProcessStatus();
-        if (dispatcherState != ProcessStatus.STARTING
-                && dispatcherState != ProcessStatus.STOPPED) {
+        if ((dispatcherState != ProcessStatus.STARTING)
+                && (dispatcherState != ProcessStatus.STOPPED)) {
             dispatcher = Dispatcher.getInstance().keepOn();
         }
 

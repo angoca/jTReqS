@@ -85,7 +85,7 @@ public abstract class AbstractConfiguratorException extends TReqSException {
 
         LOGGER.trace("> Exception created");
 
-        assert file != null && !file.equals("");
+        assert (file != null) && !file.equals("");
 
         this.filename = file;
 
@@ -106,8 +106,8 @@ public abstract class AbstractConfiguratorException extends TReqSException {
 
         LOGGER.trace("> Exception created");
 
-        assert sectionValue != null && !sectionValue.equals("");
-        assert keyValue != null && !keyValue.equals("");
+        assert (sectionValue != null) && !sectionValue.equals("");
+        assert (keyValue != null) && !keyValue.equals("");
 
         this.section = sectionValue;
         this.key = keyValue;

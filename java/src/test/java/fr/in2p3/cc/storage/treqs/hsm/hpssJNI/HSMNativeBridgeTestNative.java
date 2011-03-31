@@ -194,7 +194,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties02Directory() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         boolean failed = false;
         try {
@@ -221,7 +221,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties03NotExistingFile() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         boolean failed = false;
         try {
@@ -248,7 +248,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties04FileInTape() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.purge(VALID_FILE);
 
@@ -263,7 +263,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties05FileInDisk() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         NativeBridge.getInstance().stage(VALID_FILE, VALID_FILE_SIZE);
 
@@ -279,7 +279,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties06FileLocked() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.lockFile(VALID_FILE);
 
@@ -296,7 +296,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties07FileAlreadyOpen() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.open(VALID_FILE);
 
@@ -313,7 +313,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties08FileInAggregation() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE_IN_AGGREGA);
     }
@@ -326,7 +326,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties09EmptyFile() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         boolean failed = false;
         try {
@@ -354,7 +354,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties10FileInSingleHierarchy() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         NativeBridge.getInstance().getFileProperties(
                 VALID_FILE_SINGLE_HIERARCHY);
@@ -368,7 +368,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testStage02Unlocked() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
@@ -383,7 +383,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testStage03Locked() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 

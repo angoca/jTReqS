@@ -77,7 +77,7 @@ public final class PersistenceHelperResourceAllocation {
             final float qtyAllocation) {
         LOGGER.trace("> create instance");
 
-        assert user != null && !user.equals("");
+        assert (user != null) && !user.equals("");
         assert qtyAllocation >= 0;
 
         this.username = user;

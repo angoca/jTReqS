@@ -183,7 +183,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             NativeBridge.getInstance().initContext(this.getAuthType(),
                     this.getKeytabPath(), this.getUser());
         } catch (final JNIException e) {
-            final int code = processException(e);
+            final int code = HPSSJNIBridge.processException(e);
             if (code == HPSSErrorCode.HPSS_EPERM.getCode()) {
                 throw new HSMCredentialProblemException(code);
             } else if (code == HPSSErrorCode.HPSS_EIO.getCode()) {
@@ -230,7 +230,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             time = System.currentTimeMillis() - time;
             LOGGER.debug("native time getProperties: {}", time);
         } catch (final JNIException e) {
-            final int code = processException(e);
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOENT.getCode()) {
                 throw new HSMNotExistingFileException(code);
@@ -242,7 +242,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
                 throw new HSMUnavailableException(code);
             } else if (code == -30001) {
                 throw new HSMEmptyFileException(code);
-            } else if (code >= -30004 && code <= -30002) {
+            } else if ((code >= -30004) && (code <= -30002)) {
                 throw new HSMJNIProblemException(e);
             } else {
                 throw new HSMGeneralPropertiesProblemException(e);
@@ -345,7 +345,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             time = System.currentTimeMillis() - time;
             LOGGER.debug("native time stage: {}", time);
         } catch (final JNIException e) {
-            final int code = processException(e);
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOSPACE.getCode()) {
                 throw new HSMResourceException(code);

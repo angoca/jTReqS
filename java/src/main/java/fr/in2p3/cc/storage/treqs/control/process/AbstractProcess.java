@@ -105,8 +105,8 @@ public abstract class AbstractProcess extends Thread {
     public final void conclude() {
         LOGGER.trace("> conclude");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTING
-                || this.getProcessStatus() == ProcessStatus.STARTED : this
+        assert (this.getProcessStatus() == ProcessStatus.STARTING)
+                || (this.getProcessStatus() == ProcessStatus.STARTED) : this
                 .getProcessStatus().name();
 
         // The process cannot be in created status, because this state is
@@ -145,8 +145,8 @@ public abstract class AbstractProcess extends Thread {
     public final boolean keepOn() {
         LOGGER.trace("> keepOn");
 
-        assert this.getProcessStatus() == ProcessStatus.STARTED
-                || this.getProcessStatus() == ProcessStatus.STOPPING : this
+        assert (this.getProcessStatus() == ProcessStatus.STARTED)
+                || (this.getProcessStatus() == ProcessStatus.STOPPING) : this
                 .getProcessStatus().name();
 
         boolean ret = false;
@@ -194,8 +194,8 @@ public abstract class AbstractProcess extends Thread {
         LOGGER.trace("> run");
 
         // The process was created or stopped because of a general failure.
-        assert this.getProcessStatus() == ProcessStatus.STARTING
-                || this.getProcessStatus() == ProcessStatus.STOPPED : this
+        assert (this.getProcessStatus() == ProcessStatus.STARTING)
+                || (this.getProcessStatus() == ProcessStatus.STOPPED) : this
                 .getProcessStatus();
 
         if (this.getProcessStatus() == ProcessStatus.STARTING) {
@@ -234,22 +234,22 @@ public abstract class AbstractProcess extends Thread {
             final ProcessStatus currentStatus = this.getProcessStatus();
             if (
             // For kickstart.
-            currentStatus == ProcessStatus.CREATED && processStatus == ProcessStatus.STARTING
+            ((currentStatus == ProcessStatus.CREATED) && (processStatus == ProcessStatus.STARTING))
                     // For oneLoop or run
-                    || currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STARTED
+                    || ((currentStatus == ProcessStatus.STARTING) && (processStatus == ProcessStatus.STARTED))
                     // For conclude
-                    || currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPING
+                    || ((currentStatus == ProcessStatus.STARTED) && (processStatus == ProcessStatus.STOPPING))
                     // For run
-                    || currentStatus == ProcessStatus.STOPPING && processStatus == ProcessStatus.STOPPED
+                    || ((currentStatus == ProcessStatus.STOPPING) && (processStatus == ProcessStatus.STOPPED))
                     // For oneLoop
-                    || currentStatus == ProcessStatus.STARTED && processStatus == ProcessStatus.STOPPED
+                    || ((currentStatus == ProcessStatus.STARTED) && (processStatus == ProcessStatus.STOPPED))
                     // For conclude
-                    || currentStatus == ProcessStatus.STARTING && processStatus == ProcessStatus.STOPPED
+                    || ((currentStatus == ProcessStatus.STARTING) && (processStatus == ProcessStatus.STOPPED))
                     // For restart
-                    || currentStatus == ProcessStatus.STOPPED && processStatus == ProcessStatus.STARTING) {
+                    || ((currentStatus == ProcessStatus.STOPPED) && (processStatus == ProcessStatus.STARTING))) {
                 this.status = processStatus;
-            } else if (currentStatus == ProcessStatus.STOPPING
-                    && processStatus == ProcessStatus.STOPPING) {
+            } else if ((currentStatus == ProcessStatus.STOPPING)
+                    && (processStatus == ProcessStatus.STOPPING)) {
                 // Concurrent access.
                 LOGGER.info("Concrrent change to same state");
             } else {
@@ -278,8 +278,8 @@ public abstract class AbstractProcess extends Thread {
     public final void waitToFinish() {
         LOGGER.trace("> waitToFinish");
 
-        assert this.getProcessStatus() == ProcessStatus.STOPPING
-                || this.getProcessStatus() == ProcessStatus.STOPPED : this
+        assert (this.getProcessStatus() == ProcessStatus.STOPPING)
+                || (this.getProcessStatus() == ProcessStatus.STOPPED) : this
                 .getProcessStatus();
 
         while (this.getProcessStatus() != ProcessStatus.STOPPED) {

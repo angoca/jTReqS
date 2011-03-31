@@ -156,7 +156,7 @@ public final class JonathanSelector extends FifoSelector {
                         QueueStatus.CREATED)) {
                     ret = tmp;
                 }
-            } while (ret == null && users.hasNext());
+            } while ((ret == null) && users.hasNext());
         }
 
         LOGGER.trace("< getNextPossibleUser");

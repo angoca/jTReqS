@@ -307,7 +307,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             throws AbstractHSMException {
         LOGGER.trace("> getFileProperties");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
 
         LOGGER.debug("Execution from {}", System.getProperty("user.dir"));
 
@@ -377,7 +377,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         // Prints the output.
         try {
             current = stream.readLine();
-            if (error && current != null) {
+            if (error && (current != null)) {
                 LOGGER.error(current);
                 throw new HSMGeneralStageProblemException(current);
             }
@@ -457,10 +457,10 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         // Process the output.
         try {
             current = stream.readLine();
-            if (error && current != null) {
+            if (error && (current != null)) {
                 LOGGER.error(current);
                 throw new HSMCommandBridgeException(current);
-            } else if (!error && current == null) {
+            } else if (!error && (current == null)) {
                 throw new HSMCommandBridgeException();
             }
         } catch (final IOException e) {

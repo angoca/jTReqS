@@ -206,7 +206,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
             throws AbstractHSMException {
         LOGGER.trace("> getFileProperties");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
 
         // Takes the defined fileProperties that is going to be returned.
         final HSMHelperFileProperties ret = fileProperties;

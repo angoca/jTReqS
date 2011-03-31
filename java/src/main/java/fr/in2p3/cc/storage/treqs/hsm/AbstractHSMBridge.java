@@ -139,7 +139,7 @@ public abstract class AbstractHSMBridge {
     protected final void setKeytabPath(final String keytab) {
         LOGGER.trace("> setKeytabPath");
 
-        assert keytab != null && !keytab.equals("");
+        assert (keytab != null) && !keytab.equals("");
         this.keytabPath = keytab;
 
         LOGGER.trace("> setKeytabPath");

@@ -99,7 +99,7 @@ final class FileRequest {
         LOGGER.trace("> Creating instance.");
 
         assert fileRequestId > 0;
-        assert requestedFilename != null && !requestedFilename.equals("");
+        assert (requestedFilename != null) && !requestedFilename.equals("");
         assert requesterUser != null;
 
         this.id = fileRequestId;

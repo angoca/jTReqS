@@ -133,10 +133,10 @@ public class RegisterInformation {
         LOGGER.trace("> exec");
 
         try {
-            appVersion();
-            hostname();
-            hpssHostname();
-            mysqlHostname();
+            RegisterInformation.appVersion();
+            RegisterInformation.hostname();
+            RegisterInformation.hpssHostname();
+            RegisterInformation.mysqlHostname();
         } catch (final Exception e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());

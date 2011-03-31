@@ -131,7 +131,7 @@ public abstract class AbstractDAOFactory {
         if (instance == null) {
             LOGGER.debug("Creating instance.");
 
-            createDAOFactory();
+            AbstractDAOFactory.createDAOFactory();
         }
         LOGGER.trace("< getDAOFactoryInstance");
 

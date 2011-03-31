@@ -131,8 +131,8 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.trace("> destroyInstance");
 
         if (instance != null) {
-            if (instance.getProcessStatus() == ProcessStatus.STARTING
-                    || instance.getProcessStatus() == ProcessStatus.STARTED) {
+            if ((instance.getProcessStatus() == ProcessStatus.STARTING)
+                    || (instance.getProcessStatus() == ProcessStatus.STARTED)) {
                 instance.conclude();
             }
             if (instance.getProcessStatus() == ProcessStatus.STOPPING) {
@@ -301,7 +301,7 @@ public final class Dispatcher extends AbstractProcess {
             boolean cont, final HSMHelperFileProperties/* ! */fileProperties) {
         LOGGER.trace("> checkOnDisk {}", cont);
 
-        if (cont && fileProperties != null) {
+        if (cont && (fileProperties != null)) {
             final String requestTape = fileProperties.getTapeName();
             final boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
             LOGGER.debug(
@@ -401,7 +401,7 @@ public final class Dispatcher extends AbstractProcess {
         assert fileRequest != null;
 
         MediaType media = null;
-        if (cont && fileProperties != null) {
+        if (cont && (fileProperties != null)) {
             // Now, try to find out the media type.
             try {
                 media = MediaTypesController.getInstance().getMediaType(
@@ -451,7 +451,7 @@ public final class Dispatcher extends AbstractProcess {
             throw e;
         }
 
-        if (listRequests != null && listRequests.size() > 0) {
+        if ((listRequests != null) && (listRequests.size() > 0)) {
             // Loop through the returned list.
 
             this.getNewRequestsInner(newRequests, listRequests);
@@ -573,7 +573,7 @@ public final class Dispatcher extends AbstractProcess {
                 // This should be unified with the previous 'exists'.
                 FilesController.getInstance().remove(file.getName());
             }
-            if (cont && fpot != null) {
+            if (cont && (fpot != null)) {
                 if (fpot.isMetadataOutdated()) {
                     LOGGER.info("Refreshing metadata of file {}",
                             fileRequest.getName());
@@ -930,7 +930,7 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.trace("> writeRequestStatus");
 
         assert request != null;
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
         assert status != null;
 
         try {
