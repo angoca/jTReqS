@@ -62,6 +62,15 @@ public class MySQLExecuteException extends AbstractMySQLException {
             .getLogger(MySQLExecuteException.class);
 
     /**
+     * Default constructor for extended exceptions.
+     */
+    protected MySQLExecuteException() {
+        super();
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
      * Constructor wrapping an exception generated in execution.
      *
      * @param ex
@@ -71,14 +80,5 @@ public class MySQLExecuteException extends AbstractMySQLException {
         super(ex);
 
         LOGGER.trace(">< Instance creation wrapping exception");
-    }
-
-    /**
-     * Default constructor for extended exceptions.
-     */
-    protected MySQLExecuteException() {
-        super();
-
-        LOGGER.trace(">< Instance creation");
     }
 }

@@ -153,6 +153,74 @@ public final class MySQLQueueDAO implements QueueDAO {
         return id;
     }
 
+    /**
+     * Fills the statement and execute it.
+     *
+     * @param queue
+     *            Queue to update.
+     * @param nbDone
+     *            Number of requests done.
+     * @param nbFailed
+     *            Number of failed requests.
+     * @param statement
+     *            Statement to fill and execute.
+     * @param i
+     *            Index in the statement.
+     * @throws MySQLExecuteException
+     *             If there is a problem executing the query.
+     */
+    private void processUpdate(final Queue queue, final short nbDone,
+            final short nbFailed, final PreparedStatement statement, final int i)
+            throws MySQLExecuteException {
+        LOGGER.trace("> processUpdate");
+
+        assert queue != null;
+        assert nbDone >= 0;
+        assert nbFailed >= 0;
+        assert statement != null;
+        assert i > 0;
+
+        final int id = queue.getId();
+        final short statusId = queue.getStatus().getId();
+        final String ownerName = queue.getOwner().getName();
+        final int size = queue.getRequestsSize();
+        final long byteSize = queue.getByteSize();
+
+        int index = i;
+
+        try {
+            // Insert queue status.
+            statement.setShort(index++, statusId);
+            // Insert number of requests.
+            statement.setInt(index++, size);
+            // Insert number of requests done.
+            statement.setInt(index++, nbDone);
+            // Insert number of requests failed.
+            statement.setInt(index++, nbFailed);
+            // Insert owner.
+            statement.setString(index++, ownerName);
+            // Insert size.
+            statement.setLong(index++, byteSize);
+            // Insert Id.
+            statement.setInt(index++, id);
+
+            statement.execute();
+
+            LOGGER.info("Updated queue " + id);
+        } catch (SQLException e) {
+            LOGGER.error("Error updating queue " + id);
+            throw new MySQLExecuteException(e);
+        } finally {
+            try {
+                statement.close();
+            } catch (SQLException e) {
+                throw new MySQLExecuteException(e);
+            }
+        }
+
+        LOGGER.trace("< processUpdate");
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -268,73 +336,5 @@ public final class MySQLQueueDAO implements QueueDAO {
         this.processUpdate(queue, nbDone, nbFailed, statement, index);
 
         LOGGER.trace("< updateState");
-    }
-
-    /**
-     * Fills the statement and execute it.
-     *
-     * @param queue
-     *            Queue to update.
-     * @param nbDone
-     *            Number of requests done.
-     * @param nbFailed
-     *            Number of failed requests.
-     * @param statement
-     *            Statement to fill and execute.
-     * @param i
-     *            Index in the statement.
-     * @throws MySQLExecuteException
-     *             If there is a problem executing the query.
-     */
-    private void processUpdate(final Queue queue, final short nbDone,
-            final short nbFailed, final PreparedStatement statement, final int i)
-            throws MySQLExecuteException {
-        LOGGER.trace("> processUpdate");
-
-        assert queue != null;
-        assert nbDone >= 0;
-        assert nbFailed >= 0;
-        assert statement != null;
-        assert i > 0;
-
-        final int id = queue.getId();
-        final short statusId = queue.getStatus().getId();
-        final String ownerName = queue.getOwner().getName();
-        final int size = queue.getRequestsSize();
-        final long byteSize = queue.getByteSize();
-
-        int index = i;
-
-        try {
-            // Insert queue status.
-            statement.setShort(index++, statusId);
-            // Insert number of requests.
-            statement.setInt(index++, size);
-            // Insert number of requests done.
-            statement.setInt(index++, nbDone);
-            // Insert number of requests failed.
-            statement.setInt(index++, nbFailed);
-            // Insert owner.
-            statement.setString(index++, ownerName);
-            // Insert size.
-            statement.setLong(index++, byteSize);
-            // Insert Id.
-            statement.setInt(index++, id);
-
-            statement.execute();
-
-            LOGGER.info("Updated queue " + id);
-        } catch (SQLException e) {
-            LOGGER.error("Error updating queue " + id);
-            throw new MySQLExecuteException(e);
-        } finally {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                throw new MySQLExecuteException(e);
-            }
-        }
-
-        LOGGER.trace("< processUpdate");
     }
 }

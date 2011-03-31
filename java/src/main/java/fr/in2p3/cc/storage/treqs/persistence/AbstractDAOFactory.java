@@ -71,41 +71,6 @@ public abstract class AbstractDAOFactory {
     private static AbstractDAOFactory instance = null;
 
     /**
-     * Returns the DAO for the configuration.
-     *
-     * @return the DAO for the configuration object.
-     */
-    public abstract ConfigurationDAO getConfigurationDAO();
-
-    /**
-     * Returns the DAO for the queue.
-     *
-     * @return The DAO for the Queue object.
-     */
-    public abstract QueueDAO getQueueDAO();
-
-    /**
-     * Returns the DAO for the reading.
-     *
-     * @return The DAO for the reading object.
-     */
-    public abstract ReadingDAO getReadingDAO();
-
-    /**
-     * Returns the DAO for the register information.
-     *
-     * @return The DAO for the register information.
-     */
-    public abstract RegisterInformationDAO getRegisterInformationDAO();
-
-    /**
-     * Starts the process of monitoring in the database.
-     *
-     * @return The DAO for the watchdog.
-     */
-    public abstract WatchDogDAO getWatchDogDAO();
-
-    /**
      * Creates the DAO factory.
      * <p>
      * TODO v2.0 The parameters should be dynamic, this permits to reload the
@@ -174,17 +139,52 @@ public abstract class AbstractDAOFactory {
     }
 
     /**
+     * Dumps the structure of the data source.
+     *
+     * @return Structure of the data source.
+     */
+    public abstract String dumpStructure();
+
+    /**
+     * Returns the DAO for the configuration.
+     *
+     * @return the DAO for the configuration object.
+     */
+    public abstract ConfigurationDAO getConfigurationDAO();
+
+    /**
+     * Returns the DAO for the queue.
+     *
+     * @return The DAO for the Queue object.
+     */
+    public abstract QueueDAO getQueueDAO();
+
+    /**
+     * Returns the DAO for the reading.
+     *
+     * @return The DAO for the reading object.
+     */
+    public abstract ReadingDAO getReadingDAO();
+
+    /**
+     * Returns the DAO for the register information.
+     *
+     * @return The DAO for the register information.
+     */
+    public abstract RegisterInformationDAO getRegisterInformationDAO();
+
+    /**
+     * Starts the process of monitoring in the database.
+     *
+     * @return The DAO for the watchdog.
+     */
+    public abstract WatchDogDAO getWatchDogDAO();
+
+    /**
      * Initializes the data source.
      *
      * @throws TReqSException
      *             If there is a problem while initializing the data source.
      */
     public abstract void initialize() throws TReqSException;
-
-    /**
-     * Dumps the structure of the data source.
-     *
-     * @return Structure of the data source.
-     */
-    public abstract String dumpStructure();
 }

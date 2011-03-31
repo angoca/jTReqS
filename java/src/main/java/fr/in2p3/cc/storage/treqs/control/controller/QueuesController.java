@@ -493,6 +493,36 @@ public final class QueuesController {
     }
 
     /**
+     * Chooses a queue to be activated. It calls the specific algorithm, the
+     * given selector.
+     * <p>
+     * It calls the selector with a valid list of queues.
+     *
+     * @param resource
+     *            Type of queue to select.
+     * @param queues
+     *            List of queues that could be selected
+     * @return The best queue chosen by the selector.
+     * @throws TReqSException
+     *             If there a problem using the selector.
+     */
+    public Queue/* ? */getBestQueue(final Resource/* ! */resource,
+            final List<Queue>/* <!>! */queues) throws TReqSException {
+        LOGGER.trace("< getBestQueue");
+
+        assert resource != null;
+
+        Queue ret = this.getSelector().selectBestQueue(queues, resource);
+
+        assert ret != null;
+
+        LOGGER.trace("< getBestQueue");
+
+        return ret;
+
+    }
+
+    /**
      * Retrieves the list of queues of the controller.
      *
      * @return Map of queues.
@@ -561,36 +591,6 @@ public final class QueuesController {
         LOGGER.trace("< getSelector");
 
         return ret;
-    }
-
-    /**
-     * Chooses a queue to be activated. It calls the specific algorithm, the
-     * given selector.
-     * <p>
-     * It calls the selector with a valid list of queues.
-     *
-     * @param resource
-     *            Type of queue to select.
-     * @param queues
-     *            List of queues that could be selected
-     * @return The best queue chosen by the selector.
-     * @throws TReqSException
-     *             If there a problem using the selector.
-     */
-    public Queue/* ? */getBestQueue(final Resource/* ! */resource,
-            final List<Queue>/* <!>! */queues) throws TReqSException {
-        LOGGER.trace("< getBestQueue");
-
-        assert resource != null;
-
-        Queue ret = this.getSelector().selectBestQueue(queues, resource);
-
-        assert ret != null;
-
-        LOGGER.trace("< getBestQueue");
-
-        return ret;
-
     }
 
     /**

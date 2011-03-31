@@ -65,6 +65,21 @@ public final class MySQLWatchDogDAO implements WatchDogDAO {
     /*
      * (non-Javadoc)
      *
+     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#heartBeat()
+     */
+    @Override
+    public void heartBeat() throws TReqSException {
+        LOGGER.trace("> heartBeat");
+
+        MySQLBroker.getInstance().executeModification(
+                MySQLStatements.SQL_HEART_BEAT_UPDATE);
+
+        LOGGER.trace("< heartBeat");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
      * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#start(int)
      */
     @Override
@@ -89,21 +104,6 @@ public final class MySQLWatchDogDAO implements WatchDogDAO {
         }
 
         LOGGER.trace("< start");
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#heartBeat()
-     */
-    @Override
-    public void heartBeat() throws TReqSException {
-        LOGGER.trace("> heartBeat");
-
-        MySQLBroker.getInstance().executeModification(
-                MySQLStatements.SQL_HEART_BEAT_UPDATE);
-
-        LOGGER.trace("< heartBeat");
     }
 
 }

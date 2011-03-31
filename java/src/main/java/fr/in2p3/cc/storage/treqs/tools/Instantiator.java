@@ -63,6 +63,68 @@ public final class Instantiator {
     /**
      * Instantiates the given class.
      *
+     * @param classname
+     *            Instantiates the given class calling the getInstance method.
+     * @return The class.
+     * @throws InstantiatorException
+     *             If there is a problem while instantiating the class.
+     */
+    private static Class<?> getClass(final String classname)
+            throws InstantiatorException {
+        LOGGER.trace("> getClass");
+
+        assert classname != null && !classname.equals("");
+
+        Class<?> clazz = null;
+        try {
+            LOGGER.info("Class to instantiate {}", classname);
+            clazz = Class.forName(classname);
+
+        } catch (ClassNotFoundException e) {
+            throw new InstantiatorException(e);
+        }
+
+        LOGGER.trace("< getClass");
+
+        return clazz;
+    }
+
+    /**
+     * Instantiates a class and return it, given the name of the class to
+     * process.
+     *
+     * @param daoFactoryName
+     *            name of the class to instantiate.
+     * @return Instance of the corresponding name.
+     * @throws InstantiatorException
+     *             If there is a problem while instantiating the class.
+     */
+    public static AbstractDAOFactory getDataSourceAccess(
+            final String daoFactoryName) throws InstantiatorException {
+        LOGGER.trace("> getDataSourceAccess");
+
+        // Retrieves the class.
+        Class<?> daoFactory = getClass(daoFactoryName);
+
+        // Instantiates the class calling the constructor.
+        AbstractDAOFactory daoInst = null;
+        try {
+            Constructor<?> constructor = daoFactory.getConstructor();
+            daoInst = (AbstractDAOFactory) constructor.newInstance();
+        } catch (Exception e) {
+            throw new InstantiatorException(e);
+        }
+
+        assert daoInst != null;
+
+        LOGGER.trace("< getDataSourceAccess");
+
+        return daoInst;
+    }
+
+    /**
+     * Instantiates the given class.
+     *
      * @param hsmBridgeClass
      *            Instantiates the given class calling the getInstance method.
      * @return Singleton instance.
@@ -105,39 +167,6 @@ public final class Instantiator {
     }
 
     /**
-     * Instantiates a class and return it, given the name of the class to
-     * process.
-     *
-     * @param daoFactoryName
-     *            name of the class to instantiate.
-     * @return Instance of the corresponding name.
-     * @throws InstantiatorException
-     *             If there is a problem while instantiating the class.
-     */
-    public static AbstractDAOFactory getDataSourceAccess(
-            final String daoFactoryName) throws InstantiatorException {
-        LOGGER.trace("> getDataSourceAccess");
-
-        // Retrieves the class.
-        Class<?> daoFactory = getClass(daoFactoryName);
-
-        // Instantiates the class calling the constructor.
-        AbstractDAOFactory daoInst = null;
-        try {
-            Constructor<?> constructor = daoFactory.getConstructor();
-            daoInst = (AbstractDAOFactory) constructor.newInstance();
-        } catch (Exception e) {
-            throw new InstantiatorException(e);
-        }
-
-        assert daoInst != null;
-
-        LOGGER.trace("< getDataSourceAccess");
-
-        return daoInst;
-    }
-
-    /**
      * Instantiates the given class.
      *
      * @param classname
@@ -164,35 +193,6 @@ public final class Instantiator {
         LOGGER.trace("< getSelector");
 
         return (Selector) selector;
-    }
-
-    /**
-     * Instantiates the given class.
-     *
-     * @param classname
-     *            Instantiates the given class calling the getInstance method.
-     * @return The class.
-     * @throws InstantiatorException
-     *             If there is a problem while instantiating the class.
-     */
-    private static Class<?> getClass(final String classname)
-            throws InstantiatorException {
-        LOGGER.trace("> getClass");
-
-        assert classname != null && !classname.equals("");
-
-        Class<?> clazz = null;
-        try {
-            LOGGER.info("Class to instantiate {}", classname);
-            clazz = Class.forName(classname);
-
-        } catch (ClassNotFoundException e) {
-            throw new InstantiatorException(e);
-        }
-
-        LOGGER.trace("< getClass");
-
-        return clazz;
     }
 
     /**

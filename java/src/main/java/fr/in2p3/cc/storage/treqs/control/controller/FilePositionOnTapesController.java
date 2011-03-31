@@ -177,44 +177,6 @@ public final class FilePositionOnTapesController extends AbstractController {
     }
 
     /**
-     * Create a new FilePositionOnTape object. If the object does not already
-     * exist, creates a new one. If the object exists, throw an exception. This
-     * method supposes that the HSM cannot store two files with the same name.
-     *
-     * @param file
-     *            Description of the file.
-     * @param tape
-     *            Tape where the file is stored.
-     * @param position
-     *            Position of the file in the tape.
-     * @param user
-     *            Owner of the file.
-     * @return The FilePostionOnTape object.
-     * @throws TReqSException
-     *             If there is a problem creating the fpot or adding it to the
-     *             list.
-     */
-    FilePositionOnTape create(final File file, final Tape tape,
-            final int position, final User user) throws TReqSException {
-        LOGGER.trace("> create");
-
-        assert file != null;
-        assert tape != null;
-        assert position >= 0;
-        assert user != null;
-
-        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                user);
-        super.add(file.getName(), fpot);
-
-        assert fpot != null;
-
-        LOGGER.trace("< create");
-
-        return fpot;
-    }
-
-    /**
      * Removes the instances of fpots whose queues are already deleted.
      *
      * @return Quantity of instances removed.
@@ -251,6 +213,44 @@ public final class FilePositionOnTapesController extends AbstractController {
         LOGGER.trace("< cleanup");
 
         return size;
+    }
+
+    /**
+     * Create a new FilePositionOnTape object. If the object does not already
+     * exist, creates a new one. If the object exists, throw an exception. This
+     * method supposes that the HSM cannot store two files with the same name.
+     *
+     * @param file
+     *            Description of the file.
+     * @param tape
+     *            Tape where the file is stored.
+     * @param position
+     *            Position of the file in the tape.
+     * @param user
+     *            Owner of the file.
+     * @return The FilePostionOnTape object.
+     * @throws TReqSException
+     *             If there is a problem creating the fpot or adding it to the
+     *             list.
+     */
+    FilePositionOnTape create(final File file, final Tape tape,
+            final int position, final User user) throws TReqSException {
+        LOGGER.trace("> create");
+
+        assert file != null;
+        assert tape != null;
+        assert position >= 0;
+        assert user != null;
+
+        FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
+                user);
+        super.add(file.getName(), fpot);
+
+        assert fpot != null;
+
+        LOGGER.trace("< create");
+
+        return fpot;
     }
 
     /**

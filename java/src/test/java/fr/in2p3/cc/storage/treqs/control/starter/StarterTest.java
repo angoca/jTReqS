@@ -116,6 +116,63 @@ public final class StarterTest {
     }
 
     /**
+     * Makes the asserts against the values in the database.
+     *
+     * @param expectedStaged
+     *            Quantity of expected staged files.
+     * @param expectedNonStaged
+     *            Quantity of expected non staged files.
+     * @throws SQLException
+     *             Never.
+     * @throws TReqSException
+     *             Never.
+     */
+    private void checkDatabaseWithStaged(final int expectedStaged,
+            final int expectedNonStaged) throws SQLException, TReqSException {
+        RequestStatus status = RequestStatus.STAGED;
+        int actualStaged = this.countStatusRequest(status, true);
+        int actualNotStaged = this.countStatusRequest(status, false);
+
+        LOGGER.error("Staged {}, Not staged {}", actualStaged, actualNotStaged);
+        LOGGER.error("Activator {}, Dispatcher {}", Activator.getInstance()
+                .getProcessStatus().name(), Dispatcher.getInstance()
+                .getProcessStatus().name());
+
+        Assert.assertEquals(expectedNonStaged, actualNotStaged);
+        Assert.assertEquals(expectedStaged, actualStaged);
+    }
+
+    /**
+     * Performs the query against the database to know the quantity of elements.
+     *
+     * @param status
+     *            Status to analyze.
+     * @param equals
+     *            Equals or not equals to the status.
+     * @return Quantity of records that satisfy the given conditions.
+     * @throws SQLException
+     *             If there is a problem in the SQL.
+     * @throws TReqSException
+     *             In there is a problem in application.
+     */
+    private int countStatusRequest(final RequestStatus status,
+            final boolean equals) throws SQLException, TReqSException {
+        String compare = "=";
+        if (!equals) {
+            compare = "!=";
+        }
+        String query = "SELECT count(1) FROM " + MySQLRequestsDAO.REQUESTS
+                + " WHERE " + MySQLRequestsDAO.REQUESTS_STATUS + ' ' + compare
+                + status.getId();
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        result.next();
+        int actual = result.getInt(1);
+        MySQLBroker.getInstance().terminateExecution(objects);
+        return actual;
+    }
+
+    /**
      * Sets the env for each tests.
      *
      * @throws TReqSException
@@ -261,62 +318,5 @@ public final class StarterTest {
         Thread.sleep(200);
 
         this.checkDatabaseWithStaged(2, 0);
-    }
-
-    /**
-     * Makes the asserts against the values in the database.
-     *
-     * @param expectedStaged
-     *            Quantity of expected staged files.
-     * @param expectedNonStaged
-     *            Quantity of expected non staged files.
-     * @throws SQLException
-     *             Never.
-     * @throws TReqSException
-     *             Never.
-     */
-    private void checkDatabaseWithStaged(final int expectedStaged,
-            final int expectedNonStaged) throws SQLException, TReqSException {
-        RequestStatus status = RequestStatus.STAGED;
-        int actualStaged = this.countStatusRequest(status, true);
-        int actualNotStaged = this.countStatusRequest(status, false);
-
-        LOGGER.error("Staged {}, Not staged {}", actualStaged, actualNotStaged);
-        LOGGER.error("Activator {}, Dispatcher {}", Activator.getInstance()
-                .getProcessStatus().name(), Dispatcher.getInstance()
-                .getProcessStatus().name());
-
-        Assert.assertEquals(expectedNonStaged, actualNotStaged);
-        Assert.assertEquals(expectedStaged, actualStaged);
-    }
-
-    /**
-     * Performs the query against the database to know the quantity of elements.
-     *
-     * @param status
-     *            Status to analyze.
-     * @param equals
-     *            Equals or not equals to the status.
-     * @return Quantity of records that satisfy the given conditions.
-     * @throws SQLException
-     *             If there is a problem in the SQL.
-     * @throws TReqSException
-     *             In there is a problem in application.
-     */
-    private int countStatusRequest(final RequestStatus status,
-            final boolean equals) throws SQLException, TReqSException {
-        String compare = "=";
-        if (!equals) {
-            compare = "!=";
-        }
-        String query = "SELECT count(1) FROM " + MySQLRequestsDAO.REQUESTS
-                + " WHERE " + MySQLRequestsDAO.REQUESTS_STATUS + ' ' + compare
-                + status.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        result.next();
-        int actual = result.getInt(1);
-        MySQLBroker.getInstance().terminateExecution(objects);
-        return actual;
     }
 }

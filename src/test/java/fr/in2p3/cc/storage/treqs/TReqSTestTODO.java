@@ -140,6 +140,88 @@ public final class TReqSTestTODO {
     }
 
     /**
+     * Checks the assertion against a condition.
+     *
+     * @param status
+     *            given status.
+     * @param inStatus
+     *            compare to this status
+     * @param notInStatus
+     *            should not be in this status.
+     * @throws SQLException
+     *             Never.
+     * @throws TReqSException
+     *             Never.
+     */
+    private void helperAssertState(final RequestStatus status,
+            final int inStatus, final int notInStatus) throws SQLException,
+            TReqSException {
+        int actual = helperCountStatusRequest(status, true);
+        int actualOther = helperCountStatusRequest(status, false);
+        LOGGER.error("Asserting state {}: in {}, not in {}", new Object[] {
+                status.name(), actual, actualOther });
+        Assert.assertEquals(inStatus, actual);
+        Assert.assertEquals(notInStatus, actualOther);
+    }
+
+    /**
+     * Counts the requests in a given state.
+     *
+     * @param status
+     *            Status to analyze.
+     * @param equals
+     *            if equals or different to the given state.
+     * @return Quantity of requests.
+     * @throws SQLException
+     *             Never.
+     * @throws TReqSException
+     *             Never.
+     */
+    private int helperCountStatusRequest(final RequestStatus status,
+            final boolean equals) throws SQLException, TReqSException {
+        String compare = "=";
+        if (!equals) {
+            compare = "!=";
+        }
+        String query = "SELECT count(*) FROM requests WHERE status " + compare
+                + status.getId();
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        ResultSet result = (ResultSet) objects[1];
+        result.next();
+        int actual = result.getInt(1);
+        MySQLBroker.getInstance().terminateExecution(objects);
+        return actual;
+    }
+
+    /**
+     * Inserts an entry in the mock bridge.
+     *
+     * @param size
+     *            File size.
+     * @param position
+     *            Position on the tape.
+     * @param fileName
+     *            file name.
+     * @param time
+     *            Stage time.
+     * @param userName
+     *            User name.
+     * @param tape
+     *            Tape name.
+     * @throws TReqSException
+     *             Never.
+     */
+    private void helperCreateFile(final long size, final int position,
+            final String fileName, final long time, final String userName,
+            final String tape) throws TReqSException {
+        HSMHelperFileProperties properties;
+        properties = new HSMHelperFileProperties(tape, position, size);
+        HSMMockBridge.getInstance().setFileProperties(properties);
+        HSMMockBridge.getInstance().setStageTime(time);
+        MySQLRequestsDAO.insertRow(fileName, userName, RequestStatus.CREATED);
+    }
+
+    /**
      * Starts TReqS.
      *
      * @throws TReqSException
@@ -168,23 +250,6 @@ public final class TReqSTestTODO {
         long millis = Dispatcher.getInstance().getMillisBetweenLoops() / 2
                 + HUNDRED;
         Thread.sleep(millis);
-    }
-
-    /**
-     * Establishes the connection.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Before
-    public void setUp() throws TReqSException {
-        Configurator.getInstance().setValue(Constants.SECTION_ACTIVATOR,
-                Constants.ACTIVATOR_INTERVAL, "1");
-        Configurator.getInstance().setValue(Constants.SECTION_DISPATCHER,
-                Constants.DISPATCHER_INTERVAL, "1");
-        MySQLRequestsDAO.deleteAll();
-        MySQLBroker.getInstance().disconnect();
-        MySQLBroker.destroyInstance();
     }
 
     /**
@@ -225,6 +290,23 @@ public final class TReqSTestTODO {
         Dispatcher.getInstance().waitToFinish();
         Activator.getInstance().waitToFinish();
         StagersController.getInstance().waitToFinish();
+    }
+
+    /**
+     * Establishes the connection.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Before
+    public void setUp() throws TReqSException {
+        Configurator.getInstance().setValue(Constants.SECTION_ACTIVATOR,
+                Constants.ACTIVATOR_INTERVAL, "1");
+        Configurator.getInstance().setValue(Constants.SECTION_DISPATCHER,
+                Constants.DISPATCHER_INTERVAL, "1");
+        MySQLRequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
     }
 
     /**
@@ -644,457 +726,6 @@ public final class TReqSTestTODO {
     }
 
     /**
-     * Tests to stage a file for a user who is defined in the drive mapping with
-     * resources available for him, and not available. Also there are drives
-     * available.
-     *
-     * @throws TReqSException
-     *             Never.
-     * @throws InterruptedException
-     *             Never.
-     * @throws SQLException
-     *             Never.
-     */
-    @Test
-    public void testUserInDriveMappingAvailable() throws TReqSException,
-            InterruptedException, SQLException {
-        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
-                .abortPendingQueues();
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .updateUnfinishedRequests();
-        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
-                .getMediaAllocations();
-
-        Dispatcher.getInstance();
-        Activator.getInstance();
-
-        this.helperAssertState(RequestStatus.CREATED, 0, 0);
-
-        // First file ok.
-        long size = THOUSAND;
-        String tape = "IT0001";
-        int position = HUNDRED;
-        long time = Activator.getInstance().getMillisBetweenStagers() * 9
-                + HUNDRED;
-        String fileName = "fileInMapping1";
-        String userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #1");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 0);
-        // AbstractProcess the first file and creates the queue for this file.
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 0);
-        // Activates the queue, because there are drive available and the user
-        // still has some resource.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, 1, 0);
-
-        // Second file ok.
-        tape = "IT0002";
-        position = TWO_HUNDRED;
-        time = Activator.getInstance().getMillisBetweenStagers() * 6 + HUNDRED;
-        fileName = "fileInMapping2";
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #2");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 1);
-        // Passes the dispatcher to create the other queue.
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 1);
-        // Activates the second queue because there is just one drive user, and
-        // the user has a capacity to use 2 drives.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
-
-        // Third file for the same user, but the resource for this user is 2
-        // however the other drives are empty, so it processes it.
-        tape = "IT0003";
-        position = 300;
-        time = Activator.getInstance().getMillisBetweenStagers()
-                * TReqSTestTODO.THREE + HUNDRED;
-        fileName = "fileInMapping3";
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #3");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 2);
-        // Passes the dispatcher to create the third queue.
-        Dispatcher.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
-        // Activates the third queue because there are still free drive. In this
-        // case, it does not matter that the user has arrived to the limit of
-        // its resource.
-        Activator.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
-
-        // Waits for all files to be staged.
-        Thread.sleep(150);
-
-        this.helperAssertState(RequestStatus.STAGED, TReqSTestTODO.THREE, 0);
-    }
-
-    /**
-     * Counts the requests in a given state.
-     *
-     * @param status
-     *            Status to analyze.
-     * @param equals
-     *            if equals or different to the given state.
-     * @return Quantity of requests.
-     * @throws SQLException
-     *             Never.
-     * @throws TReqSException
-     *             Never.
-     */
-    private int helperCountStatusRequest(final RequestStatus status,
-            final boolean equals) throws SQLException, TReqSException {
-        String compare = "=";
-        if (!equals) {
-            compare = "!=";
-        }
-        String query = "SELECT count(*) FROM requests WHERE status " + compare
-                + status.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        result.next();
-        int actual = result.getInt(1);
-        MySQLBroker.getInstance().terminateExecution(objects);
-        return actual;
-    }
-
-    /**
-     * Tests to stage a file from a user who is defined in the drive mapping,
-     * with no resources for him, and there are no more drive available.
-     *
-     * @throws TReqSException
-     *             Never.
-     * @throws InterruptedException
-     *             Never.
-     * @throws SQLException
-     *             Never.
-     */
-    @Test
-    public void testUserInDriveMappingLimit() throws TReqSException,
-            InterruptedException, SQLException {
-        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
-                .abortPendingQueues();
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .updateUnfinishedRequests();
-        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
-                .getMediaAllocations();
-
-        Dispatcher.getInstance();
-        Activator.getInstance();
-
-        // First file ok.
-        long size = THOUSAND;
-        String tape = "IT0001";
-        int position = HUNDRED;
-        String fileName = "fileInMappingLimit1";
-        long time = Activator.getInstance().getMillisBetweenStagers() * 19
-                + HUNDRED;
-        String userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #1");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 0);
-        // AbstractProcess the first file and creates the queue for this file.
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 0);
-        // Activates the queue, because there are drives available and the user
-        // still has some resource.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, 1, 0);
-
-        // Second file ok.
-        tape = "IT0002";
-        position = TWO_HUNDRED;
-        fileName = "fileInMappingLimit2";
-        time = Activator.getInstance().getMillisBetweenStagers() * 16 + HUNDRED;
-        userName = "user1";
-
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #2");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 1);
-        // Passes the dispatcher to create the other queue.
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 1);
-        // Activates the second queue because there is just one drive user, and
-        // the user has a capacity to use 2 drives.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
-
-        // Third file for the same user, but the resource for this user is 2
-        // however the other drives are empty, so it processes it.
-        tape = "IT0003";
-        position = 300;
-        fileName = "fileInMappingLimit3";
-        time = Activator.getInstance().getMillisBetweenStagers() * 13 + HUNDRED;
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #3");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 2);
-        // Passes the dispatcher to create the third queue.
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
-        // Activates the third queue because there are still free drive. In this
-        // case, it does not matter that the user has arrived to the limit of
-        // its resource.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
-
-        // Fourth file / fourth tape is overpassed the limit of the user
-        // resource.
-        tape = "IT0004";
-        position = 400;
-        fileName = "fileInMappingLimit4";
-        time = Activator.getInstance().getMillisBetweenStagers() * 10 + HUNDRED;
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #4");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.THREE);
-        // Passes the dispatcher to create the third queue.
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.THREE);
-        // Activates the fourth queue because there are still free drive.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FOUR, 0);
-
-        // Fifth file, last available.
-        tape = "IT0005";
-        position = 500;
-        fileName = "fileInMappingLimit5";
-        time = Activator.getInstance().getMillisBetweenStagers() * 7 + HUNDRED;
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #5");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FOUR);
-        // Passes the dispatcher to create the third queue.
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FOUR);
-        // Activates the last queue, this is the limit of drives.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 0);
-
-        tape = "IT0006";
-        position = 600;
-        fileName = "fileInMappingLimit6";
-        time = Activator.getInstance().getMillisBetweenStagers();
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        LOGGER.info("File #6");
-
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FIVE);
-        // Passes the dispatcher to create the third queue.
-        Dispatcher.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FIVE);
-        // It cannot activates this queue, but it waits in a submitted state.
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 1);
-
-        // Waits for all files to be staged.
-        Thread.sleep(400);
-
-        this.helperAssertState(RequestStatus.STAGED, TReqSTestTODO.FIVE, 1);
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FIVE);
-
-        // Activates the sixth file.
-        Activator.getInstance().oneLoop();
-
-        // Waits the sixth file to be staged.
-        Thread.sleep(HUNDRED);
-
-        this.helperAssertState(RequestStatus.STAGED, 6, 0);
-    }
-
-    /**
-     * Checks the assertion against a condition.
-     *
-     * @param status
-     *            given status.
-     * @param inStatus
-     *            compare to this status
-     * @param notInStatus
-     *            should not be in this status.
-     * @throws SQLException
-     *             Never.
-     * @throws TReqSException
-     *             Never.
-     */
-    private void helperAssertState(final RequestStatus status,
-            final int inStatus, final int notInStatus) throws SQLException,
-            TReqSException {
-        int actual = helperCountStatusRequest(status, true);
-        int actualOther = helperCountStatusRequest(status, false);
-        LOGGER.error("Asserting state {}: in {}, not in {}", new Object[] {
-                status.name(), actual, actualOther });
-        Assert.assertEquals(inStatus, actual);
-        Assert.assertEquals(notInStatus, actualOther);
-    }
-
-    /**
-     * Inserts an entry in the mock bridge.
-     *
-     * @param size
-     *            File size.
-     * @param position
-     *            Position on the tape.
-     * @param fileName
-     *            file name.
-     * @param time
-     *            Stage time.
-     * @param userName
-     *            User name.
-     * @param tape
-     *            Tape name.
-     * @throws TReqSException
-     *             Never.
-     */
-    private void helperCreateFile(final long size, final int position,
-            final String fileName, final long time, final String userName,
-            final String tape) throws TReqSException {
-        HSMHelperFileProperties properties;
-        properties = new HSMHelperFileProperties(tape, position, size);
-        HSMMockBridge.getInstance().setFileProperties(properties);
-        HSMMockBridge.getInstance().setStageTime(time);
-        MySQLRequestsDAO.insertRow(fileName, userName, RequestStatus.CREATED);
-    }
-
-    /**
-     * Tests a user which is not defined and uses all drives, even, it asks for
-     * more that the total capacity.
-     *
-     * @throws TReqSException
-     *             Never.
-     * @throws SQLException
-     *             Never.
-     */
-    @Test
-    public void testUserNotDefinedUsingAll() throws TReqSException,
-            SQLException {
-        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
-                .abortPendingQueues();
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .updateUnfinishedRequests();
-        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
-                .getMediaAllocations();
-
-        Dispatcher.getInstance();
-        Activator.getInstance();
-
-        this.helperAssertState(RequestStatus.CREATED, 0, 0);
-
-        // First file ok.
-        long size = THOUSAND;
-        String tape = "IT0001";
-        int position = TWO_HUNDRED;
-        long time = 1;
-        String fileName = "testUserNotDefinedUsingAll1";
-        String userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 2nd file
-        tape = "IT0002";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserNotDefinedUsingAll2";
-        userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 3rd file
-        tape = "IT0003";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserNotDefinedUsingAll3";
-        userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 4th file
-        tape = "IT0004";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserNotDefinedUsingAll4";
-        userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 5th file
-        tape = "IT0005";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserNotDefinedUsingAll5";
-        userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FOUR);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, TReqSTestTODO.FIVE, 0);
-
-        HSMMockBridge.getInstance().waitStage(HSMMockBridge.getInstance());
-
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 0);
-
-        // 6th file
-        tape = "IT0006";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserNotDefinedUsingAll6";
-        userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FIVE);
-        Dispatcher.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FIVE);
-        Activator.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 1);
-
-        synchronized (HSMMockBridge.getInstance()) {
-            HSMMockBridge.getInstance().notifyAll();
-            HSMMockBridge.getInstance().waitStage(null);
-        }
-    }
-
-    /**
      * A registered user and a non registered user have one request each one.
      * The non registered ask for another queue and it is possible because there
      * are some free drives.
@@ -1374,6 +1005,375 @@ public final class TReqSTestTODO {
     // case b: there are several place in their capacity
     // case c: They overpassed their capacity
     // case d: One of them overpassed its capacity
+
+    /**
+     * Tests to stage a file for a user who is defined in the drive mapping with
+     * resources available for him, and not available. Also there are drives
+     * available.
+     *
+     * @throws TReqSException
+     *             Never.
+     * @throws InterruptedException
+     *             Never.
+     * @throws SQLException
+     *             Never.
+     */
+    @Test
+    public void testUserInDriveMappingAvailable() throws TReqSException,
+            InterruptedException, SQLException {
+        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
+                .abortPendingQueues();
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .updateUnfinishedRequests();
+        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
+                .getMediaAllocations();
+
+        Dispatcher.getInstance();
+        Activator.getInstance();
+
+        this.helperAssertState(RequestStatus.CREATED, 0, 0);
+
+        // First file ok.
+        long size = THOUSAND;
+        String tape = "IT0001";
+        int position = HUNDRED;
+        long time = Activator.getInstance().getMillisBetweenStagers() * 9
+                + HUNDRED;
+        String fileName = "fileInMapping1";
+        String userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #1");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 0);
+        // AbstractProcess the first file and creates the queue for this file.
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 0);
+        // Activates the queue, because there are drive available and the user
+        // still has some resource.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, 1, 0);
+
+        // Second file ok.
+        tape = "IT0002";
+        position = TWO_HUNDRED;
+        time = Activator.getInstance().getMillisBetweenStagers() * 6 + HUNDRED;
+        fileName = "fileInMapping2";
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #2");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 1);
+        // Passes the dispatcher to create the other queue.
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 1);
+        // Activates the second queue because there is just one drive user, and
+        // the user has a capacity to use 2 drives.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
+
+        // Third file for the same user, but the resource for this user is 2
+        // however the other drives are empty, so it processes it.
+        tape = "IT0003";
+        position = 300;
+        time = Activator.getInstance().getMillisBetweenStagers()
+                * TReqSTestTODO.THREE + HUNDRED;
+        fileName = "fileInMapping3";
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #3");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 2);
+        // Passes the dispatcher to create the third queue.
+        Dispatcher.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
+        // Activates the third queue because there are still free drive. In this
+        // case, it does not matter that the user has arrived to the limit of
+        // its resource.
+        Activator.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
+
+        // Waits for all files to be staged.
+        Thread.sleep(150);
+
+        this.helperAssertState(RequestStatus.STAGED, TReqSTestTODO.THREE, 0);
+    }
+
+    /**
+     * Tests to stage a file from a user who is defined in the drive mapping,
+     * with no resources for him, and there are no more drive available.
+     *
+     * @throws TReqSException
+     *             Never.
+     * @throws InterruptedException
+     *             Never.
+     * @throws SQLException
+     *             Never.
+     */
+    @Test
+    public void testUserInDriveMappingLimit() throws TReqSException,
+            InterruptedException, SQLException {
+        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
+                .abortPendingQueues();
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .updateUnfinishedRequests();
+        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
+                .getMediaAllocations();
+
+        Dispatcher.getInstance();
+        Activator.getInstance();
+
+        // First file ok.
+        long size = THOUSAND;
+        String tape = "IT0001";
+        int position = HUNDRED;
+        String fileName = "fileInMappingLimit1";
+        long time = Activator.getInstance().getMillisBetweenStagers() * 19
+                + HUNDRED;
+        String userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #1");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 0);
+        // AbstractProcess the first file and creates the queue for this file.
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 0);
+        // Activates the queue, because there are drives available and the user
+        // still has some resource.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, 1, 0);
+
+        // Second file ok.
+        tape = "IT0002";
+        position = TWO_HUNDRED;
+        fileName = "fileInMappingLimit2";
+        time = Activator.getInstance().getMillisBetweenStagers() * 16 + HUNDRED;
+        userName = "user1";
+
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #2");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 1);
+        // Passes the dispatcher to create the other queue.
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 1);
+        // Activates the second queue because there is just one drive user, and
+        // the user has a capacity to use 2 drives.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
+
+        // Third file for the same user, but the resource for this user is 2
+        // however the other drives are empty, so it processes it.
+        tape = "IT0003";
+        position = 300;
+        fileName = "fileInMappingLimit3";
+        time = Activator.getInstance().getMillisBetweenStagers() * 13 + HUNDRED;
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #3");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 2);
+        // Passes the dispatcher to create the third queue.
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
+        // Activates the third queue because there are still free drive. In this
+        // case, it does not matter that the user has arrived to the limit of
+        // its resource.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
+
+        // Fourth file / fourth tape is overpassed the limit of the user
+        // resource.
+        tape = "IT0004";
+        position = 400;
+        fileName = "fileInMappingLimit4";
+        time = Activator.getInstance().getMillisBetweenStagers() * 10 + HUNDRED;
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #4");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.THREE);
+        // Passes the dispatcher to create the third queue.
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.THREE);
+        // Activates the fourth queue because there are still free drive.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FOUR, 0);
+
+        // Fifth file, last available.
+        tape = "IT0005";
+        position = 500;
+        fileName = "fileInMappingLimit5";
+        time = Activator.getInstance().getMillisBetweenStagers() * 7 + HUNDRED;
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #5");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FOUR);
+        // Passes the dispatcher to create the third queue.
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FOUR);
+        // Activates the last queue, this is the limit of drives.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 0);
+
+        tape = "IT0006";
+        position = 600;
+        fileName = "fileInMappingLimit6";
+        time = Activator.getInstance().getMillisBetweenStagers();
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        LOGGER.info("File #6");
+
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FIVE);
+        // Passes the dispatcher to create the third queue.
+        Dispatcher.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FIVE);
+        // It cannot activates this queue, but it waits in a submitted state.
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 1);
+
+        // Waits for all files to be staged.
+        Thread.sleep(400);
+
+        this.helperAssertState(RequestStatus.STAGED, TReqSTestTODO.FIVE, 1);
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FIVE);
+
+        // Activates the sixth file.
+        Activator.getInstance().oneLoop();
+
+        // Waits the sixth file to be staged.
+        Thread.sleep(HUNDRED);
+
+        this.helperAssertState(RequestStatus.STAGED, 6, 0);
+    }
+
+    /**
+     * Tests a user which is not defined and uses all drives, even, it asks for
+     * more that the total capacity.
+     *
+     * @throws TReqSException
+     *             Never.
+     * @throws SQLException
+     *             Never.
+     */
+    @Test
+    public void testUserNotDefinedUsingAll() throws TReqSException,
+            SQLException {
+        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
+                .abortPendingQueues();
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .updateUnfinishedRequests();
+        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
+                .getMediaAllocations();
+
+        Dispatcher.getInstance();
+        Activator.getInstance();
+
+        this.helperAssertState(RequestStatus.CREATED, 0, 0);
+
+        // First file ok.
+        long size = THOUSAND;
+        String tape = "IT0001";
+        int position = TWO_HUNDRED;
+        long time = 1;
+        String fileName = "testUserNotDefinedUsingAll1";
+        String userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 2nd file
+        tape = "IT0002";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserNotDefinedUsingAll2";
+        userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 3rd file
+        tape = "IT0003";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserNotDefinedUsingAll3";
+        userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 4th file
+        tape = "IT0004";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserNotDefinedUsingAll4";
+        userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 5th file
+        tape = "IT0005";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserNotDefinedUsingAll5";
+        userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FOUR);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, TReqSTestTODO.FIVE, 0);
+
+        HSMMockBridge.getInstance().waitStage(HSMMockBridge.getInstance());
+
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 0);
+
+        // 6th file
+        tape = "IT0006";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserNotDefinedUsingAll6";
+        userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FIVE);
+        Dispatcher.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FIVE);
+        Activator.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 1);
+
+        synchronized (HSMMockBridge.getInstance()) {
+            HSMMockBridge.getInstance().notifyAll();
+            HSMMockBridge.getInstance().waitStage(null);
+        }
+    }
 
     // TODO Tests: No media types in the db
     // TODO Tests: 1 media type 0 allocations

@@ -118,6 +118,34 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     }
 
     /**
+     * Process the exception taking the code and returning it.
+     *
+     * @param e
+     *            Exception to process.
+     * @return Code of the exception.
+     */
+    static int processException(final JNIException e) {
+        LOGGER.trace("> processException");
+
+        assert e != null;
+
+        String message = e.getCode();
+        System.err.println(message);
+        int i = message.indexOf(':');
+        int ret = -1;
+        String codeStr = message.substring(0, i);
+        try {
+            ret = Short.parseShort(codeStr);
+        } catch (NumberFormatException e1) {
+            ret = -40000;
+        }
+
+        LOGGER.trace("< processException");
+
+        return ret;
+    }
+
+    /**
      * The HSM authorization type.
      */
     private String authType;
@@ -294,34 +322,6 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         this.user = hpssUser;
 
         LOGGER.trace("< initUser");
-    }
-
-    /**
-     * Process the exception taking the code and returning it.
-     *
-     * @param e
-     *            Exception to process.
-     * @return Code of the exception.
-     */
-    static int processException(final JNIException e) {
-        LOGGER.trace("> processException");
-
-        assert e != null;
-
-        String message = e.getCode();
-        System.err.println(message);
-        int i = message.indexOf(':');
-        int ret = -1;
-        String codeStr = message.substring(0, i);
-        try {
-            ret = Short.parseShort(codeStr);
-        } catch (NumberFormatException e1) {
-            ret = -40000;
-        }
-
-        LOGGER.trace("< processException");
-
-        return ret;
     }
 
     /*

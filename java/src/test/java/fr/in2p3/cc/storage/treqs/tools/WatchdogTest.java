@@ -99,6 +99,16 @@ public final class WatchdogTest {
     }
 
     /**
+     * Destroys the objects.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        AbstractDAOFactory.destroyInstance();
+        Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
+    /**
      * Setups the environment.
      *
      * @throws TReqSException
@@ -117,47 +127,6 @@ public final class WatchdogTest {
         Activator.destroyInstance();
         Dispatcher.destroyInstance();
         Watchdog.destroyInstance();
-    }
-
-    /**
-     * Destroys the objects.
-     */
-    @AfterClass
-    public static void oneTimeTearDown() {
-        AbstractDAOFactory.destroyInstance();
-        Configurator.destroyInstance();
-        System.clearProperty(Constants.CONFIGURATION_FILE);
-    }
-
-    /**
-     * Tests to delete an inexistent value.
-     *
-     * @throws TReqSException
-     *             If there is any problem.
-     * @throws SQLException
-     *             Problem in SQL.
-     */
-    @Test
-    public void testStart01TestPid() throws TReqSException, SQLException {
-        LOGGER.info("--> testStart01TestPid");
-        Watchdog.getInstance();
-
-        String pid = ManagementFactory.getRuntimeMXBean().getName();
-        int index = pid.indexOf('@');
-        // Warning: It does not work with gij
-        String expected = pid.substring(0, index);
-
-        String query = "SELECT " + MySQLStatements.HEART_BEAT_PID + " FROM "
-                + MySQLStatements.HEART_BEAT;
-
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-
-        ResultSet result = (ResultSet) objects[1];
-        result.next();
-        String actual = result.getString(1);
-        MySQLBroker.getInstance().terminateExecution(objects);
-
-        Assert.assertEquals(expected, actual);
     }
 
     /**
@@ -542,5 +511,36 @@ public final class WatchdogTest {
 
         LOGGER.warn("First {} second {}", first, second);
         Assert.assertEquals(first, second);
+    }
+
+    /**
+     * Tests to delete an inexistent value.
+     *
+     * @throws TReqSException
+     *             If there is any problem.
+     * @throws SQLException
+     *             Problem in SQL.
+     */
+    @Test
+    public void testStart01TestPid() throws TReqSException, SQLException {
+        LOGGER.info("--> testStart01TestPid");
+        Watchdog.getInstance();
+
+        String pid = ManagementFactory.getRuntimeMXBean().getName();
+        int index = pid.indexOf('@');
+        // Warning: It does not work with gij
+        String expected = pid.substring(0, index);
+
+        String query = "SELECT " + MySQLStatements.HEART_BEAT_PID + " FROM "
+                + MySQLStatements.HEART_BEAT;
+
+        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+
+        ResultSet result = (ResultSet) objects[1];
+        result.next();
+        String actual = result.getString(1);
+        MySQLBroker.getInstance().terminateExecution(objects);
+
+        Assert.assertEquals(expected, actual);
     }
 }

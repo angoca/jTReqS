@@ -50,16 +50,6 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
  */
 public final class InvalidStateException extends TReqSException {
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -6062480558866198913L;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(InvalidStateException.class);
-
-    /**
      * Reasons to create an InvalidStateException.
      *
      * @author Andrés Gómez
@@ -75,6 +65,16 @@ public final class InvalidStateException extends TReqSException {
          */
         REGISTER
     }
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -6062480558866198913L;
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(InvalidStateException.class);
 
     /**
      * Creates the exception when the queue cannot be activated.

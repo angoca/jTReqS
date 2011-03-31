@@ -142,6 +142,19 @@ public abstract class AbstractHSMException extends TReqSException {
         LOGGER.trace("< Instance creation");
     }
 
+    /**
+     * Retrieves the associated error code.
+     *
+     * @return The associated error code.
+     */
+    public final int getErrorCode() {
+        LOGGER.trace(">< getHSMErrorCode");
+
+        return this.errorcode;
+    }
+
+    // CHECKSTYLE:ON
+
     /*
      * (non-Javadoc)
      *
@@ -152,18 +165,5 @@ public abstract class AbstractHSMException extends TReqSException {
         LOGGER.trace(">< getMessage");
 
         return "Code: " + this.errorcode + " - " + super.getMessage();
-    }
-
-    // CHECKSTYLE:ON
-
-    /**
-     * Retrieves the associated error code.
-     *
-     * @return The associated error code.
-     */
-    public final int getErrorCode() {
-        LOGGER.trace(">< getHSMErrorCode");
-
-        return this.errorcode;
     }
 }

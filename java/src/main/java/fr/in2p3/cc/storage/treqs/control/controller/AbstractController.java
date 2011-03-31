@@ -63,25 +63,6 @@ abstract class AbstractController {
     private Map<String, Object> objectMap;
 
     /**
-     * Retrieves the object map.
-     *
-     * @return Object map.
-     */
-    protected Map<String, Object>/* <!>? */getObjectMap() {
-        return this.objectMap;
-    }
-
-    /**
-     * Sets the map of the controller.
-     *
-     * @param map
-     *            Object's map.
-     */
-    protected void setObjectMap(final Map<String, Object>/* <!>! */map) {
-        this.objectMap = map;
-    }
-
-    /**
      * Creates a new object instance and insert it in the map if the "same"
      * object does not exist. Return a new instance or throw an exception if it
      * already exists.
@@ -141,6 +122,15 @@ abstract class AbstractController {
     }
 
     /**
+     * Retrieves the object map.
+     *
+     * @return Object map.
+     */
+    protected Map<String, Object>/* <!>? */getObjectMap() {
+        return this.objectMap;
+    }
+
+    /**
      * Deletes the reference to an object from the set of objects.
      * <p>
      * This method should not be called from a synchronous block. This method is
@@ -164,5 +154,15 @@ abstract class AbstractController {
         LOGGER.debug("Object {} removed", key);
 
         LOGGER.trace("< remove");
+    }
+
+    /**
+     * Sets the map of the controller.
+     *
+     * @param map
+     *            Object's map.
+     */
+    protected void setObjectMap(final Map<String, Object>/* <!>! */map) {
+        this.objectMap = map;
     }
 }

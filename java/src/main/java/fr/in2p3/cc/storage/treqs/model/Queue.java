@@ -729,6 +729,17 @@ public final class Queue implements Comparable<Queue> {
     }
 
     /**
+     * Getter for ActivationTime member.
+     *
+     * @return Time when the queue was activated.
+     */
+    private Calendar getActivationTime() {
+        LOGGER.trace(">< getActivationTime");
+
+        return this.activationTime;
+    }
+
+    /**
      * Returns the quantity of bytes that this queue has to process.
      *
      * @return Quantity of bytes to process.
@@ -877,17 +888,6 @@ public final class Queue implements Comparable<Queue> {
     }
 
     /**
-     * Getter for ActivationTime member.
-     *
-     * @return Time when the queue was activated.
-     */
-    private Calendar getActivationTime() {
-        LOGGER.trace(">< getActivationTime");
-
-        return this.activationTime;
-    }
-
-    /**
      * Getter for suspend duration in seconds.
      *
      * @return Duration of the suspension.
@@ -918,66 +918,6 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace(">< getTape");
 
         return this.tape;
-    }
-
-    /**
-     * The new reading object is created by this function. The reading status is
-     * QUEUED.
-     * <p>
-     * Each time this method is called, the Queue owner is recalculated. This is
-     * done by counting the files for each owner and then selecting the user
-     * owning more files.
-     *
-     * @param fpot
-     *            The metadata of the file.
-     * @param retries
-     *            Number of tries.
-     * @return If there was an already registered fpot.
-     * @throws TReqSException
-     *             When validating the metadata or registering the reading.
-     */
-    public boolean registerFPOT(final FilePositionOnTape fpot,
-            final byte retries) throws TReqSException {
-        LOGGER.trace("> registerFPOT");
-
-        assert fpot != null;
-        assert retries >= 0;
-
-        this.registerFileValidation(fpot);
-
-        // Register the reading.
-        Reading reading = new Reading(fpot, retries, this);
-
-        LOGGER.debug(
-                "Queue {} - {} Inserting the reading object at position {}",
-                new Object[] { this.getTape().getName(), this.getStatus(),
-                        fpot.getPosition() });
-
-        // The insert method ensures that the reading object is inserted
-        // in the right place.
-
-        // FIXME v2.0 In HPSS version 7 the aggregation return the same position
-        // for different files.
-        boolean exists = false;
-        synchronized (this.readingList) {
-            exists = this.readingList.containsKey(fpot.getPosition());
-            if (!exists) {
-                this.insertNotRegisteredFile(reading);
-            } else {
-                // The file is already in the queue.
-                LOGGER.info("Queue {} already has a reading for file {}", this
-                        .getTape().getName(), fpot.getFile().getName());
-                if (!this.readingList.get(fpot.getPosition()).getMetaData()
-                        .getFile().getName().equals(fpot.getFile().getName())) {
-                    assert false : "Two different files in the same position";
-                    // FIXME v2.0 this will happen when using aggregation.
-                }
-            }
-        }
-
-        LOGGER.trace("< registerFPOT");
-
-        return exists;
     }
 
     /**
@@ -1074,6 +1014,92 @@ public final class Queue implements Comparable<Queue> {
         }
 
         LOGGER.trace("< regiterFileValidation");
+    }
+
+    /**
+     * The new reading object is created by this function. The reading status is
+     * QUEUED.
+     * <p>
+     * Each time this method is called, the Queue owner is recalculated. This is
+     * done by counting the files for each owner and then selecting the user
+     * owning more files.
+     *
+     * @param fpot
+     *            The metadata of the file.
+     * @param retries
+     *            Number of tries.
+     * @return If there was an already registered fpot.
+     * @throws TReqSException
+     *             When validating the metadata or registering the reading.
+     */
+    public boolean registerFPOT(final FilePositionOnTape fpot,
+            final byte retries) throws TReqSException {
+        LOGGER.trace("> registerFPOT");
+
+        assert fpot != null;
+        assert retries >= 0;
+
+        this.registerFileValidation(fpot);
+
+        // Register the reading.
+        Reading reading = new Reading(fpot, retries, this);
+
+        LOGGER.debug(
+                "Queue {} - {} Inserting the reading object at position {}",
+                new Object[] { this.getTape().getName(), this.getStatus(),
+                        fpot.getPosition() });
+
+        // The insert method ensures that the reading object is inserted
+        // in the right place.
+
+        // FIXME v2.0 In HPSS version 7 the aggregation return the same position
+        // for different files.
+        boolean exists = false;
+        synchronized (this.readingList) {
+            exists = this.readingList.containsKey(fpot.getPosition());
+            if (!exists) {
+                this.insertNotRegisteredFile(reading);
+            } else {
+                // The file is already in the queue.
+                LOGGER.info("Queue {} already has a reading for file {}", this
+                        .getTape().getName(), fpot.getFile().getName());
+                if (!this.readingList.get(fpot.getPosition()).getMetaData()
+                        .getFile().getName().equals(fpot.getFile().getName())) {
+                    assert false : "Two different files in the same position";
+                    // FIXME v2.0 this will happen when using aggregation.
+                }
+            }
+        }
+
+        LOGGER.trace("< registerFPOT");
+
+        return exists;
+    }
+
+    /**
+     * Setter for ActivationTime member. It does not check the end time, because
+     * it is in other state.
+     * <p>
+     * The visibility is default for the tests. However, it should not be used
+     * from the outside.
+     *
+     * @param time
+     *            Activation time.
+     */
+    void setActivationTime(final Calendar time) {
+        LOGGER.trace("> setActivationTime");
+
+        assert time != null;
+        assert this.getStatus() == QueueStatus.ACTIVATED : this.getStatus();
+        assert this.creationTime != null;
+        assert this.suspensionTime == null;
+        assert this.endTime == null;
+        assert time.getTimeInMillis() >= this.getCreationTime()
+                .getTimeInMillis();
+
+        this.activationTime = time;
+
+        LOGGER.trace("< setActivationTime");
     }
 
     /**
@@ -1210,32 +1236,6 @@ public final class Queue implements Comparable<Queue> {
         }
 
         LOGGER.trace("< setStatus");
-    }
-
-    /**
-     * Setter for ActivationTime member. It does not check the end time, because
-     * it is in other state.
-     * <p>
-     * The visibility is default for the tests. However, it should not be used
-     * from the outside.
-     *
-     * @param time
-     *            Activation time.
-     */
-    void setActivationTime(final Calendar time) {
-        LOGGER.trace("> setActivationTime");
-
-        assert time != null;
-        assert this.getStatus() == QueueStatus.ACTIVATED : this.getStatus();
-        assert this.creationTime != null;
-        assert this.suspensionTime == null;
-        assert this.endTime == null;
-        assert time.getTimeInMillis() >= this.getCreationTime()
-                .getTimeInMillis();
-
-        this.activationTime = time;
-
-        LOGGER.trace("< setActivationTime");
     }
 
     /**

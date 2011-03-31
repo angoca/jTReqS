@@ -102,21 +102,6 @@ public final class MySQLQueueDAOTest {
     }
 
     /**
-     * Setup the env for the tests.
-     *
-     * @throws TReqSException
-     *             Problem setting the value.
-     */
-    @Before
-    public void setUp() throws TReqSException {
-        MySQLTests.cleanDatabase();
-
-        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (1, \"T10K-A\", 5)";
-        MySQLBroker.getInstance().executeModification(query);
-    }
-
-    /**
      * Destroys all after tests.
      *
      * @throws TReqSException
@@ -130,6 +115,21 @@ public final class MySQLQueueDAOTest {
         AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
         System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
+    /**
+     * Setup the env for the tests.
+     *
+     * @throws TReqSException
+     *             Problem setting the value.
+     */
+    @Before
+    public void setUp() throws TReqSException {
+        MySQLTests.cleanDatabase();
+
+        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+                + " VALUES (1, \"T10K-A\", 5)";
+        MySQLBroker.getInstance().executeModification(query);
     }
 
     /**

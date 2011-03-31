@@ -49,16 +49,6 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  */
 public final class InvalidMaxException extends TReqSException {
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 1958561609145251734L;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(InvalidMaxException.class);
-
-    /**
      * Reasons to create this exception.
      *
      * @author Andres Gomez
@@ -74,6 +64,16 @@ public final class InvalidMaxException extends TReqSException {
          */
         STAGERS_PER_QUEUE
     }
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 1958561609145251734L;
+
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(InvalidMaxException.class);
 
     /**
      * Reason to create this exception.

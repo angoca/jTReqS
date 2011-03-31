@@ -66,42 +66,26 @@ public final class HSMNativeBridgeTestNative {
     }
 
     /**
-     * Retrieves the valid keytab.
-     *
-     * @return Complete path to a keytab.
-     */
-    static String getValidKeytabPath() {
-        return validKeytabPath;
-    }
-
-    /**
      * Name of the user related to the keytab.
      */
     private static String validUsername = System.getProperty("userKeytab");
+
     static {
         if (validUsername == null) {
             validUsername = "treqs";
         }
     }
-
-    /**
-     * Retrieves the user related to the keytab.
-     *
-     * @return Username.
-     */
-    static String getValidUsername() {
-        return validUsername;
-    }
-
     /**
      * Authentication type for the valid keytab.
      */
     static final String VALID_AUTH_TYPE = "unix";
+
     /**
      * Name of a file that could be stored in tape.
      */
     static final String VALID_FILE = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
+
     /**
      * Size of the valid file.
      */
@@ -135,12 +119,10 @@ public final class HSMNativeBridgeTestNative {
      */
     static final String VALID_FILE_SINGLE_HIERARCHY = "/hpss/in2p3.fr/"
             + "group/ccin2p3/treqs/dummy";
-
     /**
      * Checks if the authentication was done.
      */
     private static boolean authenticated = false;
-
     /**
      * Authenticates the user.
      *
@@ -163,6 +145,24 @@ public final class HSMNativeBridgeTestNative {
             NativeBridge.destroyInstance();
             authenticated = false;
         }
+    }
+
+    /**
+     * Retrieves the valid keytab.
+     *
+     * @return Complete path to a keytab.
+     */
+    static String getValidKeytabPath() {
+        return validKeytabPath;
+    }
+
+    /**
+     * Retrieves the user related to the keytab.
+     *
+     * @return Username.
+     */
+    static String getValidUsername() {
+        return validUsername;
     }
 
     /**

@@ -65,6 +65,75 @@ public final class MySQLInit {
             .getLogger(MySQLInit.class);
 
     /**
+     * Default constructor hidden.
+     */
+    MySQLInit() {
+        // Nothing.
+    }
+
+    /**
+     * Creates a table given the table name and its structure. Actually, it
+     * builds the statement to execute.
+     *
+     * @param tableName
+     *            Name of the table to create.
+     * @param structure
+     *            Structure of the table (column, precision, etc.)
+     * @throws TReqSException
+     *             If there is a problem executing the statement.
+     */
+    private void createTable(final String tableName, final String structure)
+            throws TReqSException {
+        LOGGER.trace("> createTable");
+
+        assert tableName != null && !tableName.equals("");
+        assert structure != null && !structure.equals("");
+
+        String statement = InitDBStatements.CREATE_TABLE + tableName + " "
+                + structure;
+        int ret = MySQLBroker.getInstance().executeModification(statement);
+        if (ret == 1) {
+            LOGGER.info("Table {} created", tableName);
+        }
+
+        LOGGER.trace("< createTable");
+    }
+
+    /**
+     * Dumps the structure of the database.
+     *
+     * @return Structure of the create tables.
+     */
+    public String dumpStructure() {
+        LOGGER.trace("> dumpStructure");
+
+        String structure = "";
+
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.MEDIATYPES + " "
+                + InitDBStatements.STRUCTURE_TABLE_MEDIATYPES + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.ALLOCATIONS + " "
+                + InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.QUEUES + " "
+                + InitDBStatements.STRUCTURE_TABLE_QUEUES + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.REQUESTS + " "
+                + InitDBStatements.STRUCTURE_TABLE_REQUESTS + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.HEART_BEAT + " "
+                + InitDBStatements.STRUCTURE_TABLE_HEART_BEAT + ";\n";
+        structure += "\n" + InitDBStatements.CREATE_TABLE
+                + InitDBStatements.INFORMATIONS + " "
+                + InitDBStatements.STRUCTURE_TABLE_INFORMATIONS + ";\n";
+
+        LOGGER.trace("> dumpStructure");
+
+        return structure;
+    }
+
+    /**
      * Verifies the existence of the tables. If they do not exist, then it will
      * create them.
      *
@@ -148,74 +217,5 @@ public final class MySQLInit {
         MySQLBroker.destroyInstance();
 
         LOGGER.trace("< initializeDatabase");
-    }
-
-    /**
-     * Creates a table given the table name and its structure. Actually, it
-     * builds the statement to execute.
-     *
-     * @param tableName
-     *            Name of the table to create.
-     * @param structure
-     *            Structure of the table (column, precision, etc.)
-     * @throws TReqSException
-     *             If there is a problem executing the statement.
-     */
-    private void createTable(final String tableName, final String structure)
-            throws TReqSException {
-        LOGGER.trace("> createTable");
-
-        assert tableName != null && !tableName.equals("");
-        assert structure != null && !structure.equals("");
-
-        String statement = InitDBStatements.CREATE_TABLE + tableName + " "
-                + structure;
-        int ret = MySQLBroker.getInstance().executeModification(statement);
-        if (ret == 1) {
-            LOGGER.info("Table {} created", tableName);
-        }
-
-        LOGGER.trace("< createTable");
-    }
-
-    /**
-     * Default constructor hidden.
-     */
-    MySQLInit() {
-        // Nothing.
-    }
-
-    /**
-     * Dumps the structure of the database.
-     *
-     * @return Structure of the create tables.
-     */
-    public String dumpStructure() {
-        LOGGER.trace("> dumpStructure");
-
-        String structure = "";
-
-        structure += "\n" + InitDBStatements.CREATE_TABLE
-                + InitDBStatements.MEDIATYPES + " "
-                + InitDBStatements.STRUCTURE_TABLE_MEDIATYPES + ";\n";
-        structure += "\n" + InitDBStatements.CREATE_TABLE
-                + InitDBStatements.ALLOCATIONS + " "
-                + InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS + ";\n";
-        structure += "\n" + InitDBStatements.CREATE_TABLE
-                + InitDBStatements.QUEUES + " "
-                + InitDBStatements.STRUCTURE_TABLE_QUEUES + ";\n";
-        structure += "\n" + InitDBStatements.CREATE_TABLE
-                + InitDBStatements.REQUESTS + " "
-                + InitDBStatements.STRUCTURE_TABLE_REQUESTS + ";\n";
-        structure += "\n" + InitDBStatements.CREATE_TABLE
-                + InitDBStatements.HEART_BEAT + " "
-                + InitDBStatements.STRUCTURE_TABLE_HEART_BEAT + ";\n";
-        structure += "\n" + InitDBStatements.CREATE_TABLE
-                + InitDBStatements.INFORMATIONS + " "
-                + InitDBStatements.STRUCTURE_TABLE_INFORMATIONS + ";\n";
-
-        LOGGER.trace("> dumpStructure");
-
-        return structure;
     }
 }

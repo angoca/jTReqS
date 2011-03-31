@@ -395,48 +395,6 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Processes the output of a stream.
-     *
-     * @param stream
-     *            Buffer where is the stream.
-     * @param error
-     *            If the output is error or not.
-     * @return The processed output. It could be null.
-     * @throws HSMCommandBridgeException
-     *             If there is a problem processing the output.
-     */
-    private String processOutput(final BufferedReader stream,
-            final boolean error) throws HSMCommandBridgeException {
-        LOGGER.trace("> processOutput");
-
-        assert stream != null;
-
-        String current = null;
-        // Process the output.
-        try {
-            current = stream.readLine();
-            if (error && current != null) {
-                LOGGER.error(current);
-                throw new HSMCommandBridgeException(current);
-            } else if (!error && current == null) {
-                throw new HSMCommandBridgeException();
-            }
-        } catch (IOException e) {
-            throw new HSMCommandBridgeException(e);
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                throw new HSMCommandBridgeException(e);
-            }
-        }
-
-        LOGGER.trace("< processOutput");
-
-        return current;
-    }
-
-    /**
      * Processes the output of the get properties command.
      *
      * @param output
@@ -476,6 +434,48 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.trace("< processGetPropertiesOutput");
 
         return ret;
+    }
+
+    /**
+     * Processes the output of a stream.
+     *
+     * @param stream
+     *            Buffer where is the stream.
+     * @param error
+     *            If the output is error or not.
+     * @return The processed output. It could be null.
+     * @throws HSMCommandBridgeException
+     *             If there is a problem processing the output.
+     */
+    private String processOutput(final BufferedReader stream,
+            final boolean error) throws HSMCommandBridgeException {
+        LOGGER.trace("> processOutput");
+
+        assert stream != null;
+
+        String current = null;
+        // Process the output.
+        try {
+            current = stream.readLine();
+            if (error && current != null) {
+                LOGGER.error(current);
+                throw new HSMCommandBridgeException(current);
+            } else if (!error && current == null) {
+                throw new HSMCommandBridgeException();
+            }
+        } catch (IOException e) {
+            throw new HSMCommandBridgeException(e);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                throw new HSMCommandBridgeException(e);
+            }
+        }
+
+        LOGGER.trace("< processOutput");
+
+        return current;
     }
 
     /*

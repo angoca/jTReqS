@@ -113,31 +113,6 @@ public final class HSMNativeBridgeContextTestNative {
     }
 
     /**
-     * Tests to stage a file without being authenticated.
-     */
-    @Test
-    public void testStage01NoInit() {
-        LOGGER.info("----- testStage01NoInit");
-        boolean failed = false;
-        try {
-            NativeBridge.getInstance().stage(
-                    HSMNativeBridgeTestNative.VALID_FILE,
-                    HSMNativeBridgeTestNative.VALID_FILE_SIZE);
-            failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
-            LOGGER.info("testStage01NoInit " + code + " - "
-                    + HPSSErrorCode.HPSS_EPERM.getCode());
-            if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
      * Tests to init the API client with kerberos as authentication mechanism
      * when the right is unix.
      */
@@ -229,6 +204,31 @@ public final class HSMNativeBridgeContextTestNative {
             }
         }
         HSMNativeBridgeTestNative.deauthenticate();
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to stage a file without being authenticated.
+     */
+    @Test
+    public void testStage01NoInit() {
+        LOGGER.info("----- testStage01NoInit");
+        boolean failed = false;
+        try {
+            NativeBridge.getInstance().stage(
+                    HSMNativeBridgeTestNative.VALID_FILE,
+                    HSMNativeBridgeTestNative.VALID_FILE_SIZE);
+            failed = true;
+        } catch (JNIException e) {
+            int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testStage01NoInit " + code + " - "
+                    + HPSSErrorCode.HPSS_EPERM.getCode());
+            if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
+                failed = true;
+            }
+        }
         if (failed) {
             Assert.fail();
         }

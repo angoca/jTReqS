@@ -83,6 +83,25 @@ public final class MockReadingDAO implements ReadingDAO {
     private static AbstractPersistanceException requestStatusByIdException = null;
 
     /**
+     * @param requests
+     *            Given list of requests.
+     */
+    private static void createRequest(
+            final List<PersistenceHelperFileRequest> requests) {
+        short id = (short) (Math.random() * Constants.MILLISECONDS + 1);
+        String filename = "path" + (int) (Math.random() * 10) + "/file"
+                + (int) (Math.random() * 100);
+        byte nbTries = (byte) ((int) (Math.random() * 10) - 9);
+        if (nbTries <= 0) {
+            nbTries = 1;
+        }
+        String user = "user" + (int) (Math.random() * 10);
+        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
+                id, filename, nbTries, user);
+        requests.add(request);
+    }
+
+    /**
      * @return A created list of requests.
      */
     private static List<PersistenceHelperFileRequest> createRequests() {
@@ -103,21 +122,41 @@ public final class MockReadingDAO implements ReadingDAO {
 
     /**
      * @param requests
-     *            Given list of requests.
+     *            List of requests.
      */
-    private static void createRequest(
+    public static void setNewRequests(
             final List<PersistenceHelperFileRequest> requests) {
-        short id = (short) (Math.random() * Constants.MILLISECONDS + 1);
-        String filename = "path" + (int) (Math.random() * 10) + "/file"
-                + (int) (Math.random() * 100);
-        byte nbTries = (byte) ((int) (Math.random() * 10) - 9);
-        if (nbTries <= 0) {
-            nbTries = 1;
-        }
-        String user = "user" + (int) (Math.random() * 10);
-        PersistenceHelperFileRequest request = new PersistenceHelperFileRequest(
-                id, filename, nbTries, user);
-        requests.add(request);
+        newRequests = requests;
+    }
+
+    /**
+     * @param exception
+     *            Exception to throw.
+     */
+    public static void setNewRequestsException(
+            final AbstractPersistanceException exception) {
+        newRequestException = exception;
+    }
+
+    /**
+     * Quantity of requests to generate. then, recreates the requests.
+     *
+     * @param qty
+     *            -1 means that is random, otherwise the quantity indicate will
+     *            be generated in the next generation.
+     */
+    public static void setQuantityRequests(final int qty) {
+        quantityRequest = qty;
+        newRequests = createRequests();
+    }
+
+    /**
+     * @param exception
+     *            Sets the exception to throw.
+     */
+    public static void setRequestStatusByIdException(
+            final AbstractPersistanceException exception) {
+        requestStatusByIdException = exception;
     }
 
     /*
@@ -156,36 +195,6 @@ public final class MockReadingDAO implements ReadingDAO {
         return ret;
     }
 
-    /**
-     * @param requests
-     *            List of requests.
-     */
-    public static void setNewRequests(
-            final List<PersistenceHelperFileRequest> requests) {
-        newRequests = requests;
-    }
-
-    /**
-     * @param exception
-     *            Exception to throw.
-     */
-    public static void setNewRequestsException(
-            final AbstractPersistanceException exception) {
-        newRequestException = exception;
-    }
-
-    /**
-     * Quantity of requests to generate. then, recreates the requests.
-     *
-     * @param qty
-     *            -1 means that is random, otherwise the quantity indicate will
-     *            be generated in the next generation.
-     */
-    public static void setQuantityRequests(final int qty) {
-        quantityRequest = qty;
-        newRequests = createRequests();
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -206,15 +215,6 @@ public final class MockReadingDAO implements ReadingDAO {
         }
 
         LOGGER.trace("< setRequestStatusById-code");
-    }
-
-    /**
-     * @param exception
-     *            Sets the exception to throw.
-     */
-    public static void setRequestStatusByIdException(
-            final AbstractPersistanceException exception) {
-        requestStatusByIdException = exception;
     }
 
     /*

@@ -47,6 +47,14 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 public interface WatchDogDAO {
 
     /**
+     * Registers a beat in the data source.
+     *
+     * @throws TReqSException
+     *             If there is a problem acceding the data source.
+     */
+    void heartBeat() throws TReqSException;
+
+    /**
      * Starts the monitoring.
      *
      * @param pid
@@ -55,13 +63,5 @@ public interface WatchDogDAO {
      *             If there is a problem acceding the data source.
      */
     void start(int pid) throws TReqSException;
-
-    /**
-     * Registers a beat in the data source.
-     *
-     * @throws TReqSException
-     *             If there is a problem acceding the data source.
-     */
-    void heartBeat() throws TReqSException;
 
 }

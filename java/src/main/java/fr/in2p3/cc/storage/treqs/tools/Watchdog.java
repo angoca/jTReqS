@@ -107,6 +107,41 @@ public final class Watchdog {
     }
 
     /**
+     * Method to retrieve the current PID of the application.
+     * <p>
+     * This information was obtained from <a
+     * href="http://blog.igorminar.com/2007/03/how-java
+     * -application-can-discover
+     * -its.html">http://blog.igorminar.com/2007/03/how-java
+     * -application-can-discover-its.html</a>
+     * <p>
+     * There is another approach but it is dependent to the virtual machine.
+     * <p>
+     * <code>
+     * String name = ManagementFactory.getRuntimeMXBean().getName();<br/>
+     * int index = name.indexOf('@');
+     * int ret = Integer.parseInt(name.substring(0, index));
+     * </code> However, this does not work with GCJ.
+     *
+     * @return PID of the application.
+     * @throws WatchdogException
+     *             If there is any problem while executing the command.
+     */
+    public static int getPID() throws WatchdogException {
+        byte[] bo = new byte[100];
+        String[] cmd = { "bash", "-c", "echo $PPID" };
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec(cmd);
+            p.getInputStream().read(bo);
+        } catch (IOException e) {
+            throw new WatchdogException(e);
+        }
+        int ret = Integer.parseInt(new String(bo).trim());
+        return ret;
+    }
+
+    /**
      * Starts the monitoring process by writing the start time. However, and
      * this time there is not any heart beat.
      *
@@ -163,40 +198,5 @@ public final class Watchdog {
         }
 
         LOGGER.trace("< heartBeat");
-    }
-
-    /**
-     * Method to retrieve the current PID of the application.
-     * <p>
-     * This information was obtained from <a
-     * href="http://blog.igorminar.com/2007/03/how-java
-     * -application-can-discover
-     * -its.html">http://blog.igorminar.com/2007/03/how-java
-     * -application-can-discover-its.html</a>
-     * <p>
-     * There is another approach but it is dependent to the virtual machine.
-     * <p>
-     * <code>
-     * String name = ManagementFactory.getRuntimeMXBean().getName();<br/>
-     * int index = name.indexOf('@');
-     * int ret = Integer.parseInt(name.substring(0, index));
-     * </code> However, this does not work with GCJ.
-     *
-     * @return PID of the application.
-     * @throws WatchdogException
-     *             If there is any problem while executing the command.
-     */
-    public static int getPID() throws WatchdogException {
-        byte[] bo = new byte[100];
-        String[] cmd = { "bash", "-c", "echo $PPID" };
-        Process p;
-        try {
-            p = Runtime.getRuntime().exec(cmd);
-            p.getInputStream().read(bo);
-        } catch (IOException e) {
-            throw new WatchdogException(e);
-        }
-        int ret = Integer.parseInt(new String(bo).trim());
-        return ret;
     }
 }

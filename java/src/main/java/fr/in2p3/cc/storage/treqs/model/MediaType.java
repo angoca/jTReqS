@@ -107,18 +107,6 @@ public final class MediaType {
         return ret;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        LOGGER.trace(">< hashCode");
-
-        return this.id * this.name.hashCode();
-    }
-
     /**
      * Getter of the id.
      *
@@ -139,6 +127,18 @@ public final class MediaType {
         LOGGER.trace(">< getName");
 
         return this.name;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        LOGGER.trace(">< hashCode");
+
+        return this.id * this.name.hashCode();
     }
 
     /*

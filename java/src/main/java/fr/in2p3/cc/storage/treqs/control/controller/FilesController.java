@@ -145,34 +145,6 @@ public final class FilesController extends AbstractController {
     }
 
     /**
-     * Creates a new file and populates the parameters. The created file is
-     * stored in the Files map.
-     *
-     * @param name
-     *            File Name.
-     * @param size
-     *            Size of the file.`
-     * @return The created File.
-     * @throws TReqSException
-     *             If there is a problem creating the file.
-     */
-    File create(final String name, final long size) throws TReqSException {
-        LOGGER.trace("> create");
-
-        assert name != null && !name.equals("");
-        assert size >= 0;
-
-        File file = new File(name, size);
-        super.add(name, file);
-
-        assert file != null;
-
-        LOGGER.trace("< create");
-
-        return file;
-    }
-
-    /**
      * Removes the references of files that do not have any file position on
      * tape associated.
      *
@@ -207,5 +179,33 @@ public final class FilesController extends AbstractController {
         LOGGER.trace("< cleanup");
 
         return size;
+    }
+
+    /**
+     * Creates a new file and populates the parameters. The created file is
+     * stored in the Files map.
+     *
+     * @param name
+     *            File Name.
+     * @param size
+     *            Size of the file.`
+     * @return The created File.
+     * @throws TReqSException
+     *             If there is a problem creating the file.
+     */
+    File create(final String name, final long size) throws TReqSException {
+        LOGGER.trace("> create");
+
+        assert name != null && !name.equals("");
+        assert size >= 0;
+
+        File file = new File(name, size);
+        super.add(name, file);
+
+        assert file != null;
+
+        LOGGER.trace("< create");
+
+        return file;
     }
 }

@@ -260,36 +260,6 @@ public final class Dispatcher extends AbstractProcess {
     }
 
     /**
-     * Deletes the references to unused objects.
-     * <p>
-     * With the new mechanism to clean objects once the queue has finished, it
-     * is not necessary to exist this method.
-     *
-     * @throws TReqSException
-     *             If there is a problem getting the configuration.
-     */
-    private void cleaningReferences() throws TReqSException {
-        LOGGER.trace("> cleaningReferences");
-
-        // Clean the finished queues.
-        LOGGER.debug("Cleaning unreferenced instances");
-        int cleanedinstances = QueuesController.getInstance().cleanDoneQueues();
-        LOGGER.debug(cleanedinstances + " Queues cleaned");
-        cleanedinstances = FilePositionOnTapesController.getInstance()
-                .cleanup();
-        LOGGER.debug(cleanedinstances + " FilePositionOnTapes cleaned");
-        cleanedinstances = FilesController.getInstance().cleanup();
-        LOGGER.debug(cleanedinstances + " Files cleaned");
-        cleanedinstances = TapesController.getInstance().cleanup();
-        LOGGER.debug(cleanedinstances + " Tapes cleaned");
-        cleanedinstances = UsersController.getInstance().cleanup();
-        // The users are not deleted
-        // The media types and their allocation are not deleted.
-
-        LOGGER.trace("< cleaningReferences");
-    }
-
-    /**
      * Checks if the exception is about an empty file.
      *
      * @param fileRequest
@@ -349,6 +319,36 @@ public final class Dispatcher extends AbstractProcess {
     }
 
     /**
+     * Deletes the references to unused objects.
+     * <p>
+     * With the new mechanism to clean objects once the queue has finished, it
+     * is not necessary to exist this method.
+     *
+     * @throws TReqSException
+     *             If there is a problem getting the configuration.
+     */
+    private void cleaningReferences() throws TReqSException {
+        LOGGER.trace("> cleaningReferences");
+
+        // Clean the finished queues.
+        LOGGER.debug("Cleaning unreferenced instances");
+        int cleanedinstances = QueuesController.getInstance().cleanDoneQueues();
+        LOGGER.debug(cleanedinstances + " Queues cleaned");
+        cleanedinstances = FilePositionOnTapesController.getInstance()
+                .cleanup();
+        LOGGER.debug(cleanedinstances + " FilePositionOnTapes cleaned");
+        cleanedinstances = FilesController.getInstance().cleanup();
+        LOGGER.debug(cleanedinstances + " Files cleaned");
+        cleanedinstances = TapesController.getInstance().cleanup();
+        LOGGER.debug(cleanedinstances + " Tapes cleaned");
+        cleanedinstances = UsersController.getInstance().cleanup();
+        // The users are not deleted
+        // The media types and their allocation are not deleted.
+
+        LOGGER.trace("< cleaningReferences");
+    }
+
+    /**
      * Process the case when a file is already on disk.
      *
      * @param request
@@ -377,6 +377,54 @@ public final class Dispatcher extends AbstractProcess {
         LOGGER.trace(">< getMaxRequests");
 
         return this.maxRequests;
+    }
+
+    /**
+     * Returns the type of media.
+     *
+     * @param fileRequest
+     *            File request.
+     * @param fileProperties
+     *            Properties of the file.
+     * @param media
+     *            Media type.
+     * @param cont
+     *            if the execution has to continue.
+     * @return
+     * @throws TReqSException
+     */
+    private MediaType/* ? */getMediaType(final FileRequest/* ! */fileRequest,
+            final HSMHelperFileProperties/* ? */fileProperties, boolean cont)
+            throws TReqSException {
+        LOGGER.trace("> getMediaType");
+
+        assert fileRequest != null;
+
+        MediaType media = null;
+        if (cont && fileProperties != null) {
+            // Now, try to find out the media type.
+            try {
+                media = MediaTypesController.getInstance().getMediaType(
+                        fileProperties.getTapeName());
+            } catch (NotMediaTypeDefinedException e) {
+                this.logFailReadingException(e, fileRequest);
+            }
+        }
+
+        LOGGER.trace("< getMediaType");
+
+        return media;
+    }
+
+    /**
+     * Retrieves the quantity of milliseconds between loops.
+     *
+     * @return Quantity of seconds between loops.
+     */
+    public long getMillisBetweenLoops() {
+        LOGGER.trace(">< getSecondsBetweenLoops");
+
+        return this.millisBetweenLoops;
     }
 
     /**
@@ -457,54 +505,6 @@ public final class Dispatcher extends AbstractProcess {
         }
 
         LOGGER.trace("< getNewRequestsInner");
-    }
-
-    /**
-     * Returns the type of media.
-     *
-     * @param fileRequest
-     *            File request.
-     * @param fileProperties
-     *            Properties of the file.
-     * @param media
-     *            Media type.
-     * @param cont
-     *            if the execution has to continue.
-     * @return
-     * @throws TReqSException
-     */
-    private MediaType/* ? */getMediaType(final FileRequest/* ! */fileRequest,
-            final HSMHelperFileProperties/* ? */fileProperties, boolean cont)
-            throws TReqSException {
-        LOGGER.trace("> getMediaType");
-
-        assert fileRequest != null;
-
-        MediaType media = null;
-        if (cont && fileProperties != null) {
-            // Now, try to find out the media type.
-            try {
-                media = MediaTypesController.getInstance().getMediaType(
-                        fileProperties.getTapeName());
-            } catch (NotMediaTypeDefinedException e) {
-                this.logFailReadingException(e, fileRequest);
-            }
-        }
-
-        LOGGER.trace("< getMediaType");
-
-        return media;
-    }
-
-    /**
-     * Retrieves the quantity of milliseconds between loops.
-     *
-     * @return Quantity of seconds between loops.
-     */
-    public long getMillisBetweenLoops() {
-        LOGGER.trace(">< getSecondsBetweenLoops");
-
-        return this.millisBetweenLoops;
     }
 
     /**

@@ -111,6 +111,16 @@ public final class QueueTest {
     private static final int NUMBER_3000 = 3000;
 
     /**
+     * Destroys everything at the end.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        AbstractDAOFactory.destroyInstance();
+        Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
+    /**
      * Sets everything.
      *
      * @throws ProblematicConfiguationFileException
@@ -129,16 +139,6 @@ public final class QueueTest {
      */
     @After
     public void tearDown() {
-        Configurator.destroyInstance();
-        System.clearProperty(Constants.CONFIGURATION_FILE);
-    }
-
-    /**
-     * Destroys everything at the end.
-     */
-    @AfterClass
-    public static void oneTimeTearDown() {
-        AbstractDAOFactory.destroyInstance();
         Configurator.destroyInstance();
         System.clearProperty(Constants.CONFIGURATION_FILE);
     }

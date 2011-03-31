@@ -86,6 +86,16 @@ public final class ReadingTest {
     }
 
     /**
+     * Destroys all after tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        AbstractDAOFactory.destroyInstance();
+        Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
+    /**
      * Establishes the configuration.
      *
      * @throws TReqSException
@@ -106,16 +116,6 @@ public final class ReadingTest {
     public void tearDown() {
         HSMMockBridge.destroyInstance();
         Configurator.destroyInstance();
-    }
-
-    /**
-     * Destroys all after tests.
-     */
-    @AfterClass
-    public static void oneTimeTearDown() {
-        AbstractDAOFactory.destroyInstance();
-        Configurator.destroyInstance();
-        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**

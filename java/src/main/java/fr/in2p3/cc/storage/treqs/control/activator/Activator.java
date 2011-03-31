@@ -351,17 +351,6 @@ public final class Activator extends AbstractProcess {
     }
 
     /**
-     * Getter.
-     *
-     * @return Quantity of stagers per queue.
-     */
-    public byte getStagersPerQueue() {
-        LOGGER.trace(">< getStagersPerQueue");
-
-        return this.stagersPerQueue;
-    }
-
-    /**
      * Retrieves the validity of metadata.
      *
      * @return Value to consider the metadata as outdated.
@@ -392,6 +381,17 @@ public final class Activator extends AbstractProcess {
         LOGGER.trace(">< getMillisBetweenStagers");
 
         return this.millisBetweenStagers;
+    }
+
+    /**
+     * Getter.
+     *
+     * @return Quantity of stagers per queue.
+     */
+    public byte getStagersPerQueue() {
+        LOGGER.trace(">< getStagersPerQueue");
+
+        return this.stagersPerQueue;
     }
 
     /*

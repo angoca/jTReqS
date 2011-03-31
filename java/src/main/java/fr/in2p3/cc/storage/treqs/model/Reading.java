@@ -167,17 +167,6 @@ public final class Reading {
     }
 
     /**
-     * Getter for request status member.
-     *
-     * @return Status of the associated file.
-     */
-    public RequestStatus getRequestStatus() {
-        LOGGER.trace(">< getRequestStatus");
-
-        return this.requestStatus;
-    }
-
-    /**
      * Getter for max tries member.
      *
      * @return Maximal possible quantity of retries for this reading.
@@ -220,6 +209,17 @@ public final class Reading {
     }
 
     /**
+     * Getter for request status member.
+     *
+     * @return Status of the associated file.
+     */
+    public RequestStatus getRequestStatus() {
+        LOGGER.trace(">< getRequestStatus");
+
+        return this.requestStatus;
+    }
+
+    /**
      * Getter for start time member.
      *
      * @return Retrieves when the reading was started.
@@ -228,6 +228,44 @@ public final class Reading {
         LOGGER.trace(">< getStartTime");
 
         return this.startTime;
+    }
+
+    /**
+     * Logs the exception, updates the data source and changes the file status.
+     *
+     * @param message
+     *            Message to log.
+     * @param exception
+     *            Exception to process.
+     * @param daoState
+     *            State to register in the database.
+     * @throws TReqSException
+     *             If there is a problem registering the error in the database.
+     */
+    private void logsException(final String message, final Exception exception,
+            final RequestStatus daoState) throws TReqSException {
+        LOGGER.trace("> logsException");
+
+        assert message != null && !message.equals("");
+        assert exception != null;
+        assert daoState != null;
+
+        LOGGER.warn(message);
+
+        if (exception instanceof AbstractHSMException) {
+            this.setErrorCode(((AbstractHSMException) exception).getErrorCode());
+        }
+        this.setErrorMessage(exception.getMessage());
+
+        this.setFileRequestStatus(RequestStatus.FAILED);
+        // Put the request status as CREATED so that the dispatcher will
+        // reconsider it. Or failed if it is over.
+
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .update(this, daoState, new GregorianCalendar());
+
+        LOGGER.trace("< logsException");
+
     }
 
     /**
@@ -306,44 +344,6 @@ public final class Reading {
         }
 
         LOGGER.trace("< realStage");
-    }
-
-    /**
-     * Logs the exception, updates the data source and changes the file status.
-     *
-     * @param message
-     *            Message to log.
-     * @param exception
-     *            Exception to process.
-     * @param daoState
-     *            State to register in the database.
-     * @throws TReqSException
-     *             If there is a problem registering the error in the database.
-     */
-    private void logsException(final String message, final Exception exception,
-            final RequestStatus daoState) throws TReqSException {
-        LOGGER.trace("> logsException");
-
-        assert message != null && !message.equals("");
-        assert exception != null;
-        assert daoState != null;
-
-        LOGGER.warn(message);
-
-        if (exception instanceof AbstractHSMException) {
-            this.setErrorCode(((AbstractHSMException) exception).getErrorCode());
-        }
-        this.setErrorMessage(exception.getMessage());
-
-        this.setFileRequestStatus(RequestStatus.FAILED);
-        // Put the request status as CREATED so that the dispatcher will
-        // reconsider it. Or failed if it is over.
-
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .update(this, daoState, new GregorianCalendar());
-
-        LOGGER.trace("< logsException");
-
     }
 
     /**

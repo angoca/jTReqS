@@ -127,6 +127,49 @@ public final class ResourcesController {
     }
 
     /**
+     * Tests if the given user is defined in the list.
+     *
+     * @param user
+     *            User to search.
+     * @return true if the user is defined in the lists. false otherwise.
+     */
+    protected boolean exist(final User user) {
+        LOGGER.trace("> exist");
+
+        assert user != null;
+
+        boolean found = false;
+        Iterator<Resource> iter = this.resources.iterator();
+        while (iter.hasNext() && !found) {
+            Resource resource = iter.next();
+            int qty = resource.getUsedResources(user);
+            if (qty != 0) {
+                found = true;
+            }
+        }
+        if (!found) {
+            @SuppressWarnings("rawtypes")
+            Iterator iterShare = this.share.values().iterator();
+            while (iterShare.hasNext()) {
+                @SuppressWarnings("unchecked")
+                Iterator<PersistenceHelperResourceAllocation> iterList = ((Collection<PersistenceHelperResourceAllocation>) iterShare
+                        .next()).iterator();
+                while (iterList.hasNext()) {
+                    PersistenceHelperResourceAllocation helper = iterList
+                            .next();
+                    if (user.equals(helper.getUsername())) {
+                        found = true;
+                    }
+                }
+            }
+        }
+
+        LOGGER.trace("< exist");
+
+        return found;
+    }
+
+    /**
      * Returns the list of media allocations defined in the database.
      *
      * @return The list of resources.
@@ -171,48 +214,5 @@ public final class ResourcesController {
         LOGGER.trace("< getResourceAllocation");
 
         return this.share;
-    }
-
-    /**
-     * Tests if the given user is defined in the list.
-     *
-     * @param user
-     *            User to search.
-     * @return true if the user is defined in the lists. false otherwise.
-     */
-    protected boolean exist(final User user) {
-        LOGGER.trace("> exist");
-
-        assert user != null;
-
-        boolean found = false;
-        Iterator<Resource> iter = this.resources.iterator();
-        while (iter.hasNext() && !found) {
-            Resource resource = iter.next();
-            int qty = resource.getUsedResources(user);
-            if (qty != 0) {
-                found = true;
-            }
-        }
-        if (!found) {
-            @SuppressWarnings("rawtypes")
-            Iterator iterShare = this.share.values().iterator();
-            while (iterShare.hasNext()) {
-                @SuppressWarnings("unchecked")
-                Iterator<PersistenceHelperResourceAllocation> iterList = ((Collection<PersistenceHelperResourceAllocation>) iterShare
-                        .next()).iterator();
-                while (iterList.hasNext()) {
-                    PersistenceHelperResourceAllocation helper = iterList
-                            .next();
-                    if (user.equals(helper.getUsername())) {
-                        found = true;
-                    }
-                }
-            }
-        }
-
-        LOGGER.trace("< exist");
-
-        return found;
     }
 }

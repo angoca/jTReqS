@@ -49,21 +49,21 @@ public final class MockWatchDogDAO implements WatchDogDAO {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#start(java.lang.String)
+     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#heartBeat()
      */
     @Override
-    public void start(final int pid) {
+    public void heartBeat() {
         // Nothing.
     }
 
     /*
      * (non-Javadoc)
      *
-     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#heartBeat()
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#start(java.lang.String)
      */
     @Override
-    public void heartBeat() {
+    public void start(final int pid) {
         // Nothing.
     }
 

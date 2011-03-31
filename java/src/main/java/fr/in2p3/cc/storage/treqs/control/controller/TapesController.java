@@ -147,34 +147,6 @@ public final class TapesController extends AbstractController {
     }
 
     /**
-     * Create a new tape. The following parameters are needed.
-     *
-     * @param name
-     *            Name of the tape.
-     * @param media
-     *            Media type.
-     * @return Instantiated Tape.
-     * @throws ControllerInsertException
-     *             If there is an object that already exists with the same name.
-     */
-    Tape create(final String name, final MediaType media)
-            throws ControllerInsertException {
-        LOGGER.trace("> create");
-
-        assert name != null && !name.equals("");
-        assert media != null;
-
-        Tape tape = new Tape(name, media);
-        super.add(name, tape);
-
-        assert tape != null;
-
-        LOGGER.trace("< create");
-
-        return tape;
-    }
-
-    /**
      * Removes the tapes that are not associated to any fpot.
      *
      * @return Quantity of tapes were removed.
@@ -208,5 +180,33 @@ public final class TapesController extends AbstractController {
         LOGGER.trace("< cleanup");
 
         return size;
+    }
+
+    /**
+     * Create a new tape. The following parameters are needed.
+     *
+     * @param name
+     *            Name of the tape.
+     * @param media
+     *            Media type.
+     * @return Instantiated Tape.
+     * @throws ControllerInsertException
+     *             If there is an object that already exists with the same name.
+     */
+    Tape create(final String name, final MediaType media)
+            throws ControllerInsertException {
+        LOGGER.trace("> create");
+
+        assert name != null && !name.equals("");
+        assert media != null;
+
+        Tape tape = new Tape(name, media);
+        super.add(name, tape);
+
+        assert tape != null;
+
+        LOGGER.trace("< create");
+
+        return tape;
     }
 }

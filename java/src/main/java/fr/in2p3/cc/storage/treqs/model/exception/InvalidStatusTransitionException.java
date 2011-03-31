@@ -66,6 +66,11 @@ public final class InvalidStatusTransitionException extends TReqSException {
     private RequestStatus newStatus;
 
     /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -2658791247113864625L;
+
+    /**
      * Creates an exception with the old status and the new invalid status.
      *
      * @param newFRStatus
@@ -85,11 +90,6 @@ public final class InvalidStatusTransitionException extends TReqSException {
 
         LOGGER.trace("< Instance creation");
     }
-
-    /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -2658791247113864625L;
 
     @Override
     public String toString() {

@@ -82,6 +82,88 @@ public final class JonathanSelector extends FifoSelector {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(JonathanSelector.class);
 
+    /**
+     * Calculates the score for a user with the next formula.
+     * <p>
+     * <code>
+     * Value = #TotalDrives * #Reserved - #Used
+     * </code>
+     *
+     * @param resource
+     *            Type of associated resource.
+     * @param usersScores
+     *            Score of the users.
+     * @param queue
+     *            Queue to analyze.
+     */
+    private void calculateUserScore(final Resource/* ! */resource,
+            final Map<User, Float>/* <!,!>! */usersScores,
+            final Queue/* ! */queue) {
+        LOGGER.trace("> checkUser");
+
+        assert resource != null : "resource null";
+        assert usersScores != null : "usersScore null";
+        assert queue != null : "queue null";
+
+        float score;
+        if (queue.getStatus() == QueueStatus.CREATED) {
+            // Just setting a default best user.
+            User user = queue.getOwner();
+            if (user != null) {
+                score = (resource.getTotalAllocation() * resource
+                        .getUserAllocation(user))
+                        - resource.getUsedResources(user);
+                usersScores.put(user, score);
+                LOGGER.debug(
+                        "{} score: {} = {} * {} - {}",
+                        new Object[] { user.getName(), score,
+                                resource.getTotalAllocation(),
+                                resource.getUserAllocation(user),
+                                resource.getUsedResources(user) });
+            } else {
+                LOGGER.info("The queue does not have an owner: {}. This "
+                        + "should never happen - 3.", queue.getTape().getName());
+                assert false : "Queue without owner";
+            }
+
+        }
+
+        LOGGER.trace("< checkUser");
+    }
+
+    /**
+     * Returns a users that has queues in created state.
+     * <p>
+     * TODO v2.0 Negative user means that the user has to be ignored/skipped.
+     *
+     * @param users
+     *            Iterator of users.
+     * @return User that has at least one queue in created state.
+     * @throws TReqSException
+     *             If there is a problem with queuesController.
+     */
+    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+            throws TReqSException {
+        LOGGER.trace("> getNextPossibleUser");
+
+        assert users != null : "users null";
+
+        User ret = null;
+        if (users.hasNext()) {
+            do {
+                User tmp = users.next();
+                if (QueuesController.getInstance().exists(tmp,
+                        QueueStatus.CREATED)) {
+                    ret = tmp;
+                }
+            } while (ret == null && users.hasNext());
+        }
+
+        LOGGER.trace("< getNextPossibleUser");
+
+        return ret;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -273,87 +355,5 @@ public final class JonathanSelector extends FifoSelector {
         LOGGER.trace("< selectBestUser - {}", bestUser.getName());
 
         return bestUser;
-    }
-
-    /**
-     * Returns a users that has queues in created state.
-     * <p>
-     * TODO v2.0 Negative user means that the user has to be ignored/skipped.
-     *
-     * @param users
-     *            Iterator of users.
-     * @return User that has at least one queue in created state.
-     * @throws TReqSException
-     *             If there is a problem with queuesController.
-     */
-    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
-            throws TReqSException {
-        LOGGER.trace("> getNextPossibleUser");
-
-        assert users != null : "users null";
-
-        User ret = null;
-        if (users.hasNext()) {
-            do {
-                User tmp = users.next();
-                if (QueuesController.getInstance().exists(tmp,
-                        QueueStatus.CREATED)) {
-                    ret = tmp;
-                }
-            } while (ret == null && users.hasNext());
-        }
-
-        LOGGER.trace("< getNextPossibleUser");
-
-        return ret;
-    }
-
-    /**
-     * Calculates the score for a user with the next formula.
-     * <p>
-     * <code>
-     * Value = #TotalDrives * #Reserved - #Used
-     * </code>
-     *
-     * @param resource
-     *            Type of associated resource.
-     * @param usersScores
-     *            Score of the users.
-     * @param queue
-     *            Queue to analyze.
-     */
-    private void calculateUserScore(final Resource/* ! */resource,
-            final Map<User, Float>/* <!,!>! */usersScores,
-            final Queue/* ! */queue) {
-        LOGGER.trace("> checkUser");
-
-        assert resource != null : "resource null";
-        assert usersScores != null : "usersScore null";
-        assert queue != null : "queue null";
-
-        float score;
-        if (queue.getStatus() == QueueStatus.CREATED) {
-            // Just setting a default best user.
-            User user = queue.getOwner();
-            if (user != null) {
-                score = (resource.getTotalAllocation() * resource
-                        .getUserAllocation(user))
-                        - resource.getUsedResources(user);
-                usersScores.put(user, score);
-                LOGGER.debug(
-                        "{} score: {} = {} * {} - {}",
-                        new Object[] { user.getName(), score,
-                                resource.getTotalAllocation(),
-                                resource.getUserAllocation(user),
-                                resource.getUsedResources(user) });
-            } else {
-                LOGGER.info("The queue does not have an owner: {}. This "
-                        + "should never happen - 3.", queue.getTape().getName());
-                assert false : "Queue without owner";
-            }
-
-        }
-
-        LOGGER.trace("< checkUser");
     }
 }

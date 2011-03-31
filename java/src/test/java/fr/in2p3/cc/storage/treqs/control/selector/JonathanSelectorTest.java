@@ -102,6 +102,14 @@ public final class JonathanSelectorTest {
     }
 
     /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
+    /**
      * Setups the environment.
      *
      * @throws ProblematicConfiguationFileException
@@ -113,14 +121,6 @@ public final class JonathanSelectorTest {
                 Constants.PESISTENCE_FACTORY, MainTests.MOCK_PERSISTANCE);
         Configurator.getInstance().setValue(Constants.SECTION_HSM_BRIDGE,
                 Constants.HSM_BRIDGE, MainTests.MOCK_BRIDGE);
-    }
-
-    /**
-     * Destroys all after all tests.
-     */
-    @AfterClass
-    public static void oneTimeTearDown() {
-        System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 
     /**

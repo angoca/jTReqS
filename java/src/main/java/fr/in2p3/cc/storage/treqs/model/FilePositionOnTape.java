@@ -162,17 +162,6 @@ public final class FilePositionOnTape {
     }
 
     /**
-     * Retrieves the user that is asking for the file.
-     *
-     * @return The user that requests the file.
-     */
-    public User getRequester() {
-        LOGGER.trace(">< getRequester");
-
-        return this.requesterUser;
-    }
-
-    /**
      * Getter for position member. The information retrieved could eventually be
      * outdated. It is a good practice to call this method after a
      * isMetadataOutdated call, in order to be sure that the metadata is still
@@ -184,6 +173,17 @@ public final class FilePositionOnTape {
         LOGGER.trace(">< getPosition");
 
         return this.position;
+    }
+
+    /**
+     * Retrieves the user that is asking for the file.
+     *
+     * @return The user that requests the file.
+     */
+    public User getRequester() {
+        LOGGER.trace(">< getRequester");
+
+        return this.requesterUser;
     }
 
     /**
@@ -239,22 +239,6 @@ public final class FilePositionOnTape {
     }
 
     /**
-     * Sets the user that is asking for the file.
-     *
-     * @param requester
-     *            The new requester.
-     */
-    private void setRequester(final User requester) {
-        LOGGER.trace("> setRequester");
-
-        assert requester != null;
-
-        this.requesterUser = requester;
-
-        LOGGER.trace("< setRequester");
-    }
-
-    /**
      * Setter for position member.
      *
      * @param positionInTape
@@ -271,6 +255,22 @@ public final class FilePositionOnTape {
     }
 
     /**
+     * Sets the user that is asking for the file.
+     *
+     * @param requester
+     *            The new requester.
+     */
+    private void setRequester(final User requester) {
+        LOGGER.trace("> setRequester");
+
+        assert requester != null;
+
+        this.requesterUser = requester;
+
+        LOGGER.trace("< setRequester");
+    }
+
+    /**
      * Setter for tape member.
      *
      * @param associatedTape
@@ -284,28 +284,6 @@ public final class FilePositionOnTape {
         this.tape = associatedTape;
 
         LOGGER.trace("< setTape");
-    }
-
-    /**
-     * Updates the metadata of the file.
-     *
-     * @param associatedTape
-     *            Associated tape.
-     * @param positionInTape
-     *            Position of the file in the tape.
-     */
-    public void updateMetadata(final Tape associatedTape,
-            final int positionInTape) {
-        LOGGER.trace("> updateMetadata");
-
-        assert associatedTape != null;
-        assert positionInTape >= 0;
-
-        this.setMetadataTimestamp(new GregorianCalendar());
-        this.setTape(associatedTape);
-        this.setPosition(positionInTape);
-
-        LOGGER.trace("< updateMetadata");
     }
 
     /*
@@ -333,5 +311,27 @@ public final class FilePositionOnTape {
         LOGGER.trace("< toString");
 
         return ret;
+    }
+
+    /**
+     * Updates the metadata of the file.
+     *
+     * @param associatedTape
+     *            Associated tape.
+     * @param positionInTape
+     *            Position of the file in the tape.
+     */
+    public void updateMetadata(final Tape associatedTape,
+            final int positionInTape) {
+        LOGGER.trace("> updateMetadata");
+
+        assert associatedTape != null;
+        assert positionInTape >= 0;
+
+        this.setMetadataTimestamp(new GregorianCalendar());
+        this.setTape(associatedTape);
+        this.setPosition(positionInTape);
+
+        LOGGER.trace("< updateMetadata");
     }
 }

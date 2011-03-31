@@ -62,18 +62,6 @@ public final class ExecuterException extends TReqSException {
     private static final long serialVersionUID = -4509497188580934635L;
 
     /**
-     * Creates the exception with a descriptive message.
-     * 
-     * @param message
-     *            Message describing the problem.
-     */
-    public ExecuterException(final String /* ! */message) {
-        super(message);
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-    /**
      * Creates the exception with not parameters.
      */
     public ExecuterException() {
@@ -90,6 +78,18 @@ public final class ExecuterException extends TReqSException {
      */
     public ExecuterException(final IOException/* ! */exception) {
         super(exception);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception with a descriptive message.
+     * 
+     * @param message
+     *            Message describing the problem.
+     */
+    public ExecuterException(final String /* ! */message) {
+        super(message);
 
         LOGGER.trace(">< Instance creation");
     }

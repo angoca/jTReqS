@@ -63,6 +63,81 @@ public abstract class Selector {
             .getLogger(Selector.class);
 
     /**
+     * Checks if the queue has to be selected.
+     *
+     * @param resource
+     *            Type of resource.
+     * @param queue
+     *            Currently analyzed queue.
+     * @return true if the queue could be taken in account for comparison.
+     * @throws TReqSException
+     *             If there is a problem getting the configuration.
+     */
+    protected boolean checkQueue(final Resource/* ! */resource,
+            final Queue/* ! */queue) throws TReqSException {
+        LOGGER.trace("> checkQueue");
+
+        assert resource != null : "resource null";
+        assert queue != null : "queue null";
+
+        boolean ret = false;
+
+        // The queue concerns the given resource.
+        if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
+            // The queue is in created state.
+            if (queue.getStatus() == QueueStatus.CREATED) {
+                // Check if the tape for this queue is not already used by
+                // another active queue.
+                if (QueuesController.getInstance().exists(
+                        queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
+                    // There is another active queue for this tape. Just
+                    // pick another one.
+                    LOGGER.debug("Another queue on this tape" + " ({})"
+                            + " is already active. Trying next queue.", queue
+                            .getTape().getName());
+                } else {
+                    // This is a queue for the given user, for the media
+                    // type of the given resource, that is in created state
+                    // and there is not another queue in activated state.
+                    ret = true;
+                }
+            } else {
+                LOGGER.info("The analyzed queue is in other state: {} - {}",
+                        queue.getTape().getName(), queue.getStatus());
+                assert false : "This should not happen because the list of "
+                        + "queues has queues only in created state.";
+            }
+        } else {
+            LOGGER.error("Different media type: current queue {} "
+                    + "searched {}", queue.getTape().getMediaType().getName(),
+                    resource.getMediaType().getName());
+            assert false : "This should never happen, the list of tapes is "
+                    + "the correct type";
+        }
+
+        LOGGER.trace("< checkQueue - {}", ret);
+
+        return ret;
+    }
+
+    /**
+     * Compares the two queue to see which one can be selected. Both of them are
+     * eligible.
+     * <p>
+     *
+     *
+     * @param best
+     *            This is the best queue at the moment.
+     * @param queue
+     *            The currently analyzed queue.
+     * @return The new best queue.
+     * @throws TReqSException
+     *             Problem in the configurator.
+     */
+    protected abstract Queue compareQueue(final Queue/* ! */best,
+            final Queue /* ! */queue) throws TReqSException;
+
+    /**
      * Chooses the best queue candidate for activation for a given resource.
      *
      * @param queues
@@ -119,81 +194,6 @@ public abstract class Selector {
         LOGGER.trace("< selectBestQueueWithoutUser");
 
         return best;
-    }
-
-    /**
-     * Compares the two queue to see which one can be selected. Both of them are
-     * eligible.
-     * <p>
-     *
-     *
-     * @param best
-     *            This is the best queue at the moment.
-     * @param queue
-     *            The currently analyzed queue.
-     * @return The new best queue.
-     * @throws TReqSException
-     *             Problem in the configurator.
-     */
-    protected abstract Queue compareQueue(final Queue/* ! */best,
-            final Queue /* ! */queue) throws TReqSException;
-
-    /**
-     * Checks if the queue has to be selected.
-     *
-     * @param resource
-     *            Type of resource.
-     * @param queue
-     *            Currently analyzed queue.
-     * @return true if the queue could be taken in account for comparison.
-     * @throws TReqSException
-     *             If there is a problem getting the configuration.
-     */
-    protected boolean checkQueue(final Resource/* ! */resource,
-            final Queue/* ! */queue) throws TReqSException {
-        LOGGER.trace("> checkQueue");
-
-        assert resource != null : "resource null";
-        assert queue != null : "queue null";
-
-        boolean ret = false;
-
-        // The queue concerns the given resource.
-        if ((queue.getTape().getMediaType().equals(resource.getMediaType()))) {
-            // The queue is in created state.
-            if (queue.getStatus() == QueueStatus.CREATED) {
-                // Check if the tape for this queue is not already used by
-                // another active queue.
-                if (QueuesController.getInstance().exists(
-                        queue.getTape().getName(), QueueStatus.ACTIVATED) != null) {
-                    // There is another active queue for this tape. Just
-                    // pick another one.
-                    LOGGER.debug("Another queue on this tape" + " ({})"
-                            + " is already active. Trying next queue.", queue
-                            .getTape().getName());
-                } else {
-                    // This is a queue for the given user, for the media
-                    // type of the given resource, that is in created state
-                    // and there is not another queue in activated state.
-                    ret = true;
-                }
-            } else {
-                LOGGER.info("The analyzed queue is in other state: {} - {}",
-                        queue.getTape().getName(), queue.getStatus());
-                assert false : "This should not happen because the list of "
-                        + "queues has queues only in created state.";
-            }
-        } else {
-            LOGGER.error("Different media type: current queue {} "
-                    + "searched {}", queue.getTape().getMediaType().getName(),
-                    resource.getMediaType().getName());
-            assert false : "This should never happen, the list of tapes is "
-                    + "the correct type";
-        }
-
-        LOGGER.trace("< checkQueue - {}", ret);
-
-        return ret;
     }
 
 }

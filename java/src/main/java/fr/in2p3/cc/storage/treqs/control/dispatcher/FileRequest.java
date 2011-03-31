@@ -112,17 +112,6 @@ final class FileRequest {
     }
 
     /**
-     * Getter for user member.
-     *
-     * @return The user that requests the file.
-     */
-    public User getUser() {
-        LOGGER.trace(">< getUser");
-
-        return this.user;
-    }
-
-    /**
      * Getter for id member.
      *
      * @return The id of the request.
@@ -153,6 +142,17 @@ final class FileRequest {
         LOGGER.trace(">< getNumberTries");
 
         return this.numberTries;
+    }
+
+    /**
+     * Getter for user member.
+     *
+     * @return The user that requests the file.
+     */
+    public User getUser() {
+        LOGGER.trace(">< getUser");
+
+        return this.user;
     }
 
     /**

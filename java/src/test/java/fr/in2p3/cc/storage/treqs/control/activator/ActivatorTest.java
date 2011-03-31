@@ -509,13 +509,31 @@ public final class ActivatorTest {
     }
 
     /**
-     * Sets an invalid metadata.
+     * Sets and retrieves a value.
+     *
+     * @throws TReqSException
+     *             Never.
      */
     @Test
-    public void testSetMetadataTimeout01() {
+    public void testSecondsBetweenLoops01() throws TReqSException {
+        short value = 2;
+        Activator.getInstance().setSecondsBetweenLoops(value);
+
+        int actual = Activator.getInstance().getMillisBetweenLoops();
+
+        int expected = value * Constants.MILLISECONDS;
+
+        Assert.assertEquals(expected, actual);
+    }
+
+    /**
+     * Tries to set a negative value.
+     */
+    @Test
+    public void testSecondsBetweenLoops02() {
         boolean failed = false;
         try {
-            Activator.getInstance().setMetadataTimeout((short) 0);
+            Activator.getInstance().setSecondsBetweenLoops((short) -6);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -525,27 +543,6 @@ public final class ActivatorTest {
         if (failed) {
             Assert.fail();
         }
-    }
-
-    /**
-     * Tests the stop method.
-     * <p>
-     * This method is slow because of a loop in the activator.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void testStop01() throws TReqSException {
-        Activator.getInstance().setSecondsBetweenLoops((short) 1);
-
-        Activator.getInstance().start();
-        try {
-            Thread.sleep(ActivatorTest.HUNDRED);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Activator.getInstance().conclude();
     }
 
     /**
@@ -586,31 +583,13 @@ public final class ActivatorTest {
     }
 
     /**
-     * Sets and retrieves a value.
-     *
-     * @throws TReqSException
-     *             Never.
+     * Sets an invalid metadata.
      */
     @Test
-    public void testSecondsBetweenLoops01() throws TReqSException {
-        short value = 2;
-        Activator.getInstance().setSecondsBetweenLoops(value);
-
-        int actual = Activator.getInstance().getMillisBetweenLoops();
-
-        int expected = value * Constants.MILLISECONDS;
-
-        Assert.assertEquals(expected, actual);
-    }
-
-    /**
-     * Tries to set a negative value.
-     */
-    @Test
-    public void testSecondsBetweenLoops02() {
+    public void testSetMetadataTimeout01() {
         boolean failed = false;
         try {
-            Activator.getInstance().setSecondsBetweenLoops((short) -6);
+            Activator.getInstance().setMetadataTimeout((short) 0);
             failed = true;
         } catch (Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -620,5 +599,26 @@ public final class ActivatorTest {
         if (failed) {
             Assert.fail();
         }
+    }
+
+    /**
+     * Tests the stop method.
+     * <p>
+     * This method is slow because of a loop in the activator.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testStop01() throws TReqSException {
+        Activator.getInstance().setSecondsBetweenLoops((short) 1);
+
+        Activator.getInstance().start();
+        try {
+            Thread.sleep(ActivatorTest.HUNDRED);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Activator.getInstance().conclude();
     }
 }

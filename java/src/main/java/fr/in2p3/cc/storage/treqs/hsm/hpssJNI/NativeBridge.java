@@ -51,6 +51,11 @@ public final class NativeBridge {
     private static NativeBridge instance = null;
 
     /**
+     * Name of the library to load the HPSS JNI bridge.
+     */
+    private static final String HPSS_JNI_BRIDGE_LIBRARY = "NativeBridge";
+
+    /**
      * Destroys the unique instance. This is useful only for testing purposes.
      */
     public static void destroyInstance() {
@@ -80,6 +85,20 @@ public final class NativeBridge {
         assert instance != null;
 
         return instance;
+    }
+
+    /**
+     * Default constructor hidden where the library is loaded.
+     */
+    private NativeBridge() {
+        try {
+            System.out.println("Loading the HPSS JNI Bridge.");
+            System.loadLibrary(NativeBridge.HPSS_JNI_BRIDGE_LIBRARY);
+            System.out.println("Library loaded succesfully.");
+        } catch (java.lang.UnsatisfiedLinkError e) {
+            System.out.println("Error loading library. " + e.getMessage());
+            throw e;
+        }
     }
 
     /**
@@ -136,23 +155,4 @@ public final class NativeBridge {
      *             If there is a problem while staging the file.
      */
     native void stage(final String name, final long size) throws JNIException;
-
-    /**
-     * Name of the library to load the HPSS JNI bridge.
-     */
-    private static final String HPSS_JNI_BRIDGE_LIBRARY = "NativeBridge";
-
-    /**
-     * Default constructor hidden where the library is loaded.
-     */
-    private NativeBridge() {
-        try {
-            System.out.println("Loading the HPSS JNI Bridge.");
-            System.loadLibrary(NativeBridge.HPSS_JNI_BRIDGE_LIBRARY);
-            System.out.println("Library loaded succesfully.");
-        } catch (java.lang.UnsatisfiedLinkError e) {
-            System.out.println("Error loading library. " + e.getMessage());
-            throw e;
-        }
-    }
 }

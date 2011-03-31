@@ -162,39 +162,6 @@ public final class Configurator {
     }
 
     /**
-     * Find the string value for a defined parameter. If not present, throws a
-     * KeyNotFoundException.
-     *
-     * @param sec
-     *            Section of the property.
-     * @param key
-     *            Name of the property.
-     * @return The value.
-     * @throws KeyNotFoundException
-     *             If the variable was not found.
-     */
-    public String getStringValue(final String sec, final String key)
-            throws KeyNotFoundException {
-        LOGGER.trace("> getStringValue");
-
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
-
-        String value = this.properties.getString(sec + "." + key);
-
-        if (value == null) {
-            LOGGER.debug("Nothing found for String [" + sec + "]:" + key);
-            throw new KeyNotFoundException(sec, key);
-        }
-
-        assert value != null;
-
-        LOGGER.trace("< getStringValue - {}", value);
-
-        return value;
-    }
-
-    /**
      * Find the byte value for a defined parameter. If not present, it returns
      * the given default one.
      *
@@ -242,6 +209,39 @@ public final class Configurator {
         short value = this.properties.getShort(sec + "." + key, defaultValue);
 
         LOGGER.trace("< getShortValue - {}", value);
+
+        return value;
+    }
+
+    /**
+     * Find the string value for a defined parameter. If not present, throws a
+     * KeyNotFoundException.
+     *
+     * @param sec
+     *            Section of the property.
+     * @param key
+     *            Name of the property.
+     * @return The value.
+     * @throws KeyNotFoundException
+     *             If the variable was not found.
+     */
+    public String getStringValue(final String sec, final String key)
+            throws KeyNotFoundException {
+        LOGGER.trace("> getStringValue");
+
+        assert sec != null && !sec.equals("");
+        assert key != null && !key.equals("");
+
+        String value = this.properties.getString(sec + "." + key);
+
+        if (value == null) {
+            LOGGER.debug("Nothing found for String [" + sec + "]:" + key);
+            throw new KeyNotFoundException(sec, key);
+        }
+
+        assert value != null;
+
+        LOGGER.trace("< getStringValue - {}", value);
 
         return value;
     }

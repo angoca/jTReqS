@@ -65,6 +65,14 @@ public final class ConfiguratorTest {
             .getLogger(ConfiguratorTest.class);
 
     /**
+     * Destroys all after all tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
+
+    /**
      * Setups the configuration file for tests.
      */
     @Before
@@ -79,14 +87,6 @@ public final class ConfiguratorTest {
     @After
     public void tearDown() {
         Configurator.destroyInstance();
-        System.clearProperty(Constants.CONFIGURATION_FILE);
-    }
-
-    /**
-     * Destroys all after all tests.
-     */
-    @AfterClass
-    public static void oneTimeTearDown() {
         System.clearProperty(Constants.CONFIGURATION_FILE);
     }
 

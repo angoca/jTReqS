@@ -80,6 +80,28 @@ public final class HSMMockBridge extends AbstractHSMBridge {
             .getLogger(HSMMockBridge.class);
 
     /**
+     * File properties to return in the next call.
+     */
+    private static HSMHelperFileProperties fileProperties;
+
+    /**
+     * Exception to throw in the next call of get metadata.
+     */
+    private static AbstractHSMException filePropertiesException;
+
+    /**
+     * Exception to throw in the next call of stage.
+     */
+    private static AbstractHSMException stageException;
+    /**
+     * Time of the stage.
+     */
+    private static long stageMillis;
+    /**
+     * Object for synchronization.
+     */
+    private static Object notifyObject;
+    /**
      * Destroys the only instance. ONLY for testing purposes.
      */
     public static void destroyInstance() {
@@ -92,7 +114,6 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         LOGGER.trace("< destroyInstance");
     }
-
     /**
      * Retrieves the unique instance.
      *
@@ -112,27 +133,6 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         return instance;
     }
-
-    /**
-     * File properties to return in the next call.
-     */
-    private static HSMHelperFileProperties fileProperties;
-    /**
-     * Exception to throw in the next call of get metadata.
-     */
-    private static AbstractHSMException filePropertiesException;
-    /**
-     * Exception to throw in the next call of stage.
-     */
-    private static AbstractHSMException stageException;
-    /**
-     * Time of the stage.
-     */
-    private static long stageMillis;
-    /**
-     * Object for synchronization.
-     */
-    private static Object notifyObject;
 
     /**
      * Constructor where the basic elements are defined.

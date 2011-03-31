@@ -84,29 +84,6 @@ public class RegisterInformation {
     private static final String MYSQL_HOSTNAME = "MySQLHostname";
 
     /**
-     * Register the information in the database.
-     * 
-     * @throws TReqSException
-     *             If there is any problem while retrieving or inserting the
-     *             values.
-     */
-    public static void exec() {
-        LOGGER.trace("> exec");
-
-        try {
-            appVersion();
-            hostname();
-            hpssHostname();
-            mysqlHostname();
-        } catch (Exception e) {
-            LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
-                    e.getStackTrace());
-        }
-
-        LOGGER.trace("< exec");
-    }
-
-    /**
      * Register the application version.
      * 
      * @throws TReqSException
@@ -143,6 +120,29 @@ public class RegisterInformation {
                 .insert(APP_VERSION, appVersion);
 
         LOGGER.trace("< appVersion");
+    }
+
+    /**
+     * Register the information in the database.
+     * 
+     * @throws TReqSException
+     *             If there is any problem while retrieving or inserting the
+     *             values.
+     */
+    public static void exec() {
+        LOGGER.trace("> exec");
+
+        try {
+            appVersion();
+            hostname();
+            hpssHostname();
+            mysqlHostname();
+        } catch (Exception e) {
+            LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
+                    e.getStackTrace());
+        }
+
+        LOGGER.trace("< exec");
     }
 
     /**
