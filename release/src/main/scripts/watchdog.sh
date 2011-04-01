@@ -54,9 +54,9 @@ BAD='bad'
 # Quantity of minutes to consider a heartbeat as old.
 INTERVAL=3
 SQL_SELECT="SELECT IF (last_time > DATE_SUB(NOW(), INTERVAL ${INTERVAL} MINUTE), \"${OK}\", \"${BAD}\") FROM heart_beat ;"
-DBUSER=treqs
-DBNAME=treqsjobs
-DBPASSWD=bah5eVit
+DBUSER=jtreqsMon
+DBNAME=jtreqsDB
+DBPASSWD=jtreqsPassWD
 
 rc=0
 check_db=no
