@@ -141,7 +141,9 @@
             <copy todir="target/jtreqs/doc">
               <fileset dir="../doc">
                 <include name="errors.txt" />
+                <include name="jtreqs.cron" />
                 <include name="Migration_1.0-1.5" />
+                <include name="mysql.sql" />
               </fileset>
             </copy>
             <copy todir="target/jtreqs/bin">
