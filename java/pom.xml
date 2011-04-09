@@ -187,7 +187,6 @@
               <report>index</report>
               <report>issue-tracking</report>
               <report>license</report>
-              <report>mailing-list</report>
               <report>plugin-management</report>
               <report>plugins</report>
               <report>project-team</report>
