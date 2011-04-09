@@ -208,6 +208,10 @@ public final class Constants {
      */
     public static final String SELECTOR_NAME = "SELECTOR_NAME";
     /**
+     * There was a problem with a stager.
+     */
+    public static final int STAGER_PROBLEM = -3;
+    /**
      * Quantity of simultaneous stagers asking for files of the same tap to
      * HPSS.
      */
@@ -232,7 +236,6 @@ public final class Constants {
      * The word yes.
      */
     public static final String YES = "yes";
-
     /**
      * Invisible constructor.
      */
