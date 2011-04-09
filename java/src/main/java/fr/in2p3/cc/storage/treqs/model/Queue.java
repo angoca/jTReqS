@@ -480,8 +480,8 @@ public final class Queue implements Comparable<Queue> {
         // Calculates the quantity of files per owner.
         final Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
-            final User user = this.readingList.get(iterator.next()).getMetaData()
-                    .getRequester();
+            final User user = this.readingList.get(iterator.next())
+                    .getMetaData().getRequester();
             final Integer score = ownersScores.get(user);
             if (score != null) {
                 ownersScores.put(user, score + 1);
@@ -565,13 +565,13 @@ public final class Queue implements Comparable<Queue> {
         final List<Integer> positions = new ArrayList<Integer>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
-            final
-            Iterator keys = this.readingList.keySet().iterator();
+            final Iterator keys = this.readingList.keySet().iterator();
             while (keys.hasNext()) {
                 final int position = (Integer) keys.next();
                 positions.add(position);
                 final Reading reading = this.readingList.get(position);
-                final String filename = reading.getMetaData().getFile().getName();
+                final String filename = reading.getMetaData().getFile()
+                        .getName();
 
                 // Removes the file position on tape.
                 FilePositionOnTapesController.getInstance().remove(filename);
@@ -686,11 +686,13 @@ public final class Queue implements Comparable<Queue> {
         this.countRequests();
 
         // Asks for the item in the current position.
-        final Reading currentReading = this.readingList.get(this.getHeadPosition());
+        final Reading currentReading = this.readingList.get(this
+                .getHeadPosition());
 
         if (currentReading != null) {
             // Verifies if the current one is also the last one.
-            final Reading last = this.readingList.get(this.readingList.lastKey());
+            final Reading last = this.readingList.get(this.readingList
+                    .lastKey());
             if (last == currentReading) {
                 final RequestStatus fs = currentReading.getRequestStatus();
                 // The last file is in a final state.
@@ -1178,9 +1180,11 @@ public final class Queue implements Comparable<Queue> {
             LOGGER.error("The new position " + position
                     + " cannot be before the current head position "
                     + this.getHeadPosition());
-            throw new InvalidParameterException(
-                    InvalidParameterReasons.HEAD_REWOUND,
-                    this.getHeadPosition(), position);
+            // TODO v2.0 This was the error in version 1.5.4.2
+            // throw new InvalidParameterException(
+            // InvalidParameterReasons.HEAD_REWOUND,
+            // this.getHeadPosition(), position);
+            assert false;
         }
 
         this.headPosition = position;
