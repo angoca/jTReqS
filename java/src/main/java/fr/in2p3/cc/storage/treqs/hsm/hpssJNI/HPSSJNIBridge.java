@@ -251,9 +251,13 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         // Checks if there was a problem while querying the file to HPSS.
         if (LOGGER.isDebugEnabled()) {
             // The ret variable is modified by getFileProperties.
-            LOGGER.info("position '{}'", ret.getPosition());
-            LOGGER.info("storageName '{}'", ret.getTapeName());
-            LOGGER.info("size '{}'", ret.getSize());
+            if (ret != null) {
+                LOGGER.info("filename '{}' position '{}' storageName '{}' "
+                        + "size '{}'", new Object[] { name, ret.getPosition(),
+                        ret.getTapeName(), ret.getSize() });
+            } else {
+                LOGGER.info("ret object was null");
+            }
         }
 
         assert ret != null;
