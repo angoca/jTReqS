@@ -139,7 +139,7 @@ public final class Reading {
 
         // Registers this reading in the database.
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .firstUpdate(this, "Registered in a Queue.");
+                .firstUpdate(this, "Registered in Queue " + this.queue.getId());
 
         LOGGER.trace("< Creating reading with parameters.");
     }
@@ -300,7 +300,7 @@ public final class Reading {
             HSMFactory.getHSMBridge().stage(this.getMetaData().getFile());
             time = System.currentTimeMillis() - time;
             LOGGER.debug("total time stage: {}", time);
-            this.setErrorMessage("Succesfully staged.");
+            this.setErrorMessage("Successfully staged.");
             this.setFileRequestStatus(RequestStatus.STAGED);
             // Register the state in the database with staged status.
             // TODO v2.0 The setStage method should do this.
@@ -337,8 +337,8 @@ public final class Reading {
                         RequestStatus.FAILED);
             }
         } catch (final Exception e) {
-            final String mess = "Unexpected error while staging " + filename + ":"
-                    + e.getMessage();
+            final String mess = "Unexpected error while staging " + filename
+                    + ":" + e.getMessage();
             this.logsException(mess, e, RequestStatus.FAILED);
             throw new StagerException(e);
         }
