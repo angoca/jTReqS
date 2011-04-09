@@ -70,11 +70,13 @@ public enum RequestStatus {
     SUBMITTED((short) 110);
 
     /**
-     *
+     * Id of the status.
      */
     private short id;
 
     /**
+     * Constructor with the id of the request.
+     *
      * @param statusId
      *            If of the status.
      */
