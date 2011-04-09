@@ -36,7 +36,7 @@ BEGIN {
       } else if ($0 ~ stager3) {
         print $2,$3,"\t\t\t3-s",$12;
       }
-    } else if (/ Succesfully staged/) {
+    } else if (/ Successfully staged/) {
       if ($0 ~ stager1) {
         print $2,$3,"\t1-e",$12;
       } else if ($0 ~ stager2) {
