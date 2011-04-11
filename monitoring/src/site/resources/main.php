@@ -45,15 +45,16 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
           $num = mysql_numrows($result);
           while ($i < $num) {?>
             <tr>
-              <td><?php echo mysql_result($result, $i, "name");?></td>
-              <td><?php echo mysql_result($result, $i, "value");?></td>
+              <td><?php echo mysql_result($result, $i, "name");?>
+              </td>
+              <td><?php echo mysql_result($result, $i, "value");?>
+              </td>
             </tr>
             <?php
             $i++;
           }?>
           </tbody>
-        </table>
-      </td>
+        </table></td>
       <td>
         <h1>Heartbeat</h1> <?php
         $result = mysql_query($SQL_HEARTBEAT_LAST); ?>
@@ -67,8 +68,10 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
           </thead>
           <tbody>
             <tr>
-              <td><?php echo mysql_result($result, 0, "pid"); ?></td>
-              <td><?php echo mysql_result($result, 0, "start_time"); ?></td>
+              <td><?php echo mysql_result($result, 0, "pid"); ?>
+              </td>
+              <td><?php echo mysql_result($result, 0, "start_time"); ?>
+              </td>
               <td><?php
               $last = mysql_result($result, 0, "hb");
               if ($last > $MAX_LAST_BEAT) {
@@ -78,7 +81,8 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
               } ?></td>
             </tr>
           </tbody>
-        </table></td>
+        </table>
+      </td>
     </tr>
   </table>
   <table>
@@ -117,20 +121,25 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             $total = $created + $activated + $suspended + $ended + $aborted; ?>
             <tr>
               <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $owner; ?>
-              </a></td>
-              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $created; ?>
-              </a></td>
-              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $activated; ?>
-              </a></td>
-              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $ended; ?>
-              </a></td>
-              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $aborted; ?>
-              </a></td>
-              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $suspended; ?>
-              </a></td>
-              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $total; ?>
               </a>
               </td>
+              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $created; ?>
+              </a>
+              </td>
+              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $activated; ?>
+              </a>
+              </td>
+              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $ended; ?>
+              </a>
+              </td>
+              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $aborted; ?>
+              </a>
+              </td>
+              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $suspended; ?>
+              </a>
+              </td>
+              <td><a href="queues.php?user=<?php echo $owner; ?>"><?php echo $total; ?>
+              </a></td>
             </tr>
             <?php
             $sumCreated += $created;
@@ -143,21 +152,17 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
           <tfoot>
             <tr>
               <td>Total</td>
-              <td><?php echo $sumCreated; ?>
-              </td>
-              <td><?php echo $sumActivated; ?>
-              </td>
-              <td><?php echo $sumEnded; ?>
-              </td>
-              <td><?php echo $sumAborted; ?>
-              </td>
-              <td><?php echo $sumSuspended; ?>
-              </td>
+              <td><?php echo $sumCreated; ?></td>
+              <td><?php echo $sumActivated; ?></td>
+              <td><?php echo $sumEnded; ?></td>
+              <td><?php echo $sumAborted; ?></td>
+              <td><?php echo $sumSuspended; ?></td>
               <td><?php echo $sumCreated + $sumActivated + $sumEnded + $sumAborted + $sumSuspended; ?>
               </td>
             </tr>
           </tfoot>
-        </table></td>
+        </table>
+      </td>
       <td>
 
         <h1>Requests</h1> <?php
@@ -196,28 +201,22 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             $total = $created + $submitted + $queued + $staged + $onDisk + $failed; ?>
             <tr>
               <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $user; ?>
-              </a>
-              </td>
-              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $created; ?>
-              </a>
-              </td>
-              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $onDisk; ?>
-              </a>
-              </td>
-              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $submitted; ?>
-              </a>
-              </td>
-              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $queued; ?>
-              </a>
-              </td>
-              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $staged; ?>
-              </a>
-              </td>
-              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $failed; ?>
-              </a>
-              </td>
-              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $total; ?>
               </a></td>
+              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $created; ?>
+              </a></td>
+              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $onDisk; ?>
+              </a></td>
+              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $submitted; ?>
+              </a></td>
+              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $queued; ?>
+              </a></td>
+              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $staged; ?>
+              </a></td>
+              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $failed; ?>
+              </a></td>
+              <td><a href="requests.php?user=<?php echo $user; ?>"><?php echo $total; ?>
+              </a>
+              </td>
             </tr>
             <?php
             $sumCreated += $created;
@@ -231,24 +230,17 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
           <tfoot>
             <tr>
               <td>Total</td>
-              <td><?php echo $sumCreated; ?>
-              </td>
-              <td><?php echo $sumOnDisk; ?>
-              </td>
-              <td><?php echo $sumSubmitted; ?>
-              </td>
-              <td><?php echo $sumQueued; ?>
-              </td>
-              <td><?php echo $sumStaged; ?>
-              </td>
-              <td><?php echo $sumFailed; ?>
-              </td>
+              <td><?php echo $sumCreated; ?></td>
+              <td><?php echo $sumOnDisk; ?></td>
+              <td><?php echo $sumSubmitted; ?></td>
+              <td><?php echo $sumQueued; ?></td>
+              <td><?php echo $sumStaged; ?></td>
+              <td><?php echo $sumFailed; ?></td>
               <td><?php echo $sumCreated + $sumOnDisk + $sumSubmitted + $sumQueued + $sumStaged + $sumFailed; ?>
               </td>
             </tr>
           </tfoot>
-        </table>
-      </td>
+        </table></td>
     </tr>
   </table>
   <table>
@@ -289,15 +281,13 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             $maxbook = $book;
           }
         }
-        $table_width = 950;
-        $col1_width = 50;
         ?>
         <table summary="Share on resource type" class=share>
           <thead class="gradient">
             <tr>
               <th class="resource">Resource</th>
               <th class="resource">Drives</th>
-              <th class="resource" colspan="100" width="500">Repartition</th>
+              <th class="resource" colspan="100">Repartition</th>
               <?php
               if ($maxbook > 0) { ?>
               <th class="resource">Overbooking</th>
@@ -319,18 +309,16 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
           foreach ($resource_array as $medianame => $shares_array) {
             $share_sum = 1; ?>
           <tr>
-            <td class="resource"><?php echo $medianame; ?>
-            </td>
-            <td class="resource"><?php echo $drives_alloc[$medianame]; ?>
+            <td class="resource" rowspan="2"><?php echo $medianame; ?></td>
+            <td class="resource" rowspan="2"><?php echo $drives_alloc[$medianame]; ?>
             </td>
             <?php
             foreach ($shares_array as $user => $share) {
               // For each row, prints a line and spans columns as percentage.
               if ($share > 0) { ?>
             <td class="share" colspan="<?php echo $share * 100; ?>"><span
-              class="bubble"><?php echo $user." has ".($share * 100)."%"; ?> </span>
-              <?php echo $user; ?>
-            </td>
+              class="bubble"><?php echo "User '".$user."' has ".($share * 100)."%"; ?>
+            </span> <?php echo $user; ?></td>
             <?php
             $share_sum -= $share;
               }
@@ -338,10 +326,14 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             if ($share_sum <= 0) {
               // Resource is overbooked. Do nothing.
             } else if ($share_sum > 0) { ?>
-            <td class="share_free" colspan="<?php echo $share_sum * 100; ?>">free:
-            <?php echo $share_sum * 100; ?>%</td>
-            <?php
+            <td class="share_free" colspan="<?php echo $share_sum * 100; ?>"
+              rowspan="2">Free: <?php echo $share_sum * 100; ?>%</td>
+              <?php
             } ?>
+          </tr>
+          <tr>
+            <td class="share" colspan="<?php echo (1 - $share_sum) * 100; ?>">Used:
+            <?php echo (1 - $share_sum) * 100; ?>%</td>
           </tr>
           <?php
           }
@@ -349,16 +341,22 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
           <tfoot>
             <tr>
               <td colspan="2" />
-              <td class="resource" colspan="20">20%</td>
-              <td class="resource" colspan="20">20%</td>
-              <td class="resource" colspan="20">20%</td>
-              <td class="resource" colspan="20">20%</td>
-              <td class="resource" colspan="20">20%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
+              <td class="resource" colspan="10">10%</td>
             </tr>
           </tfoot>
-        </table></td>
+        </table>
+      </td>
       <td>
-        <h1>Drives Usage</h1> <?php
+        <h1>Drives Distribution</h1> <?php
 
         $used_drive = array();
         $result = mysql_query($SQL_USED_DRIVES);
@@ -405,11 +403,16 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             ?>
 
             <tr>
-              <td><?php echo $name; ?></td>
-              <td><?php echo $drives; ?></td>
-              <td><?php echo $user; ?></td>
-              <td><?php echo (int)($share * $drives); ?></td>
-              <td><?php echo $used_drive["$mediaId/$user"]; ?></td>
+              <td><?php echo $name; ?>
+              </td>
+              <td><?php echo $drives; ?>
+              </td>
+              <td><?php echo $user; ?>
+              </td>
+              <td><?php echo $share * $drives; ?>
+              </td>
+              <td><?php echo $used_drive["$mediaId/$user"]; ?>
+              </td>
             </tr>
             <?php
             unset($used_drive["$mediaId/$user"]);
@@ -418,22 +421,26 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             $values = preg_split('/\//', $key, -1, PREG_SPLIT_NO_EMPTY);
             $media = $values[0];
             $user = $values[1];
-            $query = "SELECT name, drives FROM jmediatypes WHERE id = $media";
-            $result = mysql_query($query);
+            $result = mysql_query($SQL_USAGE_DRIVES_FOR_MEDIA.$media);
             $name = mysql_result($result, 0, "name");
             $drives = mysql_result($result, 0, "drives");?>
             <tr>
-              <td><?php echo $name; ?></td>
-              <td><?php echo $drives; ?></td>
-              <td><?php echo $user; ?></td>
+              <td><?php echo $name; ?>
+              </td>
+              <td><?php echo $drives; ?>
+              </td>
+              <td><?php echo $user; ?>
+              </td>
               <td>0</td>
-              <td><?php echo $val; ?></td>
+              <td><?php echo $val; ?>
+              </td>
             </tr>
             <?php
           }
           ?>
           </tbody>
-        </table></td>
+        </table>
+      </td>
     </tr>
   </table>
   <?php mysql_close();?>
