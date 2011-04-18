@@ -38,6 +38,8 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 /**
  * Statements used to initialize the database.
+ * <p>
+ * TODO v2.0 Create tables queue_status and request_status.
  *
  * @author Andrés Gómez
  * @since 1.5
