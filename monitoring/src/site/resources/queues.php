@@ -1,10 +1,39 @@
+<!-- Copyright Jonathan Schaeffer 2009-2010, CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr> -->
+
+<!-- Contributors Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr> -->
+
+<!-- This software is a computer program whose purpose is to schedule, sort
+    and submit file requests to the hierarchical storage system HPSS. -->
+
+<!-- This software is governed by the CeCILL license under French law and
+    abiding by the rules of distribution of free software. You can use, modify
+    and/or redistribute the software under the terms of the CeCILL license as
+    circulated by CEA, CNRS and INRIA at the following URL "http://www.cecill.info". -->
+
+<!-- As a counterpart to the access to the source code and rights to copy,
+    modify and redistribute granted by the license, users are provided only with
+    a limited warranty and the software's author, the holder of the economic
+    rights, and the successive licensors have only limited liability. -->
+
+<!-- In this respect, the user's attention is drawn to the risks associated
+    with loading, using, modifying and/or developing or reproducing the software
+    by the user in light of its specific status of free software, that may mean
+    that it is complicated to manipulate, and that also therefore means that
+    it is reserved for developers and experienced professionals having in-depth
+    computer knowledge. Users are therefore encouraged to load and test the software's
+    suitability as regards their requirements in conditions enabling the security
+    of their systems and/or data to be ensured and, more generally, to use and
+    operate it in the same conditions as regards security. -->
+
+<!-- The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms. -->
 <html>
 <head>
 <link rel="icon" href="images/eyes.ico" type="image/ico" />
 <title>jTReqS Monitoring - Queues</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <style type="text/css">
-@IMPORT url("../resources_old/css/fancystyle.css");
+@IMPORT url("css/fancystyle.css");
 </style>
 </head>
 <body>
@@ -17,7 +46,7 @@ ini_set('display_errors', true);
 require_once "configuration.inc";
 require_once "queries.inc";
 
-include "../resources_old/menu.php";
+include "menu.php";
 
 mysql_connect($dbServer, $dbUser, $dbPasswd);
 @ mysql_select_db($dbName) or die("Unable to connect to the database '"
@@ -76,9 +105,9 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             </div>
             <div>
               <span> Waiting <b><?php echo $waiting; ?> </b> </span>
-            </div>
-        </a> <?php
-        }?></td>
+            </div> </a> <?php
+        }?>
+        </td>
         <?php
         $media = mysql_result($result, $i, "media");
         $id = mysql_result($result, $i, "id");
@@ -104,7 +133,7 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
                   echo "<span style=\"color:red\">".$failed."</span>";
                 } else {
                   echo $failed;
-                } ?></b> </span>
+                } ?> </b> </span>
             </div>
             <div>
               Creation: <b><?php echo $creationTime; ?> </b>
@@ -117,7 +146,8 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
                 Duration <b><?php echo $duration; ?> </b> </span><span>Left: <b><?php echo $reqs - ($done + $failed); ?>
               </b> </span>
             </div> </a> <?php
-        }?></td>
+        }?>
+        </td>
         <?php
         $media = mysql_result($result, $i, "media");
         $id = mysql_result($result, $i, "id");
@@ -146,7 +176,8 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
             <div>
               <span> Waiting <b><?php echo $waiting; ?> </b> </span>
             </div> </a> <?php
-        }?></td>
+        }?>
+        </td>
       </tr>
       <?php
     } ?>
@@ -161,7 +192,6 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
       </tr>
     </tfoot>
   </table>
-
-
+  <?php mysql_close();?>
 </body>
 </html>
