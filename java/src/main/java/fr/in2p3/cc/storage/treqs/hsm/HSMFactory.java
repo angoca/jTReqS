@@ -69,6 +69,9 @@ public final class HSMFactory {
      * Retrieves the corresponding HSM bridge. This method checks the value of
      * MAIN.HSM_BRIDGE in the configuration file. If no value was specify, it
      * will return HPSS bridge as default.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @return The configured HSM bridge.
      * @throws ProblematicConfiguationFileException
@@ -84,7 +87,7 @@ public final class HSMFactory {
         try {
             hsmBridgeClass = Configurator.getInstance().getStringValue(
                     Constants.SECTION_HSM_BRIDGE, Constants.HSM_BRIDGE);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             LOGGER.info("No setting for {}.{}, default value will be used: {}",
                     new Object[] { Constants.SECTION_HSM_BRIDGE,
                             Constants.HSM_BRIDGE, hsmBridgeClass });
@@ -93,7 +96,7 @@ public final class HSMFactory {
         LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
         // TODO v2.0 keep a copy of an object to invoke it fastly, not to do the
         // whole process each time.
-        AbstractHSMBridge bridge = Instantiator
+        final AbstractHSMBridge bridge = Instantiator
                 .getInstanceClass(hsmBridgeClass);
 
         assert bridge != null;

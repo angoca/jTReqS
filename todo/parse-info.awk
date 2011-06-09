@@ -5,7 +5,7 @@
 # In order to know the stager of a queue, you can execute the next command
 # and then replace the given values in this code.
 #
-# awk '/-JT848800-/ {print $3}' jtreqs-trace.log | sort | uniq
+# awk '/-JT848800-/ {print $3}' jtreqs-trace.log | sort | uniq | awk -F- '{print $2}'
 #
 # In order to execute the command, you have to give the right arguments:
 # t = tapename
@@ -28,15 +28,15 @@ BEGIN {
 {
 
   if ($0 ~ tape) {
-    if (/ Staging\./) {
+    if (/ Started\./) {
       if ($0 ~ stager1) {
-        print $2,$3,"\t1-s",$12;
+        print $2,$3,"\t1-s",$14;
       } else if ($0 ~ stager2) {
-        print $2,$3,"\t\t2-s",$12;
+        print $2,$3,"\t\t2-s",$14;
       } else if ($0 ~ stager3) {
-        print $2,$3,"\t\t\t3-s",$12;
+        print $2,$3,"\t\t\t3-s",$14;
       }
-    } else if (/ Succesfully staged/) {
+    } else if (/ successfully staged\./) {
       if ($0 ~ stager1) {
         print $2,$3,"\t1-e",$12;
       } else if ($0 ~ stager2) {

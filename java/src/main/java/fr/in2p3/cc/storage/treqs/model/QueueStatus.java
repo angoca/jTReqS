@@ -48,6 +48,12 @@ import org.slf4j.LoggerFactory;
  */
 public enum QueueStatus {
     /**
+     * The queue has changed to aborted at initialization time. This is done
+     * only in the database level. The object in memory will not contain this
+     * code.
+     */
+    ABORTED((short) 240),
+    /**
      * The corresponding tape is "used". The Queue is activated, it means that
      * the queue is being processed, and the corresponding tape should be
      * mounted in a drive and being read, or the tape is in transit.
@@ -72,13 +78,7 @@ public enum QueueStatus {
      * The corresponding tape is currently unavailable. The tape could be locked
      * due to physical problems.
      */
-    TEMPORARILY_SUSPENDED((short) 220),
-    /**
-     * The queue has changed to aborted at initialization time. This is done
-     * only in the database level. The object in memory will not contain this
-     * code.
-     */
-    ABORTED((short) 240);
+    TEMPORARILY_SUSPENDED((short) 220);
     /**
      * Logger.
      */

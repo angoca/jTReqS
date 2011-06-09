@@ -42,6 +42,9 @@ import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * Main class that get together all tests.
+ * <p>
+ * TODO v2.0 The native tests have to be included as part of the test in the
+ * complete application. Currently, they are executed independently.
  *
  * @author Andrés Gómez
  */
@@ -50,15 +53,15 @@ import org.junit.runners.Suite.SuiteClasses;
         SystemTests.class })
 public final class MainTests {
     /**
-     * Mock persistence.
-     */
-    public static final String MOCK_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
-            + "persistence.mock.MockDAOFactory";
-    /**
      * Mock bridge.
      */
     public static final String MOCK_BRIDGE = "fr.in2p3.cc.storage.treqs."
             + "hsm.mock.HSMMockBridge";
+    /**
+     * Mock persistence.
+     */
+    public static final String MOCK_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
+            + "persistence.mock.MockDAOFactory";
     /**
      * Properties file.
      */

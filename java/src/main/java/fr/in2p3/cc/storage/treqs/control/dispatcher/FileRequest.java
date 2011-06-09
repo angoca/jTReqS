@@ -66,10 +66,6 @@ final class FileRequest {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(FileRequest.class);
     /**
-     * User requesting the file.
-     */
-    private final User user;
-    /**
      * Unique Id of the request.
      */
     private final int id;
@@ -81,6 +77,10 @@ final class FileRequest {
      * Number of retries.
      */
     private byte numberTries;
+    /**
+     * User requesting the file.
+     */
+    private final User user;
 
     /**
      * Constructor with all parameters.
@@ -99,7 +99,7 @@ final class FileRequest {
         LOGGER.trace("> Creating instance.");
 
         assert fileRequestId > 0;
-        assert requestedFilename != null && !requestedFilename.equals("");
+        assert (requestedFilename != null) && !requestedFilename.equals("");
         assert requesterUser != null;
 
         this.id = fileRequestId;
@@ -109,17 +109,6 @@ final class FileRequest {
         this.setNumberTries(tries);
 
         LOGGER.trace("< Creating instance.");
-    }
-
-    /**
-     * Getter for user member.
-     *
-     * @return The user that requests the file.
-     */
-    public User getUser() {
-        LOGGER.trace(">< getUser");
-
-        return this.user;
     }
 
     /**
@@ -153,6 +142,17 @@ final class FileRequest {
         LOGGER.trace(">< getNumberTries");
 
         return this.numberTries;
+    }
+
+    /**
+     * Getter for user member.
+     *
+     * @return The user that requests the file.
+     */
+    public User getUser() {
+        LOGGER.trace(">< getUser");
+
+        return this.user;
     }
 
     /**

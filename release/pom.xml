@@ -52,14 +52,13 @@
   </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
-    <version>1.5.5-SNAPSHOT</version>
+    <version>1.5.6-SNAPSHOT</version>
     <artifactId>jtreqs-server</artifactId>
   </parent>
   <properties>
     <logbackFile>logback.xml</logbackFile>
     <jtreqsConfFile>jtreqs.conf.properties</jtreqsConfFile>
     <watchdog>watchdog.sh</watchdog>
-    <hpssRootDirectory>$HPSS_ROOT</hpssRootDirectory>
   </properties>
 
   <!-- Build Settings -->
@@ -91,7 +90,7 @@
           <extraJvmArguments>
             -d64
             -Dlogback.configurationFile=${logbackFile}
-            -Djava.library.path=${hpssRootDirectory}/lib/:$BASEDIR/lib/
+            -Djava.library.path=$BASEDIR/lib/
           </extraJvmArguments>
           <platforms>
             <platform>unix</platform>
@@ -142,7 +141,9 @@
             <copy todir="target/jtreqs/doc">
               <fileset dir="../doc">
                 <include name="errors.txt" />
+                <include name="jtreqs.cron" />
                 <include name="Migration_1.0-1.5" />
+                <include name="mysql.sql" />
               </fileset>
             </copy>
             <copy todir="target/jtreqs/bin">

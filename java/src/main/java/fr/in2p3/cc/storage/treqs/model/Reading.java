@@ -76,10 +76,6 @@ public final class Reading {
      */
     private String errorMessage;
     /**
-     * Status of the last reading operation.
-     */
-    private RequestStatus requestStatus;
-    /**
      * Max number of retries.
      */
     private final byte maxTries;
@@ -88,17 +84,21 @@ public final class Reading {
      */
     private final FilePositionOnTape metaData;
     /**
-     * Number of reading tries.
-     */
-    private byte tries;
-    /**
      * The associated queue.
      */
     private final Queue queue;
     /**
+     * Status of the last reading operation.
+     */
+    private RequestStatus requestStatus;
+    /**
      * When the file started to be staged.
      */
     private Calendar startTime;
+    /**
+     * Number of reading tries.
+     */
+    private byte tries;
 
     /**
      * Sets all the initial parameters and updates the DAO. The file status is
@@ -132,14 +132,14 @@ public final class Reading {
         this.setNumberOfTries(triesNumber);
         this.setErrorCode((short) 0);
 
-        byte max = Configurator.getInstance().getByteValue(
+        final byte max = Configurator.getInstance().getByteValue(
                 Constants.SECTION_READING, Constants.MAX_READ_RETRIES,
                 DefaultProperties.MAX_READ_RETRIES);
         this.maxTries = max;
 
         // Registers this reading in the database.
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .firstUpdate(this, "Registered in a Queue.");
+                .firstUpdate(this, "Registered in Queue " + this.queue.getId());
 
         LOGGER.trace("< Creating reading with parameters.");
     }
@@ -164,17 +164,6 @@ public final class Reading {
         LOGGER.trace(">< getErrorMessage");
 
         return this.errorMessage;
-    }
-
-    /**
-     * Getter for request status member.
-     *
-     * @return Status of the associated file.
-     */
-    public RequestStatus getRequestStatus() {
-        LOGGER.trace(">< getRequestStatus");
-
-        return this.requestStatus;
     }
 
     /**
@@ -220,6 +209,17 @@ public final class Reading {
     }
 
     /**
+     * Getter for request status member.
+     *
+     * @return Status of the associated file.
+     */
+    public RequestStatus getRequestStatus() {
+        LOGGER.trace(">< getRequestStatus");
+
+        return this.requestStatus;
+    }
+
+    /**
      * Getter for start time member.
      *
      * @return Retrieves when the reading was started.
@@ -228,6 +228,44 @@ public final class Reading {
         LOGGER.trace(">< getStartTime");
 
         return this.startTime;
+    }
+
+    /**
+     * Logs the exception, updates the data source and changes the file status.
+     *
+     * @param message
+     *            Message to log.
+     * @param exception
+     *            Exception to process.
+     * @param daoState
+     *            State to register in the database.
+     * @throws TReqSException
+     *             If there is a problem registering the error in the database.
+     */
+    private void logsException(final String message, final Exception exception,
+            final RequestStatus daoState) throws TReqSException {
+        LOGGER.trace("> logsException");
+
+        assert (message != null) && !message.equals("");
+        assert exception != null;
+        assert daoState != null;
+
+        LOGGER.warn(message);
+
+        if (exception instanceof AbstractHSMException) {
+            this.setErrorCode(((AbstractHSMException) exception).getErrorCode());
+        }
+        this.setErrorMessage(exception.getMessage());
+
+        this.setFileRequestStatus(RequestStatus.FAILED);
+        // Put the request status as CREATED so that the dispatcher will
+        // reconsider it. Or failed if it is over.
+
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .update(this, daoState, new GregorianCalendar());
+
+        LOGGER.trace("< logsException");
+
     }
 
     /**
@@ -258,8 +296,11 @@ public final class Reading {
                         Integer.toString(this.metaData.getPosition()) });
 
         try {
+            long time = System.currentTimeMillis();
             HSMFactory.getHSMBridge().stage(this.getMetaData().getFile());
-            this.setErrorMessage("Succesfully staged.");
+            time = System.currentTimeMillis() - time;
+            LOGGER.debug("total time stage: {}", time);
+            this.setErrorMessage("Successfully staged.");
             this.setFileRequestStatus(RequestStatus.STAGED);
             // Register the state in the database with staged status.
             // TODO v2.0 The setStage method should do this.
@@ -268,7 +309,7 @@ public final class Reading {
                     .getReadingDAO()
                     .update(this, RequestStatus.STAGED, new GregorianCalendar());
             LOGGER.info("File {} successfully staged.", filename);
-        } catch (AbstractHSMException e) {
+        } catch (final AbstractHSMException e) {
             LOGGER.warn("Error processing this file: {} {}", filename,
                     e.getMessage());
             if (e instanceof HSMResourceException) {
@@ -295,52 +336,14 @@ public final class Reading {
                 this.logsException("General error. Retrying " + filename, e,
                         RequestStatus.FAILED);
             }
-        } catch (Exception e) {
-            String mess = "Unexpected error while staging " + filename + ":"
-                    + e.getMessage();
+        } catch (final Exception e) {
+            final String mess = "Unexpected error while staging " + filename
+                    + ":" + e.getMessage();
             this.logsException(mess, e, RequestStatus.FAILED);
             throw new StagerException(e);
         }
 
         LOGGER.trace("< realStage");
-    }
-
-    /**
-     * Logs the exception, updates the data source and changes the file status.
-     *
-     * @param message
-     *            Message to log.
-     * @param exception
-     *            Exception to process.
-     * @param daoState
-     *            State to register in the database.
-     * @throws TReqSException
-     *             If there is a problem registering the error in the database.
-     */
-    private void logsException(final String message, final Exception exception,
-            final RequestStatus daoState) throws TReqSException {
-        LOGGER.trace("> logsException");
-
-        assert message != null && !message.equals("");
-        assert exception != null;
-        assert daoState != null;
-
-        LOGGER.warn(message);
-
-        if (exception instanceof AbstractHSMException) {
-            this.setErrorCode(((AbstractHSMException) exception).getErrorCode());
-        }
-        this.setErrorMessage(exception.getMessage());
-
-        this.setFileRequestStatus(RequestStatus.FAILED);
-        // Put the request status as CREATED so that the dispatcher will
-        // reconsider it. Or failed if it is over.
-
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .update(this, daoState, new GregorianCalendar());
-
-        LOGGER.trace("< logsException");
-
     }
 
     /**
@@ -366,7 +369,7 @@ public final class Reading {
     void setErrorMessage(final String message) {
         LOGGER.trace("> setErrorMessage");
 
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
 
         this.errorMessage = message;
 
@@ -471,7 +474,7 @@ public final class Reading {
     void stage() throws TReqSException {
         LOGGER.trace("> stage");
 
-        String filename = this.getMetaData().getFile().getName();
+        final String filename = this.getMetaData().getFile().getName();
 
         if (this.requestStatus == RequestStatus.QUEUED) {
             LOGGER.info("{} already submitted to the HSM.", filename);

@@ -38,6 +38,8 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
 /**
  * Statements used to initialize the database.
+ * <p>
+ * TODO v2.0 Create tables queue_status and request_status.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -73,6 +75,10 @@ final class InitDBStatements {
      */
     static final String HEART_BEAT = MySQLStatements.HEART_BEAT;
     /**
+     * Heart beat table: Most recent beat.
+     */
+    static final String HEART_BEAT_LAST_TIME = MySQLStatements.HEART_BEAT_LAST_TIME;
+    /**
      * Heart beat table: Process id.
      */
     static final String HEART_BEAT_PID = MySQLStatements.HEART_BEAT_PID;
@@ -80,10 +86,6 @@ final class InitDBStatements {
      * Heart beat table: Application start.
      */
     static final String HEART_BEAT_START_TIME = MySQLStatements.HEART_BEAT_START_TIME;
-    /**
-     * Heart beat table: Most recent beat.
-     */
-    static final String HEART_BEAT_LAST_TIME = MySQLStatements.HEART_BEAT_LAST_TIME;
     /**
      * Informations table names;
      */
@@ -174,10 +176,6 @@ final class InitDBStatements {
      */
     static final String REQUESTS = MySQLStatements.REQUESTS;
     /**
-     * Requests table: Name of the tape where the file is currently stored.
-     */
-    private static final String REQUESTS_TAPE = MySQLStatements.REQUESTS_TAPE;
-    /**
      * Requests table: Name or IP of the client that is demanding the file. It's
      * only used by the client.
      */
@@ -241,6 +239,10 @@ final class InitDBStatements {
      * Requests table: When the request was added to a queue.
      */
     private static final String REQUESTS_SUBMISSION_TIME = MySQLStatements.REQUESTS_SUBMISSION_TIME;
+    /**
+     * Requests table: Name of the tape where the file is currently stored.
+     */
+    private static final String REQUESTS_TAPE = MySQLStatements.REQUESTS_TAPE;
     /**
      * Requests table: How many retries have been done for this request.
      */

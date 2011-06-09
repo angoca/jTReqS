@@ -53,6 +53,10 @@ public enum RequestStatus {
      */
     FAILED((short) 160),
     /**
+     * The file is already on disk.
+     */
+    ON_DISK((short) 150),
+    /**
      * File is submitted to HPSS for staging.
      */
     QUEUED((short) 120),
@@ -63,18 +67,16 @@ public enum RequestStatus {
     /**
      * File is registered in a queue.
      */
-    SUBMITTED((short) 110),
-    /**
-     * The file is already on disk.
-     */
-    ON_DISK((short) 150);
+    SUBMITTED((short) 110);
 
     /**
-     *
+     * Id of the status.
      */
     private short id;
 
     /**
+     * Constructor with the id of the request.
+     *
      * @param statusId
      *            If of the status.
      */

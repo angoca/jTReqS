@@ -48,14 +48,14 @@ import org.slf4j.LoggerFactory;
 public final class MySQLOpenException extends AbstractMySQLException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 4734251355039228712L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLOpenException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 4734251355039228712L;
 
     /**
      * Wraps an exception thrown when connecting to the database.

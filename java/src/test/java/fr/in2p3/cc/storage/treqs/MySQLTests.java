@@ -41,9 +41,9 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBroker;
-import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLInitTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLBrokerTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLConfigurationDAOTest;
+import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLInitTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLQueueDAOTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLReadingDAOTest;
 import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
@@ -69,13 +69,6 @@ public final class MySQLTests {
             + "persistence.mysql.MySQLDAOFactory";
 
     /**
-     * Default constructor hidden.
-     */
-    private MySQLTests() {
-        // Hidden
-    }
-
-    /**
      * Deletes the rows of the tables queues, allocations and mediatypes.
      *
      * @throws TReqSException
@@ -88,6 +81,13 @@ public final class MySQLTests {
         MySQLBroker.getInstance().executeModification(query);
         query = "DELETE FROM " + MySQLStatements.MEDIATYPES;
         MySQLBroker.getInstance().executeModification(query);
+    }
+
+    /**
+     * Default constructor hidden.
+     */
+    private MySQLTests() {
+        // Hidden
     }
 
 }

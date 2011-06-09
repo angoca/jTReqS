@@ -70,6 +70,17 @@ public final class MockDAOFactory extends AbstractDAOFactory {
      * (non-Javadoc)
      *
      * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#dumpStructure()
+     */
+    @Override
+    public String dumpStructure() {
+        return "";
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getConfigurationDAO
      * ()
      */
@@ -106,8 +117,11 @@ public final class MockDAOFactory extends AbstractDAOFactory {
         return new MockReadingDAO();
     }
 
-    /* (non-Javadoc)
-     * @see fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
      */
     @Override
     public RegisterInformationDAO getRegisterInformationDAO() {
@@ -138,16 +152,5 @@ public final class MockDAOFactory extends AbstractDAOFactory {
     @Override
     public void initialize() {
         // Nothing.
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#dumpStructure()
-     */
-    @Override
-    public String dumpStructure() {
-        return "";
     }
 }

@@ -41,6 +41,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Represents a user.
+ * <p>
+ * TODO v2.0 To have a table with the blocked users. This skips the reading of a
+ * file that is not currently available, and answer quickly.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -80,7 +83,7 @@ public final class User {
 
         boolean ret = false;
         if (obj instanceof User) {
-            User user = (User) obj;
+            final User user = (User) obj;
             if (user.getName().equals(this.getName())) {
                 ret = true;
             }
@@ -111,7 +114,7 @@ public final class User {
     public int hashCode() {
         LOGGER.trace("> hashCode");
 
-        int ret = this.name.hashCode();
+        final int ret = this.name.hashCode();
 
         LOGGER.trace("< hashCode");
 

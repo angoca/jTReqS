@@ -129,14 +129,14 @@ public final class MediaTypesController extends AbstractController {
             throws TReqSException {
         LOGGER.trace("> add");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert id >= 0;
 
         MediaType media = null;
         synchronized (this.getObjectMap()) {
             media = (MediaType) this.exists(name);
             if (media == null) {
-                media = create(name, id);
+                media = this.create(name, id);
             }
         }
 
@@ -162,10 +162,10 @@ public final class MediaTypesController extends AbstractController {
             throws TReqSException {
         LOGGER.trace("> create");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert id >= 0;
 
-        MediaType media = new MediaType(id, name);
+        final MediaType media = new MediaType(id, name);
         super.add(name, media);
 
         assert media != null;
@@ -196,7 +196,7 @@ public final class MediaTypesController extends AbstractController {
             throws TReqSException {
         LOGGER.trace("> getMediaType");
 
-        assert storageName != null && !storageName.equals("");
+        assert (storageName != null) && !storageName.equals("");
 
         MediaType ret = null;
         synchronized (this.getObjectMap()) {

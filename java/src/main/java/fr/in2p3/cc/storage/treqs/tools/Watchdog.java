@@ -60,14 +60,14 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 public final class Watchdog {
 
     /**
+     * Singleton instance.
+     */
+    private static Watchdog instance;
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(Watchdog.class);
-    /**
-     * Singleton instance.
-     */
-    private static Watchdog instance;
 
     /**
      * Destroys the only instance. ONLY for testing purposes.
@@ -107,65 +107,6 @@ public final class Watchdog {
     }
 
     /**
-     * Starts the monitoring process by writing the start time. However, and
-     * this time there is not any heart beat.
-     *
-     * @throws TReqSException
-     *             If there a problem while accessing the data source.
-     */
-    private Watchdog() throws TReqSException {
-        LOGGER.trace("> Watchdog");
-
-        int pid = Watchdog.getPID();
-
-        AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().start(pid);
-
-        LOGGER.trace("< Watchdog");
-    }
-
-    /**
-     * Registers a beat in the data source.
-     *
-     * @throws TReqSException
-     *             If there a problem while accessing the data source.
-     */
-    public void heartBeat() throws TReqSException {
-        LOGGER.trace("> heartBeat");
-
-        boolean activator = false;
-        ProcessStatus activatorState = Activator.getInstance()
-                .getProcessStatus();
-        if (activatorState != ProcessStatus.STARTING
-                && activatorState != ProcessStatus.STOPPED) {
-            activator = Activator.getInstance().keepOn();
-        }
-
-        boolean dispatcher = false;
-        ProcessStatus dispatcherState = Dispatcher.getInstance()
-                .getProcessStatus();
-        if (dispatcherState != ProcessStatus.STARTING
-                && dispatcherState != ProcessStatus.STOPPED) {
-            dispatcher = Dispatcher.getInstance().keepOn();
-        }
-
-        if (activator && dispatcher) {
-            AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO()
-                    .heartBeat();
-        } else {
-            LOGGER.error("No heartbeat, the application is dying.");
-            if (!activator && dispatcher) {
-                LOGGER.warn("Activator is stopped");
-            } else if (activator && !dispatcher) {
-                LOGGER.warn("Dispatcher is stopped");
-            } else {
-                LOGGER.warn("Dispatcher and Activator are stopped");
-            }
-        }
-
-        LOGGER.trace("< heartBeat");
-    }
-
-    /**
      * Method to retrieve the current PID of the application.
      * <p>
      * This information was obtained from <a
@@ -187,16 +128,75 @@ public final class Watchdog {
      *             If there is any problem while executing the command.
      */
     public static int getPID() throws WatchdogException {
-        byte[] bo = new byte[100];
-        String[] cmd = { "bash", "-c", "echo $PPID" };
+        final byte[] bo = new byte[100];
+        final String[] cmd = { "bash", "-c", "echo $PPID" };
         Process p;
         try {
             p = Runtime.getRuntime().exec(cmd);
             p.getInputStream().read(bo);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new WatchdogException(e);
         }
-        int ret = Integer.parseInt(new String(bo).trim());
+        final int ret = Integer.parseInt(new String(bo).trim());
         return ret;
+    }
+
+    /**
+     * Starts the monitoring process by writing the start time. However, and
+     * this time there is not any heart beat.
+     *
+     * @throws TReqSException
+     *             If there a problem while accessing the data source.
+     */
+    private Watchdog() throws TReqSException {
+        LOGGER.trace("> Watchdog");
+
+        final int pid = Watchdog.getPID();
+
+        AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO().start(pid);
+
+        LOGGER.trace("< Watchdog");
+    }
+
+    /**
+     * Registers a beat in the data source.
+     *
+     * @throws TReqSException
+     *             If there a problem while accessing the data source.
+     */
+    public void heartBeat() throws TReqSException {
+        LOGGER.trace("> heartBeat");
+
+        boolean activator = false;
+        final ProcessStatus activatorState = Activator.getInstance()
+                .getProcessStatus();
+        if ((activatorState != ProcessStatus.STARTING)
+                && (activatorState != ProcessStatus.STOPPED)) {
+            activator = Activator.getInstance().keepOn();
+        }
+
+        boolean dispatcher = false;
+        final ProcessStatus dispatcherState = Dispatcher.getInstance()
+                .getProcessStatus();
+        if ((dispatcherState != ProcessStatus.STARTING)
+                && (dispatcherState != ProcessStatus.STOPPED)) {
+            dispatcher = Dispatcher.getInstance().keepOn();
+        }
+
+        if (activator && dispatcher) {
+            AbstractDAOFactory.getDAOFactoryInstance().getWatchDogDAO()
+                    .heartBeat();
+        } else {
+            LOGGER.error("No heartbeat, the application is dying.");
+            if (!activator && dispatcher) {
+                LOGGER.warn("Activator is stopped");
+            } else if (activator && !dispatcher) {
+                LOGGER.warn("Dispatcher is stopped");
+            } else {
+                LOGGER.warn("Dispatcher and Activator are stopped");
+            }
+        }
+
+        LOGGER.trace("< heartBeat");
     }
 }

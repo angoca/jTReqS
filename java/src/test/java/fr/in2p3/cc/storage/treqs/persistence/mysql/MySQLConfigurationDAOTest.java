@@ -109,7 +109,7 @@ public final class MySQLConfigurationDAOTest {
     public void testGetMediatypes01() throws TReqSException {
         MySQLBroker.getInstance().connect();
 
-        List<Resource> actual = new MySQLConfigurationDAO()
+        final List<Resource> actual = new MySQLConfigurationDAO()
                 .getMediaAllocations();
 
         Assert.assertTrue(actual.size() == 0);
@@ -125,11 +125,11 @@ public final class MySQLConfigurationDAOTest {
     public void testGetMediatypes02() throws TReqSException {
         MySQLBroker.getInstance().connect();
 
-        String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
+        final String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
                 + " VALUES (1, \"T10K-A\", 5)";
         MySQLBroker.getInstance().executeModification(query);
 
-        List<Resource> actual = new MySQLConfigurationDAO()
+        final List<Resource> actual = new MySQLConfigurationDAO()
                 .getMediaAllocations();
 
         Assert.assertTrue(actual.size() == 1);
@@ -154,7 +154,7 @@ public final class MySQLConfigurationDAOTest {
                 + " VALUES (3, \"T10K-C\", 8)";
         MySQLBroker.getInstance().executeModification(query);
 
-        List<Resource> actual = new MySQLConfigurationDAO()
+        final List<Resource> actual = new MySQLConfigurationDAO()
                 .getMediaAllocations();
 
         Assert.assertTrue(actual.size() == 2);
@@ -172,11 +172,11 @@ public final class MySQLConfigurationDAOTest {
     public void testGetResourceAllocation01() throws TReqSException {
         MySQLBroker.getInstance().connect();
 
-        MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
+        final MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
 
-        int actual = map.size();
+        final int actual = map.size();
 
-        int expected = 0;
+        final int expected = 0;
 
         Assert.assertEquals(expected, actual);
         MySQLBroker.getInstance().disconnect();
@@ -200,11 +200,11 @@ public final class MySQLConfigurationDAOTest {
                 + " VALUES (2, \"user1\", 0.5)";
         MySQLBroker.getInstance().executeModification(query);
 
-        MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
+        final MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
 
-        int actual = map.size();
+        final int actual = map.size();
 
-        int expected = 1;
+        final int expected = 1;
 
         Assert.assertEquals(expected, actual);
         MySQLBroker.getInstance().disconnect();
@@ -234,11 +234,11 @@ public final class MySQLConfigurationDAOTest {
                 + " VALUES (2, \"user3\", 0.5)";
         MySQLBroker.getInstance().executeModification(query);
 
-        MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
+        final MultiMap map = new MySQLConfigurationDAO().getResourceAllocation();
 
-        int actual = map.size();
+        final int actual = map.size();
 
-        int expected = 2;
+        final int expected = 2;
 
         Assert.assertEquals(expected, actual);
         MySQLBroker.getInstance().disconnect();

@@ -57,18 +57,6 @@ public abstract class AbstractHSMStageException extends AbstractHSMException {
     private static final long serialVersionUID = 635125729313261510L;
 
     /**
-     * Creates the exception with an associated error code.
-     *
-     * @param hsmErrorcode
-     *            Error code.
-     */
-    protected AbstractHSMStageException(final int hsmErrorcode) {
-        super(hsmErrorcode);
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-    /**
      * Creates the exception wrapping another exception.
      *
      * @param exception
@@ -76,6 +64,18 @@ public abstract class AbstractHSMStageException extends AbstractHSMException {
      */
     protected AbstractHSMStageException(final Exception exception) {
         super(exception);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception with an associated error code.
+     *
+     * @param hsmErrorcode
+     *            Error code.
+     */
+    protected AbstractHSMStageException(final int hsmErrorcode) {
+        super(hsmErrorcode);
 
         LOGGER.trace(">< Instance creation");
     }

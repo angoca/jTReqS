@@ -63,25 +63,6 @@ abstract class AbstractController {
     private Map<String, Object> objectMap;
 
     /**
-     * Retrieves the object map.
-     *
-     * @return Object map.
-     */
-    protected Map<String, Object>/* <!>? */getObjectMap() {
-        return this.objectMap;
-    }
-
-    /**
-     * Sets the map of the controller.
-     *
-     * @param map
-     *            Object's map.
-     */
-    protected void setObjectMap(final Map<String, Object>/* <!>! */map) {
-        this.objectMap = map;
-    }
-
-    /**
      * Creates a new object instance and insert it in the map if the "same"
      * object does not exist. Return a new instance or throw an exception if it
      * already exists.
@@ -127,7 +108,7 @@ abstract class AbstractController {
 
         assert key != null;
 
-        Object ret = this.objectMap.get(key);
+        final Object ret = this.objectMap.get(key);
 
         if (ret != null) {
             LOGGER.debug("Object '{}' already exists", key);
@@ -138,6 +119,15 @@ abstract class AbstractController {
         LOGGER.trace("< exists");
 
         return ret;
+    }
+
+    /**
+     * Retrieves the object map.
+     *
+     * @return Object map.
+     */
+    protected Map<String, Object>/* <!>? */getObjectMap() {
+        return this.objectMap;
     }
 
     /**
@@ -164,5 +154,15 @@ abstract class AbstractController {
         LOGGER.debug("Object {} removed", key);
 
         LOGGER.trace("< remove");
+    }
+
+    /**
+     * Sets the map of the controller.
+     *
+     * @param map
+     *            Object's map.
+     */
+    protected void setObjectMap(final Map<String, Object>/* <!>! */map) {
+        this.objectMap = map;
     }
 }

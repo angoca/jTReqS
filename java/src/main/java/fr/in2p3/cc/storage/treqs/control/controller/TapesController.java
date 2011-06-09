@@ -128,14 +128,14 @@ public final class TapesController extends AbstractController {
             throws ControllerInsertException {
         LOGGER.trace("> add");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert media != null;
 
         Tape tape = null;
         synchronized (this.getObjectMap()) {
             tape = (Tape) this.exists(name);
             if (tape == null) {
-                tape = create(name, media);
+                tape = this.create(name, media);
             }
         }
 
@@ -144,6 +144,42 @@ public final class TapesController extends AbstractController {
         LOGGER.trace("< add");
 
         return tape;
+    }
+
+    /**
+     * Removes the tapes that are not associated to any fpot.
+     *
+     * @return Quantity of tapes were removed.
+     */
+    public int cleanup() {
+        LOGGER.trace("> cleanup");
+
+        int size = 0;
+        final List<String> toRemove = new ArrayList<String>();
+        synchronized (this.getObjectMap()) {
+
+            // Checks the references without fpots.
+            final Iterator<String> iter = this.getObjectMap().keySet().iterator();
+            while (iter.hasNext()) {
+                final String name = iter.next();
+                final Tape tape = (Tape) this.getObjectMap().get(name);
+                final boolean exist = FilePositionOnTapesController.getInstance()
+                        .exists(tape);
+                if (!exist) {
+                    toRemove.add(name);
+                }
+            }
+            // Delete the tapes.
+            size = toRemove.size();
+            for (int i = 0; i < size; i++) {
+                LOGGER.debug("Deleting {}", toRemove.get(i));
+                this.getObjectMap().remove(toRemove.get(i));
+            }
+        }
+
+        LOGGER.trace("< cleanup");
+
+        return size;
     }
 
     /**
@@ -161,10 +197,10 @@ public final class TapesController extends AbstractController {
             throws ControllerInsertException {
         LOGGER.trace("> create");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert media != null;
 
-        Tape tape = new Tape(name, media);
+        final Tape tape = new Tape(name, media);
         super.add(name, tape);
 
         assert tape != null;
@@ -172,41 +208,5 @@ public final class TapesController extends AbstractController {
         LOGGER.trace("< create");
 
         return tape;
-    }
-
-    /**
-     * Removes the tapes that are not associated to any fpot.
-     *
-     * @return Quantity of tapes were removed.
-     */
-    public int cleanup() {
-        LOGGER.trace("> cleanup");
-
-        int size = 0;
-        List<String> toRemove = new ArrayList<String>();
-        synchronized (this.getObjectMap()) {
-
-            // Checks the references without fpots.
-            Iterator<String> iter = this.getObjectMap().keySet().iterator();
-            while (iter.hasNext()) {
-                String name = iter.next();
-                Tape tape = (Tape) this.getObjectMap().get(name);
-                boolean exist = FilePositionOnTapesController.getInstance()
-                        .exists(tape);
-                if (!exist) {
-                    toRemove.add(name);
-                }
-            }
-            // Delete the tapes.
-            size = toRemove.size();
-            for (int i = 0; i < size; i++) {
-                LOGGER.debug("Deleting {}", toRemove.get(i));
-                this.getObjectMap().remove(toRemove.get(i));
-            }
-        }
-
-        LOGGER.trace("< cleanup");
-
-        return size;
     }
 }

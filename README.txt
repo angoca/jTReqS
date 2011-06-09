@@ -98,7 +98,9 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
 -o bin/libNativeBridge.so bin/HPSSBroker.o bin/NativeBridge.o
 
 
-* Installation
+* Installation and configuration
+
+** Database
 
  - Create the database and give proper permissions to user <jtreqs>.
    > CREATE DATABASE jtreqs;
@@ -107,6 +109,68 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
    > GRANT ALL ON jtreqs.* TO 'jtreqs'@'localhost';
    For production.
    > GRANT SELECT, INSERT, UPDATE ON jtreqs.* TO 'jtreqs'@'localhost';
+
+   Then, you can create the tables in the databases. In the 'doc' directory,
+   there is a script called 'mysql.sql' that contains the dump of the database.
+   However, the application itself can show the queries to create the tables
+   by calling the application with the option -db
+      jtreqs.sh -db
+   And, if you want, the application can create the tables if it is called like
+   this:
+      jtreqs.sh -dbc
+   For more information about executing the application, please check
+   'Execution' section.
+
+   Once, the tables are created, you need to indicate the quantity of drives
+   that the application can use to mounts tapes. Remember that the HSM (HPSS)
+   could use many drives to do migration, thus, it is NOT recommended to put the
+   totality of drives for the applications. Depending on the ratio
+   reading/writings, this value should be configured. If you are going to put 15
+   T10K-B drives you should insert a row like:
+      insert into JMEDIATYPES (id, name, drives) values (1, "T10K-B", 15);
+   When using Fair-Share, you have to decide the percentage of drives that will
+   be used for a given client when all drives are requested. This will assure a
+   minimum quantity of drives per user when all drives are being used. For
+   example, if you want to reserve 20% of drives T10K-B for an experience called
+   atlas, you will do:
+      insert into JALLOCATIONS (id, user, share) values (1, "atlas", 0.20);
+
+** System
+
+*** User
+
+   The application needs a user to be executed, thus it is necessary to create a
+   user in the system that will have the following rights:
+   - To execute the application (+x in the bin/jtreqs.sh
+   - To read the keytab (+r in the keytab path)
+   - To write in the log files of the application. If the default values are
+   chosen, then the application has to have the rights to write in
+   /var/log/jtreqs.
+
+*** Files and Directories
+
+   Depending on the configuration, you must create a directory to write the
+   logs. If the default configuration for 'logback' is selected, then you have
+   to create the directory
+      /var/log/jtreqs
+
+   In order to start the application as a service, there is a daemon called
+   jtreqsd and it is found in the 'bin' directory. You can create a symbolic
+   link to this file, and then you can do the following actions: start, stop,
+   query the status. You just have to do
+      ln /etc/init.c/jtreqds /opt/jtreqs/bin/jtreqds
+   We supposed that the installation of the application is in /opt/jtreqs. You
+   will need to modify this file, in order to define the JAVA_HOME, the home
+   directory for the application, and other parameters.
+
+   The application's monitoring is done with a watchdog, and you can add it in
+   a cron. The file checks if the applications is running well, its name is
+   watchdog.sh and it can be found in the bin directory. You will need to
+   modify this file to configure the database access.
+   There is a file called jtreqs.cron that show how the cron can be configured.
+
+** Application
+
  - Modify the file
      jtreqs/etc/jtreqs.conf.properties
      (or bin/jtreqs.conf.properties without maven)
@@ -120,13 +184,14 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
 
 * Execution
 
- - Start jtreqs (the database tables will be created automatically).
+ - Start jtreqs.
 
    (When using Maven)
    Once the file has been inflated, then execute these commands from the root
    dir of the installation:
    The install directory could be something like /opt/jtreqs
      $ export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
+     $ export LD_LIBRARY_PATH=${HPSS_ROOT}/lib
      $ sh jtreqs/bin/jtreqs.sh
 
    (When not using Maven)
@@ -135,7 +200,10 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
      $ cd bin
      $ sh ./jtreqs.sh
 
+   However, if the cron is set, then it will start the application
+   automatically.
 
 * Usage
 
  - With the treqs-client available at: http://git.in2p3.fr/public/treqs-client.
+

@@ -61,25 +61,25 @@ import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAll
 public final class MockConfigurationDAO implements ConfigurationDAO {
 
     /**
+     * Dot two.
+     */
+    private static final double DOT_ONE = 0.1;
+
+    /**
      * Dot one.
      */
     private static final double DOT_TWO = 0.2;
 
     /**
-     * Dot two.
+     * Exception to throw.
      */
-    private static final double DOT_ONE = 0.1;
+    private static MockPersistanceException exception = null;
 
     /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MockConfigurationDAO.class);
-
-    /**
-     * Exception to throw.
-     */
-    private static MockPersistanceException exception = null;
 
     /**
      * Quantity of drives per type.
@@ -90,9 +90,8 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      * T10KB  8
      * </code>
      *
-     * @see
-     *       fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
-     *       ()
+     * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
+     *      ()
      * @return The list of mock allocations.
      * @throws TReqSException
      *             Never.
@@ -102,11 +101,11 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
         LOGGER.trace("> getMediaAllocations");
 
         if (exception != null) {
-            AbstractPersistanceException toThrow = exception;
+            final AbstractPersistanceException toThrow = exception;
             exception = null;
             throw toThrow;
         }
-        ArrayList<Resource> drives = new ArrayList<Resource>();
+        final ArrayList<Resource> drives = new ArrayList<Resource>();
         byte id = 1;
         String name = "T10K-A";
         MediaType media = MediaTypesController.getInstance().add(name, id);
@@ -132,7 +131,7 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
      * </code>
      *
      * @see fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#
-     *       getResourceAllocation()
+     *      getResourceAllocation()
      * @return Allocation per mock users.
      * @throws AbstractPersistanceException
      *             Never.
@@ -142,11 +141,11 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
         LOGGER.trace("> getResourceAllocation");
 
         if (exception != null) {
-            AbstractPersistanceException toThrow = exception;
+            final AbstractPersistanceException toThrow = exception;
             exception = null;
             throw toThrow;
         }
-        MultiMap values = new MultiValueMap();
+        final MultiMap values = new MultiValueMap();
         // T10KA
         values.put(new Float(MockConfigurationDAO.DOT_ONE),
                 new PersistenceHelperResourceAllocation("user1", 2));

@@ -67,7 +67,7 @@ public final class MySQLInitTest {
         try {
             MySQLBroker.getInstance().executeModification(
                     "DROP TABLE IF EXISTS " + table);
-        } catch (AbstractMySQLException e) {
+        } catch (final AbstractMySQLException e) {
             e.printStackTrace();
         }
     }
@@ -85,11 +85,11 @@ public final class MySQLInitTest {
         Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
                 Constants.PESISTENCE_FACTORY, MySQLTests.MYSQL_PERSISTANCE);
 
-        dropTable(MySQLStatements.REQUESTS);
-        dropTable(MySQLStatements.QUEUES);
-        dropTable(MySQLStatements.ALLOCATIONS);
-        dropTable(MySQLStatements.MEDIATYPES);
-        dropTable(MySQLStatements.HEART_BEAT);
+        MySQLInitTest.dropTable(MySQLStatements.REQUESTS);
+        MySQLInitTest.dropTable(MySQLStatements.QUEUES);
+        MySQLInitTest.dropTable(MySQLStatements.ALLOCATIONS);
+        MySQLInitTest.dropTable(MySQLStatements.MEDIATYPES);
+        MySQLInitTest.dropTable(MySQLStatements.HEART_BEAT);
         MySQLBroker.getInstance().disconnect();
     }
 

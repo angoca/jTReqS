@@ -50,14 +50,14 @@ import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMPropertiesException;
 final class HSMUnknownOutputException extends AbstractHSMPropertiesException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4181387207872984173L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HSMUnknownOutputException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -4181387207872984173L;
 
     /**
      * Exception with a number format exception.

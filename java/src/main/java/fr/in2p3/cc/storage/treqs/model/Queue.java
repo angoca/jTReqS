@@ -134,7 +134,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * possible to add requests in this queue.<br>
  * It could be queues in any other state. <br>
  * A queue in this state is very short, because when a queue is completely
- * processed, it is immediatly deleted from the Queue's controller.</li>
+ * processed, it is immediately deleted from the Queue's controller.</li>
  * </ul>
  * <h3>New Requests</h3>
  * <p>
@@ -236,6 +236,9 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * Once the queue has finish processing all the requests, then it calls the
  * Controllers of different objects to remove the references. When the Queue has
  * been finished, there is not any reason to keep this information in memory.
+ * <p>
+ * TODO v2.0 To have a table with the unavailable tapes. This skips the reading
+ * of a file that is not currently available, and answer quickly.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -247,6 +250,10 @@ public final class Queue implements Comparable<Queue> {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(Queue.class);
 
+    /**
+     * Time when the queue is activated.
+     */
+    private Calendar activationTime;
     /**
      * Quantity of byte to read. Sum of the file's sizes of all file.
      */
@@ -260,21 +267,17 @@ public final class Queue implements Comparable<Queue> {
      */
     private Calendar endTime;
     /**
-     * List of files to read &lt;position, Reading of file&gt;.
-     */
-    private TreeMap<Integer, Reading> readingList;
-    /**
      * Position of the head, corresponding to the current file being read.
      */
     private int headPosition;
     /**
      * Unique Id of this queue given by the data source.
      */
-    private int id;
+    private final int id;
     /**
      * Maximal retries of suspensions permitted of the queue.
      */
-    private byte maxSuspendRetries;
+    private final byte maxSuspendRetries;
     /**
      * Number of requests successfully staged.
      */
@@ -292,13 +295,13 @@ public final class Queue implements Comparable<Queue> {
      */
     private User owner;
     /**
+     * List of files to read &lt;position, Reading of file&gt;.
+     */
+    private final TreeMap<Integer, Reading> readingList;
+    /**
      * Status of this queue.
      */
     private QueueStatus status;
-    /**
-     * Time when the queue is activated.
-     */
-    private Calendar activationTime;
     /**
      * Duration in seconds of a suspension.
      */
@@ -314,7 +317,7 @@ public final class Queue implements Comparable<Queue> {
     /**
      * Associated tape.
      */
-    private Tape tape;
+    private final Tape tape;
 
     /**
      * Constructor that associates a tape with the Queue. This constructor also
@@ -417,9 +420,9 @@ public final class Queue implements Comparable<Queue> {
     private void calculateOwner() {
         LOGGER.trace("> calculateOwner");
 
-        Map<User, Integer> ownersScores = this.calculateOwnersScores();
+        final Map<User, Integer> ownersScores = this.calculateOwnersScores();
 
-        ArrayList<User> list = new ArrayList<User>();
+        final ArrayList<User> list = new ArrayList<User>();
         list.addAll(ownersScores.keySet());
 
         Collections.sort(list, new Comparator<User>() {
@@ -442,15 +445,15 @@ public final class Queue implements Comparable<Queue> {
         boolean found = false;
         User bestUser = null;
         // Takes the user with more files, and assigns it as queue's owner.
-        Iterator<User> iterator = list.iterator();
+        final Iterator<User> iterator = list.iterator();
         while (iterator.hasNext() && !found) {
-            User user = iterator.next();
-            Integer score = ownersScores.get(user);
+            final User user = iterator.next();
+            final Integer score = ownersScores.get(user);
             if (score >= max) {
                 max = score;
                 bestUser = user;
                 // One user has more than 50%+1 files of the queue.
-                if (max > (this.readingList.size() / 2)) {
+                if (max > this.readingList.size() / 2) {
                     // We are sure to have the major owner of the queue
                     found = true;
                 }
@@ -472,14 +475,14 @@ public final class Queue implements Comparable<Queue> {
     private Map<User, Integer> calculateOwnersScores() {
         LOGGER.trace("> calculateOwnersScores");
 
-        Map<User, Integer> ownersScores = new HashMap<User, Integer>();
+        final Map<User, Integer> ownersScores = new HashMap<User, Integer>();
 
         // Calculates the quantity of files per owner.
-        Iterator<Integer> iterator = this.readingList.keySet().iterator();
+        final Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
-            User user = this.readingList.get(iterator.next()).getMetaData()
-                    .getRequester();
-            Integer score = ownersScores.get(user);
+            final User user = this.readingList.get(iterator.next())
+                    .getMetaData().getRequester();
+            final Integer score = ownersScores.get(user);
             if (score != null) {
                 ownersScores.put(user, score + 1);
             } else {
@@ -541,7 +544,7 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace("> changeToSuspended");
 
         this.setStatus(QueueStatus.TEMPORARILY_SUSPENDED);
-        Calendar suspension = new GregorianCalendar();
+        final Calendar suspension = new GregorianCalendar();
         suspension.setTimeInMillis(System.currentTimeMillis()
                 + this.getSuspendDuration() * Constants.MILLISECONDS);
         this.setSuspensionTime(suspension);
@@ -559,15 +562,16 @@ public final class Queue implements Comparable<Queue> {
     private void cleanReferences() throws TReqSException {
         LOGGER.trace("> cleanReferences");
 
-        List<Integer> positions = new ArrayList<Integer>();
+        final List<Integer> positions = new ArrayList<Integer>();
         synchronized (this.readingList) {
             @SuppressWarnings("rawtypes")
-            Iterator keys = this.readingList.keySet().iterator();
+            final Iterator keys = this.readingList.keySet().iterator();
             while (keys.hasNext()) {
-                int position = (Integer) keys.next();
+                final int position = (Integer) keys.next();
                 positions.add(position);
-                Reading reading = this.readingList.get(position);
-                String filename = reading.getMetaData().getFile().getName();
+                final Reading reading = this.readingList.get(position);
+                final String filename = reading.getMetaData().getFile()
+                        .getName();
 
                 // Removes the file position on tape.
                 FilePositionOnTapesController.getInstance().remove(filename);
@@ -579,10 +583,10 @@ public final class Queue implements Comparable<Queue> {
                 this.readingList.remove(positions.get(i));
             }
         }
-        String tapename = this.getTape().getName();
+        final String tapename = this.getTape().getName();
         // Removes the tape if there are not any Queue in created state for this
         // tape.
-        Queue created = QueuesController.getInstance().exists(tapename,
+        final Queue created = QueuesController.getInstance().exists(tapename,
                 QueueStatus.CREATED);
         if (created == null) {
             TapesController.getInstance().remove(tapename);
@@ -631,7 +635,7 @@ public final class Queue implements Comparable<Queue> {
 
         byte nbFailed = 0;
         byte nbDone = 0;
-        Iterator<Integer> iterator = this.readingList.keySet().iterator();
+        final Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext()) {
             switch (this.readingList.get(iterator.next()).getRequestStatus()) {
             case FAILED:
@@ -682,13 +686,15 @@ public final class Queue implements Comparable<Queue> {
         this.countRequests();
 
         // Asks for the item in the current position.
-        Reading currentReading = this.readingList.get(this.getHeadPosition());
+        final Reading currentReading = this.readingList.get(this
+                .getHeadPosition());
 
         if (currentReading != null) {
             // Verifies if the current one is also the last one.
-            Reading last = this.readingList.get(this.readingList.lastKey());
+            final Reading last = this.readingList.get(this.readingList
+                    .lastKey());
             if (last == currentReading) {
-                RequestStatus fs = currentReading.getRequestStatus();
+                final RequestStatus fs = currentReading.getRequestStatus();
                 // The last file is in a final state.
                 if ((fs == RequestStatus.STAGED)
                         || (fs == RequestStatus.FAILED)
@@ -723,6 +729,17 @@ public final class Queue implements Comparable<Queue> {
         }
 
         LOGGER.trace("< finalizeQueue");
+    }
+
+    /**
+     * Getter for ActivationTime member.
+     *
+     * @return Time when the queue was activated.
+     */
+    private Calendar getActivationTime() {
+        LOGGER.trace(">< getActivationTime");
+
+        return this.activationTime;
     }
 
     /**
@@ -800,10 +817,10 @@ public final class Queue implements Comparable<Queue> {
         Reading ret = null;
         boolean found = false;
 
-        Iterator<Integer> iterator = this.readingList.keySet().iterator();
+        final Iterator<Integer> iterator = this.readingList.keySet().iterator();
         while (iterator.hasNext() && !found) {
-            Integer key = iterator.next();
-            Reading reading = this.readingList.get(key);
+            final Integer key = iterator.next();
+            final Reading reading = this.readingList.get(key);
             if (reading.getRequestStatus() == RequestStatus.SUBMITTED) {
                 // This is the file to return
                 if (this.getStatus() == QueueStatus.ACTIVATED) {
@@ -874,17 +891,6 @@ public final class Queue implements Comparable<Queue> {
     }
 
     /**
-     * Getter for ActivationTime member.
-     *
-     * @return Time when the queue was activated.
-     */
-    private Calendar getActivationTime() {
-        LOGGER.trace(">< getActivationTime");
-
-        return this.activationTime;
-    }
-
-    /**
      * Getter for suspend duration in seconds.
      *
      * @return Duration of the suspension.
@@ -915,66 +921,6 @@ public final class Queue implements Comparable<Queue> {
         LOGGER.trace(">< getTape");
 
         return this.tape;
-    }
-
-    /**
-     * The new reading object is created by this function. The reading status is
-     * QUEUED.
-     * <p>
-     * Each time this method is called, the Queue owner is recalculated. This is
-     * done by counting the files for each owner and then selecting the user
-     * owning more files.
-     *
-     * @param fpot
-     *            The metadata of the file.
-     * @param retries
-     *            Number of tries.
-     * @return If there was an already registered fpot.
-     * @throws TReqSException
-     *             When validating the metadata or registering the reading.
-     */
-    public boolean registerFPOT(final FilePositionOnTape fpot,
-            final byte retries) throws TReqSException {
-        LOGGER.trace("> registerFPOT");
-
-        assert fpot != null;
-        assert retries >= 0;
-
-        this.registerFileValidation(fpot);
-
-        // Register the reading.
-        Reading reading = new Reading(fpot, retries, this);
-
-        LOGGER.debug(
-                "Queue {} - {} Inserting the reading object at position {}",
-                new Object[] { this.getTape().getName(), this.getStatus(),
-                        fpot.getPosition() });
-
-        // The insert method ensures that the reading object is inserted
-        // in the right place.
-
-        // FIXME v2.0 In HPSS version 7 the aggregation return the same position
-        // for different files.
-        boolean exists = false;
-        synchronized (this.readingList) {
-            exists = this.readingList.containsKey(fpot.getPosition());
-            if (!exists) {
-                this.insertNotRegisteredFile(reading);
-            } else {
-                // The file is already in the queue.
-                LOGGER.info("Queue {} already has a reading for file {}", this
-                        .getTape().getName(), fpot.getFile().getName());
-                if (!this.readingList.get(fpot.getPosition()).getMetaData()
-                        .getFile().getName().equals(fpot.getFile().getName())) {
-                    assert false : "Two different files in the same position";
-                    // FIXME v2.0 this will happen when using aggregation.
-                }
-            }
-        }
-
-        LOGGER.trace("< registerFPOT");
-
-        return exists;
     }
 
     /**
@@ -1052,8 +998,8 @@ public final class Queue implements Comparable<Queue> {
                 && (this.getStatus() != QueueStatus.ACTIVATED)
                 && (this.getStatus() != QueueStatus.TEMPORARILY_SUSPENDED)) {
             // We can't register a file in this queue.
-            String filename = fpot.getFile().getName();
-            String tapename = this.getTape().getName();
+            final String filename = fpot.getFile().getName();
+            final String tapename = this.getTape().getName();
             LOGGER.error("Unable to register file " + filename + " in Queue '"
                     + tapename + "' with status: " + this.getStatus());
             throw new InvalidStateException(InvalidStateReasons.REGISTER,
@@ -1071,6 +1017,92 @@ public final class Queue implements Comparable<Queue> {
         }
 
         LOGGER.trace("< regiterFileValidation");
+    }
+
+    /**
+     * The new reading object is created by this function. The reading status is
+     * QUEUED.
+     * <p>
+     * Each time this method is called, the Queue owner is recalculated. This is
+     * done by counting the files for each owner and then selecting the user
+     * owning more files.
+     *
+     * @param fpot
+     *            The metadata of the file.
+     * @param retries
+     *            Number of tries.
+     * @return If there was an already registered fpot.
+     * @throws TReqSException
+     *             When validating the metadata or registering the reading.
+     */
+    public boolean registerFPOT(final FilePositionOnTape fpot,
+            final byte retries) throws TReqSException {
+        LOGGER.trace("> registerFPOT");
+
+        assert fpot != null;
+        assert retries >= 0;
+
+        this.registerFileValidation(fpot);
+
+        // Register the reading.
+        final Reading reading = new Reading(fpot, retries, this);
+
+        LOGGER.debug(
+                "Queue {} - {} Inserting the reading object at position {}",
+                new Object[] { this.getTape().getName(), this.getStatus(),
+                        fpot.getPosition() });
+
+        // The insert method ensures that the reading object is inserted
+        // in the right place.
+
+        // FIXME v2.0 In HPSS version 7 the aggregation return the same position
+        // for different files.
+        boolean exists = false;
+        synchronized (this.readingList) {
+            exists = this.readingList.containsKey(fpot.getPosition());
+            if (!exists) {
+                this.insertNotRegisteredFile(reading);
+            } else {
+                // The file is already in the queue.
+                LOGGER.info("Queue {} already has a reading for file {}", this
+                        .getTape().getName(), fpot.getFile().getName());
+                if (!this.readingList.get(fpot.getPosition()).getMetaData()
+                        .getFile().getName().equals(fpot.getFile().getName())) {
+                    assert false : "Two different files in the same position";
+                    // FIXME v2.0 this will happen when using aggregation.
+                }
+            }
+        }
+
+        LOGGER.trace("< registerFPOT");
+
+        return exists;
+    }
+
+    /**
+     * Setter for ActivationTime member. It does not check the end time, because
+     * it is in other state.
+     * <p>
+     * The visibility is default for the tests. However, it should not be used
+     * from the outside.
+     *
+     * @param time
+     *            Activation time.
+     */
+    void setActivationTime(final Calendar time) {
+        LOGGER.trace("> setActivationTime");
+
+        assert time != null;
+        assert this.getStatus() == QueueStatus.ACTIVATED : this.getStatus();
+        assert this.creationTime != null;
+        assert this.suspensionTime == null;
+        assert this.endTime == null;
+        assert time.getTimeInMillis() >= this.getCreationTime()
+                .getTimeInMillis();
+
+        this.activationTime = time;
+
+        LOGGER.trace("< setActivationTime");
     }
 
     /**
@@ -1148,9 +1180,11 @@ public final class Queue implements Comparable<Queue> {
             LOGGER.error("The new position " + position
                     + " cannot be before the current head position "
                     + this.getHeadPosition());
-            throw new InvalidParameterException(
-                    InvalidParameterReasons.HEAD_REWOUND,
-                    this.getHeadPosition(), position);
+            // TODO v2.0 This was the error in version 1.5.4.2
+            // throw new InvalidParameterException(
+            // InvalidParameterReasons.HEAD_REWOUND,
+            // this.getHeadPosition(), position);
+            assert false;
         }
 
         this.headPosition = position;
@@ -1207,32 +1241,6 @@ public final class Queue implements Comparable<Queue> {
         }
 
         LOGGER.trace("< setStatus");
-    }
-
-    /**
-     * Setter for ActivationTime member. It does not check the end time, because
-     * it is in other state.
-     * <p>
-     * The visibility is default for the tests. However, it should not be used
-     * from the outside.
-     *
-     * @param time
-     *            Activation time.
-     */
-    void setActivationTime(final Calendar time) {
-        LOGGER.trace("> setActivationTime");
-
-        assert time != null;
-        assert this.getStatus() == QueueStatus.ACTIVATED : this.getStatus();
-        assert this.creationTime != null;
-        assert this.suspensionTime == null;
-        assert this.endTime == null;
-        assert time.getTimeInMillis() >= this.getCreationTime()
-                .getTimeInMillis();
-
-        this.activationTime = time;
-
-        LOGGER.trace("< setActivationTime");
     }
 
     /**
@@ -1352,7 +1360,7 @@ public final class Queue implements Comparable<Queue> {
         }
         ret += "}";
 
-        assert ret != null && !ret.equals("");
+        assert (ret != null) && !ret.equals("");
 
         LOGGER.trace("< toString");
 

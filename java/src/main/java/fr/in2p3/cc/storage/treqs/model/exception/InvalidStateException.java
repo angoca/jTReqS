@@ -50,16 +50,6 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
  */
 public final class InvalidStateException extends TReqSException {
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -6062480558866198913L;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(InvalidStateException.class);
-
-    /**
      * Reasons to create an InvalidStateException.
      *
      * @author Andrés Gómez
@@ -75,6 +65,16 @@ public final class InvalidStateException extends TReqSException {
          */
         REGISTER
     }
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(InvalidStateException.class);
+
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -6062480558866198913L;
 
     /**
      * Creates the exception when the queue cannot be activated.
@@ -83,12 +83,11 @@ public final class InvalidStateException extends TReqSException {
      *            Reason of the exception.
      */
     public InvalidStateException(final InvalidStateReasons reason) {
-        super("Queue is not in CREATED state and it cannot be "
-                + "activated.");
+        super("Queue is not in CREATED state and it cannot be " + "activated.");
 
         LOGGER.trace("> Instance creation");
 
-        assert reason != null && reason == InvalidStateReasons.ACTIVATE;
+        assert (reason != null) && (reason == InvalidStateReasons.ACTIVATE);
 
         LOGGER.trace("< Instance creation");
     }
@@ -113,9 +112,9 @@ public final class InvalidStateException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert reason != null && reason == InvalidStateReasons.REGISTER;
-        assert filename != null && !filename.equals("");
-        assert tapename != null && !tapename.equals("");
+        assert (reason != null) && (reason == InvalidStateReasons.REGISTER);
+        assert (filename != null) && !filename.equals("");
+        assert (tapename != null) && !tapename.equals("");
 
         LOGGER.trace("< Instance creation");
     }

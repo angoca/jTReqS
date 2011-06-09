@@ -57,7 +57,7 @@ public final class Main {
         System.out.println("jTReqS-Server started");
         try {
             Starter.getInstance().process(args);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

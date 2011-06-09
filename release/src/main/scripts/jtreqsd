@@ -46,6 +46,7 @@
 # Sets the environment.
 export JAVA_HOME=${JAVA_HOME:-/usr/java/jdk1.6.0_22}
 export HPSS_ROOT=${HPSS_ROOT:-/opt/hpss}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HPSS_ROOT}/lib
 export JTREQS_INSTALL_DIR=${JTREQS_INSTALL_DIR:-/opt/jtreqs}
 
 JTREQS_USER=treqs
@@ -74,7 +75,7 @@ pid_of_jtreqs(){
 JTREQS_PID=`pid_of_jtreqs`
 
 start(){
-  echo -n "Starting jTReqS: "
+  echo -n `date +%F_%T` "Starting jTReqS: "
   if [ ! -x ${JTREQS_INSTALL_DIR}/bin/jtreqs.sh ] ; then
     failure
     echo
@@ -102,7 +103,7 @@ start(){
 }
 
 stop(){
-  echo -n $"Stopping jTReqS: "
+  echo -n `date +%F_%T` $"Stopping jTReqS: "
 
   killproc ${PROG} -TERM
   RETVAL=$?

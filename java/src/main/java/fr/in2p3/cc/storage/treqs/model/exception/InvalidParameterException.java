@@ -50,16 +50,6 @@ import fr.in2p3.cc.storage.treqs.model.QueueStatus;
  */
 public final class InvalidParameterException extends TReqSException {
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -4795338754047868534L;
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(InvalidParameterException.class);
-
-    /**
      * Reasons to create an InvalidParameterException.
      *
      * @author Andrés Gómez
@@ -79,6 +69,44 @@ public final class InvalidParameterException extends TReqSException {
          * The new state is not a valid transition from the current state.
          */
         INVALID_NEW_QUEUE_STATUS
+    }
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(InvalidParameterException.class);
+
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -4795338754047868534L;
+
+    /**
+     * Creates the exception when trying to move the head behind the current
+     * position.
+     *
+     * @param headRewound
+     *            Error code that indicates that the new position is before the
+     *            current position.
+     * @param currentPosition
+     *            Current position of the head.
+     * @param newPosition
+     *            New invalid position of the head.
+     */
+    public InvalidParameterException(final InvalidParameterReasons headRewound,
+            final int currentPosition, final int newPosition) {
+        super("The new position " + newPosition
+                + " cannot be before the current head position "
+                + currentPosition);
+
+        LOGGER.trace("> Instance creation");
+
+        assert (headRewound != null)
+                && (headRewound == InvalidParameterReasons.HEAD_REWOUND);
+        assert currentPosition > 0;
+        assert newPosition >= 0;
+
+        LOGGER.trace("< Instance creation");
     }
 
     /**
@@ -104,39 +132,11 @@ public final class InvalidParameterException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert fileBeforeHead != null
-                && fileBeforeHead == InvalidParameterReasons.FILE_BEFORE_HEAD;
+        assert (fileBeforeHead != null)
+                && (fileBeforeHead == InvalidParameterReasons.FILE_BEFORE_HEAD);
         assert headPosition > 0;
         assert filePosition >= 0;
-        assert filename != null && !filename.equals("");
-
-        LOGGER.trace("< Instance creation");
-    }
-
-    /**
-     * Creates the exception when trying to move the head behind the current
-     * position.
-     *
-     * @param headRewound
-     *            Error code that indicates that the new position is before the
-     *            current position.
-     * @param currentPosition
-     *            Current position of the head.
-     * @param newPosition
-     *            New invalid position of the head.
-     */
-    public InvalidParameterException(final InvalidParameterReasons headRewound,
-            final int currentPosition, final int newPosition) {
-        super("The new position " + newPosition
-                + " cannot be before the current head position "
-                + currentPosition);
-
-        LOGGER.trace("> Instance creation");
-
-        assert headRewound != null
-                && headRewound == InvalidParameterReasons.HEAD_REWOUND;
-        assert currentPosition > 0;
-        assert newPosition >= 0;
+        assert (filename != null) && !filename.equals("");
 
         LOGGER.trace("< Instance creation");
     }
@@ -159,8 +159,8 @@ public final class InvalidParameterException extends TReqSException {
 
         LOGGER.trace("> Instance creation");
 
-        assert reason != null
-                && reason == InvalidParameterReasons.INVALID_NEW_QUEUE_STATUS;
+        assert (reason != null)
+                && (reason == InvalidParameterReasons.INVALID_NEW_QUEUE_STATUS);
         assert currentQueueStatus != null;
         assert newQueueStatus != null;
 

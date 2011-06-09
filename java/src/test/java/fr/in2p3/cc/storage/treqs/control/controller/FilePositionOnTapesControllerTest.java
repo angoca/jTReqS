@@ -100,16 +100,16 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddFpot01FileNull() {
-        File file = null;
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        User user = new User("userName");
+        final File file = null;
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final User user = new User("userName");
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance()
                     .add(file, tape, 0, user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -124,17 +124,17 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddFpot02TapeNull() {
-        File file = new File("filename",
+        final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        Tape tape = null;
-        User user = new User("userName");
+        final Tape tape = null;
+        final User user = new User("userName");
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance()
                     .add(file, tape, 0, user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -149,17 +149,17 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddFpot03TapeNegative() {
-        File file = new File("filename",
+        final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        User user = new User("userName");
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final User user = new User("userName");
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance().add(file, tape, -15,
                     user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -174,17 +174,17 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddFpot04UserNull() {
-        File file = new File("filename",
+        final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        User user = null;
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final User user = null;
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance().add(file, tape, -15,
                     user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -202,15 +202,15 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testAddTwice() throws TReqSException {
-        File file = new File("filename",
+        final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        User user = new User("userName");
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final User user = new User("userName");
 
-        FilePositionOnTape fpot1 = FilePositionOnTapesController.getInstance()
+        final FilePositionOnTape fpot1 = FilePositionOnTapesController.getInstance()
                 .add(file, tape, 0, user);
 
-        FilePositionOnTape fpot2 = FilePositionOnTapesController.getInstance()
+        final FilePositionOnTape fpot2 = FilePositionOnTapesController.getInstance()
                 .add(file, tape, 0, user);
         Assert.assertTrue("Same fpot", fpot1 == fpot2);
 
@@ -221,16 +221,16 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testCreateFpot01FileNull() {
-        File file = null;
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        User user = new User("userName");
+        final File file = null;
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final User user = new User("userName");
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance().create(file, tape, 0,
                     user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -245,17 +245,17 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testCreateFpot02TapeNull() {
-        File file = new File("filename",
+        final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        Tape tape = null;
-        User user = new User("userName");
+        final Tape tape = null;
+        final User user = new User("userName");
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance().create(file, tape, 0,
                     user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -270,17 +270,17 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testCreateFpot03TapeNegative() {
-        File file = new File("filename",
+        final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        User user = new User("userName");
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final User user = new User("userName");
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance().create(file, tape, -15,
                     user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -295,17 +295,17 @@ public final class FilePositionOnTapesControllerTest {
      */
     @Test
     public void testCreateFpot04UserNull() {
-        File file = new File("filename",
+        final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        User user = null;
+        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final User user = null;
 
         boolean failed = false;
         try {
             FilePositionOnTapesController.getInstance().create(file, tape, 15,
                     user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }

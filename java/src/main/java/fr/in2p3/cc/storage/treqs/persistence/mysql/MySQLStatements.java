@@ -36,14 +36,18 @@
  */
 package fr.in2p3.cc.storage.treqs.persistence.mysql;
 
-import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.model.QueueStatus;
+import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 
 /**
  * Statements used to interact with the database.
  * <p>
  * TODO v2.0 The dates have to be server side or database side, but not both of
  * them.
+ * <p>
+ * TODO v2.0 Create an option that permits to dump the SQL queries of the
+ * application. This permits to see how the database is used, an eventually
+ * tuned it in a better way.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -254,6 +258,13 @@ public final class MySQLStatements {
      */
     static final String REQUESTS_VERSION = "version";
     /**
+     * SQL statement to retrieve the allocation per user per media type.
+     */
+    public static final String SQL_ALLOCATIONS_SELECT = "SELECT "
+            + ALLOCATIONS_ID + ", " + ALLOCATIONS_USER + ", "
+            + ALLOCATIONS_SHARE + " FROM " + ALLOCATIONS;
+
+    /**
      * Deletes old (all) registers in the heart beat table.
      */
     public static final String SQL_HEART_BEAT_DELETE_OLD = "DELETE FROM "
@@ -278,7 +289,6 @@ public final class MySQLStatements {
     public static final String SQL_INFORMATIONS_INSERT = "INSERT INTO "
             + INFORMATIONS + '(' + INFORMATIONS_NAME + ',' + INFORMATIONS_VALUE
             + ") VALUES (?, ?)";
-
     /**
      * SQL statement to select a information value in the database.
      * <p>
@@ -294,10 +304,18 @@ public final class MySQLStatements {
     public static final String SQL_INFORMATIONS_UPDATE = "UPDATE "
             + INFORMATIONS + " SET " + INFORMATIONS_VALUE + " = ? WHERE "
             + INFORMATIONS_NAME + " = ?";
+
     /**
      * Word limit to limit the quantity of queries.
      */
     public static final String SQL_LIMIT = " LIMIT ";
+
+    /**
+     * SQL statement to retrieve the quantity of drives available for use.
+     */
+    public static final String SQL_MEDIATYPES_SELECT = "SELECT "
+            + MEDIATYPES_ID + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES
+            + " FROM " + MEDIATYPES;
 
     /**
      * SQL statement to insert a new queue in the database.
@@ -347,7 +365,6 @@ public final class MySQLStatements {
             + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
             + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
             + QUEUES_ID + " = ? ";
-
     /**
      * SQL statement to update a queue, putting the current time as end time.
      * This is used when a queue has been completely processed.
@@ -373,6 +390,7 @@ public final class MySQLStatements {
             + QUEUES_NB_REQS_DONE + " = ?, " + QUEUES_NB_REQS_FAILED + " = ?, "
             + QUEUES_OWNER + " = ?, " + QUEUES_BYTE_SIZE + " = ? " + " WHERE "
             + QUEUES_ID + " = ? ";
+
     /**
      * SQL statement to retrieve the new requests registered in the database.
      * TODO v2.0 This query should add this condition, but currently it is dealt
@@ -410,7 +428,7 @@ public final class MySQLStatements {
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a request as queued. It means that the request
@@ -424,7 +442,7 @@ public final class MySQLStatements {
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a request that had a problem while staging. It
@@ -437,7 +455,7 @@ public final class MySQLStatements {
             + " = ?, " + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE
             + " = ?, " + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a request that could not have been staged due to
@@ -451,7 +469,7 @@ public final class MySQLStatements {
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
             + REQUESTS_MESSAGE + " = ? WHERE " + REQUESTS_FILE + " = ? AND "
-            + REQUESTS_END_TIME + " IS null";
+            + REQUESTS_STATUS + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update a file request and indicate that the request has
@@ -465,8 +483,8 @@ public final class MySQLStatements {
             + REQUESTS_TAPE + " = ?, " + REQUESTS_POSITION + " = ?, "
             + REQUESTS_LEVEL + " = ?, " + REQUESTS_SIZE + " = ?, "
             + REQUESTS_ERRORCODE + " = 0, " + REQUESTS_SUBMISSION_TIME
-            + " = ? WHERE " + REQUESTS_FILE + " = ? AND " + REQUESTS_END_TIME
-            + " IS null";
+            + " = ? WHERE " + REQUESTS_FILE + " = ? AND " + REQUESTS_STATUS
+            + " < " + RequestStatus.STAGED.getId();
 
     /**
      * SQL statement to update the unprocessed requests of a previous execution.
@@ -483,20 +501,6 @@ public final class MySQLStatements {
             + RequestStatus.CREATED.getId() + " WHERE " + REQUESTS_STATUS
             + " BETWEEN " + RequestStatus.SUBMITTED.getId() + " AND "
             + RequestStatus.QUEUED.getId();
-
-    /**
-     * SQL statement to retrieve the allocation per user per media type.
-     */
-    public static final String SQL_ALLOCATIONS_SELECT = "SELECT "
-            + ALLOCATIONS_ID + ", " + ALLOCATIONS_USER + ", "
-            + ALLOCATIONS_SHARE + " FROM " + ALLOCATIONS;
-
-    /**
-     * SQL statement to retrieve the quantity of drives available for use.
-     */
-    public static final String SQL_MEDIATYPES_SELECT = "SELECT "
-            + MEDIATYPES_ID + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES
-            + " FROM " + MEDIATYPES;
 
     /**
      * Default constructor hidden.

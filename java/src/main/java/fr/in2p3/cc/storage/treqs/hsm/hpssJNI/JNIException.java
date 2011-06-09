@@ -62,7 +62,7 @@ public final class JNIException extends Exception {
      *            Id of the error.
      */
     public JNIException(final String code) {
-        assert code != null && !code.equals("") : "Invalid";
+        assert (code != null) && !code.equals("") : "Invalid";
 
         this.id = code;
         System.out.println("JNIException created");

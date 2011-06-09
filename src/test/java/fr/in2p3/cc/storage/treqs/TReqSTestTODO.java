@@ -66,31 +66,22 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Tests of jTReqS execution.
+ * <p>
+ * TODO v2.0 This has to be included in the normal structure of the project.
+ * These tests have to be verified.
  *
  * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class TReqSTestTODO {
     /**
-     * Number four.
-     */
-    private static final int FOUR = 4;
-    /**
-     * Number three.
-     */
-    private static final int THREE = 3;
-    /**
      * Number five.
      */
     private static final int FIVE = 5;
     /**
-     * Two hundred.
+     * Number four.
      */
-    private static final int TWO_HUNDRED = 200;
-    /**
-     * One thousand.
-     */
-    private static final int THOUSAND = 1000;
+    private static final int FOUR = 4;
     /**
      * One hundred.
      */
@@ -100,6 +91,18 @@ public final class TReqSTestTODO {
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(TReqSTestTODO.class);
+    /**
+     * One thousand.
+     */
+    private static final int THOUSAND = 1000;
+    /**
+     * Number three.
+     */
+    private static final int THREE = 3;
+    /**
+     * Two hundred.
+     */
+    private static final int TWO_HUNDRED = 200;
 
     /**
      * Sets the environment and initializes the controllers.
@@ -137,6 +140,88 @@ public final class TReqSTestTODO {
     }
 
     /**
+     * Checks the assertion against a condition.
+     *
+     * @param status
+     *            given status.
+     * @param inStatus
+     *            compare to this status
+     * @param notInStatus
+     *            should not be in this status.
+     * @throws SQLException
+     *             Never.
+     * @throws TReqSException
+     *             Never.
+     */
+    private void helperAssertState(final RequestStatus status,
+            final int inStatus, final int notInStatus) throws SQLException,
+            TReqSException {
+        final int actual = this.helperCountStatusRequest(status, true);
+        final int actualOther = this.helperCountStatusRequest(status, false);
+        LOGGER.error("Asserting state {}: in {}, not in {}", new Object[] {
+                status.name(), actual, actualOther });
+        Assert.assertEquals(inStatus, actual);
+        Assert.assertEquals(notInStatus, actualOther);
+    }
+
+    /**
+     * Counts the requests in a given state.
+     *
+     * @param status
+     *            Status to analyze.
+     * @param equals
+     *            if equals or different to the given state.
+     * @return Quantity of requests.
+     * @throws SQLException
+     *             Never.
+     * @throws TReqSException
+     *             Never.
+     */
+    private int helperCountStatusRequest(final RequestStatus status,
+            final boolean equals) throws SQLException, TReqSException {
+        String compare = "=";
+        if (!equals) {
+            compare = "!=";
+        }
+        final String query = "SELECT count(*) FROM requests WHERE status " + compare
+                + status.getId();
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
+        result.next();
+        final int actual = result.getInt(1);
+        MySQLBroker.getInstance().terminateExecution(objects);
+        return actual;
+    }
+
+    /**
+     * Inserts an entry in the mock bridge.
+     *
+     * @param size
+     *            File size.
+     * @param position
+     *            Position on the tape.
+     * @param fileName
+     *            file name.
+     * @param time
+     *            Stage time.
+     * @param userName
+     *            User name.
+     * @param tape
+     *            Tape name.
+     * @throws TReqSException
+     *             Never.
+     */
+    private void helperCreateFile(final long size, final int position,
+            final String fileName, final long time, final String userName,
+            final String tape) throws TReqSException {
+        HSMHelperFileProperties properties;
+        properties = new HSMHelperFileProperties(tape, position, size);
+        HSMMockBridge.getInstance().setFileProperties(properties);
+        HSMMockBridge.getInstance().setStageTime(time);
+        MySQLRequestsDAO.insertRow(fileName, userName, RequestStatus.CREATED);
+    }
+
+    /**
      * Starts TReqS.
      *
      * @throws TReqSException
@@ -162,26 +247,9 @@ public final class TReqSTestTODO {
 
         Activator.getInstance().start();
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops() / 2
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops() / 2
                 + HUNDRED;
         Thread.sleep(millis);
-    }
-
-    /**
-     * Establishes the connection.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Before
-    public void setUp() throws TReqSException {
-        Configurator.getInstance().setValue(Constants.SECTION_ACTIVATOR,
-                Constants.ACTIVATOR_INTERVAL, "1");
-        Configurator.getInstance().setValue(Constants.SECTION_DISPATCHER,
-                Constants.DISPATCHER_INTERVAL, "1");
-        MySQLRequestsDAO.deleteAll();
-        MySQLBroker.getInstance().disconnect();
-        MySQLBroker.destroyInstance();
     }
 
     /**
@@ -225,6 +293,23 @@ public final class TReqSTestTODO {
     }
 
     /**
+     * Establishes the connection.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Before
+    public void setUp() throws TReqSException {
+        Configurator.getInstance().setValue(Constants.SECTION_ACTIVATOR,
+                Constants.ACTIVATOR_INTERVAL, "1");
+        Configurator.getInstance().setValue(Constants.SECTION_DISPATCHER,
+                Constants.DISPATCHER_INTERVAL, "1");
+        MySQLRequestsDAO.deleteAll();
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+    }
+
+    /**
      * Destroys all objects.
      *
      * @throws TReqSException
@@ -263,13 +348,13 @@ public final class TReqSTestTODO {
         // Starts TReqS
         this.helperExecuteTReqS();
 
-        String fileName = "filename-12";
-        String userName = "username-12";
-        RequestStatus status = RequestStatus.CREATED;
+        final String fileName = "filename-12";
+        final String userName = "username-12";
+        final RequestStatus status = RequestStatus.CREATED;
         // Insert request
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -301,7 +386,7 @@ public final class TReqSTestTODO {
         Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         ResultSet result = (ResultSet) objects[1];
         result.next();
-        int actualNotStaged = result.getInt(1);
+        final int actualNotStaged = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
 
         query = "SELECT count(1) FROM requests WHERE status = "
@@ -309,7 +394,7 @@ public final class TReqSTestTODO {
         objects = MySQLBroker.getInstance().executeSelect(query);
         result = (ResultSet) objects[1];
         result.next();
-        int actualStaged = result.getInt(1);
+        final int actualStaged = result.getInt(1);
         MySQLBroker.getInstance().terminateExecution(objects);
 
         LOGGER.error("testComponentsStartedCreated Staged {}, not Staged {}",
@@ -333,14 +418,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedFailed() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-16";
-        String userName = "username-16";
-        RequestStatus status = RequestStatus.FAILED;
+        final String fileName = "filename-16";
+        final String userName = "username-16";
+        final RequestStatus status = RequestStatus.FAILED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -349,10 +434,10 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM requests WHERE status != "
+        final String query = "SELECT * FROM requests WHERE status != "
                 + RequestStatus.FAILED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -376,14 +461,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedQueued() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-13";
-        String userName = "username-13";
-        RequestStatus status = RequestStatus.QUEUED;
+        final String fileName = "filename-13";
+        final String userName = "username-13";
+        final RequestStatus status = RequestStatus.QUEUED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -392,10 +477,10 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM requests WHERE status != "
+        final String query = "SELECT * FROM requests WHERE status != "
                 + RequestStatus.QUEUED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -419,14 +504,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedStaged() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-15";
-        String userName = "username-15";
-        RequestStatus status = RequestStatus.STAGED;
+        final String fileName = "filename-15";
+        final String userName = "username-15";
+        final RequestStatus status = RequestStatus.STAGED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -435,10 +520,10 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM requests WHERE status != "
+        final String query = "SELECT * FROM requests WHERE status != "
                 + RequestStatus.STAGED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -462,14 +547,14 @@ public final class TReqSTestTODO {
     @Test
     public void testComponentsStartedSubmitted() throws TReqSException,
             InterruptedException, SQLException {
-        helperExecuteTReqS();
+        this.helperExecuteTReqS();
 
-        String fileName = "filename-14";
-        String userName = "username-14";
-        RequestStatus status = RequestStatus.SUBMITTED;
+        final String fileName = "filename-14";
+        final String userName = "username-14";
+        final RequestStatus status = RequestStatus.SUBMITTED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
                 + Activator.getInstance().getMillisBetweenLoops() + HUNDRED;
         Thread.sleep(millis);
 
@@ -478,11 +563,11 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        String query = "SELECT * FROM " + MySQLRequestsDAO.REQUESTS + " WHERE "
+        final String query = "SELECT * FROM " + MySQLRequestsDAO.REQUESTS + " WHERE "
                 + MySQLRequestsDAO.REQUESTS_STATUS + " != "
                 + RequestStatus.SUBMITTED.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         if (result.next()) {
             MySQLBroker.getInstance().terminateExecution(objects);
 
@@ -506,9 +591,9 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentAlreadyStaged() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-6";
-        String userName = "username-6";
-        RequestStatus status = RequestStatus.STAGED;
+        final String fileName = "filename-6";
+        final String userName = "username-6";
+        final RequestStatus status = RequestStatus.STAGED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
         this.helperStartTReqS();
@@ -530,16 +615,16 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentFail() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-11";
-        String userName = "username-11";
-        RequestStatus status = RequestStatus.CREATED;
+        final String fileName = "filename-11";
+        final String userName = "username-11";
+        final RequestStatus status = RequestStatus.CREATED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
+        final AbstractHSMException exception = new HSMGeneralPropertiesProblemException(
                 new Exception());
         HSMMockBridge.getInstance().setFilePropertiesException(exception);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.FAILED, 1, 0);
     }
@@ -558,12 +643,12 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentFailed() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-7";
-        String userName = "username-7";
-        RequestStatus status = RequestStatus.FAILED;
+        final String fileName = "filename-7";
+        final String userName = "username-7";
+        final RequestStatus status = RequestStatus.FAILED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.FAILED, 1, 0);
     }
@@ -582,12 +667,12 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentQueued() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-3";
-        String userName = "username-3";
-        RequestStatus status = RequestStatus.QUEUED;
+        final String fileName = "filename-3";
+        final String userName = "username-3";
+        final RequestStatus status = RequestStatus.QUEUED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.STAGED, 1, 0);
     }
@@ -606,12 +691,12 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentsCreated() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-1";
-        String userName = "username-1";
-        RequestStatus status = RequestStatus.CREATED;
+        final String fileName = "filename-1";
+        final String userName = "username-1";
+        final RequestStatus status = RequestStatus.CREATED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.STAGED, 1, 0);
     }
@@ -630,15 +715,296 @@ public final class TReqSTestTODO {
     @Test
     public void testStartComponentSubmitted() throws TReqSException,
             InterruptedException, SQLException {
-        String fileName = "filename-2";
-        String userName = "username-2";
-        RequestStatus status = RequestStatus.SUBMITTED;
+        final String fileName = "filename-2";
+        final String userName = "username-2";
+        final RequestStatus status = RequestStatus.SUBMITTED;
         MySQLRequestsDAO.insertRow(fileName, userName, status);
 
-        helperStartTReqS();
+        this.helperStartTReqS();
 
         this.helperAssertState(RequestStatus.STAGED, 1, 0);
     }
+
+    /**
+     * A registered user and a non registered user have one request each one.
+     * The non registered ask for another queue and it is possible because there
+     * are some free drives.
+     *
+     * @throws TReqSException
+     *             Never.
+     * @throws SQLException
+     *             Never.
+     * @throws InterruptedException
+     *             Never.
+     */
+    @Test
+    public void testUserDefinedAndNotDefined1() throws TReqSException,
+            SQLException, InterruptedException {
+        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
+                .abortPendingQueues();
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .updateUnfinishedRequests();
+        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
+                .getMediaAllocations();
+
+        Dispatcher.getInstance();
+        Activator.getInstance();
+
+        this.helperAssertState(RequestStatus.CREATED, 0, 0);
+
+        // First file ok.
+        final long size = THOUSAND;
+        String tape = "IT0001";
+        int position = TWO_HUNDRED;
+        long time = 1;
+        String fileName = "testUserDefinedAndNotDefined11";
+        String userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 2nd file
+        tape = "IT0002";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserDefinedAndNotDefined12";
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 1);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 2, 0);
+
+        HSMMockBridge.getInstance().waitStage(HSMMockBridge.getInstance());
+
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        Thread.sleep(THOUSAND);
+        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
+
+        // 3rd file
+        tape = "IT0003";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserDefinedAndNotDefined13";
+        userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        // It activates another queue for the non registered user because there
+        // are still empty drives.
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 2);
+        Dispatcher.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
+        Activator.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
+
+        synchronized (HSMMockBridge.getInstance()) {
+            HSMMockBridge.getInstance().notifyAll();
+            HSMMockBridge.getInstance().waitStage(null);
+        }
+    }
+
+    /**
+     * A registered user and a non registered user have one request each one.
+     * The registered ask for another queue and it is possible because the
+     * drives are not in the limit, however it is more that its reserved
+     * resource.
+     *
+     * @throws TReqSException
+     *             Never.
+     * @throws SQLException
+     *             Never.
+     * @throws InterruptedException
+     *             Never.
+     */
+    @Test
+    public void testUserDefinedAndNotDefined2() throws TReqSException,
+            SQLException, InterruptedException {
+        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
+                .abortPendingQueues();
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .updateUnfinishedRequests();
+        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
+                .getMediaAllocations();
+
+        Dispatcher.getInstance();
+        Activator.getInstance();
+
+        this.helperAssertState(RequestStatus.CREATED, 0, 0);
+
+        // First file ok.
+        final long size = THOUSAND;
+        String tape = "IT0001";
+        int position = TWO_HUNDRED;
+        long time = Activator.getInstance().getMillisBetweenStagers() * 30
+                + HUNDRED;
+        String fileName = "testUserDefinedAndNotDefined21";
+        String userName = "userNotDefined1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        // 2nd file
+        tape = "IT0002";
+        position = TWO_HUNDRED;
+        time = Activator.getInstance().getMillisBetweenStagers() * 30 + HUNDRED;
+        fileName = "testUserDefinedAndNotDefined22";
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        this.helperAssertState(RequestStatus.CREATED, 2, 0);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 2, 0);
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        Thread.sleep(THOUSAND);
+        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
+
+        // 3rd file
+        tape = "IT0003";
+        position = TWO_HUNDRED;
+        time = Activator.getInstance().getMillisBetweenStagers() * 10 + HUNDRED;
+        fileName = "testUserDefinedAndNotDefined23";
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        // It activates another queue for the non registered user because there
+        // are still empty drives.
+
+        this.helperAssertState(RequestStatus.CREATED, 1, 2);
+        Dispatcher.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
+        Activator.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
+    }
+
+    /**
+     * Two registered users have two request each one. Another register user ask
+     * a request, and the user has one free resource, at the same time, a non
+     * registered user ask for a queue. The selected queue is for the registered
+     * user.
+     *
+     * @throws TReqSException
+     *             Never.
+     * @throws SQLException
+     *             Never.
+     * @throws InterruptedException
+     *             Never.
+     */
+    @Test
+    public void testUserDefinedAndNotDefined3() throws TReqSException,
+            SQLException, InterruptedException {
+        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
+                .abortPendingQueues();
+        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
+                .updateUnfinishedRequests();
+        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
+                .getMediaAllocations();
+
+        Dispatcher.getInstance();
+        Activator.getInstance();
+
+        this.helperAssertState(RequestStatus.CREATED, 0, 0);
+
+        // First file ok.
+        final long size = THOUSAND;
+        String tape = "IT0001";
+        int position = TWO_HUNDRED;
+        long time = 1;
+        String fileName = "testUserDefinedAndNotDefined31";
+        String userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 2nd file
+        tape = "IT0002";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserDefinedAndNotDefined32";
+        userName = "user1";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 3rd file
+        tape = "IT0003";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserDefinedAndNotDefined33";
+        userName = "user6";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+
+        // 4th file
+        tape = "IT0004";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserDefinedAndNotDefined34";
+        userName = "user6";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.THREE);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, TReqSTestTODO.FOUR, 0);
+
+        HSMMockBridge.getInstance().waitStage(HSMMockBridge.getInstance());
+
+        Activator.getInstance().oneLoop();
+        Activator.getInstance().restart();
+        Thread.sleep(THOUSAND);
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FOUR, 0);
+
+        // 5th file
+        tape = "IT0015";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserDefinedAndNotDefined35a";
+        userName = "user2";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FOUR);
+        Dispatcher.getInstance().oneLoop();
+        Dispatcher.getInstance().restart();
+        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FOUR);
+
+        // 6th file
+        tape = "IT0025";
+        position = TWO_HUNDRED;
+        time = 1;
+        fileName = "testUserDefinedAndNotDefined35b";
+        userName = "userNotDefined2";
+        this.helperCreateFile(size, position, fileName, time, userName, tape);
+
+        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FIVE);
+        Dispatcher.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.SUBMITTED, 2, TReqSTestTODO.FOUR);
+        Activator.getInstance().oneLoop();
+        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 1);
+
+        // Verifies that the activated queue is the one for the
+        final String query = "SELECT status FROM requests WHERE hpss_file = '"
+                + fileName + "'";
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
+        result.next();
+        final int actual = result.getInt(1);
+        MySQLBroker.getInstance().terminateExecution(objects);
+        Assert.assertEquals(12, actual);
+
+        synchronized (HSMMockBridge.getInstance()) {
+            HSMMockBridge.getInstance().notifyAll();
+            HSMMockBridge.getInstance().waitStage(null);
+        }
+    }
+    // TODO Tests: Two registered users that have the same capacity and both of
+    // them want a drive:
+    // case a: it is the last one available for their capacity
+    // case b: there are several place in their capacity
+    // case c: They overpassed their capacity
+    // case d: One of them overpassed its capacity
 
     /**
      * Tests to stage a file for a user who is defined in the drive mapping with
@@ -668,7 +1034,7 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.CREATED, 0, 0);
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = HUNDRED;
         long time = Activator.getInstance().getMillisBetweenStagers() * 9
@@ -740,35 +1106,6 @@ public final class TReqSTestTODO {
     }
 
     /**
-     * Counts the requests in a given state.
-     *
-     * @param status
-     *            Status to analyze.
-     * @param equals
-     *            if equals or different to the given state.
-     * @return Quantity of requests.
-     * @throws SQLException
-     *             Never.
-     * @throws TReqSException
-     *             Never.
-     */
-    private int helperCountStatusRequest(final RequestStatus status,
-            final boolean equals) throws SQLException, TReqSException {
-        String compare = "=";
-        if (!equals) {
-            compare = "!=";
-        }
-        String query = "SELECT count(*) FROM requests WHERE status " + compare
-                + status.getId();
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        result.next();
-        int actual = result.getInt(1);
-        MySQLBroker.getInstance().terminateExecution(objects);
-        return actual;
-    }
-
-    /**
      * Tests to stage a file from a user who is defined in the drive mapping,
      * with no resources for him, and there are no more drive available.
      *
@@ -793,7 +1130,7 @@ public final class TReqSTestTODO {
         Activator.getInstance();
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = HUNDRED;
         String fileName = "fileInMappingLimit1";
@@ -935,59 +1272,6 @@ public final class TReqSTestTODO {
     }
 
     /**
-     * Checks the assertion against a condition.
-     *
-     * @param status
-     *            given status.
-     * @param inStatus
-     *            compare to this status
-     * @param notInStatus
-     *            should not be in this status.
-     * @throws SQLException
-     *             Never.
-     * @throws TReqSException
-     *             Never.
-     */
-    private void helperAssertState(final RequestStatus status,
-            final int inStatus, final int notInStatus) throws SQLException,
-            TReqSException {
-        int actual = helperCountStatusRequest(status, true);
-        int actualOther = helperCountStatusRequest(status, false);
-        LOGGER.error("Asserting state {}: in {}, not in {}", new Object[] {
-                status.name(), actual, actualOther });
-        Assert.assertEquals(inStatus, actual);
-        Assert.assertEquals(notInStatus, actualOther);
-    }
-
-    /**
-     * Inserts an entry in the mock bridge.
-     *
-     * @param size
-     *            File size.
-     * @param position
-     *            Position on the tape.
-     * @param fileName
-     *            file name.
-     * @param time
-     *            Stage time.
-     * @param userName
-     *            User name.
-     * @param tape
-     *            Tape name.
-     * @throws TReqSException
-     *             Never.
-     */
-    private void helperCreateFile(final long size, final int position,
-            final String fileName, final long time, final String userName,
-            final String tape) throws TReqSException {
-        HSMHelperFileProperties properties;
-        properties = new HSMHelperFileProperties(tape, position, size);
-        HSMMockBridge.getInstance().setFileProperties(properties);
-        HSMMockBridge.getInstance().setStageTime(time);
-        MySQLRequestsDAO.insertRow(fileName, userName, RequestStatus.CREATED);
-    }
-
-    /**
      * Tests a user which is not defined and uses all drives, even, it asks for
      * more that the total capacity.
      *
@@ -1012,7 +1296,7 @@ public final class TReqSTestTODO {
         this.helperAssertState(RequestStatus.CREATED, 0, 0);
 
         // First file ok.
-        long size = THOUSAND;
+        final long size = THOUSAND;
         String tape = "IT0001";
         int position = TWO_HUNDRED;
         long time = 1;
@@ -1091,287 +1375,6 @@ public final class TReqSTestTODO {
         }
     }
 
-    /**
-     * A registered user and a non registered user have one request each one.
-     * The non registered ask for another queue and it is possible because there
-     * are some free drives.
-     *
-     * @throws TReqSException
-     *             Never.
-     * @throws SQLException
-     *             Never.
-     * @throws InterruptedException
-     *             Never.
-     */
-    @Test
-    public void testUserDefinedAndNotDefined1() throws TReqSException,
-            SQLException, InterruptedException {
-        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
-                .abortPendingQueues();
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .updateUnfinishedRequests();
-        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
-                .getMediaAllocations();
-
-        Dispatcher.getInstance();
-        Activator.getInstance();
-
-        this.helperAssertState(RequestStatus.CREATED, 0, 0);
-
-        // First file ok.
-        long size = THOUSAND;
-        String tape = "IT0001";
-        int position = TWO_HUNDRED;
-        long time = 1;
-        String fileName = "testUserDefinedAndNotDefined11";
-        String userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 2nd file
-        tape = "IT0002";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserDefinedAndNotDefined12";
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 1);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 2, 0);
-
-        HSMMockBridge.getInstance().waitStage(HSMMockBridge.getInstance());
-
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        Thread.sleep(THOUSAND);
-        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
-
-        // 3rd file
-        tape = "IT0003";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserDefinedAndNotDefined13";
-        userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        // It activates another queue for the non registered user because there
-        // are still empty drives.
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 2);
-        Dispatcher.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
-        Activator.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
-
-        synchronized (HSMMockBridge.getInstance()) {
-            HSMMockBridge.getInstance().notifyAll();
-            HSMMockBridge.getInstance().waitStage(null);
-        }
-    }
-
-    /**
-     * A registered user and a non registered user have one request each one.
-     * The registered ask for another queue and it is possible because the
-     * drives are not in the limit, however it is more that its reserved
-     * resource.
-     *
-     * @throws TReqSException
-     *             Never.
-     * @throws SQLException
-     *             Never.
-     * @throws InterruptedException
-     *             Never.
-     */
-    @Test
-    public void testUserDefinedAndNotDefined2() throws TReqSException,
-            SQLException, InterruptedException {
-        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
-                .abortPendingQueues();
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .updateUnfinishedRequests();
-        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
-                .getMediaAllocations();
-
-        Dispatcher.getInstance();
-        Activator.getInstance();
-
-        this.helperAssertState(RequestStatus.CREATED, 0, 0);
-
-        // First file ok.
-        long size = THOUSAND;
-        String tape = "IT0001";
-        int position = TWO_HUNDRED;
-        long time = Activator.getInstance().getMillisBetweenStagers() * 30
-                + HUNDRED;
-        String fileName = "testUserDefinedAndNotDefined21";
-        String userName = "userNotDefined1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        // 2nd file
-        tape = "IT0002";
-        position = TWO_HUNDRED;
-        time = Activator.getInstance().getMillisBetweenStagers() * 30 + HUNDRED;
-        fileName = "testUserDefinedAndNotDefined22";
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        this.helperAssertState(RequestStatus.CREATED, 2, 0);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 2, 0);
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        Thread.sleep(THOUSAND);
-        this.helperAssertState(RequestStatus.QUEUED, 2, 0);
-
-        // 3rd file
-        tape = "IT0003";
-        position = TWO_HUNDRED;
-        time = Activator.getInstance().getMillisBetweenStagers() * 10 + HUNDRED;
-        fileName = "testUserDefinedAndNotDefined23";
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        // It activates another queue for the non registered user because there
-        // are still empty drives.
-
-        this.helperAssertState(RequestStatus.CREATED, 1, 2);
-        Dispatcher.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, 2);
-        Activator.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.THREE, 0);
-    }
-
-    /**
-     * Two registered users have two request each one. Another register user ask
-     * a request, and the user has one free resource, at the same time, a non
-     * registered user ask for a queue. The selected queue is for the registered
-     * user.
-     *
-     * @throws TReqSException
-     *             Never.
-     * @throws SQLException
-     *             Never.
-     * @throws InterruptedException
-     *             Never.
-     */
-    @Test
-    public void testUserDefinedAndNotDefined3() throws TReqSException,
-            SQLException, InterruptedException {
-        AbstractDAOFactory.getDAOFactoryInstance().getQueueDAO()
-                .abortPendingQueues();
-        AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .updateUnfinishedRequests();
-        AbstractDAOFactory.getDAOFactoryInstance().getConfigurationDAO()
-                .getMediaAllocations();
-
-        Dispatcher.getInstance();
-        Activator.getInstance();
-
-        this.helperAssertState(RequestStatus.CREATED, 0, 0);
-
-        // First file ok.
-        long size = THOUSAND;
-        String tape = "IT0001";
-        int position = TWO_HUNDRED;
-        long time = 1;
-        String fileName = "testUserDefinedAndNotDefined31";
-        String userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 2nd file
-        tape = "IT0002";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserDefinedAndNotDefined32";
-        userName = "user1";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 3rd file
-        tape = "IT0003";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserDefinedAndNotDefined33";
-        userName = "user6";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-
-        // 4th file
-        tape = "IT0004";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserDefinedAndNotDefined34";
-        userName = "user6";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.THREE);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, TReqSTestTODO.FOUR, 0);
-
-        HSMMockBridge.getInstance().waitStage(HSMMockBridge.getInstance());
-
-        Activator.getInstance().oneLoop();
-        Activator.getInstance().restart();
-        Thread.sleep(THOUSAND);
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FOUR, 0);
-
-        // 5th file
-        tape = "IT0015";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserDefinedAndNotDefined35a";
-        userName = "user2";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FOUR);
-        Dispatcher.getInstance().oneLoop();
-        Dispatcher.getInstance().restart();
-        this.helperAssertState(RequestStatus.SUBMITTED, 1, TReqSTestTODO.FOUR);
-
-        // 6th file
-        tape = "IT0025";
-        position = TWO_HUNDRED;
-        time = 1;
-        fileName = "testUserDefinedAndNotDefined35b";
-        userName = "userNotDefined2";
-        this.helperCreateFile(size, position, fileName, time, userName, tape);
-
-        this.helperAssertState(RequestStatus.CREATED, 1, TReqSTestTODO.FIVE);
-        Dispatcher.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.SUBMITTED, 2, TReqSTestTODO.FOUR);
-        Activator.getInstance().oneLoop();
-        this.helperAssertState(RequestStatus.QUEUED, TReqSTestTODO.FIVE, 1);
-
-        // Verifies that the activated queue is the one for the
-        String query = "SELECT status FROM requests WHERE hpss_file = '"
-                + fileName + "'";
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
-        result.next();
-        int actual = result.getInt(1);
-        MySQLBroker.getInstance().terminateExecution(objects);
-        Assert.assertEquals(12, actual);
-
-        synchronized (HSMMockBridge.getInstance()) {
-            HSMMockBridge.getInstance().notifyAll();
-            HSMMockBridge.getInstance().waitStage(null);
-        }
-    }
-    // TODO Tests: Two registered users that have the same capacity and both of
-    // them want a drive:
-    // case a: it is the last one available for their capacity
-    // case b: there are several place in their capacity
-    // case c: They overpassed their capacity
-    // case d: One of them overpassed its capacity
-
     // TODO Tests: No media types in the db
     // TODO Tests: 1 media type 0 allocations
     // TODO Tests: 2 media type 0 allocations
@@ -1381,4 +1384,42 @@ public final class TReqSTestTODO {
 
     // TODO Tests: No database connection
     // TODO Tests: create an empty file and stage it
+
+    // TODO Tests: Check how the states are being change in the database. This
+    // permits to see that the database receives valid changes from the
+    // application. This could be enforced with a trigger.
+    // TODO Tests: Check that the application write a request as onDisk or
+    // staged when the media type is not recognized. This means that the media
+    // type is not registered in the database, and the application cannot
+    // control its access (it does not know the quantity of available drives)
+    // so it returns the request as in Disk, and show an error message in the
+    // log.
+
+    // TODO Tests: Test the application with not defined drives. This should
+    // show error messages, but continues the execution. The configuration
+    // should be done while active.
+
+    // TODO Tests: To do a test of trying to read a file that it is being
+    // written.
+    // TODO Tests: To do tests of reading an already open file.
+
+    // TODO Tests: Several (many) clients asking just one file each one. This
+    // test the performance of the database, and the scalability.
+    // TODO Tests: Simulate a big prestaging from the tests, in order to see
+    // how the components behave.
+
+    // TODO Tests: Aggregation has to be implemented and tested.
+    // TODO Tests: RAIT should be tested (RAID with tapes)
+
+    // TODO Tests: Stage more that 4 files from a tape to see how the components
+    // work (activator, selector)
+
+    // TODO Tests: Restage a file, once the metadata has been expired.
+    // TODO Tests: Select a best user when a queue has several users.
+    // TODO Tests: To do a tape mapping with inexistent users.
+    // TODO Tests: Stage a file with a user with negative share.
+    // TODO Tests: Start and stop the application several times, with things
+    // in the database.
+    // TODO Tests: SelectBestUser returns null, then do what? If the user has
+    // negative sharing but the tape has other users.
 }

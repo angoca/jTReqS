@@ -67,6 +67,13 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLDAOFactory.class);
 
+    @Override
+    public String dumpStructure() {
+        LOGGER.trace(">< dumpStructure");
+
+        return new MySQLInit().dumpStructure();
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -143,12 +150,5 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
         new MySQLInit().initializeDatabase();
 
         LOGGER.trace("< initialize");
-    }
-
-    @Override
-    public String dumpStructure() {
-        LOGGER.trace(">< dumpStructure");
-
-        return new MySQLInit().dumpStructure();
     }
 }

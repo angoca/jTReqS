@@ -63,45 +63,30 @@ public final class Instantiator {
     /**
      * Instantiates the given class.
      *
-     * @param hsmBridgeClass
+     * @param classname
      *            Instantiates the given class calling the getInstance method.
-     * @return Singleton instance.
+     * @return The class.
      * @throws InstantiatorException
      *             If there is a problem while instantiating the class.
      */
-    public static AbstractHSMBridge getInstanceClass(final String hsmBridgeClass)
+    private static Class<?> getClass(final String classname)
             throws InstantiatorException {
-        LOGGER.trace("> instanciateClass");
+        LOGGER.trace("> getClass");
 
-        AbstractHSMBridge bridge = null;
-        Class<?> hsm = getClass(hsmBridgeClass);
-        if (hsm != null) {
-            Method getInstance = null;
-            try {
-                getInstance = hsm.getMethod("getInstance");
-            } catch (SecurityException e) {
-                throw new InstantiatorException(e);
-            } catch (NoSuchMethodException e) {
-                throw new InstantiatorException(e);
-            }
-            if (getInstance != null) {
-                try {
-                    bridge = (AbstractHSMBridge) getInstance.invoke(null);
-                } catch (IllegalArgumentException e) {
-                    throw new InstantiatorException(e);
-                } catch (IllegalAccessException e) {
-                    throw new InstantiatorException(e);
-                } catch (InvocationTargetException e) {
-                    throw new InstantiatorException(e);
-                }
-            }
+        assert (classname != null) && !classname.equals("");
+
+        Class<?> clazz = null;
+        try {
+            LOGGER.info("Class to instantiate {}", classname);
+            clazz = Class.forName(classname);
+
+        } catch (final ClassNotFoundException e) {
+            throw new InstantiatorException(e);
         }
 
-        assert bridge != null;
+        LOGGER.trace("< getClass");
 
-        LOGGER.trace("< instanciateClass");
-
-        return bridge;
+        return clazz;
     }
 
     /**
@@ -119,14 +104,14 @@ public final class Instantiator {
         LOGGER.trace("> getDataSourceAccess");
 
         // Retrieves the class.
-        Class<?> daoFactory = getClass(daoFactoryName);
+        final Class<?> daoFactory = Instantiator.getClass(daoFactoryName);
 
         // Instantiates the class calling the constructor.
         AbstractDAOFactory daoInst = null;
         try {
-            Constructor<?> constructor = daoFactory.getConstructor();
+            final Constructor<?> constructor = daoFactory.getConstructor();
             daoInst = (AbstractDAOFactory) constructor.newInstance();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new InstantiatorException(e);
         }
 
@@ -135,6 +120,50 @@ public final class Instantiator {
         LOGGER.trace("< getDataSourceAccess");
 
         return daoInst;
+    }
+
+    /**
+     * Instantiates the given class.
+     *
+     * @param hsmBridgeClass
+     *            Instantiates the given class calling the getInstance method.
+     * @return Singleton instance.
+     * @throws InstantiatorException
+     *             If there is a problem while instantiating the class.
+     */
+    public static AbstractHSMBridge getInstanceClass(final String hsmBridgeClass)
+            throws InstantiatorException {
+        LOGGER.trace("> instanciateClass");
+
+        AbstractHSMBridge bridge = null;
+        final Class<?> hsm = Instantiator.getClass(hsmBridgeClass);
+        if (hsm != null) {
+            Method getInstance = null;
+            try {
+                getInstance = hsm.getMethod("getInstance");
+            } catch (final SecurityException e) {
+                throw new InstantiatorException(e);
+            } catch (final NoSuchMethodException e) {
+                throw new InstantiatorException(e);
+            }
+            if (getInstance != null) {
+                try {
+                    bridge = (AbstractHSMBridge) getInstance.invoke(null);
+                } catch (final IllegalArgumentException e) {
+                    throw new InstantiatorException(e);
+                } catch (final IllegalAccessException e) {
+                    throw new InstantiatorException(e);
+                } catch (final InvocationTargetException e) {
+                    throw new InstantiatorException(e);
+                }
+            }
+        }
+
+        assert bridge != null;
+
+        LOGGER.trace("< instanciateClass");
+
+        return bridge;
     }
 
     /**
@@ -150,10 +179,10 @@ public final class Instantiator {
             throws InstantiatorException {
         LOGGER.trace("> getSelector");
 
-        Class<?> clazz = getClass(classname);
+        final Class<?> clazz = Instantiator.getClass(classname);
         Object selector;
         try {
-            Constructor<?> constructor = clazz.getConstructor();
+            final Constructor<?> constructor = clazz.getConstructor();
             selector = constructor.newInstance();
         } catch (final Exception e) {
             throw new InstantiatorException(e);
@@ -164,35 +193,6 @@ public final class Instantiator {
         LOGGER.trace("< getSelector");
 
         return (Selector) selector;
-    }
-
-    /**
-     * Instantiates the given class.
-     *
-     * @param classname
-     *            Instantiates the given class calling the getInstance method.
-     * @return The class.
-     * @throws InstantiatorException
-     *             If there is a problem while instantiating the class.
-     */
-    private static Class<?> getClass(final String classname)
-            throws InstantiatorException {
-        LOGGER.trace("> getClass");
-
-        assert classname != null && !classname.equals("");
-
-        Class<?> clazz = null;
-        try {
-            LOGGER.info("Class to instantiate {}", classname);
-            clazz = Class.forName(classname);
-
-        } catch (ClassNotFoundException e) {
-            throw new InstantiatorException(e);
-        }
-
-        LOGGER.trace("< getClass");
-
-        return clazz;
     }
 
     /**

@@ -67,19 +67,19 @@ public final class CommandExecuter {
             throws ExecuterException {
         LOGGER.trace("> execute");
 
-        assert command != null && !command.equals("");
+        assert (command != null) && !command.equals("");
 
         String ret = null;
         try {
-            Process process = Runtime.getRuntime().exec(command);
+            final Process process = Runtime.getRuntime().exec(command);
             final BufferedReader bfStreamOut = new BufferedReader(
                     new InputStreamReader(process.getInputStream()));
             final BufferedReader bfStreamErr = new BufferedReader(
                     new InputStreamReader(process.getErrorStream()));
 
-            processOutput(bfStreamErr, true);
-            ret = processOutput(bfStreamOut, false);
-        } catch (IOException e) {
+            CommandExecuter.processOutput(bfStreamErr, true);
+            ret = CommandExecuter.processOutput(bfStreamOut, false);
+        } catch (final IOException e) {
             throw new ExecuterException(e);
         }
 
@@ -101,8 +101,9 @@ public final class CommandExecuter {
      * @throws HSMCommandBridgeException
      *             If there is a problem processing the output.
      */
-    private static String/* ? */processOutput(final BufferedReader/* ! */stream,
-            final boolean error) throws ExecuterException {
+    private static String/* ? */processOutput(
+            final BufferedReader/* ! */stream, final boolean error)
+            throws ExecuterException {
         LOGGER.trace("> processOutput");
 
         assert stream != null;
@@ -111,18 +112,18 @@ public final class CommandExecuter {
         // Process the output.
         try {
             current = stream.readLine();
-            if (error && current != null) {
+            if (error && (current != null)) {
                 LOGGER.error(current);
                 throw new ExecuterException(current);
-            } else if (!error && current == null) {
+            } else if (!error && (current == null)) {
                 throw new ExecuterException();
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new ExecuterException(e);
         } finally {
             try {
                 stream.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new ExecuterException(e);
             }
         }

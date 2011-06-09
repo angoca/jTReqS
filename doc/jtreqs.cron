@@ -1,0 +1,7 @@
+MAILTO=treqsmaster@cc.in2p3.fr
+# jTReqS watchdog
+*/3 * * * * sh /opt/jtreqs/bin/watchdog.sh -db
+# jTReqS archiver
+# TODO v2.0 check this thing. It is better to user "insert select jtreqsarchive"
+7 0 * * * /opt/jtreqs/etc/archiver.py --srcdb jtreqsdb --srcuser jtreqsarch --srcpwd xxxxxxxx --srchost localhost --srcsock /var/lib/mysql/jtreqs/tmp/mysql.sock --arcdb jtreqsarchivedb --arcuser jtreqsarch --arcpwd xxxxxxxx --archost localhost --arcsock /var/lib/mysql/jtreqs/tmp/mysql.sock --days 3 >> /var/log/jtreqs/archiver.log 2>&1
+

@@ -75,17 +75,17 @@ public class MySQLRegisterInformationDAO implements RegisterInformationDAO {
             throws TReqSException {
         LOGGER.trace("> insert {} {}", name, value);
 
-        assert name != null && !name.equals("");
-        assert value != null && !value.equals("");
+        assert (name != null) && !name.equals("");
+        assert (value != null) && !value.equals("");
 
-        String query = MySQLStatements.SQL_INFORMATIONS_SELECT + '\'' + name
+        final String query = MySQLStatements.SQL_INFORMATIONS_SELECT + '\'' + name
                 + '\'';
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         try {
             if (result.next()) {
-                PreparedStatement statement = MySQLBroker.getInstance()
+                final PreparedStatement statement = MySQLBroker.getInstance()
                         .getPreparedStatement(
                                 MySQLStatements.SQL_INFORMATIONS_UPDATE);
                 int index = 1;
@@ -97,17 +97,17 @@ public class MySQLRegisterInformationDAO implements RegisterInformationDAO {
 
                     statement.execute();
 
-                    int count = statement.getUpdateCount();
+                    final int count = statement.getUpdateCount();
                     if (count <= 0) {
                         LOGGER.warn("Nothing updated");
                     }
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     LOGGER.error("Error updating the registration of " + name
                             + ' ' + value);
                     throw new MySQLExecuteException(e);
                 }
             } else {
-                PreparedStatement statement = MySQLBroker.getInstance()
+                final PreparedStatement statement = MySQLBroker.getInstance()
                         .getPreparedStatement(
                                 MySQLStatements.SQL_INFORMATIONS_INSERT);
                 int index = 1;
@@ -119,17 +119,17 @@ public class MySQLRegisterInformationDAO implements RegisterInformationDAO {
 
                     statement.execute();
 
-                    int count = statement.getUpdateCount();
+                    final int count = statement.getUpdateCount();
                     if (count <= 0) {
                         LOGGER.warn("Nothing inserted");
                     }
-                } catch (SQLException e) {
+                } catch (final SQLException e) {
                     LOGGER.error("Error inserting the registration of " + name
                             + ' ' + value);
                     throw new MySQLExecuteException(e);
                 }
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);

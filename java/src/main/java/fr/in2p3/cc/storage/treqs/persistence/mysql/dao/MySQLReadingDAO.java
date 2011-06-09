@@ -83,7 +83,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         LOGGER.trace("> firstUpdate");
 
         assert reading != null;
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
 
         final short statusId = reading.getRequestStatus().getId();
         final int queueId = reading.getQueue().getId();
@@ -93,7 +93,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
         final Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         final String filename = reading.getMetaData().getFile().getName();
 
-        PreparedStatement statement = MySQLBroker.getInstance()
+        final PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(
                         MySQLStatements.SQL_REQUESTS_UPDATE_SUBMITTED);
         int index = 1;
@@ -119,11 +119,11 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
             statement.execute();
 
-            int count = statement.getUpdateCount();
+            final int count = statement.getUpdateCount();
             if (count <= 0) {
                 LOGGER.warn("Nothing updated");
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Error updating request " + queueId);
             throw new MySQLExecuteException(e);
         }
@@ -143,27 +143,27 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
         assert limit >= 0;
 
-        List<PersistenceHelperFileRequest> newRequests = new ArrayList<PersistenceHelperFileRequest>();
+        final List<PersistenceHelperFileRequest> newRequests = new ArrayList<PersistenceHelperFileRequest>();
 
         String query = MySQLStatements.SQL_REQUESTS_GET_NEW;
         if (limit > 0) {
             query += MySQLStatements.SQL_LIMIT + limit;
         }
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(query);
-        ResultSet result = (ResultSet) objects[1];
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
+        final ResultSet result = (ResultSet) objects[1];
         try {
             while (result.next()) {
                 int index = 1;
-                int id = result.getInt(index++);
-                String user = result.getString(index++);
-                String fileName = result.getString(index++);
-                byte tries = result.getByte(index++);
-                PersistenceHelperFileRequest fileRequest = new PersistenceHelperFileRequest(
+                final int id = result.getInt(index++);
+                final String user = result.getString(index++);
+                final String fileName = result.getString(index++);
+                final byte tries = result.getByte(index++);
+                final PersistenceHelperFileRequest fileRequest = new PersistenceHelperFileRequest(
                         id, fileName, tries, user);
                 newRequests.add(fileRequest);
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);
@@ -174,6 +174,71 @@ public final class MySQLReadingDAO implements ReadingDAO {
         LOGGER.trace("< getNewRequests");
 
         return newRequests;
+    }
+
+    /**
+     * Fills the statement and execute it.
+     *
+     * @param reading
+     *            Request to update.
+     * @param status
+     *            Status of the reading.
+     * @param statement
+     *            Statement to fill and execute.
+     * @param i
+     *            Index of the statement.
+     * @throws MySQLExecuteException
+     *             If there is a problem executing the query.
+     */
+    private void processUpdate(final Reading reading,
+            final RequestStatus status, final PreparedStatement statement,
+            final int i) throws MySQLExecuteException {
+        LOGGER.trace("> processUpdate");
+
+        assert reading != null;
+        assert status != null;
+        assert statement != null;
+        assert i > 0;
+
+        try {
+            final short statusId = status.getId();
+            final int queueId = reading.getQueue().getId();
+            final String tapename = reading.getMetaData().getTape().getName();
+            final int position = reading.getMetaData().getPosition();
+            final String filename = reading.getMetaData().getFile().getName();
+            final byte nbTries = reading.getNumberOfTries();
+            final String errorMessage = reading.getErrorMessage();
+            final int errorCode = reading.getErrorCode();
+
+            int index = i;
+
+            LOGGER.debug("ID {} TAPE {} POS {} CODE {} TRIES {} STATUS {} "
+                    + "MESS {} FILE {}", new Object[] { queueId, tapename,
+                    position, errorCode, nbTries, statusId, errorMessage,
+                    filename });
+            // Insert queue id
+            statement.setInt(index++, queueId);
+            // Insert cartridge
+            statement.setString(index++, tapename);
+            // Insert position.
+            statement.setInt(index++, position);
+            // Insert Error code
+            statement.setInt(index++, errorCode);
+            // Insert number of tries
+            statement.setByte(index++, nbTries);
+            // Insert File request Status
+            statement.setShort(index++, statusId);
+            // Insert message
+            statement.setString(index++, errorMessage);
+            // Insert file name
+            statement.setString(index++, filename);
+
+            statement.execute();
+        } catch (final SQLException e1) {
+            throw new MySQLExecuteException(e1);
+        }
+
+        LOGGER.trace("< processUpdate");
     }
 
     /*
@@ -190,13 +255,13 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
         assert id >= 0;
         assert status != null;
-        assert message != null && !message.equals("");
+        assert (message != null) && !message.equals("");
 
         final short statusId = status.getId();
         final Timestamp currentTimestamp = new Timestamp(
                 System.currentTimeMillis());
 
-        PreparedStatement statement = MySQLBroker.getInstance()
+        final PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(
                         MySQLStatements.SQL_REQUESTS_UPDATE_FINAL_REQUEST_ID);
         int index = 1;
@@ -213,7 +278,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
             statement.setInt(index++, id);
 
             statement.execute();
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Error updating request " + id);
             throw new MySQLExecuteException(e);
         }
@@ -287,77 +352,12 @@ public final class MySQLReadingDAO implements ReadingDAO {
                 assert false;
                 break;
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         }
         this.processUpdate(reading, status, statement, index);
 
         LOGGER.trace("< update");
-    }
-
-    /**
-     * Fills the statement and execute it.
-     *
-     * @param reading
-     *            Request to update.
-     * @param status
-     *            Status of the reading.
-     * @param statement
-     *            Statement to fill and execute.
-     * @param i
-     *            Index of the statement.
-     * @throws MySQLExecuteException
-     *             If there is a problem executing the query.
-     */
-    private void processUpdate(final Reading reading,
-            final RequestStatus status, final PreparedStatement statement,
-            final int i) throws MySQLExecuteException {
-        LOGGER.trace("> processUpdate");
-
-        assert reading != null;
-        assert status != null;
-        assert statement != null;
-        assert i > 0;
-
-        try {
-            final short statusId = status.getId();
-            final int queueId = reading.getQueue().getId();
-            final String tapename = reading.getMetaData().getTape().getName();
-            final int position = reading.getMetaData().getPosition();
-            final String filename = reading.getMetaData().getFile().getName();
-            final byte nbTries = reading.getNumberOfTries();
-            final String errorMessage = reading.getErrorMessage();
-            final int errorCode = reading.getErrorCode();
-
-            int index = i;
-
-            LOGGER.debug("ID {} TAPE {} POS {} CODE {} TRIES {} STATUS {} "
-                    + "MESS {} FILE {}", new Object[] { queueId, tapename,
-                    position, errorCode, nbTries, statusId, errorMessage,
-                    filename });
-            // Insert queue id
-            statement.setInt(index++, queueId);
-            // Insert cartridge
-            statement.setString(index++, tapename);
-            // Insert position.
-            statement.setInt(index++, position);
-            // Insert Error code
-            statement.setInt(index++, errorCode);
-            // Insert number of tries
-            statement.setByte(index++, nbTries);
-            // Insert File request Status
-            statement.setShort(index++, statusId);
-            // Insert message
-            statement.setString(index++, errorMessage);
-            // Insert file name
-            statement.setString(index++, filename);
-
-            statement.execute();
-        } catch (SQLException e1) {
-            throw new MySQLExecuteException(e1);
-        }
-
-        LOGGER.trace("< processUpdate");
     }
 
     /*
@@ -372,7 +372,7 @@ public final class MySQLReadingDAO implements ReadingDAO {
 
         LOGGER.info("Cleaning unfinished requests");
 
-        int ret = MySQLBroker.getInstance().executeModification(
+        final int ret = MySQLBroker.getInstance().executeModification(
                 MySQLStatements.SQL_REQUESTS_UPDATE_UNPROCESSED);
 
         assert ret >= 0;

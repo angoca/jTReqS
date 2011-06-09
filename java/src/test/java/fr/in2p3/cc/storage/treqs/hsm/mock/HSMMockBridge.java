@@ -54,21 +54,21 @@ import fr.in2p3.cc.storage.treqs.model.File;
  */
 public final class HSMMockBridge extends AbstractHSMBridge {
     /**
-     * Types of tapes.
+     * Max file position in tape.
      */
-    private static final int TAPE_TYPES = 4;
+    private static final int FILE_POSITION = 100;
     /**
      * Max file size.
      */
     private static final int FILE_SIZE = 10000;
     /**
-     * Max file position in tape.
+     * File properties to return in the next call.
      */
-    private static final int FILE_POSITION = 100;
+    private static HSMHelperFileProperties fileProperties;
     /**
-     * Max tape number.
+     * Exception to throw in the next call of get metadata.
      */
-    private static final int TAPE_NUMBER = 10;
+    private static AbstractHSMException filePropertiesException;
     /**
      * Instance of the singleton.
      */
@@ -79,6 +79,28 @@ public final class HSMMockBridge extends AbstractHSMBridge {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HSMMockBridge.class);
 
+    /**
+     * Object for synchronization.
+     */
+    private static Object notifyObject;
+
+    /**
+     * Exception to throw in the next call of stage.
+     */
+    private static AbstractHSMException stageException;
+
+    /**
+     * Time of the stage.
+     */
+    private static long stageMillis;
+    /**
+     * Max tape number.
+     */
+    private static final int TAPE_NUMBER = 10;
+    /**
+     * Types of tapes.
+     */
+    private static final int TAPE_TYPES = 4;
     /**
      * Destroys the only instance. ONLY for testing purposes.
      */
@@ -92,7 +114,6 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         LOGGER.trace("< destroyInstance");
     }
-
     /**
      * Retrieves the unique instance.
      *
@@ -112,27 +133,6 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         return instance;
     }
-
-    /**
-     * File properties to return in the next call.
-     */
-    private static HSMHelperFileProperties fileProperties;
-    /**
-     * Exception to throw in the next call of get metadata.
-     */
-    private static AbstractHSMException filePropertiesException;
-    /**
-     * Exception to throw in the next call of stage.
-     */
-    private static AbstractHSMException stageException;
-    /**
-     * Time of the stage.
-     */
-    private static long stageMillis;
-    /**
-     * Object for synchronization.
-     */
-    private static Object notifyObject;
 
     /**
      * Constructor where the basic elements are defined.
@@ -165,7 +165,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         HSMHelperFileProperties properties;
         // Generating a random tape.
         String tape = "";
-        int randomized = (int) (Math.random() * TAPE_TYPES);
+        final int randomized = (int) (Math.random() * TAPE_TYPES);
         switch (randomized) {
         case 0:
             tape += "IT";
@@ -182,8 +182,8 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         tape += "000";
         tape += (int) (Math.random() * TAPE_NUMBER);
 
-        int position = (int) (Math.random() * FILE_POSITION) + 1;
-        long size = (int) (Math.random() * FILE_SIZE) + 1;
+        final int position = (int) (Math.random() * FILE_POSITION) + 1;
+        final long size = (int) (Math.random() * FILE_SIZE) + 1;
 
         properties = new HSMHelperFileProperties(tape, position, size);
 
@@ -206,17 +206,17 @@ public final class HSMMockBridge extends AbstractHSMBridge {
             throws AbstractHSMException {
         LOGGER.trace("> getFileProperties");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
 
         // Takes the defined fileProperties that is going to be returned.
-        HSMHelperFileProperties ret = fileProperties;
+        final HSMHelperFileProperties ret = fileProperties;
 
         // Creates a new fileProperties randomly for the next call.
-        fileProperties = generateTape();
+        fileProperties = this.generateTape();
 
         if (filePropertiesException != null) {
             // Takes the exception.
-            AbstractHSMException toThrow = filePropertiesException;
+            final AbstractHSMException toThrow = filePropertiesException;
             // Clears the exception
             filePropertiesException = null;
             // Throw the predefined exception.
@@ -290,7 +290,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
         LOGGER.trace("> stage");
 
         if (stageException != null) {
-            AbstractHSMException toThrow = stageException;
+            final AbstractHSMException toThrow = stageException;
             stageException = null;
             throw toThrow;
         }
@@ -299,7 +299,7 @@ public final class HSMMockBridge extends AbstractHSMBridge {
             synchronized (notifyObject) {
                 try {
                     notifyObject.wait();
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -309,14 +309,14 @@ public final class HSMMockBridge extends AbstractHSMBridge {
 
         long wait = 0;
         if (stageMillis == 0) {
-            wait = ((long) ((Math.random() * 7) + 2)) * Constants.MILLISECONDS;
+            wait = (long) (Math.random() * 7 + 2) * Constants.MILLISECONDS;
         } else {
             wait = stageMillis;
         }
         LOGGER.info("Fake staging starting ;) for {} millis", wait);
         try {
             Thread.sleep(wait);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.error("Error sleeping", e);
         }
         LOGGER.info("Fake staging done ;)");

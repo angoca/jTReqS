@@ -128,7 +128,7 @@ public final class FilesController extends AbstractController {
     public File add(final String name, final long size) throws TReqSException {
         LOGGER.trace("> add");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert size >= 0;
 
         File file = null;
@@ -142,6 +142,43 @@ public final class FilesController extends AbstractController {
         LOGGER.trace("< add");
 
         return file;
+    }
+
+    /**
+     * Removes the references of files that do not have any file position on
+     * tape associated.
+     *
+     * @return Quantity of references deleted.
+     */
+    public int cleanup() {
+        LOGGER.trace("> cleanup");
+
+        int size = 0;
+        final List<String> toRemove = new ArrayList<String>();
+        synchronized (this.getObjectMap()) {
+            // Checks the references without fpots.
+            final Iterator<String> iter = this.getObjectMap().keySet().iterator();
+            while (iter.hasNext()) {
+                final String key = iter.next();
+                final File file = (File) this.getObjectMap().get(key);
+                final String filename = file.getName();
+                final FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
+                        .getInstance().exists(filename);
+                if (fpot == null) {
+                    toRemove.add(filename);
+                }
+            }
+            // Delete the files.
+            size = toRemove.size();
+            for (int i = 0; i < size; i++) {
+                LOGGER.debug("Deleting {}", toRemove.get(i));
+                this.getObjectMap().remove(toRemove.get(i));
+            }
+        }
+
+        LOGGER.trace("< cleanup");
+
+        return size;
     }
 
     /**
@@ -159,10 +196,10 @@ public final class FilesController extends AbstractController {
     File create(final String name, final long size) throws TReqSException {
         LOGGER.trace("> create");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
         assert size >= 0;
 
-        File file = new File(name, size);
+        final File file = new File(name, size);
         super.add(name, file);
 
         assert file != null;
@@ -170,42 +207,5 @@ public final class FilesController extends AbstractController {
         LOGGER.trace("< create");
 
         return file;
-    }
-
-    /**
-     * Removes the references of files that do not have any file position on
-     * tape associated.
-     *
-     * @return Quantity of references deleted.
-     */
-    public int cleanup() {
-        LOGGER.trace("> cleanup");
-
-        int size = 0;
-        List<String> toRemove = new ArrayList<String>();
-        synchronized (this.getObjectMap()) {
-            // Checks the references without fpots.
-            Iterator<String> iter = this.getObjectMap().keySet().iterator();
-            while (iter.hasNext()) {
-                String key = iter.next();
-                File file = (File) this.getObjectMap().get(key);
-                String filename = file.getName();
-                FilePositionOnTape fpot = (FilePositionOnTape) FilePositionOnTapesController
-                        .getInstance().exists(filename);
-                if (fpot == null) {
-                    toRemove.add(filename);
-                }
-            }
-            // Delete the files.
-            size = toRemove.size();
-            for (int i = 0; i < size; i++) {
-                LOGGER.debug("Deleting {}", toRemove.get(i));
-                this.getObjectMap().remove(toRemove.get(i));
-            }
-        }
-
-        LOGGER.trace("< cleanup");
-
-        return size;
     }
 }

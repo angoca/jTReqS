@@ -69,7 +69,7 @@ public final class FilesControllerTest {
         try {
             FilesController.getInstance().add(null, 10);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -88,7 +88,7 @@ public final class FilesControllerTest {
         try {
             FilesController.getInstance().add("filename", -10);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -118,7 +118,7 @@ public final class FilesControllerTest {
         try {
             FilesController.getInstance().create(null, 10);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -137,7 +137,7 @@ public final class FilesControllerTest {
         try {
             FilesController.getInstance().create("filename", -10);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }

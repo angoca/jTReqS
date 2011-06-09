@@ -56,42 +56,19 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 public final class HSMNativeBridgeTestNative {
 
     /**
-     * Location of a valid keytab.
+     * Checks if the authentication was done.
      */
-    private static String validKeytabPath = System.getProperty("keytab");
-    static {
-        if (validKeytabPath == null) {
-            validKeytabPath = "/var/hpss/etc/keytab.treqs";
-        }
-    }
+    private static boolean authenticated = false;
+    /**
+     * Name of a directory.
+     */
+    static final String DIRECTORY = "/hpss";
 
     /**
-     * Retrieves the valid keytab.
-     *
-     * @return Complete path to a keytab.
+     * Logger.
      */
-    static String getValidKeytabPath() {
-        return validKeytabPath;
-    }
-
-    /**
-     * Name of the user related to the keytab.
-     */
-    private static String validUsername = System.getProperty("userKeytab");
-    static {
-        if (validUsername == null) {
-            validUsername = "treqs";
-        }
-    }
-
-    /**
-     * Retrieves the user related to the keytab.
-     *
-     * @return Username.
-     */
-    static String getValidUsername() {
-        return validUsername;
-    }
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(HSMNativeBridgeTestNative.class);
 
     /**
      * Authentication type for the valid keytab.
@@ -102,45 +79,50 @@ public final class HSMNativeBridgeTestNative {
      */
     static final String VALID_FILE = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
+
     /**
-     * Size of the valid file.
+     * Name of a file that is empty.
      */
-    static final long VALID_FILE_SIZE = 1000;
-    /**
-     * Name of a file that could be stored in tape.
-     */
-    static final String VALID_FILE_LOCKED = "/hpss/in2p3.fr/group/"
-            + "ccin2p3/treqs/dummy";
+    static final String VALID_FILE_EMPTY = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/empty";
+
     /**
      * Name of a file that is in an aggregation.
      */
     static final String VALID_FILE_IN_AGGREGA = "/hpss/in2p3.fr/group/"
             + "ccin2p3/treqs/dummy";
     /**
-     * Name of a file that is empty.
+     * Name of a file that could be stored in tape.
      */
-    static final String VALID_FILE_EMPTY = "/hpss/in2p3.fr/group/"
-            + "ccin2p3/treqs/empty";
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(HSMNativeBridgeTestNative.class);
-    /**
-     * Name of a directory.
-     */
-    static final String DIRECTORY = "/hpss";
+    static final String VALID_FILE_LOCKED = "/hpss/in2p3.fr/group/"
+            + "ccin2p3/treqs/dummy";
     /**
      * Name of a file in a single hierarchy.
      */
     static final String VALID_FILE_SINGLE_HIERARCHY = "/hpss/in2p3.fr/"
             + "group/ccin2p3/treqs/dummy";
-
     /**
-     * Checks if the authentication was done.
+     * Size of the valid file.
      */
-    private static boolean authenticated = false;
-
+    static final long VALID_FILE_SIZE = 1000;
+    /**
+     * Location of a valid keytab.
+     */
+    private static String validKeytabPath = System.getProperty("keytab");
+    /**
+     * Name of the user related to the keytab.
+     */
+    private static String validUsername = System.getProperty("userKeytab");
+    static {
+        if (validKeytabPath == null) {
+            validKeytabPath = "/var/hpss/etc/keytab.treqs";
+        }
+    }
+    static {
+        if (validUsername == null) {
+            validUsername = "treqs";
+        }
+    }
     /**
      * Authenticates the user.
      *
@@ -166,11 +148,29 @@ public final class HSMNativeBridgeTestNative {
     }
 
     /**
+     * Retrieves the valid keytab.
+     *
+     * @return Complete path to a keytab.
+     */
+    static String getValidKeytabPath() {
+        return validKeytabPath;
+    }
+
+    /**
+     * Retrieves the user related to the keytab.
+     *
+     * @return Username.
+     */
+    static String getValidUsername() {
+        return validUsername;
+    }
+
+    /**
      * Setups the environment.
      */
     @BeforeClass
     public static void oneTimeSetUp() {
-        String ldPath = "java.library.path";
+        final String ldPath = "java.library.path";
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
@@ -194,14 +194,14 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties02Directory() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         boolean failed = false;
         try {
             NativeBridge.getInstance().getFileProperties(DIRECTORY);
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties01Directory " + code + " - "
                     + HPSSErrorCode.HPSS_EISDIR.getCode());
             if (code != HPSSErrorCode.HPSS_EISDIR.getCode()) {
@@ -221,14 +221,14 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties03NotExistingFile() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         boolean failed = false;
         try {
             NativeBridge.getInstance().getFileProperties("/NoExistingFile");
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties02NotExistingFile " + code + " - "
                     + HPSSErrorCode.HPSS_ENOENT.getCode());
             if (code != HPSSErrorCode.HPSS_ENOENT.getCode()) {
@@ -248,7 +248,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties04FileInTape() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.purge(VALID_FILE);
 
@@ -263,7 +263,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties05FileInDisk() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         NativeBridge.getInstance().stage(VALID_FILE, VALID_FILE_SIZE);
 
@@ -279,7 +279,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties06FileLocked() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.lockFile(VALID_FILE);
 
@@ -296,7 +296,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties07FileAlreadyOpen() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.open(VALID_FILE);
 
@@ -313,7 +313,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties08FileInAggregation() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         NativeBridge.getInstance().getFileProperties(VALID_FILE_IN_AGGREGA);
     }
@@ -326,14 +326,14 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties09EmptyFile() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         boolean failed = false;
         try {
             NativeBridge.getInstance().getFileProperties(VALID_FILE_EMPTY);
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties08EmptyFile " + code + " - -30001");
             if (code != -30001) {
                 Assert.fail();
@@ -354,7 +354,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testGetProperties10FileInSingleHierarchy() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         NativeBridge.getInstance().getFileProperties(
                 VALID_FILE_SINGLE_HIERARCHY);
@@ -368,7 +368,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testStage02Unlocked() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
@@ -383,7 +383,7 @@ public final class HSMNativeBridgeTestNative {
      */
     @Test
     public void testStage03Locked() throws JNIException {
-        authenticate();
+        HSMNativeBridgeTestNative.authenticate();
 
         // TODO Tests: NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 

@@ -50,16 +50,17 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 /**
  * Register the information of the environment where the application is executed
  * into the data source.
+ * <p>
+ * TODO v2.0 Register the name of the database.
+ * <p>
+ * TODO v2.0 Register the name of the keytab (location).
+ * <p>
+ * TODO v2.0 Register the username for the keytab.
  *
  * @author Andres Gomez
  * @since 1.5.4
  */
 public class RegisterInformation {
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(RegisterInformation.class);
     /**
      * Variable that has the application version.
      */
@@ -73,32 +74,14 @@ public class RegisterInformation {
      */
     private static final String HPSS_HOSTNAME = "HPSSHostname";
     /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(RegisterInformation.class);
+    /**
      * Variable that has the MySQL hostname.
      */
     private static final String MYSQL_HOSTNAME = "MySQLHostname";
-
-    /**
-     * Register the information in the database.
-     *
-     * @throws TReqSException
-     *             If there is any problem while retrieving or inserting the
-     *             values.
-     */
-    public static void exec() {
-        LOGGER.trace("> exec");
-
-        try {
-            appVersion();
-            hostname();
-            hpssHostname();
-            mysqlHostname();
-        } catch (Exception e) {
-            LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
-                    e.getStackTrace());
-        }
-
-        LOGGER.trace("< exec");
-    }
 
     /**
      * Register the application version.
@@ -115,16 +98,16 @@ public class RegisterInformation {
         try {
             final ClassLoader loader = ClassLoader.getSystemClassLoader();
             if (loader != null) {
-                URL url = loader.getResource("version.txt");
+                final URL url = loader.getResource("version.txt");
                 if (url != null) {
-                    InputStream inputStream = url.openStream();
+                    final InputStream inputStream = url.openStream();
                     scanner = new Scanner(inputStream);
                     if (scanner.hasNextLine()) {
                         appVersion = scanner.nextLine();
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         } finally {
@@ -140,6 +123,29 @@ public class RegisterInformation {
     }
 
     /**
+     * Register the information in the database.
+     *
+     * @throws TReqSException
+     *             If there is any problem while retrieving or inserting the
+     *             values.
+     */
+    public static void exec() {
+        LOGGER.trace("> exec");
+
+        try {
+            RegisterInformation.appVersion();
+            RegisterInformation.hostname();
+            RegisterInformation.hpssHostname();
+            RegisterInformation.mysqlHostname();
+        } catch (final Exception e) {
+            LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
+                    e.getStackTrace());
+        }
+
+        LOGGER.trace("< exec");
+    }
+
+    /**
      * Registers the hostname where the application is executed.
      *
      * @throws TReqSException
@@ -151,7 +157,7 @@ public class RegisterInformation {
         String hostname = "Not defined.";
         try {
             hostname = CommandExecuter.execute(new String[] { "hostname" });
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         }
@@ -178,7 +184,7 @@ public class RegisterInformation {
             hpssConfFile = Configurator.getInstance()
                     .getStringValue(Constants.SECTION_KEYTAB,
                             Constants.HPSS_CONFIGURATION_FILE);
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         }
@@ -208,7 +214,7 @@ public class RegisterInformation {
         try {
             mysqlConfFile = Configurator.getInstance().getStringValue(
                     Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER);
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         }

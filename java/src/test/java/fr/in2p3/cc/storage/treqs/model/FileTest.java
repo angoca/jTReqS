@@ -92,16 +92,16 @@ public final class FileTest {
      */
     @Test
     public void testSize01() {
-        String filename = "tapename";
-        long size = FileTest.TEN;
+        final String filename = "tapename";
+        final long size = FileTest.TEN;
 
-        File file = new File(filename, size);
+        final File file = new File(filename, size);
 
         boolean failed = false;
         try {
             file.setSize(-50);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -116,14 +116,14 @@ public final class FileTest {
      */
     @Test
     public void testToString01() {
-        String filename = "tapename";
-        long size = FileTest.TEN;
+        final String filename = "tapename";
+        final long size = FileTest.TEN;
 
-        File file = new File(filename, size);
+        final File file = new File(filename, size);
 
-        String actual = file.toString();
+        final String actual = file.toString();
 
-        String expected = "File{ name: " + filename + ", size: " + size + "}";
+        final String expected = "File{ name: " + filename + ", size: " + size + "}";
 
         Assert.assertEquals("toString", expected, actual);
     }
@@ -133,13 +133,13 @@ public final class FileTest {
      */
     @Test
     public void testUpdate01() {
-        String filename = "filename";
-        long size = FileTest.TEN;
+        final String filename = "filename";
+        final long size = FileTest.TEN;
 
-        File file1 = new File(filename, size);
+        final File file1 = new File(filename, size);
         file1.setSize(size);
 
-        File file2 = new File(filename, size);
+        final File file2 = new File(filename, size);
 
         Assert.assertTrue("First Second filename",
                 file1.getName() == file2.getName());

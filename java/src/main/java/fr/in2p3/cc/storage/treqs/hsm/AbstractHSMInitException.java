@@ -39,7 +39,6 @@ package fr.in2p3.cc.storage.treqs.hsm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Raised when there is a problem while initializing the HSM access.
  *
@@ -67,18 +66,6 @@ public abstract class AbstractHSMInitException extends AbstractHSMException {
     }
 
     /**
-     * Creates the exception with an error code.
-     *
-     * @param hsmErrorcode
-     *            error code from the HSM.
-     */
-    protected AbstractHSMInitException(final int hsmErrorcode) {
-        super(hsmErrorcode);
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-    /**
      * Creates the exception wrapping another exception.
      *
      * @param exception
@@ -86,6 +73,18 @@ public abstract class AbstractHSMInitException extends AbstractHSMException {
      */
     protected AbstractHSMInitException(final Exception exception) {
         super(exception);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception with an error code.
+     *
+     * @param hsmErrorcode
+     *            error code from the HSM.
+     */
+    protected AbstractHSMInitException(final int hsmErrorcode) {
+        super(hsmErrorcode);
 
         LOGGER.trace(">< Instance creation");
     }

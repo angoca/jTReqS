@@ -50,14 +50,14 @@ import org.slf4j.LoggerFactory;
 public final class MySQLCloseException extends AbstractMySQLException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = 1150382072401169495L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLCloseException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 1150382072401169495L;
 
     /**
      * Wraps an exception generated when the database was closing.

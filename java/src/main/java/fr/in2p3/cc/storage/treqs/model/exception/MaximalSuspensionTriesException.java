@@ -49,14 +49,14 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  */
 public final class MaximalSuspensionTriesException extends TReqSException {
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -7873750096259668634L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MaximalSuspensionTriesException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -7873750096259668634L;
 
     /**
      * Creates an exception with the related code.

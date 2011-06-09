@@ -45,8 +45,7 @@ import org.slf4j.LoggerFactory;
  * @author Andrés Gómez
  * @since 1.5
  */
-final class PersistenceFactoryException extends
-        AbstractPersistanceException {
+final class PersistenceFactoryException extends AbstractPersistanceException {
 
     /**
      * Logger.

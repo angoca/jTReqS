@@ -60,10 +60,11 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 /**
  * Managing interactions with HPSS via JNI.
  * <p>
- * Currently (20101130), there is a problem with this implementation because the
- * HPSS client API cannot be loaded correctly. There is a problem when JNI loads
- * the C library, because it cannot find the exported symbols when importing the
- * authorization library via dlopen.
+ * TODO v2.0 This should permit to reload the configuration file and reestablish
+ * the connection environment.
+ * <p>
+ * TODO v2.0 Make a bridge with JNA instead of JNI (just for the exercise).
+ * However, the conversion will be easier and the API could be called directly.
  *
  * @author Andres Gomez
  * @since 1.5
@@ -117,6 +118,34 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     }
 
     /**
+     * Process the exception taking the code and returning it.
+     *
+     * @param e
+     *            Exception to process.
+     * @return Code of the exception.
+     */
+    static int processException(final JNIException e) {
+        LOGGER.trace("> processException");
+
+        assert e != null;
+
+        final String message = e.getCode();
+        System.err.println(message);
+        final int i = message.indexOf(':');
+        int ret = -1;
+        final String codeStr = message.substring(0, i);
+        try {
+            ret = Short.parseShort(codeStr);
+        } catch (final NumberFormatException e1) {
+            ret = -40000;
+        }
+
+        LOGGER.trace("< processException");
+
+        return ret;
+    }
+
+    /**
      * The HSM authorization type.
      */
     private String authType;
@@ -153,8 +182,8 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
             // hung.
             NativeBridge.getInstance().initContext(this.getAuthType(),
                     this.getKeytabPath(), this.getUser());
-        } catch (JNIException e) {
-            int code = processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             if (code == HPSSErrorCode.HPSS_EPERM.getCode()) {
                 throw new HSMCredentialProblemException(code);
             } else if (code == HPSSErrorCode.HPSS_EIO.getCode()) {
@@ -196,9 +225,12 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             // TODO v2.0 in a parallel thread check if the operation is not
             // hung.
+            long time = System.currentTimeMillis();
             ret = NativeBridge.getInstance().getFileProperties(name);
-        } catch (JNIException e) {
-            int code = processException(e);
+            time = System.currentTimeMillis() - time;
+            LOGGER.debug("native time getProperties: {}", time);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOENT.getCode()) {
                 throw new HSMNotExistingFileException(code);
@@ -210,7 +242,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
                 throw new HSMUnavailableException(code);
             } else if (code == -30001) {
                 throw new HSMEmptyFileException(code);
-            } else if (code >= -30004 && code <= -30002) {
+            } else if ((code >= -30004) && (code <= -30002)) {
                 throw new HSMJNIProblemException(e);
             } else {
                 throw new HSMGeneralPropertiesProblemException(e);
@@ -219,9 +251,13 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         // Checks if there was a problem while querying the file to HPSS.
         if (LOGGER.isDebugEnabled()) {
             // The ret variable is modified by getFileProperties.
-            LOGGER.info("position '{}'", ret.getPosition());
-            LOGGER.info("storageName '{}'", ret.getTapeName());
-            LOGGER.info("size '{}'", ret.getSize());
+            if (ret != null) {
+                LOGGER.info("filename '{}' position '{}' storageName '{}' "
+                        + "size '{}'", new Object[] { name, ret.getPosition(),
+                        ret.getTapeName(), ret.getSize() });
+            } else {
+                LOGGER.info("ret object was null");
+            }
         }
 
         assert ret != null;
@@ -244,6 +280,9 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
     /**
      * Sets the type of authentication used for HPSS.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving the value of the
@@ -256,7 +295,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             type = Configurator.getInstance().getStringValue(
                     Constants.SECTION_KEYTAB, Constants.AUTHENTICATION_TYPE);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             LOGGER.info("No setting for {}.{}, default value will be used: {}",
                     new Object[] { Constants.SECTION_KEYTAB,
                             Constants.AUTHENTICATION_TYPE, type });
@@ -269,6 +308,9 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     /**
      * Sets the user that will be used to authenticate the communication with
      * HPSS.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws KeyNotFoundException
      *             If the option could not be found.
@@ -284,34 +326,6 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         this.user = hpssUser;
 
         LOGGER.trace("< initUser");
-    }
-
-    /**
-     * Process the exception taking the code and returning it.
-     *
-     * @param e
-     *            Exception to process.
-     * @return Code of the exception.
-     */
-    static int processException(final JNIException e) {
-        LOGGER.trace("> processException");
-
-        assert e != null;
-
-        String message = e.getCode();
-        System.err.println(message);
-        int i = message.indexOf(':');
-        int ret = -1;
-        String codeStr = message.substring(0, i);
-        try {
-            ret = Short.parseShort(codeStr);
-        } catch (NumberFormatException e1) {
-            ret = -40000;
-        }
-
-        LOGGER.trace("< processException");
-
-        return ret;
     }
 
     /*
@@ -330,9 +344,12 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         try {
             // TODO v2.0 in a parallel thread check if the operation is not
             // hung.
+            long time = System.currentTimeMillis();
             NativeBridge.getInstance().stage(file.getName(), file.getSize());
-        } catch (JNIException e) {
-            int code = processException(e);
+            time = System.currentTimeMillis() - time;
+            LOGGER.debug("native time stage: {}", time);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("jni code " + code);
             if (code == HPSSErrorCode.HPSS_ENOSPACE.getCode()) {
                 throw new HSMResourceException(code);

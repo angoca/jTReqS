@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.hsm.AbstractHSMInitException;
 
-
-
 /**
  * This is a problem when initializing the HPSS Client. Probably the credentials
  * are not valid. This exception represents the code -1 from the HSM.

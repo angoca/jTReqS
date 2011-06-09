@@ -91,6 +91,13 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * The stage script does not have output, it could be anything.
  * <p>
  * TODO Tests: process the output.
+ * <p>
+ * TODO v2.0 Directory: Shows all the entries of the directory. If the output
+ * has the string FILE, then this is a directory.
+ * <p>
+ * TODO v2.0 Empty: VOLID: ##DISK and Position: 0.
+ * <p>
+ * TODO v2.0 Not existent: It says does not exist.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -234,7 +241,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      *             If there is a problem reading the configuration.
      */
     private HSMCommandBridge() throws TReqSException {
-        super ();
+        super();
 
         LOGGER.trace("> create instance.");
 
@@ -256,7 +263,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert name != null;
 
-        String command = HSM_GET_PROPERTIES_COMMAND + " "
+        final String command = HSM_GET_PROPERTIES_COMMAND + " "
                 + this.getKeytabPath() + " " + name;
 
         assert command != null;
@@ -278,7 +285,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert name != null;
 
-        String command = HSM_STAGE_COMMAND + " " + this.getKeytabPath() + " "
+        final String command = HSM_STAGE_COMMAND + " " + this.getKeytabPath() + " "
                 + name;
 
         assert command != null;
@@ -300,11 +307,11 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             throws AbstractHSMException {
         LOGGER.trace("> getFileProperties");
 
-        assert name != null && !name.equals("");
+        assert (name != null) && !name.equals("");
 
         LOGGER.debug("Execution from {}", System.getProperty("user.dir"));
 
-        String command = this.buildCommandGetProperties(name);
+        final String command = this.buildCommandGetProperties(name);
 
         LOGGER.debug(command);
         Process process = null;
@@ -330,7 +337,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         HSMHelperFileProperties ret = null;
         if (current != null) {
             // AbstractProcess the output.
-            ret = processGetPropertiesOutput(current);
+            ret = this.processGetPropertiesOutput(current);
         } else {
             throw new HSMCommandBridgeException();
         }
@@ -370,7 +377,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         // Prints the output.
         try {
             current = stream.readLine();
-            if (error && current != null) {
+            if (error && (current != null)) {
                 LOGGER.error(current);
                 throw new HSMGeneralStageProblemException(current);
             }
@@ -385,48 +392,6 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             LOGGER.error(current);
         }
         LOGGER.trace("< printStream");
-    }
-
-    /**
-     * Processes the output of a stream.
-     *
-     * @param stream
-     *            Buffer where is the stream.
-     * @param error
-     *            If the output is error or not.
-     * @return The processed output. It could be null.
-     * @throws HSMCommandBridgeException
-     *             If there is a problem processing the output.
-     */
-    private String processOutput(final BufferedReader stream,
-            final boolean error) throws HSMCommandBridgeException {
-        LOGGER.trace("> processOutput");
-
-        assert stream != null;
-
-        String current = null;
-        // Process the output.
-        try {
-            current = stream.readLine();
-            if (error && current != null) {
-                LOGGER.error(current);
-                throw new HSMCommandBridgeException(current);
-            } else if (!error && current == null) {
-                throw new HSMCommandBridgeException();
-            }
-        } catch (IOException e) {
-            throw new HSMCommandBridgeException(e);
-        } finally {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                throw new HSMCommandBridgeException(e);
-            }
-        }
-
-        LOGGER.trace("< processOutput");
-
-        return current;
     }
 
     /**
@@ -455,12 +420,12 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         HSMHelperFileProperties ret;
         try {
-            StringTokenizer tokens = new StringTokenizer(output);
-            long size = Long.parseLong(tokens.nextToken());
-            int position = Integer.parseInt(tokens.nextToken());
-            String tape = tokens.nextToken();
+            final StringTokenizer tokens = new StringTokenizer(output);
+            final long size = Long.parseLong(tokens.nextToken());
+            final int position = Integer.parseInt(tokens.nextToken());
+            final String tape = tokens.nextToken();
             ret = new HSMHelperFileProperties(tape, position, size);
-        } catch (NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new HSMUnknownOutputException(e);
         }
 
@@ -469,6 +434,48 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
         LOGGER.trace("< processGetPropertiesOutput");
 
         return ret;
+    }
+
+    /**
+     * Processes the output of a stream.
+     *
+     * @param stream
+     *            Buffer where is the stream.
+     * @param error
+     *            If the output is error or not.
+     * @return The processed output. It could be null.
+     * @throws HSMCommandBridgeException
+     *             If there is a problem processing the output.
+     */
+    private String processOutput(final BufferedReader stream,
+            final boolean error) throws HSMCommandBridgeException {
+        LOGGER.trace("> processOutput");
+
+        assert stream != null;
+
+        String current = null;
+        // Process the output.
+        try {
+            current = stream.readLine();
+            if (error && (current != null)) {
+                LOGGER.error(current);
+                throw new HSMCommandBridgeException(current);
+            } else if (!error && (current == null)) {
+                throw new HSMCommandBridgeException();
+            }
+        } catch (final IOException e) {
+            throw new HSMCommandBridgeException(e);
+        } finally {
+            try {
+                stream.close();
+            } catch (final IOException e) {
+                throw new HSMCommandBridgeException(e);
+            }
+        }
+
+        LOGGER.trace("< processOutput");
+
+        return current;
     }
 
     /*
@@ -484,7 +491,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
 
         assert file != null;
 
-        String command = this.buildCommandStage(file.getName());
+        final String command = this.buildCommandStage(file.getName());
 
         LOGGER.debug(command);
         Process process = null;
@@ -499,7 +506,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
             // Wait for the process.
             // TODO Tests: in a parallel thread check if the thread is not hung.
             process.waitFor();
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             throw new HSMCommandBridgeException(e);
         }
         LOGGER.debug("Exit code {}", process.exitValue());
@@ -514,7 +521,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
                     throw new HSMResourceException(
                             ErrorCodes.HSM_ENOSPACE.getId());
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 throw new HSMCommandBridgeException(e);
             }
         }

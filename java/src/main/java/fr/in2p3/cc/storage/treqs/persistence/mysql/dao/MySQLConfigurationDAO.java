@@ -81,25 +81,25 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
     public List<Resource> getMediaAllocations() throws TReqSException {
         LOGGER.trace("> getMediaAllocations");
 
-        List<Resource> mediaTypeList = new ArrayList<Resource>();
+        final List<Resource> mediaTypeList = new ArrayList<Resource>();
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(
                 MySQLStatements.SQL_MEDIATYPES_SELECT);
 
         // store result
-        ResultSet result = (ResultSet) objects[1];
+        final ResultSet result = (ResultSet) objects[1];
         try {
             while (result.next()) {
                 int index = 1;
-                byte id = result.getByte(index++);
-                String name = result.getString(index++);
-                short qty = result.getShort(index++);
-                MediaType media = MediaTypesController.getInstance().add(name,
+                final byte id = result.getByte(index++);
+                final String name = result.getString(index++);
+                final short qty = result.getShort(index++);
+                final MediaType media = MediaTypesController.getInstance().add(name,
                         id);
-                Resource res = new Resource(media, qty);
+                final Resource res = new Resource(media, qty);
                 mediaTypeList.add(res);
             }
-        } catch (SQLException exception) {
+        } catch (final SQLException exception) {
             throw new MySQLExecuteException(exception);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);
@@ -128,26 +128,26 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
         LOGGER.trace("> getResourceAllocation");
 
         // Allocations maps a media type to a pair (user,share)
-        MultiMap allocations = new MultiValueMap();
+        final MultiMap allocations = new MultiValueMap();
 
-        Object[] objects = MySQLBroker.getInstance().executeSelect(
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(
                 MySQLStatements.SQL_ALLOCATIONS_SELECT);
 
         // store result
-        ResultSet result = (ResultSet) objects[1];
+        final ResultSet result = (ResultSet) objects[1];
         try {
             while (result.next()) {
                 int index = 1;
-                byte id = result.getByte(index++);
-                String userName = result.getString(index++);
-                float share = result.getFloat(index++);
-                PersistenceHelperResourceAllocation helper = new PersistenceHelperResourceAllocation(
+                final byte id = result.getByte(index++);
+                final String userName = result.getString(index++);
+                final float share = result.getFloat(index++);
+                final PersistenceHelperResourceAllocation helper = new PersistenceHelperResourceAllocation(
                         userName, share);
                 allocations.put(new Byte(id), helper);
                 LOGGER.debug("Allocation on mediatype: '" + id + "', user: '"
                         + userName + "', share: " + share);
             }
-        } catch (SQLException exception) {
+        } catch (final SQLException exception) {
             throw new MySQLExecuteException(exception);
         } finally {
             MySQLBroker.getInstance().terminateExecution(objects);

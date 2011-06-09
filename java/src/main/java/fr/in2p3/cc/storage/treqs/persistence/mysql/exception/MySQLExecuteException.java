@@ -52,14 +52,23 @@ import org.slf4j.LoggerFactory;
 public class MySQLExecuteException extends AbstractMySQLException {
 
     /**
-     * Generated ID.
-     */
-    private static final long serialVersionUID = -2824525900625129436L;
-    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLExecuteException.class);
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = -2824525900625129436L;
+
+    /**
+     * Default constructor for extended exceptions.
+     */
+    protected MySQLExecuteException() {
+        super();
+
+        LOGGER.trace(">< Instance creation");
+    }
 
     /**
      * Constructor wrapping an exception generated in execution.
@@ -71,14 +80,5 @@ public class MySQLExecuteException extends AbstractMySQLException {
         super(ex);
 
         LOGGER.trace(">< Instance creation wrapping exception");
-    }
-
-    /**
-     * Default constructor for extended exceptions.
-     */
-    protected MySQLExecuteException() {
-        super();
-
-        LOGGER.trace(">< Instance creation");
     }
 }

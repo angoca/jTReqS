@@ -126,14 +126,14 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor01() {
-        int position = FilePositionOnTapeTest.HUNDRED;
-        User user = new User("username");
+        final int position = FilePositionOnTapeTest.HUNDRED;
+        final User user = new User("username");
 
         boolean failed = false;
         try {
             new FilePositionOnTape(null, position, this.tape, user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -148,14 +148,14 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor02() {
-        int position = -FilePositionOnTapeTest.HUNDRED;
-        User user = new User("username");
+        final int position = -FilePositionOnTapeTest.HUNDRED;
+        final User user = new User("username");
 
         boolean failed = false;
         try {
             new FilePositionOnTape(this.file, position, this.tape, user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -170,14 +170,14 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor03() {
-        int position = FilePositionOnTapeTest.HUNDRED;
-        User user = new User("username");
+        final int position = FilePositionOnTapeTest.HUNDRED;
+        final User user = new User("username");
 
         boolean failed = false;
         try {
             new FilePositionOnTape(this.file, position, null, user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -192,14 +192,14 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testConstructor04() {
-        int position = FilePositionOnTapeTest.HUNDRED;
-        User user = null;
+        final int position = FilePositionOnTapeTest.HUNDRED;
+        final User user = null;
 
         boolean failed = false;
         try {
             new FilePositionOnTape(this.file, position, this.tape, user);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -221,7 +221,7 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE);
 
-        int position = FilePositionOnTapeTest.HUNDRED;
+        final int position = FilePositionOnTapeTest.HUNDRED;
 
         new FilePositionOnTape(this.file, position, this.tape, new User(
                 "username"));
@@ -240,10 +240,10 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "100");
 
-        FilePositionOnTape fpot = new FilePositionOnTape(this.file,
+        final FilePositionOnTape fpot = new FilePositionOnTape(this.file,
                 FilePositionOnTapeTest.HUNDRED, this.tape, new User("username"));
 
-        boolean outdated = fpot.isMetadataOutdated();
+        final boolean outdated = fpot.isMetadataOutdated();
 
         Assert.assertTrue("No outdated metadata", !outdated);
     }
@@ -263,12 +263,12 @@ public final class FilePositionOnTapeTest {
                 Constants.SECTION_FILE_POSITION_ON_TAPE,
                 Constants.MAX_METADATA_AGE, "1");
 
-        FilePositionOnTape fpot = new FilePositionOnTape(this.file,
+        final FilePositionOnTape fpot = new FilePositionOnTape(this.file,
                 FilePositionOnTapeTest.HUNDRED, this.tape, new User("username"));
         LOGGER.info("Sleeping thread for 2 seconds");
         Thread.sleep(2000);
 
-        boolean outdated = fpot.isMetadataOutdated();
+        final boolean outdated = fpot.isMetadataOutdated();
 
         Assert.assertTrue("Outdated metadata", outdated);
 
@@ -282,26 +282,26 @@ public final class FilePositionOnTapeTest {
      */
     @Test
     public void testToString01() throws ProblematicConfiguationFileException {
-        int position = FilePositionOnTapeTest.HUNDRED;
-        String username = "username";
-        User user = new User(username);
+        final int position = FilePositionOnTapeTest.HUNDRED;
+        final String username = "username";
+        final User user = new User(username);
 
-        FilePositionOnTape fpot = new FilePositionOnTape(this.file, position,
+        final FilePositionOnTape fpot = new FilePositionOnTape(this.file, position,
                 this.tape, user);
 
-        String actual = fpot.toString();
+        final String actual = fpot.toString();
 
-        String expectedPrefix = "FilePositionOnTape{ "
+        final String expectedPrefix = "FilePositionOnTape{ "
                 + Constants.MAX_METADATA_AGE + ": " + 30 + ", file: "
                 + this.fileName + ", metadataAge: ";
-        String expectedSuffix = ", position: " + position + ", requester: "
+        final String expectedSuffix = ", position: " + position + ", requester: "
                 + username + ", tape: " + this.tapeName + "}";
 
         LOGGER.error("toString Current    {}", actual);
         LOGGER.error("toString Excepected {}XXXXXXXXXXXXX{}", expectedPrefix,
                 expectedSuffix);
-        int prefixSize = expectedPrefix.length();
-        int sufixStart = actual.length() - expectedSuffix.length();
+        final int prefixSize = expectedPrefix.length();
+        final int sufixStart = actual.length() - expectedSuffix.length();
 
         Assert.assertEquals("toString prefix", expectedPrefix,
                 actual.substring(0, prefixSize));

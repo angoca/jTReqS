@@ -74,6 +74,9 @@ import fr.in2p3.cc.storage.treqs.tools.Watchdog;
  * TODO v2.0 jmx to lock a file
  * <p>
  * TODO v2.0 jmx to lock a user completely (cancel all related queues)
+ * <p>
+ * TODO v2.0 The started should have a monitoring of all threads started, and
+ * see if they are hung.
  *
  * @author Andrés Gómez
  * @since 1.5
@@ -94,6 +97,34 @@ public final class Starter {
      */
     private static final String CONFIG_FILE_SHORT_COMMAND_OPTION = "c";
     /**
+     * Short name for the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_COMMAND_OPTION = "dbc";
+    /**
+     * Description of the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_DESCRIPTION = "Create the "
+            + "tables in the database.";
+    /**
+     * Long name for the command option: Database create tables.
+     */
+    private static final String DATABASE_CREATE_LONG_COMMAND_OPTION = "data"
+            + "base-create";
+    /**
+     * Short name for the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_COMMAND_OPTION = "db";
+    /**
+     * Description of the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_DESCRIPTION = "Shows the "
+            + "script to create the tables";
+    /**
+     * Long name for the command option: Database script.
+     */
+    private static final String DATABASE_SCRIPT_LONG_COMMAND_OPTION = "data"
+            + "base-script";
+    /**
      * Description of the command option: Help.
      */
     private static final String HELP_COMMAND_DESCRIPTION = "Print this "
@@ -107,41 +138,13 @@ public final class Starter {
      */
     private static final String HELP_SHORT_COMMAND_OPTION = "h";
     /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
-    /**
-     * Short name for the command option: Database create tables.
-     */
-    private static final String DATABASE_CREATE_COMMAND_OPTION = "dbc";
-    /**
-     * Long name for the command option: Database create tables.
-     */
-    private static final String DATABASE_CREATE_LONG_COMMAND_OPTION = "data"
-            + "base-create";
-    /**
-     * Description of the command option: Database create tables.
-     */
-    private static final String DATABASE_CREATE_DESCRIPTION = "Create the "
-            + "tables in the database.";
-    /**
-     * Short name for the command option: Database script.
-     */
-    private static final String DATABASE_SCRIPT_COMMAND_OPTION = "db";
-    /**
-     * Long name for the command option: Database script.
-     */
-    private static final String DATABASE_SCRIPT_LONG_COMMAND_OPTION = "data"
-            + "base-script";
-    /**
-     * Description of the command option: Database script.
-     */
-    private static final String DATABASE_SCRIPT_DESCRIPTION = "Shows the "
-            + "script to create the tables";
-    /**
      * The singleton instance.
      */
     private static Starter instance = null;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(Starter.class);
 
     /**
      * Destroys the only instance. ONLY for testing purposes.
@@ -227,9 +230,9 @@ public final class Starter {
                 DATABASE_SCRIPT_LONG_COMMAND_OPTION, false,
                 DATABASE_SCRIPT_DESCRIPTION);
 
-        CommandLineParser parser = new PosixParser();
+        final CommandLineParser parser = new PosixParser();
 
-        CommandLine cli = parser.parse(this.options, arguments);
+        final CommandLine cli = parser.parse(this.options, arguments);
 
         LOGGER.trace("< prepareCommandOptions");
 
@@ -254,7 +257,7 @@ public final class Starter {
 
         LOGGER.info("Starting Server");
 
-        CommandLine cli = this.prepareCommandOptions(arguments);
+        final CommandLine cli = this.prepareCommandOptions(arguments);
 
         if (cli.hasOption(HELP_LONG_COMMAND_OPTION)) {
             this.showHelp();
@@ -263,7 +266,7 @@ public final class Starter {
             // First try to figure out the configuration file:
             // 1. from the command line.
             // 2. from the configuration file
-            String configurationFile = cli
+            final String configurationFile = cli
                     .getOptionValue(CONFIG_FILE_LONG_COMMAND_OPTION);
             if (configurationFile != null) {
                 System.setProperty(Constants.CONFIGURATION_FILE,
@@ -298,7 +301,7 @@ public final class Starter {
     private void showHelp() {
         LOGGER.trace("> showHelp");
 
-        HelpFormatter help = new HelpFormatter();
+        final HelpFormatter help = new HelpFormatter();
         help.printHelp("treqs", this.options);
 
         LOGGER.trace("< showHelp");
@@ -344,7 +347,12 @@ public final class Starter {
         LOGGER.trace("> toStart");
 
         // TODO v2.0 Check the PID of a same process to prevent two TReqS.
-        // TODO v2.0 Check that the selector, DAO and hsm bridge could be loaded
+        // TODO v2.0 Check that the selector, DAO and HSM bridge could be
+        // loaded. This prevents the application to fail after a while when new
+        // requests arrive.
+        // TODO v2.0 Show a warning message when there are not defined drives
+        // in the database, instead of wait till the activator tries to activate
+        // a queue.
 
         // Gets and registers the info in the database.
         RegisterInformation.exec();
@@ -385,7 +393,11 @@ public final class Starter {
                 Thread.sleep(sleep);
                 Watchdog.getInstance().heartBeat();
             }
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
+            // TODO v2.0 Catch any TERM signal in order to stop the application.
+            // This signal will trigger the close function in all stagers, and
+            // then cancel them to stop working. Also the Dispatcher and
+            // Activator will be finished.
             throw new ExecutionErrorException(e);
         }
 
@@ -404,12 +416,12 @@ public final class Starter {
         this.cont = false;
 
         // Starts the process of stopping.
-        if (Activator.getInstance().getProcessStatus() == ProcessStatus.STARTING
-                || Activator.getInstance().getProcessStatus() == ProcessStatus.STARTED) {
+        if ((Activator.getInstance().getProcessStatus() == ProcessStatus.STARTING)
+                || (Activator.getInstance().getProcessStatus() == ProcessStatus.STARTED)) {
             Activator.getInstance().conclude();
         }
-        if (Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTING
-                || Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTED) {
+        if ((Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTING)
+                || (Dispatcher.getInstance().getProcessStatus() == ProcessStatus.STARTED)) {
             Dispatcher.getInstance().conclude();
         }
         StagersController.getInstance().conclude();

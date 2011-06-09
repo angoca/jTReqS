@@ -65,89 +65,10 @@ public final class MySQLInit {
             .getLogger(MySQLInit.class);
 
     /**
-     * Verifies the existence of the tables. If they do not exist, then it will
-     * create them.
-     *
-     * @throws TReqSException
-     *             If there is a problem using the data source.
+     * Default constructor hidden.
      */
-    public void initializeDatabase() throws TReqSException {
-        LOGGER.trace("> initializeDatabase");
-
-        // Test the existence of the needed tables.
-        boolean tableAllocationsFound = false;
-        boolean tableHeartBeatFound = false;
-        boolean tableInformationsFound = false;
-        boolean tableMediatypeFound = false;
-        boolean tableQueuesFound = false;
-        boolean tableRequestFound = false;
-
-        // Search for the "current" table in the database.
-        MySQLBroker.getInstance().connect();
-
-        Object[] objects = MySQLBroker.getInstance().executeSelect(
-                InitDBStatements.ALL_TABLES);
-        ResultSet result = (ResultSet) objects[1];
-
-        try {
-            while (result.next()) {
-                String tablename = result.getString(1);
-                if (tablename.equals(InitDBStatements.ALLOCATIONS)) {
-                    tableAllocationsFound = true;
-                }
-                if (tablename.equals(InitDBStatements.HEART_BEAT)) {
-                    tableHeartBeatFound = true;
-                }
-                if (tablename.equals(InitDBStatements.INFORMATIONS)) {
-                    tableInformationsFound = true;
-                }
-                if (tablename.equals(InitDBStatements.MEDIATYPES)) {
-                    tableMediatypeFound = true;
-                }
-                if (tablename.equals(InitDBStatements.QUEUES)) {
-                    tableQueuesFound = true;
-                }
-                if (tablename.equals(InitDBStatements.REQUESTS)) {
-                    tableRequestFound = true;
-                }
-                LOGGER.debug("Table found: {}", tablename);
-            }
-        } catch (SQLException e) {
-            throw new MySQLExecuteException(e);
-        } finally {
-            MySQLBroker.getInstance().terminateExecution(objects);
-        }
-        // All tables have been scanned. Create the missing ones
-        if (!tableMediatypeFound) {
-            this.createTable(InitDBStatements.MEDIATYPES,
-                    InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
-            LOGGER.error("Please configure the MediaTypes table");
-        }
-        if (!tableAllocationsFound) {
-            createTable(InitDBStatements.ALLOCATIONS,
-                    InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
-            LOGGER.error("Please configure the Allocations table");
-        }
-        if (!tableQueuesFound) {
-            createTable(InitDBStatements.QUEUES,
-                    InitDBStatements.STRUCTURE_TABLE_QUEUES);
-        }
-        if (!tableRequestFound) {
-            createTable(InitDBStatements.REQUESTS,
-                    InitDBStatements.STRUCTURE_TABLE_REQUESTS);
-        }
-        if (!tableHeartBeatFound) {
-            createTable(InitDBStatements.HEART_BEAT,
-                    InitDBStatements.STRUCTURE_TABLE_HEART_BEAT);
-        }
-        if (!tableInformationsFound) {
-            createTable(InitDBStatements.INFORMATIONS,
-                    InitDBStatements.STRUCTURE_TABLE_INFORMATIONS);
-        }
-        MySQLBroker.getInstance().disconnect();
-        MySQLBroker.destroyInstance();
-
-        LOGGER.trace("< initializeDatabase");
+    MySQLInit() {
+        // Nothing.
     }
 
     /**
@@ -165,24 +86,17 @@ public final class MySQLInit {
             throws TReqSException {
         LOGGER.trace("> createTable");
 
-        assert tableName != null && !tableName.equals("");
-        assert structure != null && !structure.equals("");
+        assert (tableName != null) && !tableName.equals("");
+        assert (structure != null) && !structure.equals("");
 
-        String statement = InitDBStatements.CREATE_TABLE + tableName + " "
+        final String statement = InitDBStatements.CREATE_TABLE + tableName + " "
                 + structure;
-        int ret = MySQLBroker.getInstance().executeModification(statement);
+        final int ret = MySQLBroker.getInstance().executeModification(statement);
         if (ret == 1) {
             LOGGER.info("Table {} created", tableName);
         }
 
         LOGGER.trace("< createTable");
-    }
-
-    /**
-     * Default constructor hidden.
-     */
-    MySQLInit() {
-        // Nothing.
     }
 
     /**
@@ -217,5 +131,91 @@ public final class MySQLInit {
         LOGGER.trace("> dumpStructure");
 
         return structure;
+    }
+
+    /**
+     * Verifies the existence of the tables. If they do not exist, then it will
+     * create them.
+     *
+     * @throws TReqSException
+     *             If there is a problem using the data source.
+     */
+    public void initializeDatabase() throws TReqSException {
+        LOGGER.trace("> initializeDatabase");
+
+        // Test the existence of the needed tables.
+        boolean tableAllocationsFound = false;
+        boolean tableHeartBeatFound = false;
+        boolean tableInformationsFound = false;
+        boolean tableMediatypeFound = false;
+        boolean tableQueuesFound = false;
+        boolean tableRequestFound = false;
+
+        // Search for the "current" table in the database.
+        MySQLBroker.getInstance().connect();
+
+        final Object[] objects = MySQLBroker.getInstance().executeSelect(
+                InitDBStatements.ALL_TABLES);
+        final ResultSet result = (ResultSet) objects[1];
+
+        try {
+            while (result.next()) {
+                final String tablename = result.getString(1);
+                if (tablename.equals(InitDBStatements.ALLOCATIONS)) {
+                    tableAllocationsFound = true;
+                }
+                if (tablename.equals(InitDBStatements.HEART_BEAT)) {
+                    tableHeartBeatFound = true;
+                }
+                if (tablename.equals(InitDBStatements.INFORMATIONS)) {
+                    tableInformationsFound = true;
+                }
+                if (tablename.equals(InitDBStatements.MEDIATYPES)) {
+                    tableMediatypeFound = true;
+                }
+                if (tablename.equals(InitDBStatements.QUEUES)) {
+                    tableQueuesFound = true;
+                }
+                if (tablename.equals(InitDBStatements.REQUESTS)) {
+                    tableRequestFound = true;
+                }
+                LOGGER.debug("Table found: {}", tablename);
+            }
+        } catch (final SQLException e) {
+            throw new MySQLExecuteException(e);
+        } finally {
+            MySQLBroker.getInstance().terminateExecution(objects);
+        }
+        // All tables have been scanned. Create the missing ones
+        if (!tableMediatypeFound) {
+            this.createTable(InitDBStatements.MEDIATYPES,
+                    InitDBStatements.STRUCTURE_TABLE_MEDIATYPES);
+            LOGGER.error("Please configure the MediaTypes table");
+        }
+        if (!tableAllocationsFound) {
+            this.createTable(InitDBStatements.ALLOCATIONS,
+                    InitDBStatements.STRUCTURE_TABLE_ALLOCATIONS);
+            LOGGER.error("Please configure the Allocations table");
+        }
+        if (!tableQueuesFound) {
+            this.createTable(InitDBStatements.QUEUES,
+                    InitDBStatements.STRUCTURE_TABLE_QUEUES);
+        }
+        if (!tableRequestFound) {
+            this.createTable(InitDBStatements.REQUESTS,
+                    InitDBStatements.STRUCTURE_TABLE_REQUESTS);
+        }
+        if (!tableHeartBeatFound) {
+            this.createTable(InitDBStatements.HEART_BEAT,
+                    InitDBStatements.STRUCTURE_TABLE_HEART_BEAT);
+        }
+        if (!tableInformationsFound) {
+            this.createTable(InitDBStatements.INFORMATIONS,
+                    InitDBStatements.STRUCTURE_TABLE_INFORMATIONS);
+        }
+        MySQLBroker.getInstance().disconnect();
+        MySQLBroker.destroyInstance();
+
+        LOGGER.trace("< initializeDatabase");
     }
 }

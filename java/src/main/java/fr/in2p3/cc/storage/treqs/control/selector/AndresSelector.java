@@ -137,6 +137,162 @@ public final class AndresSelector extends Selector {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(AndresSelector.class);
 
+    /**
+     * Calculates the score of the queue with the described function.
+     *
+     * @param queue
+     *            Queue to analyze.
+     * @return Score of the queue.
+     * @throws ProblematicConfiguationFileException
+     *             If there is a problem with the configuration.
+     */
+    private double calculateQueueScore(final Queue/* ! */queue)
+            throws ProblematicConfiguationFileException {
+        LOGGER.trace("> calculateQueueScore");
+
+        assert queue != null;
+
+        final short a = Configurator.getInstance().getShortValue("ANDRES",
+                "LIMITED_TIME", (short) 180);
+        final short c = Configurator.getInstance().getShortValue("ANDRES",
+                "AVERAGE_FILE", (short) 180);
+        final double pi = Math.PI;
+
+        // The elapsed time in minutes from the creation time.
+        final long z = new GregorianCalendar().getTimeInMillis()
+                - queue.getCreationTime().getTimeInMillis()
+                * Constants.MILLISECONDS * 60;
+        // File average.
+        final long y = queue.getByteSize() / queue.getRequestsSize();
+        // Quantity of files to read.
+        final long x = queue.getRequestsSize();
+
+        final double first = Math.pow(z, 2);
+
+        final double secondA = y / Math.pow(a, 2);
+
+        final double secondB = Math.sin(pi * x / c - pi) / (pi * x / c - pi);
+
+        final double score = first + secondA * secondB;
+
+        LOGGER.trace("< calculateQueueScore");
+
+        return score;
+    }
+
+    /**
+     * Calculates the score for a user with the next formula.
+     * <p>
+     * <code>
+     * Value = (#Reserved - #Used) * (#Reserved + 1)
+     * </code>
+     *
+     * @param resource
+     *            Type of associated resource.
+     * @param usersScores
+     *            Score of the users.
+     * @param queue
+     *            Queue to analyze.
+     */
+    private void calculateUserScore(final Resource/* ! */resource,
+            final Map<User, Float>/* <!,!>! */usersScores,
+            final Queue/* ! */queue) {
+        LOGGER.trace("> checkUser");
+
+        assert resource != null : "resource null";
+        assert usersScores != null : "usersScore null";
+        assert queue != null : "queue null";
+
+        float score;
+        if (queue.getStatus() == QueueStatus.CREATED) {
+            // Just setting a default best user.
+            final User user = queue.getOwner();
+            if (user != null) {
+                final float reserved = resource.getUserAllocation(user);
+                final int used = resource.getUsedResources(user);
+                score = (reserved - used) * (reserved + 1);
+                usersScores.put(user, score);
+                LOGGER.debug("{} score: {} = ({} - {}) * ({} + 1)",
+                        new Object[] { user.getName(), score, reserved, used,
+                                reserved });
+            } else {
+                LOGGER.info("The queue does not have an owner: {}. This "
+                        + "should never happen - 3.", queue.getTape().getName());
+                assert false : "Queue without owner";
+            }
+
+        }
+
+        assert usersScores.size() > 0 : "There must be at least one user";
+
+        LOGGER.trace("< checkUser");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
+     * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
+     */
+    @Override
+    protected Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
+            final Queue/* ! */currentQueue) throws TReqSException {
+        LOGGER.trace("> compareQueue");
+
+        assert bestQueue != null : "Current best queue null";
+        assert currentQueue != null : "Current queue null";
+
+        final double bestQueueScore = this.calculateQueueScore(bestQueue);
+        final double currentQueueScore = this.calculateQueueScore(currentQueue);
+
+        Queue newBest = null;
+        if (bestQueueScore < currentQueueScore) {
+            newBest = currentQueue;
+        } else {
+            newBest = bestQueue;
+        }
+
+        LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
+
+        assert newBest != null : "Best queue null";
+
+        LOGGER.trace("< compareQueue");
+
+        return newBest;
+    }
+
+    /**
+     * Returns a users that has queues in created state.
+     *
+     * @param users
+     *            Iterator of users.
+     * @return User that has at least one queue in created state.
+     * @throws TReqSException
+     *             If there is a problem with queuesController.
+     */
+    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+            throws TReqSException {
+        LOGGER.trace("> getNextPossibleUser");
+
+        assert users != null : "users null";
+
+        User ret = null;
+        if (users.hasNext()) {
+            do {
+                final User tmp = users.next();
+                if (QueuesController.getInstance().exists(tmp,
+                        QueueStatus.CREATED)) {
+                    ret = tmp;
+                }
+            } while ((ret == null) && users.hasNext());
+        }
+
+        LOGGER.trace("< getNextPossibleUser");
+
+        return ret;
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -157,10 +313,10 @@ public final class AndresSelector extends Selector {
         try {
             fairShare = Configurator.getInstance().getStringValue(
                     Constants.SECTION_SELECTOR, Constants.FAIR_SHARE);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
         }
         if (fairShare.equalsIgnoreCase(Constants.YES)) {
-            User bestUser = this.selectBestUser(queues, resource);
+            final User bestUser = this.selectBestUser(queues, resource);
             if (bestUser == null) {
                 // There is not non-blocked user among the waiting
                 // queues, just do nothing and break the while loop,
@@ -198,9 +354,9 @@ public final class AndresSelector extends Selector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    private Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
-            final Resource/* ! */resource, final User/* ! */user)
-            throws TReqSException {
+    private Queue/* ? */selectBestQueueForUser(
+            final List<Queue>/* <!>! */queues, final Resource/* ! */resource,
+            final User/* ! */user) throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
 
         assert queues != null : "queues null";
@@ -209,11 +365,11 @@ public final class AndresSelector extends Selector {
 
         Queue best = null;
         // First get the list of queues
-        int length = queues.size();
+        final int length = queues.size();
         if (length >= 1) {
             best = queues.get(0);
             for (int j = 1; j < length; j++) {
-                Queue queue = queues.get(j);
+                final Queue queue = queues.get(j);
                 // The queue belong to this user.
                 if (queue.getOwner().equals(user)) {
                     if (this.checkQueue(resource, queue)) {
@@ -243,82 +399,6 @@ public final class AndresSelector extends Selector {
         return best;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
-     * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
-     */
-    protected Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
-            final Queue/* ! */currentQueue) throws TReqSException {
-        LOGGER.trace("> compareQueue");
-
-        assert bestQueue != null : "Current best queue null";
-        assert currentQueue != null : "Current queue null";
-
-        final double bestQueueScore = this.calculateQueueScore(bestQueue);
-        final double currentQueueScore = this.calculateQueueScore(currentQueue);
-
-        Queue newBest = null;
-        if (bestQueueScore < currentQueueScore) {
-            newBest = currentQueue;
-        } else {
-            newBest = bestQueue;
-        }
-
-        LOGGER.debug("Selected queue: {}", newBest.getTape().getName());
-
-        assert newBest != null : "Best queue null";
-
-        LOGGER.trace("< compareQueue");
-
-        return newBest;
-    }
-
-    /**
-     * Calculates the score of the queue with the described function.
-     *
-     * @param queue
-     *            Queue to analyze.
-     * @return Score of the queue.
-     * @throws ProblematicConfiguationFileException
-     *             If there is a problem with the configuration.
-     */
-    private double calculateQueueScore(final Queue/* ! */queue)
-            throws ProblematicConfiguationFileException {
-        LOGGER.trace("> calculateQueueScore");
-
-        assert queue != null;
-
-        final short a = Configurator.getInstance().getShortValue("ANDRES",
-                "LIMITED_TIME", (short) 180);
-        final short c = Configurator.getInstance().getShortValue("ANDRES",
-                "AVERAGE_FILE", (short) 180);
-        final double pi = Math.PI;
-
-        // The elapsed time in minutes from the creation time.
-        final long z = new GregorianCalendar().getTimeInMillis()
-                - queue.getCreationTime().getTimeInMillis()
-                * Constants.MILLISECONDS * 60;
-        // File average.
-        final long y = queue.getByteSize() / queue.getRequestsSize();
-        // Quantity of files to read.
-        final long x = queue.getRequestsSize();
-
-        final double first = Math.pow(z, 2);
-
-        final double secondA = y / (Math.pow(a, 2));
-
-        final double secondB = Math.sin(pi * x / c - pi) / (pi * x / c - pi);
-
-        final double score = first + secondA * secondB;
-
-        LOGGER.trace("< calculateQueueScore");
-
-        return score;
-    }
-
     /**
      * Choose the best user candidate for activation.
      *
@@ -344,7 +424,7 @@ public final class AndresSelector extends Selector {
             throw new NoQueuesDefinedException();
         }
 
-        Map<User, Float> usersScores = new HashMap<User, Float>();
+        final Map<User, Float> usersScores = new HashMap<User, Float>();
 
         // For each waiting user, get its allocation and its used resources.
 
@@ -353,14 +433,14 @@ public final class AndresSelector extends Selector {
         // Browse the list of queues and compute the users scores
         LOGGER.debug("Computing Score: (user allocation - used resources) "
                 + "* (user allocation + 1)");
-        Iterator<Queue> queues = queuesMap.iterator();
+        final Iterator<Queue> queues = queuesMap.iterator();
         while (queues.hasNext()) {
-            Queue queue = queues.next();
+            final Queue queue = queues.next();
             this.calculateUserScore(resource, usersScores, queue);
         }
 
         // Catch the best
-        Iterator<User> users = usersScores.keySet().iterator();
+        final Iterator<User> users = usersScores.keySet().iterator();
         // This assures that bestUser will have a value.
         try {
             bestUser = this.getNextPossibleUser(users);
@@ -368,7 +448,7 @@ public final class AndresSelector extends Selector {
             LOGGER.info("Score: {}\t{}", bestUser.getName(), bestScore);
             User user = this.getNextPossibleUser(users);
             while (user != null) {
-                float score = usersScores.get(user);
+                final float score = usersScores.get(user);
                 LOGGER.info("Score: {}\t{}", user.getName(), score);
                 if (score > bestScore) {
                     bestUser = user;
@@ -386,7 +466,7 @@ public final class AndresSelector extends Selector {
             }
 
             LOGGER.debug("Best user: {}", bestUser.getName());
-        } catch (NoSuchElementException e) {
+        } catch (final NoSuchElementException e) {
             LOGGER.error("Houston, we have a problem.");
             throw e;
         }
@@ -396,85 +476,6 @@ public final class AndresSelector extends Selector {
         LOGGER.trace("< selectBestUser - {}", bestUser.getName());
 
         return bestUser;
-    }
-
-    /**
-     * Returns a users that has queues in created state.
-     *
-     * @param users
-     *            Iterator of users.
-     * @return User that has at least one queue in created state.
-     * @throws TReqSException
-     *             If there is a problem with queuesController.
-     */
-    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
-            throws TReqSException {
-        LOGGER.trace("> getNextPossibleUser");
-
-        assert users != null : "users null";
-
-        User ret = null;
-        if (users.hasNext()) {
-            do {
-                User tmp = users.next();
-                if (QueuesController.getInstance().exists(tmp,
-                        QueueStatus.CREATED)) {
-                    ret = tmp;
-                }
-            } while (ret == null && users.hasNext());
-        }
-
-        LOGGER.trace("< getNextPossibleUser");
-
-        return ret;
-    }
-
-    /**
-     * Calculates the score for a user with the next formula.
-     * <p>
-     * <code>
-     * Value = (#Reserved - #Used) * (#Reserved + 1)
-     * </code>
-     *
-     * @param resource
-     *            Type of associated resource.
-     * @param usersScores
-     *            Score of the users.
-     * @param queue
-     *            Queue to analyze.
-     */
-    private void calculateUserScore(final Resource/* ! */resource,
-            final Map<User, Float>/* <!,!>! */usersScores,
-            final Queue/* ! */queue) {
-        LOGGER.trace("> checkUser");
-
-        assert resource != null : "resource null";
-        assert usersScores != null : "usersScore null";
-        assert queue != null : "queue null";
-
-        float score;
-        if (queue.getStatus() == QueueStatus.CREATED) {
-            // Just setting a default best user.
-            User user = queue.getOwner();
-            if (user != null) {
-                float reserved = resource.getUserAllocation(user);
-                int used = resource.getUsedResources(user);
-                score = (reserved - used) * (reserved + 1);
-                usersScores.put(user, score);
-                LOGGER.debug("{} score: {} = ({} - {}) * ({} + 1)",
-                        new Object[] { user.getName(), score, reserved, used,
-                                reserved });
-            } else {
-                LOGGER.info("The queue does not have an owner: {}. This "
-                        + "should never happen - 3.", queue.getTape().getName());
-                assert false : "Queue without owner";
-            }
-
-        }
-
-        assert usersScores.size() > 0 : "There must be at least one user";
-
-        LOGGER.trace("< checkUser");
     }
 
 }

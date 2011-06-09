@@ -60,7 +60,7 @@ public final class MediaTypeTest {
         try {
             new MediaType((byte) 1, null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -79,7 +79,7 @@ public final class MediaTypeTest {
         try {
             new MediaType((byte) -1, "type");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -94,7 +94,7 @@ public final class MediaTypeTest {
      */
     @Test
     public void testToString01() {
-        MediaType media = new MediaType((byte) 1, "media");
+        final MediaType media = new MediaType((byte) 1, "media");
         media.toString();
     }
 }

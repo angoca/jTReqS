@@ -49,6 +49,9 @@ import fr.in2p3.cc.storage.treqs.DefaultProperties;
 /**
  * Reads the configuration from the properties file and then, keep that
  * information in memory.
+ * <p>
+ * TODO v2.0 Configure this class to load the configuration file periodically,
+ * this permits to have hot changes.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -105,7 +108,7 @@ public final class Configurator {
     /**
      * The container of the configuration.
      */
-    private CompositeConfiguration properties;
+    private final CompositeConfiguration properties;
 
     /**
      * Constructor of the configurator where it defines the name of the
@@ -126,9 +129,11 @@ public final class Configurator {
                 name = DefaultProperties.CONFIGURATION_PROPERTIES;
                 LOGGER.debug("No given file in System property");
             }
+            // TODO v2.0 Try to show the complete path of the configuration
+            // file to use in a logger. This permits to know which is being used
             this.properties.addConfiguration(new HierarchicalINIConfiguration(
                     name));
-        } catch (ConfigurationException e) {
+        } catch (final ConfigurationException e) {
             throw new ProblematicConfiguationFileException(name, e);
         }
 
@@ -146,47 +151,14 @@ public final class Configurator {
     public void deleteValue(final String sec, final String key) {
         LOGGER.trace("> deleteValue");
 
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
 
         if (this.properties != null) {
             this.properties.clearProperty(sec + "." + key);
         }
 
         LOGGER.trace("< deleteValue");
-    }
-
-    /**
-     * Find the string value for a defined parameter. If not present, throws a
-     * KeyNotFoundException.
-     *
-     * @param sec
-     *            Section of the property.
-     * @param key
-     *            Name of the property.
-     * @return The value.
-     * @throws KeyNotFoundException
-     *             If the variable was not found.
-     */
-    public String getStringValue(final String sec, final String key)
-            throws KeyNotFoundException {
-        LOGGER.trace("> getStringValue");
-
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
-
-        String value = this.properties.getString(sec + "." + key);
-
-        if (value == null) {
-            LOGGER.debug("Nothing found for String [" + sec + "]:" + key);
-            throw new KeyNotFoundException(sec, key);
-        }
-
-        assert value != null;
-
-        LOGGER.trace("< getStringValue - {}", value);
-
-        return value;
     }
 
     /**
@@ -205,10 +177,10 @@ public final class Configurator {
             final byte defaultValue) {
         LOGGER.trace("> getByteValue");
 
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
 
-        byte value = this.properties.getByte(sec + "." + key, defaultValue);
+        final byte value = this.properties.getByte(sec + "." + key, defaultValue);
 
         LOGGER.trace("< getByteValue - {}", value);
 
@@ -231,12 +203,45 @@ public final class Configurator {
             final short defaultValue) {
         LOGGER.trace("> getShortValue");
 
-        assert sec != null && !sec.equals("");
-        assert key != null && !key.equals("");
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
 
-        short value = this.properties.getShort(sec + "." + key, defaultValue);
+        final short value = this.properties.getShort(sec + "." + key, defaultValue);
 
         LOGGER.trace("< getShortValue - {}", value);
+
+        return value;
+    }
+
+    /**
+     * Find the string value for a defined parameter. If not present, throws a
+     * KeyNotFoundException.
+     *
+     * @param sec
+     *            Section of the property.
+     * @param key
+     *            Name of the property.
+     * @return The value.
+     * @throws KeyNotFoundException
+     *             If the variable was not found.
+     */
+    public String getStringValue(final String sec, final String key)
+            throws KeyNotFoundException {
+        LOGGER.trace("> getStringValue");
+
+        assert (sec != null) && !sec.equals("");
+        assert (key != null) && !key.equals("");
+
+        final String value = this.properties.getString(sec + "." + key);
+
+        if (value == null) {
+            LOGGER.debug("Nothing found for String [" + sec + "]:" + key);
+            throw new KeyNotFoundException(sec, key);
+        }
+
+        assert value != null;
+
+        LOGGER.trace("< getStringValue - {}", value);
 
         return value;
     }
@@ -255,9 +260,9 @@ public final class Configurator {
             final String value) {
         LOGGER.trace("> setValue");
 
-        assert section != null && !section.equals("");
-        assert key != null && !key.equals("");
-        assert value != null && !value.equals("");
+        assert (section != null) && !section.equals("");
+        assert (key != null) && !key.equals("");
+        assert (value != null) && !value.equals("");
 
         this.properties.setProperty(section + "." + key, value);
 

@@ -67,13 +67,13 @@ public final class TapesControllerTest {
      */
     @Test
     public void testAdd01() {
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
 
         boolean failed = false;
         try {
             TapesController.getInstance().add(null, mediatype);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -89,13 +89,13 @@ public final class TapesControllerTest {
      */
     @Test
     public void testAdd02() {
-        String tapename = "tapename";
+        final String tapename = "tapename";
 
         boolean failed = false;
         try {
             TapesController.getInstance().add(tapename, null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -113,8 +113,8 @@ public final class TapesControllerTest {
      */
     @Test
     public void testAdd03() throws Exception {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final String tapename = "tapename";
+        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
 
         TapesController.getInstance().add(tapename, mediatype);
     }
@@ -124,13 +124,13 @@ public final class TapesControllerTest {
      */
     @Test
     public void testCreate01() {
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
 
         boolean failed = false;
         try {
             TapesController.getInstance().create(null, mediatype);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -145,13 +145,13 @@ public final class TapesControllerTest {
      */
     @Test
     public void testCreate02() {
-        String tapename = "tapename";
+        final String tapename = "tapename";
 
         boolean failed = false;
         try {
             TapesController.getInstance().create(tapename, null);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -169,8 +169,8 @@ public final class TapesControllerTest {
      */
     @Test
     public void testCreate03() throws Exception {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final String tapename = "tapename";
+        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
 
         TapesController.getInstance().create(tapename, mediatype);
     }
@@ -183,8 +183,8 @@ public final class TapesControllerTest {
      */
     @Test
     public void testCreateTape01() throws TReqSException {
-        String tapename = "tapename";
-        MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final String tapename = "tapename";
+        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
         TapesController.getInstance().create("tapename", mediatype);
 
         Assert.assertTrue("Create tape", ((Tape) TapesController.getInstance()

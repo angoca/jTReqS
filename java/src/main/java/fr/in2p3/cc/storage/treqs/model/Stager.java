@@ -41,10 +41,12 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.controller.StagersController;
 import fr.in2p3.cc.storage.treqs.control.process.AbstractProcess;
 import fr.in2p3.cc.storage.treqs.control.process.ProcessStatus;
+import fr.in2p3.cc.storage.treqs.control.starter.Starter;
 import fr.in2p3.cc.storage.treqs.hsm.HSMResourceException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 
@@ -98,8 +100,11 @@ public final class Stager extends AbstractProcess {
     /**
      * This method wraps the process of staging a file, and puts other elements
      * of the process object.
+     *
+     * @throws TReqSException
+     *             If there is any uncontrolled problem.
      */
-    private void action() {
+    private void action() throws TReqSException {
         LOGGER.trace("> action");
 
         if (this.queue.getStatus() == QueueStatus.ACTIVATED) {
@@ -117,8 +122,12 @@ public final class Stager extends AbstractProcess {
         LOGGER.trace("< action");
     }
 
+    /**
+     * @return Retrieves the associated queue.
+     */
     public Queue/* ! */getQueue() {
         LOGGER.trace(">< getQueue");
+
         return this.queue;
     }
 
@@ -136,7 +145,11 @@ public final class Stager extends AbstractProcess {
 
         this.setStatus(ProcessStatus.STARTED);
 
-        this.action();
+        try {
+            this.action();
+        } catch (TReqSException e) {
+            LOGGER.error("Error", e);
+        }
 
         this.setStatus(ProcessStatus.STOPPED);
 
@@ -151,19 +164,22 @@ public final class Stager extends AbstractProcess {
      * catch exceptions.
      * <p>
      * If the HSMResourceException is caught, then the queue is suspended.
+     *
+     * @throws TReqSException
+     *             If there is any uncontrolled problem.
      */
-    private void stage() {
+    private void stage() throws TReqSException {
         LOGGER.trace("> stage");
 
         Reading nextReading = null;
         try {
             nextReading = this.queue.getNextReading();
-            while (nextReading != null && this.keepOn()) {
+            while ((nextReading != null) && this.keepOn()) {
                 try {
                     nextReading.stage();
                     LOGGER.debug("Thread {}: getting next file", this.getName());
                     nextReading = this.queue.getNextReading();
-                } catch (HSMResourceException e) {
+                } catch (final HSMResourceException e) {
                     // For instance, no space left on device should suspend
                     // the staging queue.
                     LOGGER.warn("No space left on device, suspending the queue.");
@@ -180,7 +196,7 @@ public final class Stager extends AbstractProcess {
             if (qty <= 1) {
                 this.queue.finalizeQueue();
             }
-        } catch (TReqSException e) {
+        } catch (final TReqSException e) {
             LOGGER.error("Error in Staging.", e);
 
             if (nextReading != null) {
@@ -190,11 +206,13 @@ public final class Stager extends AbstractProcess {
                             .getReadingDAO()
                             .update(nextReading, RequestStatus.FAILED,
                                     new GregorianCalendar());
-                } catch (TReqSException e1) {
+                } catch (final TReqSException e1) {
                     LOGGER.error("Error logging problem for reading {}",
                             nextReading.getMetaData().getPosition());
                 }
             }
+            Starter.getInstance().toStop();
+            LOGGER.error("Stopping", e);
         }
 
         LOGGER.trace("< stage");
@@ -210,8 +228,19 @@ public final class Stager extends AbstractProcess {
     public void toStart() {
         LOGGER.trace("> toStart");
 
-        // This is the only call, because the same method is used by oneLoop.
-        this.action();
+        try {
+            // This is the only call, because the same method is used by
+            // oneLoop.
+            this.action();
+        } catch (final Throwable t) {
+            try {
+                Starter.getInstance().toStop();
+                LOGGER.error("Stopping", t);
+            } catch (final TReqSException e) {
+                LOGGER.error("Error", e);
+                System.exit(Constants.STAGER_PROBLEM);
+            }
+        }
 
         LOGGER.trace("< toStart");
     }

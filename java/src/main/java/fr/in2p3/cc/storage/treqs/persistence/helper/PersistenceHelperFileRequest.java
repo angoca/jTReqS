@@ -91,10 +91,10 @@ public final class PersistenceHelperFileRequest {
         LOGGER.trace("> create instance");
 
         assert requestId >= 0;
-        assert file != null && !file.equals("") : "File cannot be '" + file
+        assert (file != null) && !file.equals("") : "File cannot be '" + file
                 + "'";
         assert nbTries >= 0;
-        assert user != null && !user.equals("") : "User cannot be '" + user
+        assert (user != null) && !user.equals("") : "User cannot be '" + user
                 + "'";
 
         this.id = requestId;

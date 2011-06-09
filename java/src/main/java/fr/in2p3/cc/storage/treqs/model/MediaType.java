@@ -76,7 +76,7 @@ public final class MediaType {
         LOGGER.trace("> Creating media type");
 
         assert mediaId >= 0;
-        assert mediaName != null && !mediaName.equals("");
+        assert (mediaName != null) && !mediaName.equals("");
 
         this.id = mediaId;
         this.name = mediaName;
@@ -95,8 +95,8 @@ public final class MediaType {
 
         boolean ret = false;
         if (obj instanceof MediaType) {
-            MediaType media = (MediaType) obj;
-            if (media.getId() == this.getId()
+            final MediaType media = (MediaType) obj;
+            if ((media.getId() == this.getId())
                     && media.getName().equals(this.getName())) {
                 ret = true;
             }
@@ -105,18 +105,6 @@ public final class MediaType {
         LOGGER.trace("< equals");
 
         return ret;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#hashCode()
-     */
-    @Override
-    public int hashCode() {
-        LOGGER.trace(">< hashCode");
-
-        return this.id * this.name.hashCode();
     }
 
     /**
@@ -139,6 +127,18 @@ public final class MediaType {
         LOGGER.trace(">< getName");
 
         return this.name;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+        LOGGER.trace(">< hashCode");
+
+        return this.id * this.name.hashCode();
     }
 
     /*

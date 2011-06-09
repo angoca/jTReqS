@@ -54,6 +54,9 @@ import org.slf4j.LoggerFactory;
  * ago, that means that the file should be on disk, so it is not important, the
  * file will not be part of a queue. Also, if the file changes its size, it will
  * be written in a new tape.
+ * <p>
+ * TODO v2.0 To have a table with the unavailable files. This skips the reading
+ * of a file that is not currently available, and answer quickly.
  *
  * @author Jonathan Schaeffer
  * @since 1.0
@@ -87,7 +90,7 @@ public final class File {
     public File(final String filename, final long fileSize) {
         LOGGER.trace("> Creating file.");
 
-        assert filename != null && !filename.equals("");
+        assert (filename != null) && !filename.equals("");
 
         this.name = filename;
         this.setSize(fileSize);

@@ -110,6 +110,9 @@ public abstract class AbstractHSMBridge {
 
     /**
      * Sets the complete path of the keytab.
+     * <p>
+     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
      *
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving the property.
@@ -136,7 +139,7 @@ public abstract class AbstractHSMBridge {
     protected final void setKeytabPath(final String keytab) {
         LOGGER.trace("> setKeytabPath");
 
-        assert keytab != null && !keytab.equals("");
+        assert (keytab != null) && !keytab.equals("");
         this.keytabPath = keytab;
 
         LOGGER.trace("> setKeytabPath");
@@ -170,11 +173,11 @@ public abstract class AbstractHSMBridge {
         try {
             test = Configurator.getInstance().getStringValue(
                     Constants.SECTION_KEYTAB, Constants.TEST_KEYTAB);
-        } catch (KeyNotFoundException e) {
+        } catch (final KeyNotFoundException e) {
             // Nothing.
         }
         if (test.equals(Constants.YES)) {
-            java.io.File keytab = new java.io.File(this.getKeytabPath());
+            final java.io.File keytab = new java.io.File(this.getKeytabPath());
             if (keytab.exists()) {
                 LOGGER.debug("Exists.");
                 if (keytab.canRead()) {

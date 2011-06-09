@@ -68,18 +68,6 @@ public abstract class AbstractHSMPropertiesException extends
     }
 
     /**
-     * Creates the exception with an associated error code.
-     *
-     * @param hsmErrorcode
-     *            Error code.
-     */
-    protected AbstractHSMPropertiesException(final int hsmErrorcode) {
-        super(hsmErrorcode);
-
-        LOGGER.trace(">< Instance creation");
-    }
-
-    /**
      * Creates the exception wrapping another one.
      *
      * @param exception
@@ -87,6 +75,18 @@ public abstract class AbstractHSMPropertiesException extends
      */
     protected AbstractHSMPropertiesException(final Exception exception) {
         super(exception);
+
+        LOGGER.trace(">< Instance creation");
+    }
+
+    /**
+     * Creates the exception with an associated error code.
+     *
+     * @param hsmErrorcode
+     *            Error code.
+     */
+    protected AbstractHSMPropertiesException(final int hsmErrorcode) {
+        super(hsmErrorcode);
 
         LOGGER.trace(">< Instance creation");
     }

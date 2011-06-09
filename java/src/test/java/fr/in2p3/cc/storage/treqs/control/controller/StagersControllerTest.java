@@ -119,14 +119,14 @@ public final class StagersControllerTest {
      */
     @Test
     public void test01createTape() throws TReqSException {
-        String tapename = "tapename";
-        Queue queue = new Queue(new FilePositionOnTape(
+        final String tapename = "tapename";
+        final Queue queue = new Queue(new FilePositionOnTape(
                 new File("filename", 10), 50, new Tape(tapename, new MediaType(
                         (byte) 1, "media")), new User("username")), (byte) 0);
         Helper.activate(queue);
 
-        Stager stager1 = StagersController.getInstance().create(queue);
-        Stager stager2 = StagersController.getInstance().create(queue);
+        final Stager stager1 = StagersController.getInstance().create(queue);
+        final Stager stager2 = StagersController.getInstance().create(queue);
 
         HSMMockBridge.getInstance().setStageTime(500);
 
@@ -137,7 +137,7 @@ public final class StagersControllerTest {
         stager2.start();
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.error("Error sleeping", e);
         }
         LOGGER.debug("-------> {}", stager2.toString());
@@ -152,7 +152,7 @@ public final class StagersControllerTest {
         stager1.start();
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             LOGGER.error("Error sleeping", e);
         }
 

@@ -100,7 +100,7 @@ public final class HPSSJNIBridgeTestNative {
             HPSSJNIBridge.getInstance().getFileProperties(
                     HSMNativeBridgeTestNative.DIRECTORY);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof HSMDirectoryException)) {
                 failed = true;
             }
@@ -121,7 +121,7 @@ public final class HPSSJNIBridgeTestNative {
         try {
             HPSSJNIBridge.getInstance().getFileProperties("/NoExistingFile");
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof HSMNotExistingFileException)) {
                 failed = true;
             }
@@ -231,7 +231,7 @@ public final class HPSSJNIBridgeTestNative {
             HPSSJNIBridge.getInstance().getFileProperties(
                     HSMNativeBridgeTestNative.VALID_FILE_EMPTY);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof HSMEmptyFileException)) {
                 failed = true;
             }
@@ -269,7 +269,7 @@ public final class HPSSJNIBridgeTestNative {
 
         // TODO Tests: NativeBridgeHelper.unlockTapeForFile(VALID_FILE);
 
-        File file = new File(HSMNativeBridgeTestNative.VALID_FILE,
+        final File file = new File(HSMNativeBridgeTestNative.VALID_FILE,
                 HSMNativeBridgeTestNative.VALID_FILE_SIZE);
         LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);
@@ -287,7 +287,7 @@ public final class HPSSJNIBridgeTestNative {
 
         // TODO Tests: NativeBridgeHelper.lockTapeForFile(VALID_FILE);
 
-        File file = new File(HSMNativeBridgeTestNative.VALID_FILE_LOCKED,
+        final File file = new File(HSMNativeBridgeTestNative.VALID_FILE_LOCKED,
                 HSMNativeBridgeTestNative.VALID_FILE_SIZE);
         LOGGER.error("I'm going to stage a file");
         HPSSJNIBridge.getInstance().stage(file);

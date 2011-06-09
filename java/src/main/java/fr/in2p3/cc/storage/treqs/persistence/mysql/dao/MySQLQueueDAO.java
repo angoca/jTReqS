@@ -80,7 +80,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
         LOGGER.info("Cleaning unfinished queues");
 
-        int ret = MySQLBroker.getInstance().executeModification(
+        final int ret = MySQLBroker.getInstance().executeModification(
                 MySQLStatements.SQL_QUEUES_UPDATE_ABORT_ON_STARTUP);
 
         assert ret >= 0;
@@ -112,7 +112,7 @@ public final class MySQLQueueDAO implements QueueDAO {
                 .getTimeInMillis());
 
         int id = 0;
-        PreparedStatement statement = MySQLBroker.getInstance()
+        final PreparedStatement statement = MySQLBroker.getInstance()
                 .getPreparedStatement(MySQLStatements.SQL_QUEUES_INSERT_QUEUE);
         try {
             int index = 1;
@@ -133,7 +133,7 @@ public final class MySQLQueueDAO implements QueueDAO {
 
             statement.execute();
 
-            ResultSet result = statement.getGeneratedKeys();
+            final ResultSet result = statement.getGeneratedKeys();
             if (result.next()) {
                 id = result.getInt(1);
                 result.close();
@@ -141,7 +141,7 @@ public final class MySQLQueueDAO implements QueueDAO {
                 result.close();
                 throw new MySQLNoGeneratedIdException();
             }
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
         }
         LOGGER.info("New queue inserted with id {} ({})", id, tapeName);
@@ -151,123 +151,6 @@ public final class MySQLQueueDAO implements QueueDAO {
         LOGGER.trace("< insert");
 
         return id;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateAddRequest(fr.in2p3
-     * .cc.storage.treqs.model.Queue)
-     */
-    @Override
-    public void updateAddRequest(final Queue queue) throws TReqSException {
-        LOGGER.trace("> updateAddRequest");
-
-        assert queue != null;
-
-        String ownerName = Constants.NO_OWNER_NAME;
-        if (queue.getOwner() != null) {
-            ownerName = queue.getOwner().getName();
-        }
-        final int id = queue.getId();
-        final int size = queue.getRequestsSize();
-        final long byteSize = queue.getByteSize();
-
-        PreparedStatement statement = MySQLBroker.getInstance()
-                .getPreparedStatement(
-                        MySQLStatements.SQL_QUEUES_UPDATE_ADD_REQUEST);
-
-        int index = 1;
-        try {
-            // Insert number of requests.
-            statement.setInt(index++, size);
-            // Insert owner.
-            statement.setString(index++, ownerName);
-            // Insert size.
-            statement.setLong(index++, byteSize);
-            // Insert Id.
-            statement.setInt(index++, id);
-
-            statement.execute();
-        } catch (SQLException e) {
-            LOGGER.error("Error updating queue " + id);
-            throw new MySQLExecuteException(e);
-        } finally {
-            try {
-                statement.close();
-            } catch (SQLException e) {
-                throw new MySQLExecuteException(e);
-            }
-        }
-
-        LOGGER.trace("< updateAddRequest");
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateState(fr.in2p3.cc.
-     * storage.treqs.model.Queue, java.util.Calendar, short, short)
-     */
-    @Override
-    public void updateState(final Queue queue, final Calendar time,
-            final short nbDone, final short nbFailed) throws TReqSException {
-        LOGGER.trace("> updateState");
-
-        assert queue != null;
-        assert time != null;
-        assert nbDone >= 0;
-        assert nbFailed >= 0;
-
-        final QueueStatus status = queue.getStatus();
-
-        PreparedStatement statement = null;
-        int index = 1;
-
-        try {
-            switch (status) {
-            case ACTIVATED:
-                assert nbDone == 0 && nbFailed == 0;
-                statement = MySQLBroker.getInstance().getPreparedStatement(
-                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
-                // Insert activation time
-                statement.setTimestamp(index++,
-                        new Timestamp(time.getTimeInMillis()));
-                break;
-            case CREATED:
-                assert nbDone == 0 && nbFailed == 0;
-                // This call could be done when the queue is unsuspended.
-                LOGGER.error("This is an invalid state call.");
-                assert false;
-                break;
-            case ENDED:
-                statement = MySQLBroker.getInstance().getPreparedStatement(
-                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
-                // Insert end time.
-                statement.setTimestamp(index++,
-                        new Timestamp(time.getTimeInMillis()));
-                break;
-            case TEMPORARILY_SUSPENDED:
-                // In this state the queue is not update in the database.
-                statement = MySQLBroker.getInstance().getPreparedStatement(
-                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_SUSPENDED);
-                // Insert suspension time
-                statement.setTimestamp(index++,
-                        new Timestamp(time.getTimeInMillis()));
-                break;
-            default:
-                // Aborted queue exists only when the application starts.
-                assert false;
-            }
-        } catch (SQLException e) {
-            throw new MySQLExecuteException(e);
-        }
-
-        this.processUpdate(queue, nbDone, nbFailed, statement, index);
-
-        LOGGER.trace("< updateState");
     }
 
     /**
@@ -324,17 +207,134 @@ public final class MySQLQueueDAO implements QueueDAO {
             statement.execute();
 
             LOGGER.info("Updated queue " + id);
-        } catch (SQLException e) {
+        } catch (final SQLException e) {
             LOGGER.error("Error updating queue " + id);
             throw new MySQLExecuteException(e);
         } finally {
             try {
                 statement.close();
-            } catch (SQLException e) {
+            } catch (final SQLException e) {
                 throw new MySQLExecuteException(e);
             }
         }
 
         LOGGER.trace("< processUpdate");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateAddRequest(fr.in2p3
+     * .cc.storage.treqs.model.Queue)
+     */
+    @Override
+    public void updateAddRequest(final Queue queue) throws TReqSException {
+        LOGGER.trace("> updateAddRequest");
+
+        assert queue != null;
+
+        String ownerName = Constants.NO_OWNER_NAME;
+        if (queue.getOwner() != null) {
+            ownerName = queue.getOwner().getName();
+        }
+        final int id = queue.getId();
+        final int size = queue.getRequestsSize();
+        final long byteSize = queue.getByteSize();
+
+        final PreparedStatement statement = MySQLBroker.getInstance()
+                .getPreparedStatement(
+                        MySQLStatements.SQL_QUEUES_UPDATE_ADD_REQUEST);
+
+        int index = 1;
+        try {
+            // Insert number of requests.
+            statement.setInt(index++, size);
+            // Insert owner.
+            statement.setString(index++, ownerName);
+            // Insert size.
+            statement.setLong(index++, byteSize);
+            // Insert Id.
+            statement.setInt(index++, id);
+
+            statement.execute();
+        } catch (final SQLException e) {
+            LOGGER.error("Error updating queue " + id);
+            throw new MySQLExecuteException(e);
+        } finally {
+            try {
+                statement.close();
+            } catch (final SQLException e) {
+                throw new MySQLExecuteException(e);
+            }
+        }
+
+        LOGGER.trace("< updateAddRequest");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateState(fr.in2p3.cc.
+     * storage.treqs.model.Queue, java.util.Calendar, short, short)
+     */
+    @Override
+    public void updateState(final Queue queue, final Calendar time,
+            final short nbDone, final short nbFailed) throws TReqSException {
+        LOGGER.trace("> updateState");
+
+        assert queue != null;
+        assert time != null;
+        assert nbDone >= 0;
+        assert nbFailed >= 0;
+
+        final QueueStatus status = queue.getStatus();
+
+        PreparedStatement statement = null;
+        int index = 1;
+
+        try {
+            switch (status) {
+            case ACTIVATED:
+                assert (nbDone == 0) && (nbFailed == 0);
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
+                // Insert activation time
+                statement.setTimestamp(index++,
+                        new Timestamp(time.getTimeInMillis()));
+                break;
+            case CREATED:
+                assert (nbDone == 0) && (nbFailed == 0);
+                // This call could be done when the queue is unsuspended.
+                LOGGER.error("This is an invalid state call.");
+                assert false;
+                break;
+            case ENDED:
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
+                // Insert end time.
+                statement.setTimestamp(index++,
+                        new Timestamp(time.getTimeInMillis()));
+                break;
+            case TEMPORARILY_SUSPENDED:
+                // In this state the queue is not update in the database.
+                statement = MySQLBroker.getInstance().getPreparedStatement(
+                        MySQLStatements.SQL_QUEUES_UPDATE_QUEUE_SUSPENDED);
+                // Insert suspension time
+                statement.setTimestamp(index++,
+                        new Timestamp(time.getTimeInMillis()));
+                break;
+            default:
+                // Aborted queue exists only when the application starts.
+                assert false;
+            }
+        } catch (final SQLException e) {
+            throw new MySQLExecuteException(e);
+        }
+
+        this.processUpdate(queue, nbDone, nbFailed, statement, index);
+
+        LOGGER.trace("< updateState");
     }
 }

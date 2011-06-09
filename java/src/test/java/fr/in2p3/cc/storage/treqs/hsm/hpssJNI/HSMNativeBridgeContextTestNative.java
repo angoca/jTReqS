@@ -66,7 +66,7 @@ public final class HSMNativeBridgeContextTestNative {
      */
     @BeforeClass
     public static void oneTimeSetUp() {
-        String ldPath = "java.library.path";
+        final String ldPath = "java.library.path";
         LOGGER.warn("Library path  : {}", System.getProperty(ldPath));
         LOGGER.warn("Native logger : {}", System.getenv("TREQS_LOG"));
         LOGGER.warn("HPSS logger   : {}", System.getenv("HPSS_API_DEBUG"));
@@ -95,40 +95,15 @@ public final class HSMNativeBridgeContextTestNative {
             NativeBridge.getInstance().getFileProperties(
                     HSMNativeBridgeTestNative.VALID_FILE);
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testGetProperties01NoInit " + code + " - "
                     + HPSSErrorCode.HPSS_EPERM.getCode() + ","
                     + HPSSErrorCode.HPSS_EIO.getCode() + ", "
                     + HPSSErrorCode.HPSS_EACCES.getCode());
-            if (code != HPSSErrorCode.HPSS_EPERM.getCode()
-                    && code != HPSSErrorCode.HPSS_EIO.getCode()
-                    && code != HPSSErrorCode.HPSS_EACCES.getCode()) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tests to stage a file without being authenticated.
-     */
-    @Test
-    public void testStage01NoInit() {
-        LOGGER.info("----- testStage01NoInit");
-        boolean failed = false;
-        try {
-            NativeBridge.getInstance().stage(
-                    HSMNativeBridgeTestNative.VALID_FILE,
-                    HSMNativeBridgeTestNative.VALID_FILE_SIZE);
-            failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
-            LOGGER.info("testStage01NoInit " + code + " - "
-                    + HPSSErrorCode.HPSS_EPERM.getCode());
-            if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
+            if ((code != HPSSErrorCode.HPSS_EPERM.getCode())
+                    && (code != HPSSErrorCode.HPSS_EIO.getCode())
+                    && (code != HPSSErrorCode.HPSS_EACCES.getCode())) {
                 failed = true;
             }
         }
@@ -150,8 +125,8 @@ public final class HSMNativeBridgeContextTestNative {
                     HSMNativeBridgeTestNative.getValidKeytabPath(),
                     HSMNativeBridgeTestNative.getValidUsername());
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testInit04KerberosAuthType " + code + " - "
                     + HPSSErrorCode.HPSS_EPERM.getCode());
             if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
@@ -175,8 +150,8 @@ public final class HSMNativeBridgeContextTestNative {
                     HSMNativeBridgeTestNative.VALID_AUTH_TYPE, "foo",
                     HSMNativeBridgeTestNative.getValidUsername());
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testInit03BadKeytab " + code + " - "
                     + HPSSErrorCode.HPSS_EPERM.getCode());
             if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
@@ -220,8 +195,8 @@ public final class HSMNativeBridgeContextTestNative {
                     HSMNativeBridgeTestNative.getValidKeytabPath(),
                     HSMNativeBridgeTestNative.getValidUsername());
             failed = true;
-        } catch (JNIException e) {
-            int code = HPSSJNIBridge.processException(e);
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
             LOGGER.info("testInit06AlreadyAuthenticated " + code + " - "
                     + HPSSErrorCode.HPSS_EIO.getCode());
             if (code != HPSSErrorCode.HPSS_EIO.getCode()) {
@@ -229,6 +204,31 @@ public final class HSMNativeBridgeContextTestNative {
             }
         }
         HSMNativeBridgeTestNative.deauthenticate();
+        if (failed) {
+            Assert.fail();
+        }
+    }
+
+    /**
+     * Tests to stage a file without being authenticated.
+     */
+    @Test
+    public void testStage01NoInit() {
+        LOGGER.info("----- testStage01NoInit");
+        boolean failed = false;
+        try {
+            NativeBridge.getInstance().stage(
+                    HSMNativeBridgeTestNative.VALID_FILE,
+                    HSMNativeBridgeTestNative.VALID_FILE_SIZE);
+            failed = true;
+        } catch (final JNIException e) {
+            final int code = HPSSJNIBridge.processException(e);
+            LOGGER.info("testStage01NoInit " + code + " - "
+                    + HPSSErrorCode.HPSS_EPERM.getCode());
+            if (code != HPSSErrorCode.HPSS_EPERM.getCode()) {
+                failed = true;
+            }
+        }
         if (failed) {
             Assert.fail();
         }

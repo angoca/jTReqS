@@ -66,36 +66,10 @@ public class FifoSelector extends Selector {
      * (non-Javadoc)
      *
      * @see
-     * fr.in2p3.cc.storage.treqs.control.selector.Selector#selectBestQueue(java
-     * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
-     */
-    @Override
-    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
-            final Resource/* ! */resource) throws TReqSException {
-        LOGGER.trace("> selectBestQueue");
-
-        assert queues != null : "queues null";
-        assert queues.size() > 0 : "size 0";
-        assert resource != null : "resource null";
-
-        Queue ret = null;
-
-        ret = this.selectBestQueueWithoutUser(queues, resource);
-
-        assert ret != null : "The returned queue is null";
-
-        LOGGER.trace("< selectBestQueue");
-
-        return ret;
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
      * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
+    @Override
     protected final Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
             final Queue/* ! */currentQueue) throws TReqSException {
         LOGGER.trace("> compareQueue");
@@ -132,6 +106,33 @@ public class FifoSelector extends Selector {
         LOGGER.trace("< compareQueue");
 
         return newBest;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.control.selector.Selector#selectBestQueue(java
+     * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
+     */
+    @Override
+    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
+            final Resource/* ! */resource) throws TReqSException {
+        LOGGER.trace("> selectBestQueue");
+
+        assert queues != null : "queues null";
+        assert queues.size() > 0 : "size 0";
+        assert resource != null : "resource null";
+
+        Queue ret = null;
+
+        ret = this.selectBestQueueWithoutUser(queues, resource);
+
+        assert ret != null : "The returned queue is null";
+
+        LOGGER.trace("< selectBestQueue");
+
+        return ret;
     }
 
 }

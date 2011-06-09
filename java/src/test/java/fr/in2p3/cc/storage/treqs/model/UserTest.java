@@ -55,13 +55,13 @@ public final class UserTest {
      */
     @Test
     public void testConstructor01() {
-        String name = null;
+        final String name = null;
 
         boolean failed = false;
         try {
             new User(name);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -76,13 +76,13 @@ public final class UserTest {
      */
     @Test
     public void testConstructor02() {
-        String name = "";
+        final String name = "";
 
         boolean failed = false;
         try {
             new User(name);
             failed = true;
-        } catch (Throwable e) {
+        } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
                 failed = true;
             }
@@ -97,11 +97,11 @@ public final class UserTest {
      */
     @Test
     public void testConstructorUser01() {
-        String name = "user";
+        final String name = "user";
 
-        User user1 = new User(name);
+        final User user1 = new User(name);
 
-        User user2 = new User(name);
+        final User user2 = new User(name);
 
         Assert.assertTrue("First second name",
                 user1.getName() == user2.getName());
@@ -112,13 +112,13 @@ public final class UserTest {
      */
     @Test
     public void testToString01() {
-        String name = "user";
+        final String name = "user";
 
-        User user = new User(name);
+        final User user = new User(name);
 
-        String actual = user.toString();
+        final String actual = user.toString();
 
-        String expected = "User{ name: " + name + "}";
+        final String expected = "User{ name: " + name + "}";
 
         Assert.assertEquals("toString", expected, actual);
     }

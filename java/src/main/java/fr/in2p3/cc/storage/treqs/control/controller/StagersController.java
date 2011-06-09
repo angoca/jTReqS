@@ -105,7 +105,7 @@ public final class StagersController {
     /**
      * List of created stagers.
      */
-    private List<Stager> stagers;
+    private final List<Stager> stagers;
 
     /**
      * Creates the instance instantiating the list of stagers.
@@ -129,9 +129,9 @@ public final class StagersController {
         int iter = 0;
         int cleanedStager = 0;
         synchronized (this.stagers) {
-            ListIterator<Stager> list = this.stagers.listIterator();
+            final ListIterator<Stager> list = this.stagers.listIterator();
             while (list.hasNext()) {
-                Stager stager = list.next();
+                final Stager stager = list.next();
                 iter++;
                 LOGGER.debug("Scanning stager {}", iter);
                 if (stager.getProcessStatus() == ProcessStatus.STOPPED) {
@@ -164,13 +164,13 @@ public final class StagersController {
     public void conclude() {
         LOGGER.trace("> conclude");
 
-        Iterator<Stager> iterator = this.stagers.iterator();
+        final Iterator<Stager> iterator = this.stagers.iterator();
         while (iterator.hasNext()) {
-            Stager stager = iterator.next();
+            final Stager stager = iterator.next();
             LOGGER.debug("Stager {} in status {}", stager.getName(), stager
                     .getProcessStatus().name());
-            if (stager.getProcessStatus() == ProcessStatus.STARTED
-                    || stager.getProcessStatus() == ProcessStatus.STARTING) {
+            if ((stager.getProcessStatus() == ProcessStatus.STARTED)
+                    || (stager.getProcessStatus() == ProcessStatus.STARTING)) {
                 stager.conclude();
             }
         }
@@ -190,7 +190,7 @@ public final class StagersController {
 
         assert queue != null;
 
-        Stager stager = new Stager(this.stagers.size(), queue);
+        final Stager stager = new Stager(this.stagers.size(), queue);
         synchronized (this.stagers) {
             this.stagers.add(stager);
         }
@@ -216,8 +216,8 @@ public final class StagersController {
 
         int ret = 0;
         final String tapeName = queue.getTape().getName();
-        for (Stager stager : this.stagers) {
-            if (stager.getProcessStatus() == ProcessStatus.STARTED
+        for (final Stager stager : this.stagers) {
+            if ((stager.getProcessStatus() == ProcessStatus.STARTED)
                     && stager.getQueue().getTape().getName().equals(tapeName)) {
                 ret++;
             }
@@ -239,10 +239,10 @@ public final class StagersController {
         boolean stopped = false;
         while (!stopped) {
             boolean iteration = true;
-            Iterator<Stager> iterator = this.stagers.iterator();
+            final Iterator<Stager> iterator = this.stagers.iterator();
             while (iterator.hasNext()) {
-                Stager stager = iterator.next();
-                ProcessStatus status = stager.getProcessStatus();
+                final Stager stager = iterator.next();
+                final ProcessStatus status = stager.getProcessStatus();
                 if (status == ProcessStatus.STOPPED) {
                     iteration &= true;
                 } else {
@@ -260,7 +260,7 @@ public final class StagersController {
                 // Waiting a while for the stagers to finish.
                 try {
                     Thread.sleep(Constants.MILLISECONDS);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     LOGGER.error("message", e);
                 }
             }

@@ -65,35 +65,6 @@ public final class MySQLWatchDogDAO implements WatchDogDAO {
     /*
      * (non-Javadoc)
      *
-     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#start(int)
-     */
-    @Override
-    public void start(final int pid) throws TReqSException {
-        LOGGER.trace("> start");
-
-        // Deletes old register.
-        MySQLBroker.getInstance().executeModification(
-                MySQLStatements.SQL_HEART_BEAT_DELETE_OLD);
-        // Inserts new pid.
-        PreparedStatement statement = MySQLBroker.getInstance()
-                .getPreparedStatement(MySQLStatements.SQL_HEART_BEAT_INSERT);
-
-        try {
-            int index = 1;
-            // Insert the pid.
-            statement.setInt(index++, pid);
-
-            statement.execute();
-        } catch (SQLException e) {
-            throw new MySQLExecuteException(e);
-        }
-
-        LOGGER.trace("< start");
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#heartBeat()
      */
     @Override
@@ -104,6 +75,35 @@ public final class MySQLWatchDogDAO implements WatchDogDAO {
                 MySQLStatements.SQL_HEART_BEAT_UPDATE);
 
         LOGGER.trace("< heartBeat");
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see fr.in2p3.cc.storage.treqs.model.dao.WatchDogDAO#start(int)
+     */
+    @Override
+    public void start(final int pid) throws TReqSException {
+        LOGGER.trace("> start");
+
+        // Deletes old register.
+        MySQLBroker.getInstance().executeModification(
+                MySQLStatements.SQL_HEART_BEAT_DELETE_OLD);
+        // Inserts new pid.
+        final PreparedStatement statement = MySQLBroker.getInstance()
+                .getPreparedStatement(MySQLStatements.SQL_HEART_BEAT_INSERT);
+
+        try {
+            int index = 1;
+            // Insert the pid.
+            statement.setInt(index++, pid);
+
+            statement.execute();
+        } catch (final SQLException e) {
+            throw new MySQLExecuteException(e);
+        }
+
+        LOGGER.trace("< start");
     }
 
 }
