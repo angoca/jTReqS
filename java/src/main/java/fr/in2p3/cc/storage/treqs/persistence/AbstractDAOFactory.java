@@ -73,7 +73,7 @@ public abstract class AbstractDAOFactory {
     /**
      * Creates the DAO factory.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
      *
      * @throws TReqSException
@@ -165,6 +165,13 @@ public abstract class AbstractDAOFactory {
      * @return The DAO for the reading object.
      */
     public abstract ReadingDAO getReadingDAO();
+
+    /**
+     * Returns the information about the database.
+     *
+     * @return Information about where the database is.
+     */
+    public abstract String getRegisterDBInformation() throws TReqSException ;
 
     /**
      * Returns the DAO for the register information.
