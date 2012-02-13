@@ -44,9 +44,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Exception while executing a query.
  * <p>
- * TODO v2.0 To make it abstract
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
 public class MySQLExecuteException extends AbstractMySQLException {

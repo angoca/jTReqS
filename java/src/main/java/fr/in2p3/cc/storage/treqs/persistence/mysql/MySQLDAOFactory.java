@@ -62,11 +62,22 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLWatchDogDAO;
 public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /**
+     * Specific section in the configuration file when using MySQL as data
+     * source.
+     */
+    public static final String SECTION_PERSISTENCE_MYSQL = "PERSISTENCE_MYSQL";
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(MySQLDAOFactory.class);
 
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#dumpStructure()
+     */
     @Override
     public String dumpStructure() {
         LOGGER.trace(">< dumpStructure");
@@ -78,7 +89,8 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
      * (non-Javadoc)
      *
      * @see
-     * fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getConfigurationDAO()
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getConfigurationDAO
+     * ()
      */
     @Override
     public ConfigurationDAO getConfigurationDAO() {
@@ -90,7 +102,8 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
     /*
      * (non-Javadoc)
      *
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getQueueDAO()
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getQueueDAO()
      */
     @Override
     public QueueDAO getQueueDAO() {
@@ -102,7 +115,8 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
     /*
      * (non-Javadoc)
      *
-     * @see fr.in2p3.cc.storage.treqs.persistance.DAOFactory#getReadingDAO()
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getReadingDAO()
      */
     @Override
     public ReadingDAO getReadingDAO() {
@@ -112,10 +126,23 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
     }
 
     /*
+     * (sin Javadoc)
+     *
+     * @seefr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
+     * getRegisterDBInformation()
+     */
+    @Override
+    public String/* ! */getRegisterDBInformation() throws TReqSException {
+        LOGGER.trace(">< getRegisterDBInformation");
+
+        return MySQLBroker.getURL();
+    }
+
+    /*
      * (non-Javadoc)
      *
-     * @see
-     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
+     * @see fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
+     * getRegisterInformationDAO()
      */
     @Override
     public RegisterInformationDAO getRegisterInformationDAO() {
@@ -128,7 +155,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
      * (non-Javadoc)
      *
      * @see
-     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDog()
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDogDAO()
      */
     @Override
     public WatchDogDAO getWatchDogDAO() {

@@ -329,11 +329,18 @@ public final class MySQLQueueDAO implements QueueDAO {
                 // Aborted queue exists only when the application starts.
                 assert false;
             }
+            this.processUpdate(queue, nbDone, nbFailed, statement, index);
         } catch (final SQLException e) {
             throw new MySQLExecuteException(e);
+        } finally {
+            try {
+                if (statement != null) {
+                    statement.close();
+                }
+            } catch (final SQLException e) {
+                throw new MySQLExecuteException(e);
+            }
         }
-
-        this.processUpdate(queue, nbDone, nbFailed, statement, index);
 
         LOGGER.trace("< updateState");
     }
