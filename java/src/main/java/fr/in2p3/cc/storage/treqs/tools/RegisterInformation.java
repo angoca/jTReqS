@@ -36,6 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.tools;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Scanner;
@@ -50,8 +51,6 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 /**
  * Register the information of the environment where the application is executed
  * into the data source.
- * <p>
- * TODO v2.0 Register the name of the database.
  * <p>
  * TODO v2.0 Register the name of the keytab (location).
  * <p>
@@ -79,9 +78,9 @@ public class RegisterInformation {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RegisterInformation.class);
     /**
-     * Variable that has the MySQL hostname.
+     * Variable that has the DB hostname.
      */
-    private static final String MYSQL_HOSTNAME = "MySQLHostname";
+    private static final String DB_HOSTNAME = "DBHostname";
 
     /**
      * Register the application version.
@@ -136,7 +135,7 @@ public class RegisterInformation {
             RegisterInformation.appVersion();
             RegisterInformation.hostname();
             RegisterInformation.hpssHostname();
-            RegisterInformation.mysqlHostname();
+            RegisterInformation.dbHostname();
         } catch (final Exception e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
@@ -191,7 +190,13 @@ public class RegisterInformation {
         final String[] command = new String[] { "awk", "-F=",
                 "/^HPSS_SITE_NAME/ {print $2}", hpssConfFile };
 
-        final String hpssHostname = CommandExecuter.execute(command);
+        String hpssHostname = null;
+        try {
+            hpssHostname = CommandExecuter.execute(command);
+        } catch (final ExecuterException e) {
+            if (e.getCause() instanceof IOException)
+                hpssHostname = "UNKNOWN";
+        }
 
         LOGGER.error("HPSS Hostname: {}", hpssHostname);
 
@@ -202,29 +207,29 @@ public class RegisterInformation {
     }
 
     /**
-     * Registers the MySQL server hostname.
+     * Registers the DB server hostname.
      *
      * @throws TReqSException
      *             If there is any problem while executing or registering.
      */
-    private static void mysqlHostname() throws TReqSException {
-        LOGGER.trace("> mysqlHostname");
+    private static void dbHostname() throws TReqSException {
+        LOGGER.trace("> dbHostname");
 
-        String mysqlConfFile = "Not defined.";
+        String dbConfFile = "Not defined.";
         try {
-            mysqlConfFile = Configurator.getInstance().getStringValue(
-                    Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER);
+            dbConfFile = AbstractDAOFactory.getDAOFactoryInstance()
+                    .getRegisterDBInformation();
         } catch (final TReqSException e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         }
 
-        LOGGER.error("MySQL Hostname: {}", mysqlConfFile);
+        LOGGER.error("DB Hostname: {}", dbConfFile);
 
         AbstractDAOFactory.getDAOFactoryInstance().getRegisterInformationDAO()
-                .insert(MYSQL_HOSTNAME, mysqlConfFile);
+                .insert(DB_HOSTNAME, dbConfFile);
 
-        LOGGER.trace("< mysqlHostname");
+        LOGGER.trace("< dbHostname");
     }
 
     /**
