@@ -68,7 +68,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 /**
  * SelectorTest.
  * <p>
- * TODO v2.0 tests with users and tapes and with only tapes.
+ * TODO v2.0 Tests with users and tapes and with only tapes.
  *
  * @author Andres Gomez
  */
@@ -188,22 +188,23 @@ public final class JonathanSelectorTest {
         final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
         final File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
+        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE_1);
         final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 JonathanSelectorTest.TWENTY, tape1, user);
         final Queue queue1 = HelperControl.addFPOT(fpot1, (byte) 1);
+        queue1.hashCode();
 
         final File file2 = new File("filename2", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_1);
         final FilePositionOnTape fpot = new FilePositionOnTape(file2,
                 JonathanSelectorTest.TWENTY, tape2, user);
-        HelperControl.addFPOT(fpot, (byte) 1);
+        final Queue queue2 = HelperControl.addFPOT(fpot, (byte) 1);
 
         final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
                 resource.getMediaType());
         final Queue actual = new JonathanSelector().selectBestQueueForUser(queues,
                 resource, user);
-        final Queue expected = queue1;
+        final Queue expected = queue2;
 
         Assert.assertEquals(expected, actual);
     }
@@ -221,8 +222,8 @@ public final class JonathanSelectorTest {
         final User user = new User(username);
         final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
 
-        final Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
-        final Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
+        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE_1);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_1);
 
         final File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
         final File file2 = new File("filename2", 500);
@@ -436,14 +437,14 @@ public final class JonathanSelectorTest {
 
         final User user1 = new User("username1");
         final File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape1 = new Tape("tapename1", MEDIA_TYPE_1);
+        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE_1);
         final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 JonathanSelectorTest.TWENTY, tape1, user1);
         HelperControl.addFPOT(fpot1, (byte) 1);
 
         final User user2 = new User("username2");
         final File file2 = new File("filename2", 400);
-        final Tape tape2 = new Tape("tapename2", MEDIA_TYPE_1);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_1);
         final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
                 JonathanSelectorTest.TWENTY, tape2, user2);
         HelperControl.addFPOT(fpot2, (byte) 1);

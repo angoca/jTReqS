@@ -72,7 +72,7 @@ public final class ControllerTest {
      */
     @Test
     public void testAdd01() throws TReqSException {
-        final String tapename = "tapenameYes";
+        final String tapename = "tapeYes";
         TapesController.getInstance().add(tapename,
                 new Tape(tapename, new MediaType((byte) 1, "media")));
 
@@ -142,7 +142,7 @@ public final class ControllerTest {
      */
     @Test
     public void testExist01Yes() throws TReqSException {
-        final String tapename = "tapenameYes";
+        final String tapename = "tapeYes";
         TapesController.getInstance().create(tapename,
                 new MediaType((byte) 1, "media"));
 
@@ -190,7 +190,7 @@ public final class ControllerTest {
      */
     @Test
     public void testRemove01() throws TReqSException {
-        final String tapename = "tapenameYes";
+        final String tapename = "tapeYes";
         TapesController.getInstance().create(tapename,
                 new MediaType((byte) 1, "media"));
 
