@@ -50,7 +50,7 @@ import fr.in2p3.cc.storage.treqs.DefaultProperties;
  * Reads the configuration from the properties file and then, keep that
  * information in memory.
  * <p>
- * TODO v2.0 Configure this class to load the configuration file periodically,
+ * TODO v1.5.6 Configure this class to load the configuration file periodically,
  * this permits to have hot changes.
  *
  * @author Jonathan Schaeffer
