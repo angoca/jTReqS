@@ -71,7 +71,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>native-maven-plugin</artifactId>
-        <version>1.0-alpha-6</version>
+        <version>1.0-alpha-7</version>
         <extensions>true</extensions>
         <configuration>
           <!-- javah configuration -->
