@@ -125,7 +125,7 @@
       <!-- mvn antrun:run -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.6</version>
+        <version>1.7</version>
         <configuration>
           <target>
             <property name="ant.regexp.regexpimpl" value="org.apache.tools.ant.util.regexp.Jdk14RegexpRegexp" />
@@ -178,7 +178,7 @@
       <!-- mvn assembly:single -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
         <configuration>
           <appendAssemblyId>false</appendAssemblyId>
           <finalName>jtreqs</finalName>
