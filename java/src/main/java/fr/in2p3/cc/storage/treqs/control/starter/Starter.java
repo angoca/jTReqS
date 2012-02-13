@@ -61,19 +61,17 @@ import fr.in2p3.cc.storage.treqs.tools.Watchdog;
 /**
  * Starts the application, loading the threads in the order.
  * <p>
- * TODO v2.0 JMX to reload configuration.
+ * TODO v1.5.6 JMX to reload configuration.
  * <p>
- * TODO v2.0 JMX to stop the application
+ * TODO v1.5.6 JMX to stop the application
  * <p>
- * TODO v2.0 JMX to reload the configuration.
+ * TODO v2.0 JMX to lock a user (continue but no more activations)
  * <p>
- * TODO v2.0 jmx to lock a user (continue but no more activations)
+ * TODO v2.0 JMX to lock a tape
  * <p>
- * TODO v2.0 jmx to lock a tape
+ * TODO v2.0 JMX to lock a file
  * <p>
- * TODO v2.0 jmx to lock a file
- * <p>
- * TODO v2.0 jmx to lock a user completely (cancel all related queues)
+ * TODO v2.0 JMX to lock a user completely (cancel all related queues)
  * <p>
  * TODO v2.0 The started should have a monitoring of all threads started, and
  * see if they are hung.
@@ -394,7 +392,7 @@ public final class Starter {
                 Watchdog.getInstance().heartBeat();
             }
         } catch (final InterruptedException e) {
-            // TODO v2.0 Catch any TERM signal in order to stop the application.
+            // TODO v1.5.6 Catch any TERM signal in order to stop the application.
             // This signal will trigger the close function in all stagers, and
             // then cancel them to stop working. Also the Dispatcher and
             // Activator will be finished.

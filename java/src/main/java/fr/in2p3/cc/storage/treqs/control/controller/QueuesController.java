@@ -244,7 +244,7 @@ public final class QueuesController {
                     // is after the file position.
                     LOGGER.info("A queue with status CREATED already exists.");
                     queue.registerFPOT(fpot, retry);
-                    // TODO v2.0 create a special flag in the queue, indicating
+                    // TODO v2.0 Create a special flag in the queue, indicating
                     // that there is an activated queue for the same tape, so
                     // this new queue has to be activated once the other has
                     // finished. This prevents to unmount an already mounted
@@ -569,7 +569,7 @@ public final class QueuesController {
      * Instantiates a selector dynamically. This permits to change the selector
      * in hot, without recycling the application.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
      *
      * @return The selector defined in the configuration file, or the default
