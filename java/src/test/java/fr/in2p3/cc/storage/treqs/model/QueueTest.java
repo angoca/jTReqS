@@ -359,7 +359,7 @@ public final class QueueTest {
             queue.setHeadPosition(position);
             failed = true;
         } catch (final Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof AssertionError)) {
                 failed = true;
             }
         }
@@ -1476,7 +1476,7 @@ public final class QueueTest {
             queue.setHeadPosition((short) 25);
             failed = true;
         } catch (final Throwable e) {
-            if (!(e instanceof InvalidParameterException)) {
+            if (!(e instanceof AssertionError)) {
                 failed = true;
             }
         }
