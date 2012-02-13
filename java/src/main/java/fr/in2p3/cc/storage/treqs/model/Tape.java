@@ -153,7 +153,8 @@ public final class Tape {
      */
     @Override
     public int hashCode() {
-        final int ret = this.name.hashCode() - this.mediaType.getName().hashCode()
+        final int ret = this.name.hashCode()
+                - this.mediaType.getName().hashCode()
         /* + this.statusUpdateTime.hashCode() */;
         return ret;
     }
@@ -183,7 +184,8 @@ public final class Tape {
     private void setName(final String tapeName) {
         LOGGER.trace("> setName");
 
-        assert (tapeName != null) && !tapeName.equals("");
+        assert (tapeName != null) && !tapeName.equals("")
+                && tapeName.length() <= 8;
 
         this.name = tapeName;
 
