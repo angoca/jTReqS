@@ -37,6 +37,7 @@
 package fr.in2p3.cc.storage.treqs.tools;
 
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -130,14 +131,22 @@ public final class Watchdog {
     public static int getPID() throws WatchdogException {
         final byte[] bo = new byte[100];
         final String[] cmd = { "bash", "-c", "echo $PPID" };
-        Process p;
+        final Process p;
+        int ret=-1;
         try {
             p = Runtime.getRuntime().exec(cmd);
             p.getInputStream().read(bo);
+            ret = Integer.parseInt(new String(bo).trim());
         } catch (final IOException e) {
-            throw new WatchdogException(e);
+            try {
+            // Warning: It does not work with gij
+            final String pid = ManagementFactory.getRuntimeMXBean().getName();
+            final int index = pid.indexOf('@');
+            ret = Integer.parseInt(pid.substring(0, index));}
+            catch (Exception ex){
+                throw new WatchdogException(e);
+            }
         }
-        final int ret = Integer.parseInt(new String(bo).trim());
         return ret;
     }
 
