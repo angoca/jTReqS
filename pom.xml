@@ -54,7 +54,7 @@
     <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
-      <version>1.6</version>
+      <version>1.7</version>
       <scope>compile</scope>
     </dependency>
 
@@ -75,7 +75,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>0.9.28</version>
+      <version>1.0.0</version>
       <optional>true</optional>
       <scope>runtime</scope>
     </dependency>
@@ -83,7 +83,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-core</artifactId>
-      <version>0.9.28</version>
+      <version>1.0.0</version>
       <optional>true</optional>
       <scope>runtime</scope>
     </dependency>
@@ -91,14 +91,14 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.15</version>
+      <version>5.1.18</version>
       <scope>compile</scope>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
+      <version>1.6.4</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
@@ -148,7 +148,7 @@
       experiments needs.
   </description>
   <url>https://forge.in2p3.fr/projects/show/treqs</url>
-  <inceptionYear>2009, 2010, 2011</inceptionYear>
+  <inceptionYear>2009</inceptionYear>
   <licenses>
     <license>
       <name>CeCILL</name>
@@ -165,7 +165,7 @@
     <developer>
       <id>gomez</id>
       <name>Andres Gomez Casanova</name>
-      <email>angoca at yahoo dot com</email>
+      <email>angoca@ya.hoo</email>
       <timezone>-5</timezone>
       <url>http://angoca.users.sourceforge.net/</url>
       <roles>
@@ -176,7 +176,7 @@
     <developer>
       <id>jschaeff</id>
       <name>Jonathan Schaeffer</name>
-      <email>jchaeff@cc.in2p3.fr</email>
+      <email>joschaeffer@g.mail</email>
       <timezone>+1</timezone>
       <roles>
         <role>Designer</role>
