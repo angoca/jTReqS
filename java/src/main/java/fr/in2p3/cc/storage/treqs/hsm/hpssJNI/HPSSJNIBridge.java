@@ -63,7 +63,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * TODO v2.0 This should permit to reload the configuration file and reestablish
  * the connection environment.
  * <p>
- * TODO v2.0 Make a bridge with JNA instead of JNI (just for the exercise).
+ * TODO v1.5.6 Make a bridge with JNA instead of JNI (just for the exercise).
  * However, the conversion will be easier and the API could be called directly.
  *
  * @author Andres Gomez
@@ -178,7 +178,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
                 System.getProperty("java.library.path"));
 
         try {
-            // TODO v2.0 in a parallel thread check if the operation is not
+            // TODO v2.0 In a parallel thread check if the operation is not
             // hung.
             NativeBridge.getInstance().initContext(this.getAuthType(),
                     this.getKeytabPath(), this.getUser());
@@ -223,7 +223,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
 
         HSMHelperFileProperties ret = null;
         try {
-            // TODO v2.0 in a parallel thread check if the operation is not
+            // TODO v2.0 In a parallel thread check if the operation is not
             // hung.
             long time = System.currentTimeMillis();
             ret = NativeBridge.getInstance().getFileProperties(name);
@@ -281,7 +281,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
     /**
      * Sets the type of authentication used for HPSS.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
      *
      * @throws ProblematicConfiguationFileException
@@ -309,7 +309,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
      * Sets the user that will be used to authenticate the communication with
      * HPSS.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
      *
      * @throws KeyNotFoundException
@@ -342,7 +342,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
         assert file != null;
 
         try {
-            // TODO v2.0 in a parallel thread check if the operation is not
+            // TODO v2.0 In a parallel thread check if the operation is not
             // hung.
             long time = System.currentTimeMillis();
             NativeBridge.getInstance().stage(file.getName(), file.getSize());
