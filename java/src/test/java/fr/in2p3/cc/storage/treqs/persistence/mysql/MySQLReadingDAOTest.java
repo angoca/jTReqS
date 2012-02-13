@@ -39,8 +39,6 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.junit.After;
@@ -150,11 +148,12 @@ public final class MySQLReadingDAOTest {
         final File file = new File("filename", size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final String message = "MessageFirstUpdate";
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
 
         new MySQLReadingDAO().firstUpdate(reading, message);
     }
@@ -194,11 +193,12 @@ public final class MySQLReadingDAOTest {
         final File file = new File("filename", size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final String message = null;
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
 
         boolean failed = false;
         try {
@@ -227,11 +227,12 @@ public final class MySQLReadingDAOTest {
         final File file = new File("filename", size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final String message = "";
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
 
         boolean failed = false;
         try {
@@ -530,12 +531,11 @@ public final class MySQLReadingDAOTest {
     @Test
     public void testUpdate01() {
         final RequestStatus status = RequestStatus.CREATED;
-        final Calendar endTime = new GregorianCalendar();
         final Reading reading = null;
 
         boolean failed = false;
         try {
-            new MySQLReadingDAO().update(reading, status, endTime);
+            new MySQLReadingDAO().update(reading, status);
             failed = true;
         } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -561,51 +561,16 @@ public final class MySQLReadingDAOTest {
         final File file = new File(fileName, size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final RequestStatus status = null;
-        final Calendar endTime = new GregorianCalendar();
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
 
         boolean failed = false;
         try {
-            new MySQLReadingDAO().update(reading, status, endTime);
-            failed = true;
-        } catch (final Throwable e) {
-            if (!(e instanceof AssertionError)) {
-                failed = true;
-            }
-        }
-        if (failed) {
-            Assert.fail();
-        }
-    }
-
-    /**
-     * Tries to updates a null end time.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void testUpdate03() throws TReqSException {
-        final User owner = new User("username");
-        final long size = MySQLReadingDAOTest.HUNDRED;
-        final String fileName = "hpss/file";
-        final File file = new File(fileName, size);
-        final int position = NUMBER_4;
-        final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
-        final RequestStatus status = RequestStatus.CREATED;
-        final Calendar endTime = null;
-        final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
-
-        boolean failed = false;
-        try {
-            new MySQLReadingDAO().update(reading, status, endTime);
+            new MySQLReadingDAO().update(reading, status);
             failed = true;
         } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -624,22 +589,22 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testUpdate04Created() throws TReqSException {
+    public void testUpdate03Created() throws TReqSException {
         final User owner = new User("username");
         final long size = MySQLReadingDAOTest.HUNDRED;
         final String fileName = "hpss/file";
         final File file = new File(fileName, size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final RequestStatus status = RequestStatus.CREATED;
-        final Calendar endTime = new GregorianCalendar();
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
         // TODO Tests: get from db the dates to compare them
 
-        new MySQLReadingDAO().update(reading, status, endTime);
+        new MySQLReadingDAO().update(reading, status);
     }
 
     /**
@@ -649,22 +614,22 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testUpdate05Submitted() throws TReqSException {
+    public void testUpdate04Submitted() throws TReqSException {
         final User owner = new User("username");
         final long size = MySQLReadingDAOTest.HUNDRED;
         final String fileName = "hpss/file";
         final File file = new File(fileName, size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final RequestStatus status = RequestStatus.SUBMITTED;
-        final Calendar endTime = new GregorianCalendar();
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
         // TODO Tests: get from db the dates to compare them
 
-        new MySQLReadingDAO().update(reading, status, endTime);
+        new MySQLReadingDAO().update(reading, status);
     }
 
     /**
@@ -674,22 +639,22 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testUpdate06Staged() throws TReqSException {
+    public void testUpdate05Staged() throws TReqSException {
         final User owner = new User("username");
         final long size = MySQLReadingDAOTest.HUNDRED;
         final String fileName = "hpss/file";
         final File file = new File(fileName, size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final RequestStatus status = RequestStatus.STAGED;
-        final Calendar endTime = new GregorianCalendar();
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
         // TODO Tests: get from db the dates to compare them
 
-        new MySQLReadingDAO().update(reading, status, endTime);
+        new MySQLReadingDAO().update(reading, status);
     }
 
     /**
@@ -699,22 +664,22 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testUpdate07Queued() throws TReqSException {
+    public void testUpdate06Queued() throws TReqSException {
         final User owner = new User("username");
         final long size = MySQLReadingDAOTest.HUNDRED;
         final String fileName = "hpss/file";
         final File file = new File(fileName, size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final RequestStatus status = RequestStatus.QUEUED;
-        final Calendar endTime = new GregorianCalendar();
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
         // TODO Tests: get from db the dates to compare them
 
-        new MySQLReadingDAO().update(reading, status, endTime);
+        new MySQLReadingDAO().update(reading, status);
     }
 
     /**
@@ -724,22 +689,22 @@ public final class MySQLReadingDAOTest {
      *             Never.
      */
     @Test
-    public void testUpdate08Failed() throws TReqSException {
+    public void testUpdate07Failed() throws TReqSException {
         final User owner = new User("username");
         final long size = MySQLReadingDAOTest.HUNDRED;
         final String fileName = "hpss/file";
         final File file = new File(fileName, size);
         final int position = NUMBER_4;
         final Tape tape = new Tape("tapename", MEDIA_TYPE);
-        final FilePositionOnTape fpot = new FilePositionOnTape(file, position, tape,
-                owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(file, position,
+                tape, owner);
         final RequestStatus status = RequestStatus.FAILED;
-        final Calendar endTime = new GregorianCalendar();
         final Queue queue = new Queue(fpot, (byte) NUMBER_3);
-        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3, queue);
+        final Reading reading = Helper.createReading(fpot, (byte) NUMBER_3,
+                queue);
         // TODO Tests: get from db the dates to compare them
 
-        new MySQLReadingDAO().update(reading, status, endTime);
+        new MySQLReadingDAO().update(reading, status);
     }
 
     /**
