@@ -84,7 +84,8 @@ start(){
   fi
   RETVAL=0
   if [ -z "${JTREQS_PID}" ]; then
-    su ${JTREQS_USER} -c "${PAGSH_PFIX} ${JTREQS_INSTALL_DIR}/bin/jtreqs.sh 2>&1 >> ${LOG_FILE} &"
+    su ${JTREQS_USER} -c "${PAGSH_PFIX} \"${JTREQS_INSTALL_DIR}/bin/jtreqs.sh 2>&1 >> ${LOG_FILE} &\""
+    
     JTREQS_PID=`pid_of_jtreqs`
     if [ -n "${JTREQS_PID}" ] ; then
       success
