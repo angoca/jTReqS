@@ -187,11 +187,6 @@ public final class Constants {
      */
     public static final String SECTION_PERSISTENCE = "PERSISTENCE";
     /**
-     * Specific section in the configuration file when using MySQL as data
-     * source.
-     */
-    public static final String SECTION_PERSISTENCE_MYSQL = "PERSISTENCE_MYSQL";
-    /**
      * Section in the configuration file for the Queue.
      */
     public static final String SECTION_QUEUE = "QUEUE";

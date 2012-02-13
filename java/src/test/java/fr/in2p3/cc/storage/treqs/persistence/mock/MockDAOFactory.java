@@ -39,6 +39,7 @@ package fr.in2p3.cc.storage.treqs.persistence.mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
@@ -116,6 +117,19 @@ public final class MockDAOFactory extends AbstractDAOFactory {
 
         return new MockReadingDAO();
     }
+
+	/*
+	 * (sin Javadoc)
+	 * 
+	 * @seefr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
+	 * getRegisterDBInformation()
+	 */
+	@Override
+	public String/* ! */getRegisterDBInformation() throws TReqSException {
+		LOGGER.trace(">< getRegisterDBInformation");
+
+		return "Mock DB";
+	}
 
     /*
      * (non-Javadoc)
