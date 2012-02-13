@@ -37,7 +37,6 @@
 package fr.in2p3.cc.storage.treqs.persistence.mock.dao;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -222,12 +221,10 @@ public final class MockReadingDAO implements ReadingDAO {
      *
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO#update(fr.in2p3.cc.storage
-     * .treqs.model.Reading, fr.in2p3.cc.storage.treqs.model.RequestStatus,
-     * java.util.Calendar)
+     * .treqs.model.Reading, fr.in2p3.cc.storage.treqs.model.RequestStatus)
      */
     @Override
-    public void update(final Reading reading, final RequestStatus status,
-            final Calendar time) {
+    public void update(final Reading reading, final RequestStatus status) {
         LOGGER.trace(">< update");
     }
 
