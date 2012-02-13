@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Exception on connection to MySQL database.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
 public final class MySQLOpenException extends AbstractMySQLException {
@@ -60,11 +60,11 @@ public final class MySQLOpenException extends AbstractMySQLException {
     /**
      * Wraps an exception thrown when connecting to the database.
      *
-     * @param e
+     * @param ex
      *            Wrapped exception.
      */
-    public MySQLOpenException(final Exception e) {
-        super(e);
+    public MySQLOpenException(final Exception ex) {
+        super(ex);
 
         LOGGER.trace(">< Instance creation");
     }

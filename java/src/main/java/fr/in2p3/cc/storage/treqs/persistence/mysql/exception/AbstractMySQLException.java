@@ -39,9 +39,9 @@ package fr.in2p3.cc.storage.treqs.persistence.mysql.exception;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
 
 /**
- * Basic persistence exception for MySQL.
+ * Main persistence exception for MySQL.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
 public abstract class AbstractMySQLException extends

@@ -135,13 +135,14 @@ public final class MySQLBrokerTest {
         MySQLBroker.destroyInstance();
 
         Configurator.getInstance().deleteValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER);
         Configurator.getInstance().deleteValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME);
         Configurator.getInstance().deleteValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
         Configurator.getInstance().deleteValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_PASSWORD);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL,
+                Constants.DB_PASSWORD);
 
         Configurator.destroyInstance();
     }
@@ -155,7 +156,7 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect01() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
                 "NO-SERVER");
 
         boolean failed = false;
@@ -181,10 +182,10 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect02() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
                 SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME,
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME,
                 "badNameDB");
         boolean failed = false;
         try {
@@ -209,12 +210,13 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect03() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
                 SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME, DBNAME);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME,
+                DBNAME);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER,
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER,
                 "bad-user");
 
         boolean failed = false;
@@ -240,15 +242,17 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect04() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
                 SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME, DBNAME);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME,
+                DBNAME);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER, USER);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER,
+                USER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_PASSWORD,
-                "bad-password");
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL,
+                Constants.DB_PASSWORD, "bad-password");
 
         boolean failed = false;
         try {
@@ -273,15 +277,17 @@ public final class MySQLBrokerTest {
     @Test
     public void testConnect05() throws TReqSException {
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER,
                 SERVER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME, DBNAME);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME,
+                DBNAME);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER, USER);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER,
+                USER);
         Configurator.getInstance().setValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_PASSWORD,
-                PASSWORD);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL,
+                Constants.DB_PASSWORD, PASSWORD);
 
         MySQLBroker.getInstance().connect();
         MySQLBroker.getInstance().disconnect();

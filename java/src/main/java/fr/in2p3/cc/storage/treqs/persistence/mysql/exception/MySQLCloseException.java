@@ -42,9 +42,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Exception on close database.
+ * Exception on close MySQL database.
  *
- * @author Andrés Gómez
+ * @author Andres Gomez
  * @since 1.5
  */
 public final class MySQLCloseException extends AbstractMySQLException {
