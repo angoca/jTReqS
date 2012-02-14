@@ -44,7 +44,6 @@ import org.junit.Test;
 
 import fr.in2p3.cc.storage.treqs.Constants;
 import fr.in2p3.cc.storage.treqs.DB2Tests;
-import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
 import fr.in2p3.cc.storage.treqs.persistence.db2.exception.AbstractDB2Exception;
@@ -52,100 +51,100 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Test to init the database.
- * 
+ *
  * @author Andres Gomez
  * @since 1.5.6
  */
 public final class DB2InitTest {
 
-	/**
-	 * Drops a table.
-	 * 
-	 * @param table
-	 *            Table to drop.
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	private static void dropTable(final String table) throws TReqSException {
-		try {
-			DB2TestBroker.getInstance().executeModification(
-					"DROP TABLE " + table);
-		} catch (final AbstractDB2Exception e) {
-			Throwable cause = e.getCause();
-			if ((cause == null) || !(cause instanceof SQLException)
-					|| !(((SQLException) cause).getErrorCode() != 204)) {
-				e.printStackTrace();
-			}
-		}
-	}
+    /**
+     * Drops a table.
+     *
+     * @param table
+     *            Table to drop.
+     * @throws TReqSException
+     *             Never.
+     */
+    private static void dropTable(final String table) throws TReqSException {
+        try {
+            DB2TestBroker.getInstance().executeModification(
+                    "DROP TABLE " + table);
+        } catch (final AbstractDB2Exception e) {
+            Throwable cause = e.getCause();
+            if ((cause == null) || !(cause instanceof SQLException)
+                    || !(((SQLException) cause).getErrorCode() != 204)) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	/**
-	 * Drops a table.
-	 * 
-	 * @param schema
-	 *            Table to drop.
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	private static void dropSchema(final String schema) throws TReqSException {
-		try {
-			DB2TestBroker.getInstance().executeModification(
-					"DROP SCHEMA " + schema + " RESTRICT");
-		} catch (final AbstractDB2Exception e) {
-			Throwable cause = e.getCause();
-			if ((cause == null) || !(cause instanceof SQLException)
-					|| !(((SQLException) cause).getErrorCode() != 204)) {
-				e.printStackTrace();
-			}
-		}
-	}
+    /**
+     * Drops a table.
+     *
+     * @param schema
+     *            Table to drop.
+     * @throws TReqSException
+     *             Never.
+     */
+    private static void dropSchema(final String schema) throws TReqSException {
+        try {
+            DB2TestBroker.getInstance().executeModification(
+                    "DROP SCHEMA " + schema + " RESTRICT");
+        } catch (final AbstractDB2Exception e) {
+            Throwable cause = e.getCause();
+            if ((cause == null) || !(cause instanceof SQLException)
+                    || !(((SQLException) cause).getErrorCode() != 204)) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-	/**
-	 * Init the test.
-	 * 
-	 * @throws TReqSException
-	 *             If there is a problem deleting the tables.
-	 */
-	@BeforeClass
-	public static void oneTimeSetUp() throws TReqSException {
-		System.setProperty(Constants.CONFIGURATION_FILE,
-				MainTests.PROPERTIES_FILE);
-		Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
-				Constants.PESISTENCE_FACTORY, DB2Tests.DB2_PERSISTANCE);
+    /**
+     * Init the test.
+     *
+     * @throws TReqSException
+     *             If there is a problem deleting the tables.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                DB2Tests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, DB2Tests.DB2_PERSISTANCE);
 
-		DB2InitTest.dropTable(DB2Statements.REQUESTS);
-		DB2InitTest.dropTable(DB2Statements.QUEUES);
-		DB2InitTest.dropTable(DB2Statements.ALLOCATIONS);
-		DB2InitTest.dropTable(DB2Statements.MEDIATYPES);
-		DB2InitTest.dropTable(DB2Statements.HEART_BEAT);
-		DB2InitTest.dropTable(DB2Statements.INFORMATIONS);
-		DB2InitTest.dropSchema(DB2Statements.A_SCH_DATA);
-		DB2InitTest.dropSchema(DB2Statements.A_SCH_INFO);
-		DB2InitTest.dropSchema(DB2Statements.A_SCH_MON);
-		DB2InitTest.dropSchema(DB2Statements.A_SCH_TAPE);
-		DB2Broker.getInstance().disconnect();
-	}
+        DB2InitTest.dropTable(DB2Statements.REQUESTS);
+        DB2InitTest.dropTable(DB2Statements.QUEUES);
+        DB2InitTest.dropTable(DB2Statements.ALLOCATIONS);
+        DB2InitTest.dropTable(DB2Statements.MEDIATYPES);
+        DB2InitTest.dropTable(DB2Statements.HEART_BEAT);
+        DB2InitTest.dropTable(DB2Statements.INFORMATIONS);
+        DB2InitTest.dropSchema(DB2Statements.A_SCH_DATA);
+        DB2InitTest.dropSchema(DB2Statements.A_SCH_INFO);
+        DB2InitTest.dropSchema(DB2Statements.A_SCH_MON);
+        DB2InitTest.dropSchema(DB2Statements.A_SCH_TAPE);
+        DB2Broker.getInstance().disconnect();
+    }
 
-	/**
-	 * Finalizes the test.
-	 */
-	@AfterClass
-	public static void oneTimeTearDown() {
-		DB2Broker.destroyInstance();
-		AbstractDAOFactory.destroyInstance();
-		Configurator.destroyInstance();
-		System.clearProperty(Constants.CONFIGURATION_FILE);
-	}
+    /**
+     * Finalizes the test.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        DB2Broker.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
+        Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
 
-	/**
-	 * Create all the objects.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void test01create() throws TReqSException {
-		new DB2Init().initializeDatabase();
-	}
+    /**
+     * Create all the objects.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void test01create() throws TReqSException {
+        new DB2Init().initializeDatabase();
+    }
 
 }

@@ -38,6 +38,8 @@ package fr.in2p3.cc.storage.treqs.persistence.db2;
 
 import java.util.List;
 
+import net.sf.randomjunit.RandomTestRunner;
+
 import org.apache.commons.collections.MultiMap;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -47,9 +49,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import fr.in2p3.cc.storage.treqs.Constants;
-import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.DB2Tests;
-import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.Resource;
 import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
@@ -58,190 +58,190 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 
 /**
  * Test for DB2 configuration.
- * 
+ *
  * @author Andres Gomez
  * @since 1.5.6
  */
-@RunWith(RandomBlockJUnit4ClassRunner.class)
+@RunWith(RandomTestRunner.class)
 public final class DB2ConfigurationDAOTest {
-	/**
-	 * Init the test.
-	 * 
-	 * @throws TReqSException
-	 *             If there is a problem deleting the tables.
-	 */
-	@BeforeClass
-	public static void oneTimeSetUp() throws TReqSException {
-		System.setProperty(Constants.CONFIGURATION_FILE,
-				MainTests.PROPERTIES_FILE);
-		Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
-				Constants.PESISTENCE_FACTORY, DB2Tests.DB2_PERSISTANCE);
-	}
+    /**
+     * Init the test.
+     *
+     * @throws TReqSException
+     *             If there is a problem deleting the tables.
+     */
+    @BeforeClass
+    public static void oneTimeSetUp() throws TReqSException {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                DB2Tests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, DB2Tests.DB2_PERSISTANCE);
+    }
 
-	/**
-	 * Destroys all after tests.
-	 */
-	@AfterClass
-	public static void oneTimeTearDown() {
-		DB2TestBroker.destroyInstance();
-		AbstractDAOFactory.destroyInstance();
-		Configurator.destroyInstance();
-		System.clearProperty(Constants.CONFIGURATION_FILE);
-	}
+    /**
+     * Destroys all after tests.
+     */
+    @AfterClass
+    public static void oneTimeTearDown() {
+        DB2TestBroker.destroyInstance();
+        AbstractDAOFactory.destroyInstance();
+        Configurator.destroyInstance();
+        System.clearProperty(Constants.CONFIGURATION_FILE);
+    }
 
-	/**
-	 * Setup the env for the tests.
-	 * 
-	 * @throws TReqSException
-	 *             Problem setting the value.
-	 */
-	@Before
-	public void setUp() throws TReqSException {
-		DB2Helper.deleteMediaTypes();
-	}
+    /**
+     * Setup the env for the tests.
+     *
+     * @throws TReqSException
+     *             Problem setting the value.
+     */
+    @Before
+    public void setUp() throws TReqSException {
+        DB2Helper.deleteMediaTypes();
+    }
 
-	/**
-	 * Gets 0 media type.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void testGetMediatypes01() throws TReqSException {
-		DB2TestBroker.getInstance().connect();
+    /**
+     * Gets 0 media type.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetMediatypes01() throws TReqSException {
+        DB2TestBroker.getInstance().connect();
 
-		final List<Resource> actual = new DB2ConfigurationDAO()
-				.getMediaAllocations();
+        final List<Resource> actual = new DB2ConfigurationDAO()
+                .getMediaAllocations();
 
-		Assert.assertTrue(actual.size() == 0);
-	}
+        Assert.assertTrue(actual.size() == 0);
+    }
 
-	/**
-	 * Gets 1 media type.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void testGetMediatypes02() throws TReqSException {
-		DB2TestBroker.getInstance().connect();
+    /**
+     * Gets 1 media type.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetMediatypes02() throws TReqSException {
+        DB2TestBroker.getInstance().connect();
 
-		final String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-				+ " VALUES (1, 'T10K-A', 5)";
-		DB2TestBroker.getInstance().executeModification(query);
+        final String query = "INSERT INTO " + DB2Statements.MEDIATYPES
+                + " VALUES (1, 'T10K-A', 5)";
+        DB2TestBroker.getInstance().executeModification(query);
 
-		final List<Resource> actual = new DB2ConfigurationDAO()
-				.getMediaAllocations();
+        final List<Resource> actual = new DB2ConfigurationDAO()
+                .getMediaAllocations();
 
-		Assert.assertTrue(actual.size() == 1);
+        Assert.assertTrue(actual.size() == 1);
 
-		DB2TestBroker.getInstance().disconnect();
-	}
+        DB2TestBroker.getInstance().disconnect();
+    }
 
-	/**
-	 * Gets 2 media type.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void testGetMediatypes03() throws TReqSException {
-		DB2TestBroker.getInstance().connect();
+    /**
+     * Gets 2 media type.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetMediatypes03() throws TReqSException {
+        DB2TestBroker.getInstance().connect();
 
-		String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-				+ " VALUES (2, 'T10K-B', 7)";
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "INSERT INTO " + DB2Statements.MEDIATYPES
-				+ " VALUES (3, 'T10K-C', 8)";
-		DB2TestBroker.getInstance().executeModification(query);
+        String query = "INSERT INTO " + DB2Statements.MEDIATYPES
+                + " VALUES (2, 'T10K-B', 7)";
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "INSERT INTO " + DB2Statements.MEDIATYPES
+                + " VALUES (3, 'T10K-C', 8)";
+        DB2TestBroker.getInstance().executeModification(query);
 
-		final List<Resource> actual = new DB2ConfigurationDAO()
-				.getMediaAllocations();
+        final List<Resource> actual = new DB2ConfigurationDAO()
+                .getMediaAllocations();
 
-		Assert.assertTrue(actual.size() == 2);
+        Assert.assertTrue(actual.size() == 2);
 
-		DB2TestBroker.getInstance().disconnect();
-	}
+        DB2TestBroker.getInstance().disconnect();
+    }
 
-	/**
-	 * Gets 0 allocations.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void testGetResourceAllocation01() throws TReqSException {
-		DB2TestBroker.getInstance().connect();
+    /**
+     * Gets 0 allocations.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetResourceAllocation01() throws TReqSException {
+        DB2TestBroker.getInstance().connect();
 
-		final MultiMap map = new DB2ConfigurationDAO().getResourceAllocation();
+        final MultiMap map = new DB2ConfigurationDAO().getResourceAllocation();
 
-		final int actual = map.size();
+        final int actual = map.size();
 
-		final int expected = 0;
+        final int expected = 0;
 
-		Assert.assertEquals(expected, actual);
-		DB2TestBroker.getInstance().disconnect();
-	}
+        Assert.assertEquals(expected, actual);
+        DB2TestBroker.getInstance().disconnect();
+    }
 
-	/**
-	 * Gets 1 allocation.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void testGetResourceAllocation02() throws TReqSException {
-		DB2TestBroker.getInstance().connect();
+    /**
+     * Gets 1 allocation.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetResourceAllocation02() throws TReqSException {
+        DB2TestBroker.getInstance().connect();
 
-		String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-				+ " VALUES (2, 'T10K-B', 7)";
-		DB2TestBroker.getInstance().executeModification(query);
+        String query = "INSERT INTO " + DB2Statements.MEDIATYPES
+                + " VALUES (2, 'T10K-B', 7)";
+        DB2TestBroker.getInstance().executeModification(query);
 
-		query = "INSERT INTO " + DB2Statements.ALLOCATIONS
-				+ " VALUES (2, 'user1', 0.5)";
-		DB2TestBroker.getInstance().executeModification(query);
+        query = "INSERT INTO " + DB2Statements.ALLOCATIONS
+                + " VALUES (2, 'user1', 0.5)";
+        DB2TestBroker.getInstance().executeModification(query);
 
-		final MultiMap map = new DB2ConfigurationDAO().getResourceAllocation();
+        final MultiMap map = new DB2ConfigurationDAO().getResourceAllocation();
 
-		final int actual = map.size();
+        final int actual = map.size();
 
-		final int expected = 1;
+        final int expected = 1;
 
-		Assert.assertEquals(expected, actual);
-		DB2TestBroker.getInstance().disconnect();
-	}
+        Assert.assertEquals(expected, actual);
+        DB2TestBroker.getInstance().disconnect();
+    }
 
-	/**
-	 * Gets two allocations.
-	 * 
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	@Test
-	public void testGetResourceAllocation03() throws TReqSException {
-		DB2TestBroker.getInstance().connect();
+    /**
+     * Gets two allocations.
+     *
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetResourceAllocation03() throws TReqSException {
+        DB2TestBroker.getInstance().connect();
 
-		String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-				+ " VALUES (2, 'T10K-B', 7)";
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "INSERT INTO " + DB2Statements.MEDIATYPES
-				+ " VALUES (3, 'T10K-C', 8)";
-		DB2TestBroker.getInstance().executeModification(query);
+        String query = "INSERT INTO " + DB2Statements.MEDIATYPES
+                + " VALUES (2, 'T10K-B', 7)";
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "INSERT INTO " + DB2Statements.MEDIATYPES
+                + " VALUES (3, 'T10K-C', 8)";
+        DB2TestBroker.getInstance().executeModification(query);
 
-		query = "INSERT INTO " + DB2Statements.ALLOCATIONS
-				+ " VALUES (3, 'user2', 0.6)";
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "INSERT INTO " + DB2Statements.ALLOCATIONS
-				+ " VALUES (2, 'user3', 0.5)";
-		DB2TestBroker.getInstance().executeModification(query);
+        query = "INSERT INTO " + DB2Statements.ALLOCATIONS
+                + " VALUES (3, 'user2', 0.6)";
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "INSERT INTO " + DB2Statements.ALLOCATIONS
+                + " VALUES (2, 'user3', 0.5)";
+        DB2TestBroker.getInstance().executeModification(query);
 
-		final MultiMap map = new DB2ConfigurationDAO().getResourceAllocation();
+        final MultiMap map = new DB2ConfigurationDAO().getResourceAllocation();
 
-		final int actual = map.size();
+        final int actual = map.size();
 
-		final int expected = 2;
+        final int expected = 2;
 
-		Assert.assertEquals(expected, actual);
-		DB2TestBroker.getInstance().disconnect();
-	}
+        Assert.assertEquals(expected, actual);
+        DB2TestBroker.getInstance().disconnect();
+    }
 }

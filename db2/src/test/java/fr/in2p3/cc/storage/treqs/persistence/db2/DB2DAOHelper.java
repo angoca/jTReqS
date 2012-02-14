@@ -40,85 +40,84 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.in2p3.cc.storage.treqs.Constants;
-import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.DB2Tests;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 import fr.in2p3.cc.storage.treqs.tools.Configurator;
-import fr.in2p3.cc.storage.treqs.tools.RandomString;
+import fr.in2p3.cc.storage.treqs.tools.RandomStringDB2;
 
 /**
  * This class is to create requests of random files requested from random users.
- * 
+ *
  * @author Andres Gomez
  * @since 1.5.6
  */
 public final class DB2DAOHelper {
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(DB2DAOHelper.class);
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DB2DAOHelper.class);
 
-	/**
-	 * Creates a file name with random values.
-	 * 
-	 * @return Random file.
-	 */
-	private static String getFileName() {
-		String ret = "";
-		final int size = (int) (Math.random() * 20) + 5;
-		ret = new RandomString(size).nextString();
-		return ret;
-	}
+    /**
+     * Creates a file name with random values.
+     *
+     * @return Random file.
+     */
+    private static String getFileName() {
+        String ret = "";
+        final int size = (int) (Math.random() * 20) + 5;
+        ret = new RandomStringDB2(size).nextString();
+        return ret;
+    }
 
-	/**
-	 * Creates a user name with random values.
-	 * 
-	 * @return Random user name.
-	 */
-	private static String getUserName() {
-		String ret = "";
-		ret = new RandomString(1).nextString()
-				+ ((int) (Math.random() * 5) + 1);
-		return ret;
-	}
+    /**
+     * Creates a user name with random values.
+     *
+     * @return Random user name.
+     */
+    private static String getUserName() {
+        String ret = "";
+        ret = new RandomStringDB2(1).nextString()
+                + ((int) (Math.random() * 5) + 1);
+        return ret;
+    }
 
-	/**
-	 * Main method.
-	 * 
-	 * @param args
-	 *            Nothing.
-	 * @throws TReqSException
-	 *             Never.
-	 */
-	public static void main(final String[] args) throws TReqSException {
-		// Sets the basic configuration
-		System.setProperty(Constants.CONFIGURATION_FILE,
-				MainTests.PROPERTIES_FILE);
-		Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
-				Constants.PESISTENCE_FACTORY, DB2Tests.DB2_PERSISTANCE);
+    /**
+     * Main method.
+     *
+     * @param args
+     *            Nothing.
+     * @throws TReqSException
+     *             Never.
+     */
+    public static void main(final String[] args) throws TReqSException {
+        // Sets the basic configuration
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                DB2Tests.PROPERTIES_FILE);
+        Configurator.getInstance().setValue(Constants.SECTION_PERSISTENCE,
+                Constants.PESISTENCE_FACTORY, DB2Tests.DB2_PERSISTANCE);
 
-		DB2Broker.getInstance().connect();
-		// Cleans the database.
-		DB2RequestsDAO.deleteAll();
-		// Inserts a random quantity of requests (more than 2, less than 7)
-		final int size = (int) (Math.random() * 5) + 2;
-		for (int i = 0; i < size; i++) {
-			final String fileName = DB2DAOHelper.getFileName();
-			final String userName = DB2DAOHelper.getUserName();
-			final RequestStatus status = RequestStatus.CREATED;
-			LOGGER.warn("Generated: {} - {}, {}", new String[] { i + 1 + "",
-					fileName, userName });
-			DB2RequestsDAO.insertRow(fileName, userName, status);
-		}
-		DB2Broker.getInstance().disconnect();
-	}
+        DB2Broker.getInstance().connect();
+        // Cleans the database.
+        DB2RequestsDAO.deleteAll();
+        // Inserts a random quantity of requests (more than 2, less than 7)
+        final int size = (int) (Math.random() * 5) + 2;
+        for (int i = 0; i < size; i++) {
+            final String fileName = DB2DAOHelper.getFileName();
+            final String userName = DB2DAOHelper.getUserName();
+            final RequestStatus status = RequestStatus.CREATED;
+            LOGGER.warn("Generated: {} - {}, {}", new String[] { i + 1 + "",
+                    fileName, userName });
+            DB2RequestsDAO.insertRow(fileName, userName, status);
+        }
+        DB2Broker.getInstance().disconnect();
+    }
 
-	/**
-	 * Private constructor.
-	 */
-	private DB2DAOHelper() {
-		// Nothing.
-	}
+    /**
+     * Private constructor.
+     */
+    private DB2DAOHelper() {
+        // Nothing.
+    }
 }
