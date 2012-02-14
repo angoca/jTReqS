@@ -206,11 +206,10 @@ public final class MediaTypesController extends AbstractController {
             } else if (storageName.startsWith("JT")) {
                 LOGGER.debug("T10K-B");
                 ret = (MediaType) this.getObjectMap().get("T10K-B");
-            }  else if (storageName.startsWith("K")) {
+            } else if (storageName.startsWith("K")) {
                 LOGGER.debug("T10K-C");
                 ret = (MediaType) this.getObjectMap().get("T10K-C");
-            }
-            else {
+            } else {
                 LOGGER.error("Unknown media type: '{}'", storageName);
                 assert false;
             }
