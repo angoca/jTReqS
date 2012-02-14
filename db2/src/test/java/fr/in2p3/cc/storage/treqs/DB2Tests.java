@@ -53,42 +53,47 @@ import fr.in2p3.cc.storage.treqs.persistence.db2.DB2Statements;
  * <p>
  * For all these test it is necessary to have an existing database called
  * jtreqs.
- * 
+ *
  * @author Andres Gomez
  * @since 1.5.6
  */
 @RunWith(Suite.class)
-@SuiteClasses( { DB2BrokerTest.class, DB2InitTest.class,
-		DB2ConfigurationDAOTest.class, DB2QueueDAOTest.class,
-		DB2ReadingDAOTest.class })
+@SuiteClasses({ DB2BrokerTest.class, DB2InitTest.class,
+        DB2ConfigurationDAOTest.class, DB2QueueDAOTest.class,
+        DB2ReadingDAOTest.class })
 public final class DB2Tests {
 
-	/**
-	 * DB2 persistence.
-	 */
-	public static final String DB2_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
-			+ "persistence.db2.DB2DAOFactory";
+    /**
+     * Properties file.
+     */
+    public static final String PROPERTIES_FILE = "jtreqs.conf.db2.test.properties";
 
-	/**
-	 * Deletes the rows of the tables queues, allocations and mediatypes.
-	 * 
-	 * @throws TReqSException
-	 *             If there is any problem.
-	 */
-	public static void cleanDatabase() throws TReqSException {
-		String query = "DELETE FROM " + DB2Statements.QUEUES;
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "DELETE FROM " + DB2Statements.ALLOCATIONS;
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "DELETE FROM " + DB2Statements.MEDIATYPES;
-		DB2TestBroker.getInstance().executeModification(query);
-	}
+    /**
+     * DB2 persistence.
+     */
+    public static final String DB2_PERSISTANCE = "fr.in2p3.cc.storage.treqs."
+            + "persistence.db2.DB2DAOFactory";
 
-	/**
-	 * Default constructor hidden.
-	 */
-	private DB2Tests() {
-		// Hidden
-	}
+    /**
+     * Deletes the rows of the tables queues, allocations and mediatypes.
+     *
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    public static void cleanDatabase() throws TReqSException {
+        String query = "DELETE FROM " + DB2Statements.QUEUES;
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "DELETE FROM " + DB2Statements.ALLOCATIONS;
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "DELETE FROM " + DB2Statements.MEDIATYPES;
+        DB2TestBroker.getInstance().executeModification(query);
+    }
+
+    /**
+     * Default constructor hidden.
+     */
+    private DB2Tests() {
+        // Hidden
+    }
 
 }
