@@ -4,8 +4,8 @@
 
   <!-- Contributors Andres Gomez, CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr> -->
 
-  <!-- This software is a computer program whose purpose is to schedule, sort
-    and submit file requests to the hierarchical storage system HPSS. -->
+  <!-- This software is a computer program whose purpose is to schedule,
+    sort and submit file requests to the hierarchical storage system HPSS. -->
 
   <!-- This software is governed by the CeCILL license under French law and
     abiding by the rules of distribution of free software. You can use, modify
@@ -45,6 +45,36 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>net.sf.randomjunit</groupId>
+      <artifactId>random-jUnit</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>fr.in2p3.cc.storage.jtreqs.java</groupId>
+      <artifactId>jtreqs-server-java</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.ibm.db2</groupId>
+      <artifactId>sqlj</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.ibm.db2</groupId>
+      <artifactId>db2java</artifactId>
+      <version>1.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.ibm.db2</groupId>
+      <artifactId>db2jcc</artifactId>
+      <version>1.0</version>
+    </dependency>
+
   </dependencies>
   <parent>
     <groupId>fr.in2p3.cc.storage.jtreqs</groupId>
@@ -69,28 +99,14 @@
       <testResource>
         <directory>src/test/config</directory>
       </testResource>
-      <testResource>
-        <directory>src/test/scripts</directory>
-      </testResource>
     </testResources>
-
+    <finalName>db2-${project.version}</finalName>
     <plugins>
 
       <!-- Cleans the target directory. -->
       <!-- mvn clean -->
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
-      </plugin>
-
-      <!-- This plugin copies the sources with a specific encoding. -->
-      <!-- mvn resources:resources -->
-      <!-- mvn resources:testResources -->
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.5</version>
-        <configuration>
-          <encoding>${encoding}</encoding>
-        </configuration>
       </plugin>
 
       <!-- Compiles the sources with a specific Java version and encoding. -->
@@ -103,20 +119,6 @@
           <encoding>${encoding}</encoding>
           <source>${compileSource}</source>
           <target>${compileSource}</target>
-        </configuration>
-      </plugin>
-
-      <!-- Executes the tests, taking the target directory as working directory. -->
-      <!-- mvn surefire:test -->
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.12</version>
-        <configuration>
-          <!-- The application reads configuration files. -->
-          <workingDirectory>
-            ${project.build.testOutputDirectory}
-          </workingDirectory>
-          <testFailureIgnore>true</testFailureIgnore>
         </configuration>
       </plugin>
 
@@ -135,22 +137,6 @@
         </configuration>
       </plugin>
 
-      <!-- Creates a jar with the source code. -->
-      <!-- mvn source:jar -->
-      <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
-        <executions>
-          <execution>
-            <id>attach-test-sources</id>
-            <goals>
-              <goal>jar-no-fork</goal>
-            </goals>
-          </execution>
-        </executions>
-
-      </plugin>
-
       <!-- Creates a jar with the documentation. -->
       <!-- mvn javadoc:jar -->
       <plugin>
@@ -164,6 +150,17 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- This plugin copies the sources with a specific encoding. -->
+      <!-- mvn resources:resources -->
+      <!-- mvn resources:testResources -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <encoding>${encoding}</encoding>
+        </configuration>
       </plugin>
 
       <!-- Generates the main site with some description. -->
@@ -227,14 +224,75 @@
           </reportPlugins>
         </configuration>
       </plugin>
+
+      <!-- Creates a jar with the source code. -->
+      <!-- mvn source:jar -->
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
+        <executions>
+          <execution>
+            <id>attach-test-sources</id>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Executes the tests, taking the target directory as working directory. -->
+      <!-- mvn surefire:test -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.12</version>
+        <configuration>
+          <!-- The application reads configuration files. -->
+          <workingDirectory>
+            ${project.build.testOutputDirectory}
+          </workingDirectory>
+          <testFailureIgnore>true</testFailureIgnore>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>sqlj-maven-plugin</artifactId>
+        <version>1.1</version>
+        <configuration>
+          <encoding>${encoding}</encoding>
+          <sqljDirs>
+            <file>src</file>
+          </sqljDirs>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.ibm.db2</groupId>
+            <artifactId>sqlj</artifactId>
+            <version>1.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <goals>
+              <goal>sqlj</goal>
+            </goals>
+            <configuration>
+              <sqljDirs>
+                <sqljDir>src/main/sqlj</sqljDir>
+              </sqljDirs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
     </plugins>
   </build>
 
   <!-- More Project Information -->
   <name>jTReqS Server - Java sources part</name>
   <description>
-	  This is the persistence implementation with DB2. This uses JDBC and SQLJ
-	  to interact with the database.
+    This is the persistence implementation with DB2. This uses JDBC and SQLJ
+    to interact with the database.
   </description>
 
 </project>
