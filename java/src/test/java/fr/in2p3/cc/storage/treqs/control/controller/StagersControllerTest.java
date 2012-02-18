@@ -120,9 +120,9 @@ public final class StagersControllerTest {
     @Test
     public void test01createTape() throws TReqSException {
         final String tapename = "tapename";
-        final Queue queue = new Queue(new FilePositionOnTape(
-                new File("filename", 10), 50, new Tape(tapename, new MediaType(
-                        (byte) 1, "media")), new User("username")), (byte) 0);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", 10), 50, new Tape(tapename, new MediaType((byte) 1,
+                "media", "/TAPE")), new User("username")), (byte) 0);
         Helper.activate(queue);
 
         final Stager stager1 = StagersController.getInstance().create(queue);

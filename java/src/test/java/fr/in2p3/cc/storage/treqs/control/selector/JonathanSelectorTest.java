@@ -77,8 +77,8 @@ public final class JonathanSelectorTest {
     /**
      * Media type 1 for tests.
      */
-    private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
-            "T10K-a");
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "T10K-a", "/TAPE");
     /**
      * Number 5.
      */
@@ -143,7 +143,7 @@ public final class JonathanSelectorTest {
     public void testBestQueue01() throws TReqSException {
         final String username = "username";
         final User user = new User(username);
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
 
         new JonathanSelector().selectBestQueueForUser(new ArrayList<Queue>(),
                 resource, user);
@@ -159,17 +159,18 @@ public final class JonathanSelectorTest {
     public void testBestQueue02() throws TReqSException {
         final String username = "username";
         final User user = new User(username);
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
-        final File file = new File("filename", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
+        final File file = new File("filename",
+                JonathanSelectorTest.THREE_HUNDRED);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final FilePositionOnTape fpot = new FilePositionOnTape(file,
                 JonathanSelectorTest.TWENTY, tape, user);
         final Queue queue = HelperControl.addFPOT(fpot, (byte) 1);
 
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                resource.getMediaType());
-        final Queue actual = new JonathanSelector().selectBestQueueForUser(queues,
-                resource, user);
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(resource.getMediaType());
+        final Queue actual = new JonathanSelector().selectBestQueueForUser(
+                queues, resource, user);
         final Queue expected = queue;
 
         Assert.assertEquals(expected, actual);
@@ -185,26 +186,29 @@ public final class JonathanSelectorTest {
     public void testBestQueue03() throws TReqSException {
         final String username = "username";
         final User user = new User(username);
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
 
-        final File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE_1);
+        final File file1 = new File("filename1",
+                JonathanSelectorTest.THREE_HUNDRED);
+        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE);
         final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 JonathanSelectorTest.TWENTY, tape1, user);
         final Queue queue1 = HelperControl.addFPOT(fpot1, (byte) 1);
         queue1.hashCode();
 
-        final File file2 = new File("filename2", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_1);
+        final File file2 = new File("filename2",
+                JonathanSelectorTest.THREE_HUNDRED);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE);
         final FilePositionOnTape fpot = new FilePositionOnTape(file2,
                 JonathanSelectorTest.TWENTY, tape2, user);
         final Queue queue2 = HelperControl.addFPOT(fpot, (byte) 1);
+        queue2.hashCode();
 
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                resource.getMediaType());
-        final Queue actual = new JonathanSelector().selectBestQueueForUser(queues,
-                resource, user);
-        final Queue expected = queue2;
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(resource.getMediaType());
+        final Queue actual = new JonathanSelector().selectBestQueueForUser(
+                queues, resource, user);
+        final Queue expected = queue1;
 
         Assert.assertEquals(expected, actual);
     }
@@ -220,19 +224,20 @@ public final class JonathanSelectorTest {
     public void testBestQueue04() throws TReqSException {
         final String username = "username";
         final User user = new User(username);
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
 
-        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE_1);
-        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_1);
+        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE);
 
-        final File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
+        final File file1 = new File("filename1",
+                JonathanSelectorTest.THREE_HUNDRED);
         final File file2 = new File("filename2", 500);
         final File file3 = new File("filename3", 600);
 
         final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 JonathanSelectorTest.TWENTY, tape1, user);
-        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 40, tape1,
-                user);
+        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 40,
+                tape1, user);
         final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
                 JonathanSelectorTest.TWENTY, tape2, user);
 
@@ -243,10 +248,10 @@ public final class JonathanSelectorTest {
         // Tape 2
         final Queue queue2 = HelperControl.addFPOT(fpot2, (byte) 1);
 
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                resource.getMediaType());
-        final Queue actual = new JonathanSelector().selectBestQueueForUser(queues,
-                resource, user);
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(resource.getMediaType());
+        final Queue actual = new JonathanSelector().selectBestQueueForUser(
+                queues, resource, user);
         final Queue expected = queue2;
 
         Assert.assertEquals(expected, actual);
@@ -257,7 +262,7 @@ public final class JonathanSelectorTest {
      */
     @Test
     public void testBestQueue05() {
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
 
         boolean failed = false;
         try {
@@ -282,8 +287,8 @@ public final class JonathanSelectorTest {
      */
     @Test
     public void testBestQueue06() throws TReqSException {
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                MEDIA_TYPE_1);
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE);
 
         boolean failed = false;
         try {
@@ -308,9 +313,9 @@ public final class JonathanSelectorTest {
      */
     @Test
     public void testBestQueue07() throws TReqSException {
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                resource.getMediaType());
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(resource.getMediaType());
 
         boolean failed = false;
         try {
@@ -332,7 +337,7 @@ public final class JonathanSelectorTest {
      */
     @Test
     public void testBestUser01() {
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
 
         boolean failed = false;
         try {
@@ -356,8 +361,8 @@ public final class JonathanSelectorTest {
      */
     @Test
     public void testBestUser02() throws TReqSException {
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                MEDIA_TYPE_1);
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(MEDIA_TYPE);
 
         boolean failed = false;
         try {
@@ -381,9 +386,9 @@ public final class JonathanSelectorTest {
      */
     @Test
     public void testBestUser03() throws TReqSException {
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                resource.getMediaType());
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(resource.getMediaType());
 
         boolean failed = false;
         try {
@@ -408,18 +413,20 @@ public final class JonathanSelectorTest {
     @Test
     public void testBestUser04() throws TReqSException {
         final User user = new User("username1");
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
-        final File file = new File("filename", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
+        final File file = new File("filename",
+                JonathanSelectorTest.THREE_HUNDRED);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final FilePositionOnTape fpot = new FilePositionOnTape(file,
                 JonathanSelectorTest.TWENTY, tape, user);
         HelperControl.addFPOT(fpot, (byte) 1);
         resource.setUserAllocation(user, (byte) NUMBER_5);
         resource.increaseUsedResources(user);
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                resource.getMediaType());
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(resource.getMediaType());
 
-        final User actual = new JonathanSelector().selectBestUser(queues, resource);
+        final User actual = new JonathanSelector().selectBestUser(queues,
+                resource);
         final User expected = user;
 
         Assert.assertEquals(expected, actual);
@@ -433,18 +440,19 @@ public final class JonathanSelectorTest {
      */
     @Test
     public void testBestUser05() throws TReqSException {
-        final Resource resource = new Resource(MEDIA_TYPE_1, (byte) NUMBER_5);
+        final Resource resource = new Resource(MEDIA_TYPE, (byte) NUMBER_5);
 
         final User user1 = new User("username1");
-        final File file1 = new File("filename1", JonathanSelectorTest.THREE_HUNDRED);
-        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE_1);
+        final File file1 = new File("filename1",
+                JonathanSelectorTest.THREE_HUNDRED);
+        final Tape tape1 = new Tape("tapenam1", MEDIA_TYPE);
         final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
                 JonathanSelectorTest.TWENTY, tape1, user1);
         HelperControl.addFPOT(fpot1, (byte) 1);
 
         final User user2 = new User("username2");
         final File file2 = new File("filename2", 400);
-        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_1);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE);
         final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
                 JonathanSelectorTest.TWENTY, tape2, user2);
         HelperControl.addFPOT(fpot2, (byte) 1);
@@ -455,10 +463,11 @@ public final class JonathanSelectorTest {
         resource.increaseUsedResources(user1);
         resource.increaseUsedResources(user1);
         resource.increaseUsedResources(user2);
-        final List<Queue> queues = QueuesController.getInstance().getWaitingQueues(
-                resource.getMediaType());
+        final List<Queue> queues = QueuesController.getInstance()
+                .getWaitingQueues(resource.getMediaType());
 
-        final User actual = new JonathanSelector().selectBestUser(queues, resource);
+        final User actual = new JonathanSelector().selectBestUser(queues,
+                resource);
         final User expected = user2;
         Assert.assertEquals(expected, actual);
     }

@@ -85,6 +85,11 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class DispatcherTest {
     /**
+     * Media type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "media1", "/TAPE");
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
@@ -459,7 +464,7 @@ public final class DispatcherTest {
         MockReadingDAO.setNewRequests(requests);
         final File file = FilesController.getInstance().add(filename, size);
         final Tape tape = TapesController.getInstance().add("tapename",
-                new MediaType((byte) 1, "media1"));
+                MEDIA_TYPE);
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
         MockReadingDAO.setQuantityRequests(1);
@@ -493,7 +498,7 @@ public final class DispatcherTest {
         MockReadingDAO.setNewRequests(requests);
         final File file = FilesController.getInstance().add(filename, size);
         final Tape tape = TapesController.getInstance().add("tapename",
-                new MediaType((byte) 1, "media1"));
+                MEDIA_TYPE);
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
 
@@ -529,7 +534,7 @@ public final class DispatcherTest {
         MockReadingDAO.setNewRequests(requests);
         final File file = FilesController.getInstance().add(filename, size);
         final Tape tape = TapesController.getInstance().add("tapename",
-                new MediaType((byte) 1, "media1"));
+                MEDIA_TYPE);
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
 
@@ -568,7 +573,7 @@ public final class DispatcherTest {
         MockReadingDAO.setNewRequests(requests);
         final File file = FilesController.getInstance().add(filename, size);
         final Tape tape = TapesController.getInstance().add("tapename",
-                new MediaType((byte) 1, "media1"));
+                MEDIA_TYPE);
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
         HSMMockBridge.getInstance().setFileProperties(
@@ -608,7 +613,7 @@ public final class DispatcherTest {
         MockReadingDAO.setNewRequests(requests);
         final File file = FilesController.getInstance().add(filename, size);
         final Tape tape = TapesController.getInstance().add("tapename",
-                new MediaType((byte) 1, "media1"));
+                MEDIA_TYPE);
         FilePositionOnTapesController.getInstance().add(file, tape, 0,
                 new User(username));
         final AbstractPersistanceException exception = new MockPersistanceException(

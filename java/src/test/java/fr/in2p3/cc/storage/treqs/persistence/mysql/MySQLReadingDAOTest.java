@@ -82,7 +82,7 @@ public final class MySQLReadingDAOTest {
      * Media type.
      */
     private static final MediaType MEDIA_TYPE = new MediaType((byte) 2,
-            "media1");
+            "media1", "/TAPE");
     /**
      * 3.
      */
@@ -107,7 +107,7 @@ public final class MySQLReadingDAOTest {
 
         MySQLTests.cleanDatabase();
         final String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (2, \"T10K-B\", 5)";
+                + " VALUES (2, \"T10K-B\", 5, '/TAPE')";
         MySQLBroker.getInstance().executeModification(query);
     }
 

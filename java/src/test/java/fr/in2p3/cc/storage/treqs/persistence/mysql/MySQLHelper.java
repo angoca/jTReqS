@@ -71,13 +71,16 @@ public final class MySQLHelper {
      *            Given name.
      * @param qty
      *            Quantity of available drives.
+     * @param regExp
+     *            Regular expression that describes the name of the media type.
      * @throws TReqSException
      *             If there is a problem in the insertion.
      */
     public static void insertMediaType(final int id, final String name,
-            final int qty) throws TReqSException {
+            final int qty, final String regExp) throws TReqSException {
         final String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (" + id + ", \"" + name + "\", " + qty + ")";
+                + " VALUES (" + id + ", \"" + name + "\", " + qty + ", \""
+                + regExp + "\")";
         MySQLBroker.getInstance().executeModification(query);
     }
 

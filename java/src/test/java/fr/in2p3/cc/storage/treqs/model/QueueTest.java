@@ -69,6 +69,11 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class QueueTest {
     /**
+     * Media Type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "media", "/TAPE");
+    /**
      * Number Fifty.
      */
     private static final int FIFTY = 50;
@@ -151,10 +156,9 @@ public final class QueueTest {
      */
     @Test
     public void testActivate01EndedQueue() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.TEN), QueueTest.FIFTY, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.TEN), QueueTest.FIFTY, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -180,10 +184,9 @@ public final class QueueTest {
      */
     @Test
     public void testActivate02SuspendedQueue() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.TEN), QueueTest.FIFTY, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.TEN), QueueTest.FIFTY, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.suspend();
 
@@ -235,8 +238,8 @@ public final class QueueTest {
 
         new Queue(new FilePositionOnTape(
                 new File("filename", QueueTest.HUNDRED), QueueTest.TEN,
-                new Tape("tapename", new MediaType((byte) 1, "media")),
-                new User("username")), (byte) THREE);
+                new Tape("tapename", MEDIA_TYPE), new User("username")),
+                (byte) THREE);
 
         // This could change the default configuration.
         Configurator.getInstance().deleteValue(Constants.SECTION_QUEUE,
@@ -253,10 +256,9 @@ public final class QueueTest {
      */
     @Test
     public void testOtherMethods01() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         boolean failed = false;
         try {
             queue.setStatus(null);
@@ -279,10 +281,9 @@ public final class QueueTest {
      */
     @Test
     public void testOtherMethods02() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         boolean failed = false;
         try {
             queue.setActivationTime(null);
@@ -305,9 +306,9 @@ public final class QueueTest {
      */
     @Test
     public void testOtherMethods03() throws TReqSException {
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape("tapename",
-                new MediaType((byte) 1, "mediatype")), new User("username"));
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape(
+                "tapename", MEDIA_TYPE), new User("username"));
         final Queue queue = new Queue(fpot1, (byte) QueueTest.FIVE);
 
         queue.activate();
@@ -327,9 +328,9 @@ public final class QueueTest {
     @Test
     public void testOwnerGetNothing01() throws TReqSException {
         final User expected = new User("username");
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), expected), (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), expected), (byte) THREE);
 
         final User actual = queue.getOwner();
 
@@ -344,10 +345,9 @@ public final class QueueTest {
      */
     @Test
     public void testPositionBefore01() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         short position = 1000;
         queue.setHeadPosition(position);
@@ -381,7 +381,7 @@ public final class QueueTest {
         final int position1 = QueueTest.FIFTY;
         final int position2 = QueueTest.HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username = "user";
 
         final Tape tape = new Tape(tapename, mediaType);
@@ -389,14 +389,14 @@ public final class QueueTest {
 
         // Sets the first file.
         final File file1 = new File(filename1, QueueTest.TEN);
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
-                tape, owner);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                position1, tape, owner);
         final Queue queue = new Queue(fpot1, (byte) 1);
 
         // Sets the second file.
         final File file2 = new File(filename2, QueueTest.TEN);
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
-                tape, owner);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                position2, tape, owner);
         queue.registerFPOT(fpot2, (byte) 1);
 
         queue.changeToActivated();
@@ -427,9 +427,9 @@ public final class QueueTest {
     @Test
     public void testReading01GetNull() throws TReqSException {
         final String filename = "filename2";
-        final FilePositionOnTape fpot = new FilePositionOnTape(new File(filename,
-                QueueTest.TEN), 1, new Tape("tapename", new MediaType((byte) 1,
-                "media")), new User("username"));
+        final FilePositionOnTape fpot = new FilePositionOnTape(new File(
+                filename, QueueTest.TEN), 1, new Tape("tapename", MEDIA_TYPE),
+                new User("username"));
         final Queue queue = new Queue(fpot, (byte) 1);
 
         final String actual = queue.getNextReading().getMetaData().getFile()
@@ -453,18 +453,18 @@ public final class QueueTest {
         final int position1 = QueueTest.FIFTY;
         final int position2 = QueueTest.HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username = "user";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner = new User(username);
 
         final File file1 = new File(filename1, QueueTest.TEN);
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
-                tape, owner);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                position1, tape, owner);
         final File file2 = new File(filename2, QueueTest.TEN);
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
-                tape, owner);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                position2, tape, owner);
 
         // The queue is just created.
         final Queue queue = new Queue(fpot1, (byte) 1);
@@ -533,18 +533,18 @@ public final class QueueTest {
         final int position1 = QueueTest.FIFTY;
         final int position2 = QueueTest.HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username = "user";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner = new User(username);
 
         final File file1 = new File(filename1, QueueTest.TEN);
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
-                tape, owner);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                position1, tape, owner);
         final File file2 = new File(filename2, QueueTest.TEN);
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
-                tape, owner);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                position2, tape, owner);
 
         // The queue is just created.
         final Queue queue = new Queue(fpot1, (byte) THREE);
@@ -614,18 +614,18 @@ public final class QueueTest {
         final int position1 = QueueTest.FIFTY;
         final int position2 = QueueTest.HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username = "user";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner = new User(username);
 
         final File file1 = new File(filename1, QueueTest.TEN);
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
-                tape, owner);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                position1, tape, owner);
         final File file2 = new File(filename2, QueueTest.TEN);
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
-                tape, owner);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                position2, tape, owner);
 
         // The queue is just created.
         final Queue queue = new Queue(fpot1, (byte) THREE);
@@ -695,18 +695,18 @@ public final class QueueTest {
         final int position1 = QueueTest.FIFTY;
         final int position2 = QueueTest.HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username = "user";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner = new User(username);
 
         final File file1 = new File(filename1, QueueTest.TEN);
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, position1,
-                tape, owner);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1,
+                position1, tape, owner);
         final File file2 = new File(filename2, QueueTest.TEN);
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, position2,
-                tape, owner);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
+                position2, tape, owner);
 
         // The queue is just created.
         final Queue queue = new Queue(fpot1, (byte) 1);
@@ -770,10 +770,9 @@ public final class QueueTest {
      */
     @Test
     public void testRegisterFile01Null() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
 
         final FilePositionOnTape file = null;
 
@@ -799,10 +798,10 @@ public final class QueueTest {
      */
     @Test
     public void testRegisterFile02InEndedQueue() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.HUNDRED, tape, new User(
-                "username"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.HUNDRED, tape,
+                new User("username"));
 
         final Queue queue = new Queue(fpot1, (byte) 1);
         queue.changeToActivated();
@@ -823,23 +822,23 @@ public final class QueueTest {
     }
 
     /**
-     * Tests that it is possible to register a file in an suspended queue.
+     * Tests that it is possible to register a file in an suspended queue. TODO
+     * review because the media type name is diff.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testRegisterFile03InSuspendedQueue() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.suspend();
 
-        final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape("tapename",
-                new MediaType((byte) 1, "mediatype")), new User("username"));
+        final FilePositionOnTape fpot = new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape(
+                "tapename", MEDIA_TYPE), new User("username"));
 
         queue.registerFPOT(fpot, (byte) 1);
     }
@@ -855,17 +854,17 @@ public final class QueueTest {
     public void testRegisterFile04InActivatedQueueBefore()
             throws TReqSException {
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                mediaType), new User("username")), (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", mediaType), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.setHeadPosition((short) QueueTest.HUNDRED);
 
-        final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
-                QueueTest.TEN), QueueTest.FIFTY, new Tape(tapename, mediaType),
-                new User("owner"));
+        final FilePositionOnTape fpot = new FilePositionOnTape(new File(
+                "filename", QueueTest.TEN), QueueTest.FIFTY, new Tape(tapename,
+                mediaType), new User("owner"));
 
         boolean failed = false;
         try {
@@ -893,16 +892,17 @@ public final class QueueTest {
         final String filename = "testTwice";
         final int position = QueueTest.FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                mediaType), new User("username")), (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", mediaType), new User("username")), (byte) THREE);
         queue.changeToActivated();
         final User owner = new User("user");
 
-        final FilePositionOnTape fpot = new FilePositionOnTape(new File(filename,
-                QueueTest.TEN), position, new Tape(tapename, mediaType), owner);
+        final FilePositionOnTape fpot = new FilePositionOnTape(new File(
+                filename, QueueTest.TEN), position, new Tape(tapename,
+                mediaType), owner);
 
         Assert.assertFalse("Registering file in an activated queue after head",
                 queue.registerFPOT(fpot, (byte) 1));
@@ -919,20 +919,20 @@ public final class QueueTest {
         final String filename = "testTwice";
         final int position = QueueTest.FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
 
         final Tape tape = new Tape(tapename, mediaType);
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, tape, new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, tape, new User(
+                "username")), (byte) THREE);
         final User owner = new User("user");
 
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(filename,
-                QueueTest.TEN), position, tape, owner);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(
+                filename, QueueTest.TEN), position, tape, owner);
         queue.registerFPOT(fpot1, (byte) 1);
 
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(new File(filename,
-                QueueTest.TEN), position, tape, owner);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(new File(
+                filename, QueueTest.TEN), position, tape, owner);
 
         Assert.assertTrue("Registering twice a file in the same position",
                 queue.registerFPOT(fpot2, (byte) 1));
@@ -956,7 +956,7 @@ public final class QueueTest {
         final int position3 = QueueTest.THREE_HUNDRED_FIFTY;
         final int position4 = 450;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
         final String username2 = "user2";
 
@@ -965,8 +965,8 @@ public final class QueueTest {
         final User user2 = new User(username2);
 
         // User 1
-        final Queue queue = new Queue(new FilePositionOnTape(new File(filename1,
-                QueueTest.TEN), position1, tape, user1), (byte) 1);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                filename1, QueueTest.TEN), position1, tape, user1), (byte) 1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename2,
                 QueueTest.TEN), position2, tape, user1), (byte) 1);
@@ -999,15 +999,15 @@ public final class QueueTest {
         final int position2 = QueueTest.TWO_HUNDRED_FIFTY;
         final int position3 = QueueTest.THREE_HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
         final String username2 = "user2";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner1 = new User(username1);
         final User owner2 = new User(username2);
-        final Queue queue = new Queue(new FilePositionOnTape(new File(filename1,
-                QueueTest.TEN), position1, tape, owner1), (byte) 1);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                filename1, QueueTest.TEN), position1, tape, owner1), (byte) 1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename2,
                 QueueTest.TEN), position2, tape, owner1), (byte) 1);
@@ -1036,15 +1036,15 @@ public final class QueueTest {
         final int position2 = QueueTest.TWO_HUNDRED_FIFTY;
         final int position3 = QueueTest.THREE_HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
         final String username2 = "user2";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner1 = new User(username1);
         final User owner2 = new User(username2);
-        final Queue queue = new Queue(new FilePositionOnTape(new File(filename1,
-                QueueTest.TEN), position1, tape, owner1), (byte) 1);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                filename1, QueueTest.TEN), position1, tape, owner1), (byte) 1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename2,
                 QueueTest.TEN), position2, tape, owner2), (byte) 1);
@@ -1072,15 +1072,15 @@ public final class QueueTest {
         final int position2 = QueueTest.TWO_HUNDRED_FIFTY;
         final int position3 = QueueTest.THREE_HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
         final String username2 = "user2";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner1 = new User(username1);
         final User owner2 = new User(username2);
-        final Queue queue = new Queue(new FilePositionOnTape(new File(filename1,
-                QueueTest.TEN), position1, tape, owner1), (byte) 1);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                filename1, QueueTest.TEN), position1, tape, owner1), (byte) 1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename2,
                 QueueTest.TEN), position2, tape, owner2), (byte) 1);
@@ -1112,7 +1112,7 @@ public final class QueueTest {
         final int position4 = 450;
         final int position5 = 550;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
         final String username2 = "user2";
         final String username3 = "user3";
@@ -1121,8 +1121,8 @@ public final class QueueTest {
         final User owner1 = new User(username1);
         final User owner2 = new User(username2);
         final User owner3 = new User(username3);
-        final Queue queue = new Queue(new FilePositionOnTape(new File(filename1,
-                QueueTest.TEN), position1, tape, owner1), (byte) 1);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                filename1, QueueTest.TEN), position1, tape, owner1), (byte) 1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename2,
                 QueueTest.TEN), position2, tape, owner1), (byte) 1);
@@ -1155,7 +1155,7 @@ public final class QueueTest {
         final int position2 = QueueTest.TWO_HUNDRED_FIFTY;
         final int position3 = QueueTest.THREE_HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
         final String username2 = "user2";
         final String username3 = "user3";
@@ -1164,8 +1164,8 @@ public final class QueueTest {
         final User owner1 = new User(username1);
         final User owner2 = new User(username2);
         final User owner3 = new User(username3);
-        final Queue queue = new Queue(new FilePositionOnTape(new File(filename1,
-                QueueTest.TEN), position1, tape, owner1), (byte) 1);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                filename1, QueueTest.TEN), position1, tape, owner1), (byte) 1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename2,
                 QueueTest.TEN), position2, tape, owner2), (byte) 1);
@@ -1192,13 +1192,13 @@ public final class QueueTest {
         final int position2 = QueueTest.TWO_HUNDRED_FIFTY;
         final int position3 = QueueTest.THREE_HUNDRED_FIFTY;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
 
         final Tape tape = new Tape(tapename, mediaType);
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, tape, new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, tape, new User(
+                "username")), (byte) THREE);
         final User owner1 = new User(username1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename1,
@@ -1232,15 +1232,15 @@ public final class QueueTest {
         final int position4 = 450;
         final int position5 = 550;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
         final String username1 = "user1";
         final String username2 = "user2";
 
         final Tape tape = new Tape(tapename, mediaType);
         final User owner1 = new User(username1);
         final User owner2 = new User(username2);
-        final Queue queue = new Queue(new FilePositionOnTape(new File(filename1,
-                QueueTest.TEN), position1, tape, owner1), (byte) 1);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                filename1, QueueTest.TEN), position1, tape, owner1), (byte) 1);
 
         queue.registerFPOT(new FilePositionOnTape(new File(filename2,
                 QueueTest.TEN), position2, tape, owner2), (byte) 1);
@@ -1259,23 +1259,23 @@ public final class QueueTest {
     }
 
     /**
-     * Tries to set a negative retry.
+     * Tries to set a negative retry. TODO review because the media tape name is
+     * diff.
      *
      * @throws TReqSException
      *             Never.
      */
     @Test
     public void testRegisterFile15NegativeRetry() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape("tapename",
-                new MediaType((byte) 1, "mediatype")), new User("username"));
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape(
+                "tapename", MEDIA_TYPE), new User("username"));
 
         boolean failed = false;
         try {
@@ -1302,16 +1302,16 @@ public final class QueueTest {
         final String filename = "testBig";
         final int position = 100000;
         final String tapename = "tapename";
-        final MediaType mediaType = new MediaType((byte) 1, "mediaType");
+        final MediaType mediaType = MEDIA_TYPE;
 
         final Tape tape = new Tape(tapename, mediaType);
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, tape, new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, tape, new User(
+                "username")), (byte) THREE);
         final User owner = new User("user");
 
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(filename,
-                QueueTest.TEN), position, tape, owner);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(
+                filename, QueueTest.TEN), position, tape, owner);
         queue.registerFPOT(fpot1, (byte) 1);
     }
 
@@ -1323,10 +1323,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetCreationTime01() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
 
         boolean failed = false;
         try {
@@ -1352,10 +1351,9 @@ public final class QueueTest {
     public void testSetEndTime01() throws TReqSException {
         final Calendar endime = new GregorianCalendar(2008, QueueTest.FIVE, 11);
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
 
         boolean failed = false;
@@ -1380,10 +1378,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetEndTime02() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
 
         boolean failed = false;
@@ -1408,10 +1405,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetPosition01() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
 
         boolean failed = false;
         try {
@@ -1435,10 +1431,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetPosition02() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -1464,10 +1459,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetPosition03() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.setHeadPosition((short) QueueTest.FIFTY);
 
@@ -1493,10 +1487,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetSuspendDuration01() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
 
         boolean failed = false;
         try {
@@ -1520,10 +1513,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetSuspendedtime01() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         boolean failed = false;
         try {
             queue.setSuspensionTime(new GregorianCalendar());
@@ -1546,10 +1538,9 @@ public final class QueueTest {
      */
     @Test
     public void testSetSuspendedtime02() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         boolean failed = false;
         try {
             queue.setSuspensionTime(null);
@@ -1572,10 +1563,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateActivatedActivated01() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
 
         boolean failed = false;
@@ -1600,10 +1590,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateActivatedCreated02() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
 
         boolean failed = false;
@@ -1629,10 +1618,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateCreatedCreatedState03() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
 
         boolean failed = false;
         try {
@@ -1658,10 +1646,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateCreatedEndedState04() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
 
         queue.changeToEnded();
     }
@@ -1674,10 +1661,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateCreatedSuspendedState05() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
 
         boolean failed = false;
         try {
@@ -1701,10 +1687,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateEndedActivated06() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -1730,10 +1715,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateEndedCreated07() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -1759,10 +1743,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateEndedEnded08() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -1788,10 +1771,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateEndedSuspended09() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -1818,10 +1800,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateNormal14() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.suspend();
         queue.unsuspend();
@@ -1838,10 +1819,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateSuspendedActivated10() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.suspend();
 
@@ -1867,10 +1847,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateSuspendedEnded11() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.suspend();
 
@@ -1897,10 +1876,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateSuspendedSuspended12() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.suspend();
 
@@ -1926,10 +1904,9 @@ public final class QueueTest {
      */
     @Test
     public void testStateSuspendedSuspendedSuspended13() throws TReqSException {
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         final short max = Configurator.getInstance().getShortValue(
                 Constants.SECTION_QUEUE, Constants.MAX_SUSPEND_RETRIES,
                 DefaultProperties.MAX_SUSPEND_RETRIES);
@@ -1966,9 +1943,9 @@ public final class QueueTest {
      */
     @Test
     public void testSuspension01() throws TReqSException {
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape("tapename",
-                new MediaType((byte) 1, "mediatype")), new User("username"));
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.HUNDRED, new Tape(
+                "tapename", MEDIA_TYPE), new User("username"));
         final Queue queue = new Queue(fpot1, (byte) QueueTest.FIVE);
 
         queue.activate();
@@ -1999,10 +1976,9 @@ public final class QueueTest {
         final Calendar activationTime = new GregorianCalendar(NUMBER_3000,
                 QueueTest.FIVE, 13);
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -2028,13 +2004,12 @@ public final class QueueTest {
      */
     @Test
     public void testTime02ActivationBeforeCreation() throws TReqSException {
-        final Calendar activationTime = new GregorianCalendar(2008, QueueTest.FIVE,
-                14);
+        final Calendar activationTime = new GregorianCalendar(2008,
+                QueueTest.FIVE, 14);
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.setStatus(QueueStatus.ACTIVATED);
 
         boolean failed = false;
@@ -2062,10 +2037,9 @@ public final class QueueTest {
     public void testTime03CreationAfterActivation() throws TReqSException {
         final Calendar creationTime = new GregorianCalendar(NUMBER_3000, 8, 18);
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
 
         boolean failed = false;
@@ -2093,10 +2067,9 @@ public final class QueueTest {
     public void testTime04CreationAfterEnd() throws TReqSException {
         final Calendar creationTime = new GregorianCalendar(NUMBER_3000, 11, 21);
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.changeToEnded();
 
@@ -2124,10 +2097,9 @@ public final class QueueTest {
     public void testTime05EndBeforeCreation() throws TReqSException {
         final Calendar endime = new GregorianCalendar(2008, QueueTest.FIVE, 11);
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                QueueTest.HUNDRED), QueueTest.TEN, new Tape("tapename",
-                new MediaType((byte) 1, "media")), new User("username")),
-                (byte) THREE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", QueueTest.HUNDRED), QueueTest.TEN, new Tape(
+                "tapename", MEDIA_TYPE), new User("username")), (byte) THREE);
         queue.changeToActivated();
         queue.setStatus(QueueStatus.ENDED);
 
@@ -2158,9 +2130,9 @@ public final class QueueTest {
         final byte retries = THREE;
         final String username = "username";
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                size), QueueTest.TEN, new Tape(tapename, new MediaType(
-                (byte) 1, "media")), new User(username)), retries);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", size), QueueTest.TEN,
+                new Tape(tapename, MEDIA_TYPE), new User(username)), retries);
 
         final String actual = queue.toString();
         final String expectedPrefix = "Queue{ name: " + tapename + ", status: "
@@ -2198,9 +2170,9 @@ public final class QueueTest {
         final byte retries = THREE;
         final String username = "username";
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                size), QueueTest.TEN, new Tape(tapename, new MediaType(
-                (byte) 1, "media")), new User(username)), retries);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", size), QueueTest.TEN,
+                new Tape(tapename, MEDIA_TYPE), new User(username)), retries);
         queue.changeToActivated();
 
         final String actual = queue.toString();
@@ -2239,9 +2211,9 @@ public final class QueueTest {
         final byte retries = THREE;
         final String username = "username";
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                size), QueueTest.TEN, new Tape(tapename, new MediaType(
-                (byte) 1, "media")), new User(username)), retries);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", size), QueueTest.TEN,
+                new Tape(tapename, MEDIA_TYPE), new User(username)), retries);
         queue.changeToActivated();
         queue.suspend();
 
@@ -2281,9 +2253,9 @@ public final class QueueTest {
         final byte retries = THREE;
         final String username = "username";
 
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                size), QueueTest.TEN, new Tape(tapename, new MediaType(
-                (byte) 1, "media")), new User(username)), retries);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", size), QueueTest.TEN,
+                new Tape(tapename, MEDIA_TYPE), new User(username)), retries);
         queue.changeToActivated();
         queue.changeToEnded();
 

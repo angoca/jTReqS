@@ -51,12 +51,18 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class TapeTest {
     /**
+     * Media type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1, "T10K",
+            "/TAPE");
+
+    /**
      * Tests to create a tape with all attributes passed as parameters.
      */
     @Test
     public void testConstructor01() {
         final String tapename = "tapename";
-        final MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final MediaType mediatype = MEDIA_TYPE;
         final Tape tape = new Tape(tapename, mediatype);
 
         Assert.assertEquals("Complete constructor", mediatype,
@@ -68,7 +74,7 @@ public final class TapeTest {
      */
     @Test
     public void testConstructor02() {
-        final MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final MediaType mediatype = MEDIA_TYPE;
 
         boolean failed = false;
         try {
@@ -90,7 +96,7 @@ public final class TapeTest {
     @Test
     public void testConstructor03() {
         final String tapename = "";
-        final MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final MediaType mediatype = MEDIA_TYPE;
 
         boolean failed = false;
         try {
@@ -133,7 +139,7 @@ public final class TapeTest {
     @Test
     public void testToString01() {
         final String tapename = "tapename";
-        final MediaType mediatype = new MediaType((byte) 1, "T10K");
+        final MediaType mediatype = MEDIA_TYPE;
         final Tape tape = new Tape(tapename, mediatype);
 
         final String actual = tape.toString();

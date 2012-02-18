@@ -108,11 +108,14 @@ public final class MockConfigurationDAO implements ConfigurationDAO {
         final ArrayList<Resource> drives = new ArrayList<Resource>();
         byte id = 1;
         String name = "T10K-A";
-        MediaType media = MediaTypesController.getInstance().add(name, id);
+        String regExpId = "/TAPA";
+        MediaType media = MediaTypesController.getInstance().add(name, id,
+                regExpId);
         drives.add(new Resource(media, (byte) 5));
         id = 2;
         name = "T10K-B";
-        media = MediaTypesController.getInstance().add(name, id);
+        regExpId = "TAPB";
+        media = MediaTypesController.getInstance().add(name, id, regExpId);
         drives.add(new Resource(media, (byte) 8));
 
         LOGGER.trace("< getMediaAllocations");
