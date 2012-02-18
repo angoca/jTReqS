@@ -94,8 +94,9 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
                 final byte id = result.getByte(index++);
                 final String name = result.getString(index++);
                 final short qty = result.getShort(index++);
+                final String regExpId = result.getString(index++);
                 final MediaType media = MediaTypesController.getInstance().add(
-                        name, id);
+                        name, id, regExpId);
                 final Resource res = new Resource(media, qty);
                 mediaTypeList.add(res);
             }

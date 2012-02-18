@@ -111,6 +111,11 @@ public final class MySQLStatements {
      */
     static final String MEDIATYPES_NAME = "name";
     /**
+     * Media types table: Regular expression that describes the name of the
+     * media type.
+     */
+    static final String MEDIATYPES_REG_EXP = "regex";
+    /**
      * Queues table name.
      */
     public static final String QUEUES = "jqueues";
@@ -312,7 +317,7 @@ public final class MySQLStatements {
      */
     public static final String SQL_MEDIATYPES_SELECT = "SELECT "
             + MEDIATYPES_ID + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES
-            + " FROM " + MEDIATYPES;
+            + ", " + MEDIATYPES_REG_EXP + " FROM " + MEDIATYPES;
 
     /**
      * SQL statement to insert a new queue in the database.
