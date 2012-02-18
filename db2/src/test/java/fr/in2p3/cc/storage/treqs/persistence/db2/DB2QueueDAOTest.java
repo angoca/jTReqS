@@ -83,7 +83,7 @@ public final class DB2QueueDAOTest {
      * Media type.
      */
     private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
-            "media1");
+            "media1", "/TAPE");
     /**
      * Number three.
      */
@@ -130,7 +130,7 @@ public final class DB2QueueDAOTest {
         DB2Tests.cleanDatabase();
 
         final String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (1, 'T10K-A', 5)";
+                + " VALUES (1, 'T10K-A', 5, '/TAPA')";
         DB2TestBroker.getInstance().executeModification(query);
     }
 
@@ -298,8 +298,8 @@ public final class DB2QueueDAOTest {
     @Test
     public void testUpdateAddRequest01() throws TReqSException {
         final FilePositionOnTape fpot = new FilePositionOnTape(new File(
-                "filename", 50), 0, new Tape("tapnmup1", MEDIA_TYPE),
-                new User("username"));
+                "filename", 50), 0, new Tape("tapnmup1", MEDIA_TYPE), new User(
+                "username"));
         final Queue queue = new Queue(fpot, (byte) DB2QueueDAOTest.THREE);
 
         new DB2QueueDAO().updateAddRequest(queue);
