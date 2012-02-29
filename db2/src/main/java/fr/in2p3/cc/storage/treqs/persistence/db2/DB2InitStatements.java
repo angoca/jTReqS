@@ -123,6 +123,10 @@ public final class DB2InitStatements {
      */
     private static final String MEDIATYPES_NAME = DB2Statements.MEDIATYPES_NAME;
     /**
+     * Media types table: Regular expression of the media type.
+     */
+    private static final String MEDIATYPES_REG_EXP = DB2Statements.MEDIATYPES_REG_EXP;
+    /**
      * Queues table name.
      */
     static final String QUEUES = DB2Statements.QUEUES;
@@ -355,7 +359,8 @@ public final class DB2InitStatements {
     static final String STRUCTURE_TABLE_MEDIATYPES = '(' + MEDIATYPES_ID
             + " SMALLINT NOT NULL, " + MEDIATYPES_NAME
             + " VARCHAR(16) NOT NULL, " + MEDIATYPES_DRIVES
-            + " SMALLINT DEFAULT 0 NOT NULL)";
+            + " SMALLINT DEFAULT 0 NOT NULL, " + MEDIATYPES_REG_EXP
+            + " VARCHAR(32) NOT NULL)";
 
     /**
      * Structure of the table queues. The columns were sorted in order to have

@@ -84,7 +84,7 @@ public final class DB2ReadingDAOTest {
      * Media type.
      */
     private static final MediaType MEDIA_TYPE = new MediaType((byte) 2,
-            "media1");
+            "media1", "/TAP2");
     /**
      * 3.
      */
@@ -109,7 +109,7 @@ public final class DB2ReadingDAOTest {
 
         DB2Tests.cleanDatabase();
         final String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (2, 'T10K-B', 5)";
+                + " VALUES (2, 'T10K-B', 5, '/TAPB')";
         DB2TestBroker.getInstance().executeModification(query);
     }
 

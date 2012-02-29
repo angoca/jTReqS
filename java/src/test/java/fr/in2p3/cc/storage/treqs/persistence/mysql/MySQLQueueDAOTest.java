@@ -81,7 +81,7 @@ public final class MySQLQueueDAOTest {
      * Media type.
      */
     private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
-            "media1");
+            "media1", "/TAPE");
     /**
      * Number three.
      */
@@ -128,7 +128,7 @@ public final class MySQLQueueDAOTest {
         MySQLTests.cleanDatabase();
 
         final String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (1, \"T10K-A\", 5)";
+                + " VALUES (1, \"T10K-A\", 5, '/TAPA')";
         MySQLBroker.getInstance().executeModification(query);
     }
 

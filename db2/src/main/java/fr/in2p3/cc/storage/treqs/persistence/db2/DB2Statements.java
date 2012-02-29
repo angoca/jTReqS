@@ -126,6 +126,11 @@ public class DB2Statements {
      */
     static final String MEDIATYPES_NAME = "name";
     /**
+     * Media types table: Regular expression that describes the name of the
+     * media type.
+     */
+    static final String MEDIATYPES_REG_EXP = "regex";
+    /**
      * Queues table name.
      */
     public static final String QUEUES = A_SCH_DATA + ".queues";

@@ -55,6 +55,12 @@ import fr.in2p3.cc.storage.treqs.model.Tape;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class TapesControllerTest {
     /**
+     * Media type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "mediatype", "/TAPE");
+
+    /**
      * Destroys everything at the end.
      */
     @After
@@ -67,7 +73,7 @@ public final class TapesControllerTest {
      */
     @Test
     public void testAdd01() {
-        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final MediaType mediatype = MEDIA_TYPE;
 
         boolean failed = false;
         try {
@@ -114,7 +120,7 @@ public final class TapesControllerTest {
     @Test
     public void testAdd03() throws Exception {
         final String tapename = "tapename";
-        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final MediaType mediatype = MEDIA_TYPE;
 
         TapesController.getInstance().add(tapename, mediatype);
     }
@@ -124,7 +130,7 @@ public final class TapesControllerTest {
      */
     @Test
     public void testCreate01() {
-        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final MediaType mediatype = MEDIA_TYPE;
 
         boolean failed = false;
         try {
@@ -170,7 +176,7 @@ public final class TapesControllerTest {
     @Test
     public void testCreate03() throws Exception {
         final String tapename = "tapename";
-        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final MediaType mediatype = MEDIA_TYPE;
 
         TapesController.getInstance().create(tapename, mediatype);
     }
@@ -184,7 +190,7 @@ public final class TapesControllerTest {
     @Test
     public void testCreateTape01() throws TReqSException {
         final String tapename = "tapename";
-        final MediaType mediatype = new MediaType((byte) 1, "mediatype");
+        final MediaType mediatype = MEDIA_TYPE;
         TapesController.getInstance().create("tapename", mediatype);
 
         Assert.assertTrue("Create tape", ((Tape) TapesController.getInstance()

@@ -80,7 +80,8 @@ public final class DB2ConfigurationDAO implements ConfigurationDAO {
 	private UserContext ctx;
 
 	// Declare the iterator (Named) for the media types.
-	#sql static iterator IterMedia (byte id, String name, short drives);
+	#sql static iterator IterMedia (byte id, String name, short drives, String
+	    regex);
 	/**
 	 * Iterator for the list of media.
 	 */
@@ -108,8 +109,8 @@ public final class DB2ConfigurationDAO implements ConfigurationDAO {
 		try {
 			ctx = new UserContext(DB2Broker.getInstance().getConnection());
 			final ExecutionContext execCtx = ctx.getExecutionContext();
-			#sql [ctx] iterMedia = { SELECT ID, NAME, DRIVES FROM TAPE.MEDIATYPES
-			    FOR READ ONLY };
+			#sql [ctx] iterMedia = { SELECT ID, NAME, DRIVES, REGEX FROM
+			    TAPE.MEDIATYPES FOR READ ONLY };
 			if ((sqlWarn = execCtx.getWarnings()) != null) {
 				LOGGER.warn("SQL Warning", sqlWarn);
 			}
@@ -118,8 +119,9 @@ public final class DB2ConfigurationDAO implements ConfigurationDAO {
 				final byte id = iterMedia.id();
 				final String name = iterMedia.name();
 				final short qty = iterMedia.drives();
+				final String regexp = iterMedia.regex();
 				final MediaType media = MediaTypesController.getInstance().add(
-						name, id);
+						name, id, regexp);
 				final Resource res = new Resource(media, qty);
 				mediaTypeList.add(res);
 			}

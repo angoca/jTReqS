@@ -94,12 +94,12 @@ public final class QueuesControllerTest {
      * Media type 1 for tests.
      */
     private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
-            "T10K-a");
+            "T10K-a", "/TAPA");
     /**
      * Media type 2 for tests.
      */
     private static final MediaType MEDIA_TYPE_2 = new MediaType((byte) 2,
-            "T10K-b");
+            "T10K-b", "/TAPB");
     /**
      * Name of the tape 1.
      */

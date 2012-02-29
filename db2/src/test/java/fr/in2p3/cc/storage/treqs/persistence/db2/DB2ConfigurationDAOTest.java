@@ -127,7 +127,7 @@ public final class DB2ConfigurationDAOTest {
         DB2TestBroker.getInstance().connect();
 
         final String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (1, 'T10K-A', 5)";
+                + " VALUES (1, 'T10K-A', 5, '/TAPA')";
         DB2TestBroker.getInstance().executeModification(query);
 
         final List<Resource> actual = new DB2ConfigurationDAO()
@@ -149,10 +149,10 @@ public final class DB2ConfigurationDAOTest {
         DB2TestBroker.getInstance().connect();
 
         String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (2, 'T10K-B', 7)";
+                + " VALUES (2, 'T10K-B', 7, '/TAPB')";
         DB2TestBroker.getInstance().executeModification(query);
         query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (3, 'T10K-C', 8)";
+                + " VALUES (3, 'T10K-C', 8, '/TAPC')";
         DB2TestBroker.getInstance().executeModification(query);
 
         final List<Resource> actual = new DB2ConfigurationDAO()
@@ -194,7 +194,7 @@ public final class DB2ConfigurationDAOTest {
         DB2TestBroker.getInstance().connect();
 
         String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (2, 'T10K-B', 7)";
+                + " VALUES (2, 'T10K-B', 7, '/TAPB')";
         DB2TestBroker.getInstance().executeModification(query);
 
         query = "INSERT INTO " + DB2Statements.ALLOCATIONS
@@ -222,10 +222,10 @@ public final class DB2ConfigurationDAOTest {
         DB2TestBroker.getInstance().connect();
 
         String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (2, 'T10K-B', 7)";
+                + " VALUES (2, 'T10K-B', 7, '/TAPB')";
         DB2TestBroker.getInstance().executeModification(query);
         query = "INSERT INTO " + DB2Statements.MEDIATYPES
-                + " VALUES (3, 'T10K-C', 8)";
+                + " VALUES (3, 'T10K-C', 8, '/TAPC')";
         DB2TestBroker.getInstance().executeModification(query);
 
         query = "INSERT INTO " + DB2Statements.ALLOCATIONS

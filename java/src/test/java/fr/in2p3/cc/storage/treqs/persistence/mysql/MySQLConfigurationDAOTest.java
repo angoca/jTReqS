@@ -126,7 +126,7 @@ public final class MySQLConfigurationDAOTest {
         MySQLBroker.getInstance().connect();
 
         final String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (1, \"T10K-A\", 5)";
+                + " VALUES (1, \"T10K-A\", 5, '/TAPA')";
         MySQLBroker.getInstance().executeModification(query);
 
         final List<Resource> actual = new MySQLConfigurationDAO()
@@ -148,10 +148,10 @@ public final class MySQLConfigurationDAOTest {
         MySQLBroker.getInstance().connect();
 
         String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (2, \"T10K-B\", 7)";
+                + " VALUES (2, \"T10K-B\", 7, '/TAPB')";
         MySQLBroker.getInstance().executeModification(query);
         query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (3, \"T10K-C\", 8)";
+                + " VALUES (3, \"T10K-C\", 8, '/TAPC')";
         MySQLBroker.getInstance().executeModification(query);
 
         final List<Resource> actual = new MySQLConfigurationDAO()
@@ -193,7 +193,7 @@ public final class MySQLConfigurationDAOTest {
         MySQLBroker.getInstance().connect();
 
         String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (2, \"T10K-B\", 7)";
+                + " VALUES (2, \"T10K-B\", 7, '/TAPB')";
         MySQLBroker.getInstance().executeModification(query);
 
         query = "INSERT INTO " + MySQLStatements.ALLOCATIONS
@@ -221,10 +221,10 @@ public final class MySQLConfigurationDAOTest {
         MySQLBroker.getInstance().connect();
 
         String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (2, \"T10K-B\", 7)";
+                + " VALUES (2, \"T10K-B\", 7, '/TAPB')";
         MySQLBroker.getInstance().executeModification(query);
         query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (3, \"T10K-C\", 8)";
+                + " VALUES (3, \"T10K-C\", 8, '/TAPC')";
         MySQLBroker.getInstance().executeModification(query);
 
         query = "INSERT INTO " + MySQLStatements.ALLOCATIONS
