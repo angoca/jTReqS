@@ -51,75 +51,75 @@ import fr.in2p3.cc.storage.treqs.persistence.db2.exception.AbstractDB2Exception;
  */
 public final class DB2RequestsDAO {
 
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(DB2RequestsDAO.class);
-	/**
-	 * Name for requests table.
-	 */
-	public static final String REQUESTS = DB2Statements.REQUESTS;
-	/**
-	 * Name for the status column in requests table.
-	 */
-	public static final String REQUESTS_STATUS = DB2Statements.REQUESTS_STATUS;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DB2RequestsDAO.class);
+    /**
+     * Name for requests table.
+     */
+    public static final String REQUESTS = DB2Statements.REQUESTS;
+    /**
+     * Name for the status column in requests table.
+     */
+    public static final String REQUESTS_STATUS = DB2Statements.REQUESTS_STATUS;
 
-	/**
-	 * Deletes all from the requests table.
-	 * 
-	 * @throws TReqSException
-	 *             If there is a problem while deleting.
-	 */
-	public static void deleteAll() throws TReqSException {
-		final String sqlstatement = "delete from " + DB2Statements.REQUESTS;
-		LOGGER.debug("The statement is: {}", sqlstatement);
-		try {
-			final int nrows = DB2TestBroker.getInstance().executeModification(
-					sqlstatement);
-			LOGGER.info("Updated {} requests for file ", nrows);
-		} catch (final AbstractDB2Exception e) {
-			LOGGER.error("DB2 error: {}", e.getMessage());
-		}
-	}
+    /**
+     * Deletes all from the requests table.
+     * 
+     * @throws TReqSException
+     *             If there is a problem while deleting.
+     */
+    public static void deleteAll() throws TReqSException {
+        final String sqlstatement = "delete from " + DB2Statements.REQUESTS;
+        LOGGER.debug("The statement is: {}", sqlstatement);
+        try {
+            final int nrows = DB2TestBroker.getInstance().executeModification(
+                    sqlstatement);
+            LOGGER.info("Updated {} requests for file ", nrows);
+        } catch (final AbstractDB2Exception e) {
+            LOGGER.error("DB2 error: {}", e.getMessage());
+        }
+    }
 
-	/**
-	 * Inserts a row with all the information.
-	 * 
-	 * @param fileName
-	 *            File to stage.
-	 * @param userName
-	 *            User owning the request.
-	 * @param status
-	 *            Status of the requests.
-	 * @throws TReqSException
-	 *             If there is a problem inserting the row.
-	 */
-	static void insertRow(final String fileName, final String userName,
-			final RequestStatus status) throws TReqSException {
-		final String sqlstatement = "insert into " + DB2Statements.REQUESTS
-				+ " (" + DB2Statements.REQUESTS_FILE + ", "
-				+ DB2Statements.REQUESTS_USER + ", "
-				+ DB2Statements.REQUESTS_STATUS + ", "
-				+ DB2Statements.REQUESTS_CREATION_TIME + ", "
-				+ DB2Statements.REQUESTS_CLIENT + ", "
-				+ DB2Statements.REQUESTS_VERSION + ") values ('" + fileName
-				+ "','" + userName + "'," + status.getId()
-				+ ", current timestamp, 'localhost', '1.5')";
-		LOGGER.debug("The statement is: {}", sqlstatement);
-		try {
-			final int nrows = DB2TestBroker.getInstance().executeModification(
-					sqlstatement);
-			LOGGER.info("Updated {} requests for file ", nrows);
-		} catch (final AbstractDB2Exception e) {
-			LOGGER.error("DB2 error: {}", e.getMessage());
-		}
-	}
+    /**
+     * Inserts a row with all the information.
+     * 
+     * @param fileName
+     *            File to stage.
+     * @param userName
+     *            User owning the request.
+     * @param status
+     *            Status of the requests.
+     * @throws TReqSException
+     *             If there is a problem inserting the row.
+     */
+    static void insertRow(final String fileName, final String userName,
+            final RequestStatus status) throws TReqSException {
+        final String sqlstatement = "insert into " + DB2Statements.REQUESTS
+                + " (" + DB2Statements.REQUESTS_FILE + ", "
+                + DB2Statements.REQUESTS_USER + ", "
+                + DB2Statements.REQUESTS_STATUS + ", "
+                + DB2Statements.REQUESTS_CREATION_TIME + ", "
+                + DB2Statements.REQUESTS_CLIENT + ", "
+                + DB2Statements.REQUESTS_VERSION + ") values ('" + fileName
+                + "','" + userName + "'," + status.getId()
+                + ", current timestamp, 'localhost', '1.5')";
+        LOGGER.debug("The statement is: {}", sqlstatement);
+        try {
+            final int nrows = DB2TestBroker.getInstance().executeModification(
+                    sqlstatement);
+            LOGGER.info("Updated {} requests for file ", nrows);
+        } catch (final AbstractDB2Exception e) {
+            LOGGER.error("DB2 error: {}", e.getMessage());
+        }
+    }
 
-	/**
-	 * Default constructor hidden.
-	 */
-	private DB2RequestsDAO() {
-		// Nothing.
-	}
+    /**
+     * Default constructor hidden.
+     */
+    private DB2RequestsDAO() {
+        // Nothing.
+    }
 }

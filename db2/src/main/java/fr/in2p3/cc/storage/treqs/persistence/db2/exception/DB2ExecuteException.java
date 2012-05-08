@@ -43,13 +43,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exception while executing a query.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.6
  */
 public final class DB2ExecuteException extends AbstractDB2Exception {
 
-	/**
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
@@ -61,7 +61,7 @@ public final class DB2ExecuteException extends AbstractDB2Exception {
 
     /**
      * Constructor wrapping an exception generated in execution.
-     *
+     * 
      * @param ex
      *            Wrapped exception.
      */

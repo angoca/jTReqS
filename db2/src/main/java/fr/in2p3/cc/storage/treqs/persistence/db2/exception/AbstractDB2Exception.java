@@ -46,25 +46,25 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractPersistanceException;
  */
 public abstract class AbstractDB2Exception extends AbstractPersistanceException {
 
-	/**
-	 * Generated ID.
-	 */
-	private static final long serialVersionUID = 9206810223996913722L;
+    /**
+     * Generated ID.
+     */
+    private static final long serialVersionUID = 9206810223996913722L;
 
-	/**
-	 * Wraps a thrown exception.
-	 * 
-	 * @param e
-	 *            Wrapped exception.
-	 */
-	protected AbstractDB2Exception(final Exception e) {
-		super(e);
-	}
+    /**
+     * Wraps a thrown exception.
+     * 
+     * @param e
+     *            Wrapped exception.
+     */
+    protected AbstractDB2Exception(final Exception e) {
+        super(e);
+    }
 
-	/**
-	 * Creates an exception.
-	 */
-	public AbstractDB2Exception() {
-		super();
-	}
+    /**
+     * Creates an exception.
+     */
+    public AbstractDB2Exception() {
+        super();
+    }
 }

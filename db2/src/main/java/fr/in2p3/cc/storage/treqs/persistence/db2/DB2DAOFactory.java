@@ -55,7 +55,7 @@ import fr.in2p3.cc.storage.treqs.persistence.db2.dao.DB2WatchDogDAO;
 /**
  * DAO factory. This is the implementation of the Factory method for the DB2
  * data source access.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.6
  */
@@ -66,8 +66,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
      */
     public static final String INSTANCE_PORT = "INSTANCE_PORT";
     /**
-     * Specific section in the configuration file when using DB2 as data
-     * source.
+     * Specific section in the configuration file when using DB2 as data source.
      */
     public static final String SECTION_PERSISTENCE_DB2 = "PERSISTENCE_DB2";
     /**
@@ -78,7 +77,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#dumpStructure()
      */
@@ -91,7 +90,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getConfigurationDAO
      * ()
@@ -105,7 +104,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getQueueDAO()
      */
@@ -118,7 +117,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getReadingDAO()
      */
@@ -129,22 +128,22 @@ public class DB2DAOFactory extends AbstractDAOFactory {
         return new DB2ReadingDAO();
     }
 
-	/*
-	 * (sin Javadoc)
-	 * 
-	 * @seefr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
-	 * getRegisterDBInformation()
-	 */
-	@Override
-	public String/* ! */getRegisterDBInformation() throws TReqSException {
-		LOGGER.trace(">< getRegisterDBInformation");
+    /*
+     * (sin Javadoc)
+     * 
+     * @seefr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
+     * getRegisterDBInformation()
+     */
+    @Override
+    public String/* ! */getRegisterDBInformation() throws TReqSException {
+        LOGGER.trace(">< getRegisterDBInformation");
 
-		return DB2Broker.getURL();
-	}
+        return DB2Broker.getURL();
+    }
 
-	/*
+    /*
      * (non-Javadoc)
-     *
+     * 
      * @see fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
      * getRegisterInformationDAO()
      */
@@ -157,7 +156,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDogDAO()
      */
@@ -170,7 +169,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#initialize()
      */

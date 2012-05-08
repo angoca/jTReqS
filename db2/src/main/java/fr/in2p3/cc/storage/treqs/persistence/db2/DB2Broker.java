@@ -59,286 +59,286 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  */
 public class DB2Broker {
 
-	/**
-	 * Singleton instance.
-	 */
-	private static DB2Broker instance;
-	/**
-	 * Logger.
-	 */
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(DB2Broker.class);
+    /**
+     * Singleton instance.
+     */
+    private static DB2Broker instance;
+    /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LoggerFactory
+            .getLogger(DB2Broker.class);
 
-	/**
-	 * Destroys the only instance. ONLY for testing purposes.
-	 */
-	public static void destroyInstance() {
-		LOGGER.trace("> destroyInstance");
+    /**
+     * Destroys the only instance. ONLY for testing purposes.
+     */
+    public static void destroyInstance() {
+        LOGGER.trace("> destroyInstance");
 
-		if ((instance != null) && instance.connected) {
-			try {
-				instance.disconnect();
-			} catch (final DB2CloseException e) {
-				LOGGER.error(e.getMessage());
-			}
-			LOGGER.info("Instance destroyed");
-		}
-		instance = null;
+        if ((instance != null) && instance.connected) {
+            try {
+                instance.disconnect();
+            } catch (final DB2CloseException e) {
+                LOGGER.error(e.getMessage());
+            }
+            LOGGER.info("Instance destroyed");
+        }
+        instance = null;
 
-		LOGGER.trace("< destroyInstance");
-	}
+        LOGGER.trace("< destroyInstance");
+    }
 
-	/**
-	 * Method to call the singleton.
-	 * 
-	 * @return Retrieves the unique instance of this object.
-	 */
-	public static DB2Broker getInstance() {
-		LOGGER.trace("> getInstance");
+    /**
+     * Method to call the singleton.
+     * 
+     * @return Retrieves the unique instance of this object.
+     */
+    public static DB2Broker getInstance() {
+        LOGGER.trace("> getInstance");
 
-		if (instance == null) {
-			instance = new DB2Broker();
-		}
+        if (instance == null) {
+            instance = new DB2Broker();
+        }
 
-		assert instance != null;
+        assert instance != null;
 
-		LOGGER.trace("< getInstance");
+        LOGGER.trace("< getInstance");
 
-		return instance;
-	}
+        return instance;
+    }
 
-	/**
-	 * If there is as active connection to the database.
-	 */
-	private boolean connected;
+    /**
+     * If there is as active connection to the database.
+     */
+    private boolean connected;
 
-	/**
-	 * Connection to the database.
-	 */
-	private Connection connection;
+    /**
+     * Connection to the database.
+     */
+    private Connection connection;
 
-	/**
-	 * Constructor of the broker where the object are initialized.
-	 */
-	protected DB2Broker() {
-		LOGGER.trace("> DB2Broker");
+    /**
+     * Constructor of the broker where the object are initialized.
+     */
+    protected DB2Broker() {
+        LOGGER.trace("> DB2Broker");
 
-		this.connected = false;
-		this.connection = null;
+        this.connected = false;
+        this.connection = null;
 
-		LOGGER.trace("< DB2Broker");
-	}
+        LOGGER.trace("< DB2Broker");
+    }
 
-	/**
-	 * Establishes a connection to the database.
-	 * <p>
-	 * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
-	 * configuration file in hot. Check if the value has changed.
-	 * 
-	 * @throws TReqSException
-	 *             If there is a problem retrieving the database values from the
-	 *             configuration. Or retrieving the driver, or connecting to the
-	 *             database.
-	 */
-	public void connect() throws TReqSException {
-		LOGGER.trace("> connect");
+    /**
+     * Establishes a connection to the database.
+     * <p>
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
+     * configuration file in hot. Check if the value has changed.
+     * 
+     * @throws TReqSException
+     *             If there is a problem retrieving the database values from the
+     *             configuration. Or retrieving the driver, or connecting to the
+     *             database.
+     */
+    public void connect() throws TReqSException {
+        LOGGER.trace("> connect");
 
-		final String url = getURL();
-		final String driver = "COM.ibm.db2.jdbc.app.DB2Driver";
-		final String user = Configurator.getInstance().getStringValue(
-				DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_USER);
-		final String password = Configurator.getInstance().getStringValue(
-				DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_PASSWORD);
+        final String url = getURL();
+        final String driver = "COM.ibm.db2.jdbc.app.DB2Driver";
+        final String user = Configurator.getInstance().getStringValue(
+                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_USER);
+        final String password = Configurator.getInstance().getStringValue(
+                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_PASSWORD);
 
-		// There can be only a connection per instance.
-		synchronized (instance) {
-			if (this.connection == null) {
-				try {
-					Class.forName(driver).newInstance();
-				} catch (final Exception e) {
-					LOGGER.error("Exception while loading: {}", e.getMessage());
-					throw new DB2OpenException(e);
-				}
-				try {
-				    if ((user != null) && (!user.equals(""))) {
-				        this.connection = (Connection) DriverManager.getConnection(
-				                url, user, password);
-				    } else {
-				        this.connection = (Connection) DriverManager.getConnection(
-                                url);
-				    }
+        // There can be only a connection per instance.
+        synchronized (instance) {
+            if (this.connection == null) {
+                try {
+                    Class.forName(driver).newInstance();
+                } catch (final Exception e) {
+                    LOGGER.error("Exception while loading: {}", e.getMessage());
+                    throw new DB2OpenException(e);
+                }
+                try {
+                    if ((user != null) && (!user.equals(""))) {
+                        this.connection = (Connection) DriverManager
+                                .getConnection(url, user, password);
+                    } else {
+                        this.connection = (Connection) DriverManager
+                                .getConnection(url);
+                    }
 
-					this.connected = true;
-				} catch (final SQLException ex) {
-					DB2Broker.handleSQLException(ex);
-					try {
-						this.disconnect();
-					} catch (final Exception e) {
-						LOGGER.error("Problem connecting", e);
-					}
-					throw new DB2OpenException(ex);
-				}
-			}
-		}
+                    this.connected = true;
+                } catch (final SQLException ex) {
+                    DB2Broker.handleSQLException(ex);
+                    try {
+                        this.disconnect();
+                    } catch (final Exception e) {
+                        LOGGER.error("Problem connecting", e);
+                    }
+                    throw new DB2OpenException(ex);
+                }
+            }
+        }
 
-		LOGGER.trace("< connect");
-	}
+        LOGGER.trace("< connect");
+    }
 
-	/**
-	 * Disconnects from the database.
-	 * 
-	 * @throws DB2BrokerException
-	 *             If there is a problem closing the connection.
-	 */
-	public void disconnect() throws DB2CloseException {
-		LOGGER.trace("> disconnect");
+    /**
+     * Disconnects from the database.
+     * 
+     * @throws DB2BrokerException
+     *             If there is a problem closing the connection.
+     */
+    public void disconnect() throws DB2CloseException {
+        LOGGER.trace("> disconnect");
 
-		synchronized (instance) {
-			if (this.connection != null) {
-				try {
-					this.connection.close();
-				} catch (final SQLException ex) {
-					DB2Broker.handleSQLException(ex);
-					throw new DB2CloseException(ex);
-				} finally {
-					this.connection = null;
-				}
-			}
-			this.connected = false;
-		}
+        synchronized (instance) {
+            if (this.connection != null) {
+                try {
+                    this.connection.close();
+                } catch (final SQLException ex) {
+                    DB2Broker.handleSQLException(ex);
+                    throw new DB2CloseException(ex);
+                } finally {
+                    this.connection = null;
+                }
+            }
+            this.connected = false;
+        }
 
-		LOGGER.trace("< disconnect");
-	}
+        LOGGER.trace("< disconnect");
+    }
 
-	/**
-	 * Returns the connection of this broker.
-	 * 
-	 * @return The connection.
-	 * @throws TReqSException
-	 *             While verifying the connection status or when reestablishing
-	 *             the connection.
-	 */
-	public Connection getConnection() throws TReqSException {
-		LOGGER.trace("> getConnection");
+    /**
+     * Returns the connection of this broker.
+     * 
+     * @return The connection.
+     * @throws TReqSException
+     *             While verifying the connection status or when reestablishing
+     *             the connection.
+     */
+    public Connection getConnection() throws TReqSException {
+        LOGGER.trace("> getConnection");
 
-		this.validConnection();
+        this.validConnection();
 
-		LOGGER.trace("< getConnection");
+        LOGGER.trace("< getConnection");
 
-		return this.connection;
-	}
+        return this.connection;
+    }
 
-	/**
-	 * Retrieves a prepared statement. The Broker can process just one query at
-	 * a time.
-	 * 
-	 * @param query
-	 *            Query to prepare.
-	 * @return Prepared statement to fill with the data to execute.
-	 * @throws TReqSException
-	 *             If there is a problem validating the connection or while
-	 *             preparing the statement.
-	 */
-	public PreparedStatement getPreparedStatement(final String query)
-			throws TReqSException {
-		LOGGER.trace("> getPreparedStatement");
+    /**
+     * Retrieves a prepared statement. The Broker can process just one query at
+     * a time.
+     * 
+     * @param query
+     *            Query to prepare.
+     * @return Prepared statement to fill with the data to execute.
+     * @throws TReqSException
+     *             If there is a problem validating the connection or while
+     *             preparing the statement.
+     */
+    public PreparedStatement getPreparedStatement(final String query)
+            throws TReqSException {
+        LOGGER.trace("> getPreparedStatement");
 
-		assert query != null;
-		assert !query.equals("");
+        assert query != null;
+        assert !query.equals("");
 
-		this.validConnection();
-		PreparedStatement ret;
+        this.validConnection();
+        PreparedStatement ret;
 
-		// The Broker can process just one query at a time.
-		synchronized (instance) {
-			ret = null;
-			try {
-				LOGGER.debug("Query: '{}'", query);
-				ret = this.connection.prepareStatement(query);
-			} catch (final SQLException e) {
-				throw new DB2ExecuteException(e);
-			}
-		}
+        // The Broker can process just one query at a time.
+        synchronized (instance) {
+            ret = null;
+            try {
+                LOGGER.debug("Query: '{}'", query);
+                ret = this.connection.prepareStatement(query);
+            } catch (final SQLException e) {
+                throw new DB2ExecuteException(e);
+            }
+        }
 
-		assert ret != null;
+        assert ret != null;
 
-		LOGGER.trace("< getPreparedStatement");
+        LOGGER.trace("< getPreparedStatement");
 
-		return ret;
-	}
+        return ret;
+    }
 
-	/**
-	 * Creates the URL for the connection.
-	 * 
-	 * @return Returns the URL for the DB connection.
-	 * @throws TReqSException
-	 *             If there is any problem when looking for the values.
-	 */
-	static String/* ! */getURL() throws TReqSException {
-		LOGGER.trace("> getURL");
+    /**
+     * Creates the URL for the connection.
+     * 
+     * @return Returns the URL for the DB connection.
+     * @throws TReqSException
+     *             If there is any problem when looking for the values.
+     */
+    static String/* ! */getURL() throws TReqSException {
+        LOGGER.trace("> getURL");
 
-		String port = Configurator.getInstance().getStringValue(
-				DB2DAOFactory.SECTION_PERSISTENCE_DB2,
-				DB2DAOFactory.INSTANCE_PORT);
-		if (!port.equals("")) {
-			port = ':' + port;
-		}
+        String port = Configurator.getInstance().getStringValue(
+                DB2DAOFactory.SECTION_PERSISTENCE_DB2,
+                DB2DAOFactory.INSTANCE_PORT);
+        if (!port.equals("")) {
+            port = ':' + port;
+        }
 
-		final String server = Configurator.getInstance().getStringValue(
-				DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_SERVER);
-		final String db = Configurator.getInstance().getStringValue(
-				DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_NAME);
-		final String url = "jdbc:db2://" + server + port + '/' + db;
-		LOGGER.trace("> getURL");
+        final String server = Configurator.getInstance().getStringValue(
+                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_SERVER);
+        final String db = Configurator.getInstance().getStringValue(
+                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_NAME);
+        final String url = "jdbc:db2://" + server + port + '/' + db;
+        LOGGER.trace("> getURL");
 
-		return url;
-	}
+        return url;
+    }
 
-	/**
-	 * Handle an exception, logging the messages.
-	 * 
-	 * @param exception
-	 *            Exception to process.
-	 */
-	public static void handleSQLException(SQLException exception) {
-		LOGGER.trace("> handleSQLException");
+    /**
+     * Handle an exception, logging the messages.
+     * 
+     * @param exception
+     *            Exception to process.
+     */
+    public static void handleSQLException(SQLException exception) {
+        LOGGER.trace("> handleSQLException");
 
-		assert exception != null;
-		System.err.println("SQL Exception");
-		while (exception != null) {
-			System.err.println("SQLException: " + exception.getMessage());
-			System.err.println("SQLState: " + exception.getSQLState());
-			System.err.println("DB2SQLCode: " + exception.getErrorCode());
-			exception = exception.getNextException();
-		}
+        assert exception != null;
+        System.err.println("SQL Exception");
+        while (exception != null) {
+            System.err.println("SQLException: " + exception.getMessage());
+            System.err.println("SQLState: " + exception.getSQLState());
+            System.err.println("DB2SQLCode: " + exception.getErrorCode());
+            exception = exception.getNextException();
+        }
 
-		LOGGER.trace("< handleSQLException");
-	}
+        LOGGER.trace("< handleSQLException");
+    }
 
-	/**
-	 * Validates if the connection is valid.
-	 * 
-	 * @throws TReqSException
-	 *             While verifying the connection status or when reestablishing
-	 *             the connection.
-	 */
-	protected void validConnection() throws TReqSException {
-		LOGGER.trace("> validConnection");
+    /**
+     * Validates if the connection is valid.
+     * 
+     * @throws TReqSException
+     *             While verifying the connection status or when reestablishing
+     *             the connection.
+     */
+    protected void validConnection() throws TReqSException {
+        LOGGER.trace("> validConnection");
 
-		boolean ret;
-		try {
-			ret = this.connected && (this.connection != null)
-					&& !this.connection.isClosed();
-		} catch (final SQLException e) {
-			DB2Broker.handleSQLException(e);
-			throw new DB2ExecuteException(e);
-		}
-		if (!ret) {
-			LOGGER.warn("The connection has not been established. "
-					+ "Reestablishing the connection.");
-			this.connect();
-		}
+        boolean ret;
+        try {
+            ret = this.connected && (this.connection != null)
+                    && !this.connection.isClosed();
+        } catch (final SQLException e) {
+            DB2Broker.handleSQLException(e);
+            throw new DB2ExecuteException(e);
+        }
+        if (!ret) {
+            LOGGER.warn("The connection has not been established. "
+                    + "Reestablishing the connection.");
+            this.connect();
+        }
 
-		LOGGER.trace("< validConnection");
-	}
+        LOGGER.trace("< validConnection");
+    }
 }

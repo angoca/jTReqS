@@ -41,13 +41,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Exception of an assertion, because SQLJ does not support assert.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.6
  */
 public final class DB2AssertionException extends AbstractDB2Exception {
 
-	/**
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory

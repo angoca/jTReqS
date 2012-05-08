@@ -45,46 +45,46 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
  * @since 1.5
  */
 public final class DB2Helper {
-	/**
-	 * Deletes the requests, the queues, the allocations and the mediatypes.
-	 * 
-	 * @throws TReqSException
-	 *             If there is a problem executing the queries.
-	 */
-	public static void deleteMediaTypes() throws TReqSException {
-		String query = "DELETE FROM " + DB2Statements.REQUESTS;
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "DELETE FROM " + DB2Statements.QUEUES;
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "DELETE FROM " + DB2Statements.ALLOCATIONS;
-		DB2TestBroker.getInstance().executeModification(query);
-		query = "DELETE FROM " + DB2Statements.MEDIATYPES;
-		DB2TestBroker.getInstance().executeModification(query);
-	}
+    /**
+     * Deletes the requests, the queues, the allocations and the mediatypes.
+     * 
+     * @throws TReqSException
+     *             If there is a problem executing the queries.
+     */
+    public static void deleteMediaTypes() throws TReqSException {
+        String query = "DELETE FROM " + DB2Statements.REQUESTS;
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "DELETE FROM " + DB2Statements.QUEUES;
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "DELETE FROM " + DB2Statements.ALLOCATIONS;
+        DB2TestBroker.getInstance().executeModification(query);
+        query = "DELETE FROM " + DB2Statements.MEDIATYPES;
+        DB2TestBroker.getInstance().executeModification(query);
+    }
 
-	/**
-	 * Inserts a media type by giving its properties.
-	 * 
-	 * @param id
-	 *            Unique id of the media type.
-	 * @param name
-	 *            Given name.
-	 * @param qty
-	 *            Quantity of available drives.
-	 * @throws TReqSException
-	 *             If there is a problem in the insertion.
-	 */
-	public static void insertMediaType(final int id, final String name,
-			final int qty) throws TReqSException {
-		final String query = "INSERT INTO " + DB2Statements.MEDIATYPES
-				+ " VALUES (" + id + ", \"" + name + "\", " + qty + ")";
-		DB2TestBroker.getInstance().executeModification(query);
-	}
+    /**
+     * Inserts a media type by giving its properties.
+     * 
+     * @param id
+     *            Unique id of the media type.
+     * @param name
+     *            Given name.
+     * @param qty
+     *            Quantity of available drives.
+     * @throws TReqSException
+     *             If there is a problem in the insertion.
+     */
+    public static void insertMediaType(final int id, final String name,
+            final int qty) throws TReqSException {
+        final String query = "INSERT INTO " + DB2Statements.MEDIATYPES
+                + " VALUES (" + id + ", \"" + name + "\", " + qty + ")";
+        DB2TestBroker.getInstance().executeModification(query);
+    }
 
-	/**
-	 * Hidden default constructor.
-	 */
-	private DB2Helper() {
-		// Hidden
-	}
+    /**
+     * Hidden default constructor.
+     */
+    private DB2Helper() {
+        // Hidden
+    }
 }
