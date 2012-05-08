@@ -145,8 +145,7 @@ public class DB2Broker {
 
         final String url = getURL();
         final String driver = "COM.ibm.db2.jdbc.app.DB2Driver";
-        final String user = Configurator.getInstance().getStringValue(
-                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_USER);
+        final String user = DB2Broker.getUser();
         final String password = Configurator.getInstance().getStringValue(
                 DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_PASSWORD);
 
@@ -286,6 +285,24 @@ public class DB2Broker {
         LOGGER.trace("> getURL");
 
         return url;
+    }
+
+    /**
+     * Retrieves the user used to connect to the database.
+     * 
+     * @return Database username.
+     * @throws TReqSException
+     *             If there is any problem retrieving the user.
+     */
+    static String/* ! */getUser() throws TReqSException {
+        LOGGER.trace("> getUser");
+
+        final String username = Configurator.getInstance().getStringValue(
+                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_USER);
+
+        LOGGER.trace("< getUser");
+
+        return username;
     }
 
     /**
