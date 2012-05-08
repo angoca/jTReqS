@@ -348,30 +348,6 @@ public final class DB2BrokerTest {
     }
 
     /**
-     * Connection to the database with no user defined.
-     *
-     * @throws TReqSException
-     *             Never.
-     */
-    @Test
-    public void testConnect08() throws TReqSException {
-        Configurator.getInstance().setValue(
-                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_SERVER,
-                SERVER);
-        Configurator.getInstance().setValue(
-                DB2DAOFactory.SECTION_PERSISTENCE_DB2,
-                DB2DAOFactory.INSTANCE_PORT, INSTANCE);
-        Configurator.getInstance().setValue(
-                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_NAME,
-                DBNAME);
-        Configurator.getInstance().deleteValue(
-                DB2DAOFactory.SECTION_PERSISTENCE_DB2, Constants.DB_USER);
-
-        DB2TestBroker.getInstance().connect();
-        DB2TestBroker.getInstance().disconnect();
-    }
-
-    /**
      * Destroys the instance after disconnection.
      *
      * @throws TReqSException

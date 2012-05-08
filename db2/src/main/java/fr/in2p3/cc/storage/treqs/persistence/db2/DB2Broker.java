@@ -160,14 +160,8 @@ public class DB2Broker {
                     throw new DB2OpenException(e);
                 }
                 try {
-                    if ((user != null) && (!user.equals(""))) {
-                        this.connection = (Connection) DriverManager
-                                .getConnection(url, user, password);
-                    } else {
-                        this.connection = (Connection) DriverManager
-                                .getConnection(url);
-                    }
-
+                    this.connection = (Connection) DriverManager.getConnection(
+                            url, user, password);
                     this.connected = true;
                 } catch (final SQLException ex) {
                     DB2Broker.handleSQLException(ex);
