@@ -55,7 +55,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.dao.MySQLWatchDogDAO;
 /**
  * DAO factory. This is the implementation of the Factory method for the MySQL
  * data source access.
- *
+ * 
  * @author Andrés Gómez
  * @since 1.5
  */
@@ -74,7 +74,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#dumpStructure()
      */
@@ -87,7 +87,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getConfigurationDAO
      * ()
@@ -101,7 +101,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getQueueDAO()
      */
@@ -114,7 +114,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getReadingDAO()
      */
@@ -127,7 +127,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (sin Javadoc)
-     *
+     * 
      * @seefr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
      * getRegisterDBInformation()
      */
@@ -140,7 +140,21 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDBUser
+     * ()
+     */
+    @Override
+    public String getRegisterDBUser() throws TReqSException {
+        LOGGER.trace(">< getRegisterDBInformation");
+
+        return MySQLBroker.getUser();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
      * getRegisterInformationDAO()
      */
@@ -153,7 +167,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDogDAO()
      */
@@ -166,7 +180,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#initialize()
      */

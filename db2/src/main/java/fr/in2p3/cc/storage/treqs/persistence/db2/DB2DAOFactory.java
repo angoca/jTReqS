@@ -144,6 +144,20 @@ public class DB2DAOFactory extends AbstractDAOFactory {
     /*
      * (non-Javadoc)
      * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDBUser
+     * ()
+     */
+    @Override
+    public String getRegisterDBUser() throws TReqSException {
+        LOGGER.trace(">< getRegisterDBInformation");
+
+        return DB2Broker.getUser();
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
      * getRegisterInformationDAO()
      */
