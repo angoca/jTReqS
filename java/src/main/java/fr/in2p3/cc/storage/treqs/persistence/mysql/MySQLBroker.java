@@ -66,7 +66,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <code>"jdbc:mysql://localhost:3306/dbname?useJvmCharsetConverters=true"
  * </code> This information is in
  * http://ubuntuforums.org/showthread.php?t=1248907
- *
+ * 
  * @author Andrés Gómez
  * @since 1.5
  */
@@ -107,7 +107,7 @@ public final class MySQLBroker {
 
     /**
      * Method to call the singleton.
-     *
+     * 
      * @return Retrieves the unique instance of this object.
      */
     public static MySQLBroker getInstance() {
@@ -149,7 +149,7 @@ public final class MySQLBroker {
     /**
      * Closes the result set of a query. This could be due to an exception, or
      * when the query has been already processed.
-     *
+     * 
      * @param result
      *            Result set to close.
      */
@@ -171,7 +171,7 @@ public final class MySQLBroker {
 
     /**
      * Close a given statement.
-     *
+     * 
      * @param stmt
      *            Statement to close.
      * @throws MySQLCloseException
@@ -198,7 +198,7 @@ public final class MySQLBroker {
      * <p>
      * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem retrieving the database values from the
      *             configuration. Or retrieving the driver, or connecting to the
@@ -209,8 +209,7 @@ public final class MySQLBroker {
 
         final String url = getURL();
         final String driver = "com.mysql.jdbc.Driver";
-        final String user = Configurator.getInstance().getStringValue(
-                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
+        final String user = getUser();
         final String password = Configurator.getInstance().getStringValue(
                 MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL,
                 Constants.DB_PASSWORD);
@@ -247,7 +246,7 @@ public final class MySQLBroker {
 
     /**
      * Disconnects from the database.
-     *
+     * 
      * @throws MySQLCloseException
      *             If there is a problem closing the connection.
      */
@@ -273,7 +272,7 @@ public final class MySQLBroker {
 
     /**
      * Executes a statement in the database.
-     *
+     * 
      * @param query
      *            Statement to execute.
      * @return Quantity of modified rows.
@@ -319,7 +318,7 @@ public final class MySQLBroker {
     /**
      * Executes a select in the database returning the resultSet. The Broker can
      * process just one query at a time.
-     *
+     * 
      * @param query
      *            Query statement to execute in the databases.
      * @return Set of objects: [Statement, ResultSet].
@@ -363,7 +362,7 @@ public final class MySQLBroker {
     /**
      * Retrieves a prepared statement. The Broker can process just one query at
      * a time.
-     *
+     * 
      * @param query
      *            Query to prepare.
      * @return Prepared statement to fill with the data to execute.
@@ -402,7 +401,7 @@ public final class MySQLBroker {
 
     /**
      * Creates the URL for the connection.
-     *
+     * 
      * @return Returns the URL for the DB connection.
      * @throws TReqSException
      *             If there is any problem when looking for the values.
@@ -425,8 +424,26 @@ public final class MySQLBroker {
     }
 
     /**
+     * Retrieves the user used to connect to the database.
+     * 
+     * @return Database username.
+     * @throws TReqSException
+     *             If there is any problem retrieving the user.
+     */
+    static String/* ! */getUser() throws TReqSException {
+        LOGGER.trace("> getUser");
+
+        final String username = Configurator.getInstance().getStringValue(
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
+
+        LOGGER.trace("< getUser");
+
+        return username;
+    }
+
+    /**
      * Handle an exception, logging the messages.
-     *
+     * 
      * @param exception
      *            Exception to process.
      */
@@ -444,7 +461,7 @@ public final class MySQLBroker {
 
     /**
      * Close the result set and the statement of a previous select.
-     *
+     * 
      * @param objects
      *            Set of object to close [statement, resultSet].
      * @throws MySQLCloseException
@@ -467,7 +484,7 @@ public final class MySQLBroker {
 
     /**
      * Validates if the connection is valid.
-     *
+     * 
      * @throws TReqSException
      *             While verifying the connection status or when reestablishing
      *             the connection.

@@ -135,6 +135,20 @@ public final class MockDAOFactory extends AbstractDAOFactory {
      * (non-Javadoc)
      * 
      * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDBUser
+     * ()
+     */
+    @Override
+    public String getRegisterDBUser() throws TReqSException {
+        LOGGER.trace(">< getRegisterDBUser");
+
+        return "MockUserName";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
      */
     @Override
