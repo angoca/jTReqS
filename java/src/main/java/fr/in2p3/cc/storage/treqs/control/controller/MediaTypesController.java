@@ -200,10 +200,10 @@ public final class MediaTypesController extends AbstractController {
 
         MediaType ret = null;
         synchronized (this.getObjectMap()) {
-            if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
+            if (storageName.startsWith("IT") || storageName.startsWith("I")) {
                 LOGGER.debug("T10K-A");
                 ret = (MediaType) this.getObjectMap().get("T10K-A");
-            } else if (storageName.startsWith("JT")) {
+            } else if (storageName.startsWith("J")) {
                 LOGGER.debug("T10K-B");
                 ret = (MediaType) this.getObjectMap().get("T10K-B");
             }  else if (storageName.startsWith("K")) {
