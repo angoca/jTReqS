@@ -63,6 +63,11 @@ public final class DefaultProperties {
     public static final String DEFAULT_HSM_BRIDGE = "fr.in2p3.cc.storage."
             + "treqs.hsm.hpssJNI.HPSSJNIBridge";
     /**
+     * Default Media Finder factory.
+     */
+    public static final String DEFAULT_MEDIA_FINDER_FACTORY = "fr.in2p3.cc."
+            + "storage.treqs.media.regex.RegExMediaFinder";
+    /**
      * Default selector.
      */
     public static final String DEFAULT_SELECTOR = "fr.in2p3.cc.storage.treqs."
