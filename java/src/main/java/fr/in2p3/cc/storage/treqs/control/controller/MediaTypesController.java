@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
  * <p>
  * The key is the name of the media type in the controller, however the id is
  * the primary key in the data source.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5
  */
@@ -83,7 +83,7 @@ public final class MediaTypesController extends AbstractController {
 
     /**
      * Retrieves the singleton instance of this class.
-     *
+     * 
      * @return Unique instance.
      */
     public static MediaTypesController getInstance() {
@@ -116,7 +116,7 @@ public final class MediaTypesController extends AbstractController {
     /**
      * Creates an instance of media type and adds it to the controller. Once a
      * media type is added, it cannot be deleted.
-     *
+     * 
      * @param name
      *            Name of the media type.
      * @param id
@@ -153,7 +153,7 @@ public final class MediaTypesController extends AbstractController {
 
     /**
      * Creates an instance of the media type.
-     *
+     * 
      * @param name
      *            Name of the media type.
      * @param id
@@ -183,7 +183,8 @@ public final class MediaTypesController extends AbstractController {
     }
 
     /**
-     * Returns the type of media, comparing the given name with the pattern.
+     * Returns the type of media, comparing the given id with the pattern of the
+     * regular expression.
      * <p>
      * In version 1.0, this was done by a query using the 'like' operator.
      * <p>
@@ -191,11 +192,7 @@ public final class MediaTypesController extends AbstractController {
      * <p>
      * In version 1.5.6 uses a regular expression that is stored in the database
      * along with the media type.
-     * <p>
-     * If there is an external that returns this information, this external
-     * component should be called from here. The external component is something
-     * like ACSLS that knows the media types in the robot, and the tape names.
-     *
+     * 
      * @param storageName
      *            Storage name that will be queried.
      * @return Returns the related media type that accords with the storage
@@ -205,7 +202,7 @@ public final class MediaTypesController extends AbstractController {
      *             are not a corresponding media type.
      * @since 1.5
      */
-    public MediaType getMediaType(final String storageName)
+    public final MediaType getMediaType(final String/* ! */storageName)
             throws TReqSException {
         LOGGER.trace("> getMediaType");
 
