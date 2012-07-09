@@ -36,7 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.model;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -48,7 +47,7 @@ import org.slf4j.LoggerFactory;
  * TODO v2.0 Make difference between T10K and T10K Sport, because the algorithm
  * for the selector could use this value when using the best queue according for
  * the best reading speed.
- *
+ * 
  * @author Jonathan Schaeffer
  * @since 1.0
  */
@@ -73,44 +72,46 @@ public final class MediaType {
 
     /**
      * Constructor that relates the name of the media type.
-     *
+     * 
      * @param mediaId
      *            If of the media type.
      * @param mediaName
      *            Name of the media type.
-     * @param identification
+     * @param regex
      *            This is the regular expression that determines if a tape name
-     *            belongs to this media type.
+     *            belongs to this media type. This value is used to match the id
+     *            returned by the finder, and the Media Type.
      */
     public MediaType(final byte mediaId, final String mediaName,
-            final String identification) {
+            final String regex) {
         LOGGER.trace("> Creating media type");
 
         assert mediaId >= 0;
         assert (mediaName != null) && !mediaName.equals("");
-        assert (identification != null) && !identification.equals("");
+        assert (regex != null) && !regex.equals("");
 
         this.id = mediaId;
         this.name = mediaName;
-        this.regExp = identification;
+        this.regExp = regex;
 
         LOGGER.trace("< Creating media type");
     }
 
     /**
-     * Analyzes if the given tapename belongs to this media type.
-     *
-     * @param tapename
-     *            The name of the tape to analyze.
+     * Analyzes if the given id belongs to this media type.
+     * 
+     * @param id
+     *            The id of the tape to analyze. This value could be returned by
+     *            an external system or could be the tape name directly.
      * @return true if the given tape belongs to this media type, false
      *         otherwise.
      */
-    public boolean belongs(final String tapename) {
+    public boolean belongs(final String id) {
         LOGGER.trace("> belongs");
 
-        assert (tapename != null) && (!tapename.equals(""));
+        assert (id != null) && (!id.equals(""));
 
-        boolean ret = Pattern.matches(this.regExp, tapename);
+        boolean ret = Pattern.matches(this.regExp, id);
 
         LOGGER.trace("< belongs");
 
@@ -120,7 +121,7 @@ public final class MediaType {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -143,7 +144,7 @@ public final class MediaType {
 
     /**
      * Getter of the id.
-     *
+     * 
      * @return Retrieves the unique ID of the media type.
      */
     public byte getId() {
@@ -154,7 +155,7 @@ public final class MediaType {
 
     /**
      * Getter of the name.
-     *
+     * 
      * @return Retrieves the name of the media.
      */
     public String getName() {
@@ -165,7 +166,7 @@ public final class MediaType {
 
     /**
      * Getter of the regular expression.
-     *
+     * 
      * @return Retrieves the regular expression.
      */
     private String getRegExp() {
@@ -176,7 +177,7 @@ public final class MediaType {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -188,7 +189,7 @@ public final class MediaType {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see java.lang.Object#toString()
      */
     @Override
