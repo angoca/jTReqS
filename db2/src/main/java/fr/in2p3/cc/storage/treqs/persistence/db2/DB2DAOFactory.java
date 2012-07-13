@@ -135,7 +135,7 @@ public class DB2DAOFactory extends AbstractDAOFactory {
      * getRegisterDBInformation()
      */
     @Override
-    public String/* ! */getRegisterDBInformation() throws TReqSException {
+    public String getRegisterDBInformation() throws TReqSException {
         LOGGER.trace(">< getRegisterDBInformation");
 
         return DB2Broker.getURL();

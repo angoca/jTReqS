@@ -126,7 +126,7 @@ abstract class AbstractController {
      *
      * @return Object map.
      */
-    protected Map<String, Object>/* <!>? */getObjectMap() {
+    protected Map<String, Object> getObjectMap() {
         return this.objectMap;
     }
 
@@ -162,7 +162,7 @@ abstract class AbstractController {
      * @param map
      *            Object's map.
      */
-    protected void setObjectMap(final Map<String, Object>/* <!>! */map) {
+    protected void setObjectMap(final Map<String, Object> map) {
         this.objectMap = map;
     }
 }

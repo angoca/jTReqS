@@ -289,8 +289,7 @@ public final class DB2Init {
                     DB2InitStatements.REQUESTS);
         }
 
-        LOGGER
-                .error("Please configure the MediaTypes table and Allocations table");
+        LOGGER.error("Please configure the MediaTypes table and Allocations table");
 
         DB2Broker.getInstance().disconnect();
         DB2Broker.destroyInstance();
@@ -298,8 +297,7 @@ public final class DB2Init {
         LOGGER.trace("< initializeDatabase");
     }
 
-    private void message(final int rows, final String/* ! */message,
-            final String/* ! */name) {
+    private void message(final int rows, final String message, final String name) {
         if (rows == 1) {
             LOGGER.info(message, name);
         }

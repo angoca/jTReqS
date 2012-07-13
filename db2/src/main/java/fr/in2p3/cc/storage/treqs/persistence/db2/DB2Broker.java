@@ -267,7 +267,7 @@ public class DB2Broker {
      * @throws TReqSException
      *             If there is any problem when looking for the values.
      */
-    static String/* ! */getURL() throws TReqSException {
+    static String getURL() throws TReqSException {
         LOGGER.trace("> getURL");
 
         String port = Configurator.getInstance().getStringValue(
@@ -294,7 +294,7 @@ public class DB2Broker {
      * @throws TReqSException
      *             If there is any problem retrieving the user.
      */
-    static String/* ! */getUser() throws TReqSException {
+    static String getUser() throws TReqSException {
         LOGGER.trace("> getUser");
 
         final String username = Configurator.getInstance().getStringValue(
