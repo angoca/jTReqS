@@ -53,7 +53,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
  * <p>
  * For all these test it is necessary to have an existing database called
  * jtreqs.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)
@@ -70,7 +70,7 @@ public final class MySQLTests {
 
     /**
      * Deletes the rows of the tables queues, allocations and mediatypes.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem.
      */

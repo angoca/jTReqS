@@ -132,7 +132,7 @@ public final class MySQLDAOFactory extends AbstractDAOFactory {
      * getRegisterDBInformation()
      */
     @Override
-    public String/* ! */getRegisterDBInformation() throws TReqSException {
+    public String getRegisterDBInformation() throws TReqSException {
         LOGGER.trace(">< getRegisterDBInformation");
 
         return MySQLBroker.getURL();

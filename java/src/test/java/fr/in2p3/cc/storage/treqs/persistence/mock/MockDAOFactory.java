@@ -125,7 +125,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
      * getRegisterDBInformation()
      */
     @Override
-    public String/* ! */getRegisterDBInformation() throws TReqSException {
+    public String getRegisterDBInformation() throws TReqSException {
         LOGGER.trace(">< getRegisterDBInformation");
 
         return "Mock DB";

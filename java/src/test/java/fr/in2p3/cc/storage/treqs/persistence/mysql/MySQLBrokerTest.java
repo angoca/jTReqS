@@ -61,7 +61,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
 
 /**
  * Test for mysql broker.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
@@ -114,7 +114,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Setup the env for the tests.
-     *
+     * 
      * @throws TReqSException
      *             Problem setting the value.
      */
@@ -126,7 +126,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Destroys all after a test.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      *             If there is a problem deleting a value.
      */
@@ -149,7 +149,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Tests to connect with a bad driver.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -175,7 +175,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Test to connect with a bad url.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -203,7 +203,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Tries to connect with an invalid user.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -235,7 +235,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Tries to connect with a invalid user.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -270,7 +270,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Good connection to the database.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -295,7 +295,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Connects to the database with the default values.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -307,7 +307,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Destroys the instance after disconnection.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -320,7 +320,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Tries to execute an empty modification.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -345,7 +345,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Tries to execute a null modification.
-     *
+     * 
      * @throws TReqSException
      *             never.
      */
@@ -390,7 +390,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Tries to execute an invalid query.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -415,7 +415,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Creates a table dropping before if it exists.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -434,7 +434,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Creates a table and then inserts a row in it.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -459,7 +459,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Creates, inserts and then deletes.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -485,7 +485,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Executes a null query.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -511,7 +511,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Executes an empty query.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -536,7 +536,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Executes a query without connection.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -549,7 +549,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Executes an invalid query.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -575,7 +575,7 @@ public final class MySQLBrokerTest {
 
     /**
      * Executes a valid query.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException

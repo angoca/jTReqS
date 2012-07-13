@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.exception.MySQLExecuteExcepti
 
 /**
  * Manages the inserts of the register information to MySQL database.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.4
  */
@@ -65,21 +65,21 @@ public class MySQLRegisterInformationDAO implements RegisterInformationDAO {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.model.dao.RegisterInformationDAO#insert(java
      * .lang.String, java.lang.String)
      */
     @Override
-    public void insert(final String /* ! */name, final String /* ! */value)
+    public void insert(final String name, final String value)
             throws TReqSException {
         LOGGER.trace("> insert {} {}", name, value);
 
         assert (name != null) && !name.equals("");
         assert (value != null) && !value.equals("");
 
-        final String query = MySQLStatements.SQL_INFORMATIONS_SELECT + '\'' + name
-                + '\'';
+        final String query = MySQLStatements.SQL_INFORMATIONS_SELECT + '\''
+                + name + '\'';
 
         final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         final ResultSet result = (ResultSet) objects[1];

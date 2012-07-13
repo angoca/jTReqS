@@ -225,7 +225,7 @@ public abstract class AbstractProcess extends Thread {
      * @param processStatus
      *            The new status of the process.
      */
-    protected final void setStatus(final ProcessStatus/* ! */processStatus) {
+    protected final void setStatus(final ProcessStatus processStatus) {
         LOGGER.trace("> setStatus");
 
         assert processStatus != null;

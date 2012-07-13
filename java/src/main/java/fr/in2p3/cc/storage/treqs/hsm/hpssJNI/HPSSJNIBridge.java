@@ -272,7 +272,7 @@ public final class HPSSJNIBridge extends AbstractHSMBridge {
      *
      * @return User to be used with HPSS.
      */
-    private String/* ! */getUser() {
+    private String getUser() {
         LOGGER.trace(">< getUser");
 
         return this.user;

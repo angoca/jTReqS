@@ -69,7 +69,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <p>
  * TODO v2.0 This has to be included in the normal structure of the project.
  * These tests have to be verified.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
@@ -106,7 +106,7 @@ public final class TReqSTestTODO {
 
     /**
      * Sets the environment and initializes the controllers.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem.
      */
@@ -119,14 +119,14 @@ public final class TReqSTestTODO {
 
         MySQLRequestsDAO.deleteAll();
         MySQLHelper.deleteMediaTypes();
-        MySQLHelper.insertMediaType(1, "T10K-A", TReqSTestTODO.FIVE);
-        MySQLHelper.insertMediaType(2, "T10K-B", TReqSTestTODO.FIVE);
+        MySQLHelper.insertMediaType(1, "T10K-A", TReqSTestTODO.FIVE, "5");
+        MySQLHelper.insertMediaType(2, "T10K-B", TReqSTestTODO.FIVE, "5");
         MySQLBroker.getInstance().disconnect();
     }
 
     /**
      * Destroys the objects.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem.
      */
@@ -141,7 +141,7 @@ public final class TReqSTestTODO {
 
     /**
      * Checks the assertion against a condition.
-     *
+     * 
      * @param status
      *            given status.
      * @param inStatus
@@ -166,7 +166,7 @@ public final class TReqSTestTODO {
 
     /**
      * Counts the requests in a given state.
-     *
+     * 
      * @param status
      *            Status to analyze.
      * @param equals
@@ -183,8 +183,8 @@ public final class TReqSTestTODO {
         if (!equals) {
             compare = "!=";
         }
-        final String query = "SELECT count(*) FROM requests WHERE status " + compare
-                + status.getId();
+        final String query = "SELECT count(*) FROM requests WHERE status "
+                + compare + status.getId();
         final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         final ResultSet result = (ResultSet) objects[1];
         result.next();
@@ -195,7 +195,7 @@ public final class TReqSTestTODO {
 
     /**
      * Inserts an entry in the mock bridge.
-     *
+     * 
      * @param size
      *            File size.
      * @param position
@@ -223,7 +223,7 @@ public final class TReqSTestTODO {
 
     /**
      * Starts TReqS.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -247,14 +247,14 @@ public final class TReqSTestTODO {
 
         Activator.getInstance().start();
 
-        final long millis = Dispatcher.getInstance().getMillisBetweenLoops() / 2
-                + HUNDRED;
+        final long millis = Dispatcher.getInstance().getMillisBetweenLoops()
+                / 2 + HUNDRED;
         Thread.sleep(millis);
     }
 
     /**
      * Starts TReqS and stops it after a while.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -294,7 +294,7 @@ public final class TReqSTestTODO {
 
     /**
      * Establishes the connection.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -311,7 +311,7 @@ public final class TReqSTestTODO {
 
     /**
      * Destroys all objects.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      */
@@ -334,7 +334,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to start TReqS, then inserts some requests in created state in the
      * database.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -407,7 +407,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to start TReqS, then inserts some requests in failed state in the
      * database.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -450,7 +450,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to start TReqS, then inserts some requests in queued state in the
      * database.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -493,7 +493,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to start TReqS, then inserts some requests in staged state in the
      * database.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -536,7 +536,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to start TReqS, then inserts some requests in submitted state in
      * the database.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -563,8 +563,8 @@ public final class TReqSTestTODO {
         Activator.getInstance().conclude();
         Activator.getInstance().waitToFinish();
 
-        final String query = "SELECT * FROM " + MySQLRequestsDAO.REQUESTS + " WHERE "
-                + MySQLRequestsDAO.REQUESTS_STATUS + " != "
+        final String query = "SELECT * FROM " + MySQLRequestsDAO.REQUESTS
+                + " WHERE " + MySQLRequestsDAO.REQUESTS_STATUS + " != "
                 + RequestStatus.SUBMITTED.getId();
         final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
         final ResultSet result = (ResultSet) objects[1];
@@ -580,7 +580,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to insert requests in the database in staged state, and then it
      * starts the Dispatcher and Activator as thread, not by the starter.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -604,7 +604,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to insert requests in the database in failed state, and then it
      * starts the Dispatcher and Activator as thread, not by the starter.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -632,7 +632,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to insert requests in the database in failed state, and then it
      * starts the Dispatcher and Activator as thread, not by the starter.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -656,7 +656,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to insert requests in the database in queued state, and then it
      * starts the Dispatcher and Activator as thread, not by the starter.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -680,7 +680,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to insert requests in the database in created state, and then it
      * starts the Dispatcher and Activator as thread, not by the starter.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -704,7 +704,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to insert requests in the database in submitted state, and then it
      * starts the Dispatcher and Activator as thread, not by the starter.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -729,7 +729,7 @@ public final class TReqSTestTODO {
      * A registered user and a non registered user have one request each one.
      * The non registered ask for another queue and it is possible because there
      * are some free drives.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -811,7 +811,7 @@ public final class TReqSTestTODO {
      * The registered ask for another queue and it is possible because the
      * drives are not in the limit, however it is more that its reserved
      * resource.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -884,7 +884,7 @@ public final class TReqSTestTODO {
      * a request, and the user has one free resource, at the same time, a non
      * registered user ask for a queue. The selected queue is for the registered
      * user.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -999,6 +999,7 @@ public final class TReqSTestTODO {
             HSMMockBridge.getInstance().waitStage(null);
         }
     }
+
     // TODO Tests: Two registered users that have the same capacity and both of
     // them want a drive:
     // case a: it is the last one available for their capacity
@@ -1010,7 +1011,7 @@ public final class TReqSTestTODO {
      * Tests to stage a file for a user who is defined in the drive mapping with
      * resources available for him, and not available. Also there are drives
      * available.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -1108,7 +1109,7 @@ public final class TReqSTestTODO {
     /**
      * Tests to stage a file from a user who is defined in the drive mapping,
      * with no resources for him, and there are no more drive available.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws InterruptedException
@@ -1274,7 +1275,7 @@ public final class TReqSTestTODO {
     /**
      * Tests a user which is not defined and uses all drives, even, it asks for
      * more that the total capacity.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
