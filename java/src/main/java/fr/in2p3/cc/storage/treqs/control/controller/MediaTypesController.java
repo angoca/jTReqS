@@ -185,16 +185,9 @@ public final class MediaTypesController extends AbstractController {
     /**
      * Returns the type of media, comparing the given id with the pattern of the
      * regular expression.
-     * <p>
-     * In version 1.0, this was done by a query using the 'like' operator.
-     * <p>
-     * In version 1.5, was just a simple String.startsWith().
-     * <p>
-     * In version 1.5.6 uses a regular expression that is stored in the database
-     * along with the media type.
      * 
-     * @param storageName
-     *            Storage name that will be queried.
+     * @param id
+     *            Storage id that will be queried.
      * @return Returns the related media type that accords with the storage
      *         name.
      * @throws TReqSException
@@ -202,11 +195,10 @@ public final class MediaTypesController extends AbstractController {
      *             are not a corresponding media type.
      * @since 1.5
      */
-    public final MediaType getMediaType(final String/* ! */storageName)
-            throws TReqSException {
+    public final MediaType getMediaType(final String id) throws TReqSException {
         LOGGER.trace("> getMediaType");
 
-        assert (storageName != null) && !storageName.equals("");
+        assert (id != null) && !id.equals("");
 
         MediaType ret = null;
         synchronized (this.getObjectMap()) {
@@ -214,14 +206,14 @@ public final class MediaTypesController extends AbstractController {
             while (medias.hasNext()) {
                 MediaType media = (MediaType) this.getObjectMap().get(
                         medias.next());
-                if (media.belongs(storageName)) {
+                if (media.belongs(id)) {
                     ret = media;
                 }
             }
         }
 
         if (ret == null) {
-            throw new NotMediaTypeDefinedException(storageName);
+            throw new NotMediaTypeDefinedException(id);
         }
 
         assert ret != null;
