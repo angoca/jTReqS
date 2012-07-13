@@ -126,7 +126,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * TODO v2.0 This algorithm could use a flag to use or not the fair share. That
  * means if the flag is activated, then the selector will select a best user, if
  * not, then the selector will chose a queue directly, regardless the owner.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5
  */
@@ -139,14 +139,14 @@ public final class AndresSelector extends Selector {
 
     /**
      * Calculates the score of the queue with the described function.
-     *
+     * 
      * @param queue
      *            Queue to analyze.
      * @return Score of the queue.
      * @throws ProblematicConfiguationFileException
      *             If there is a problem with the configuration.
      */
-    private double calculateQueueScore(final Queue/* ! */queue)
+    private double calculateQueueScore(final Queue queue)
             throws ProblematicConfiguationFileException {
         LOGGER.trace("> calculateQueueScore");
 
@@ -186,7 +186,7 @@ public final class AndresSelector extends Selector {
      * <code>
      * Value = (#Reserved - #Used) * (#Reserved + 1)
      * </code>
-     *
+     * 
      * @param resource
      *            Type of associated resource.
      * @param usersScores
@@ -194,9 +194,8 @@ public final class AndresSelector extends Selector {
      * @param queue
      *            Queue to analyze.
      */
-    private void calculateUserScore(final Resource/* ! */resource,
-            final Map<User, Float>/* <!,!>! */usersScores,
-            final Queue/* ! */queue) {
+    private void calculateUserScore(final Resource resource,
+            final Map<User, Float>/* <!,!>! */usersScores, final Queue queue) {
         LOGGER.trace("> checkUser");
 
         assert resource != null : "resource null";
@@ -230,14 +229,14 @@ public final class AndresSelector extends Selector {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
      * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
     @Override
-    protected Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
-            final Queue/* ! */currentQueue) throws TReqSException {
+    protected Queue compareQueue(final Queue bestQueue, final Queue currentQueue)
+            throws TReqSException {
         LOGGER.trace("> compareQueue");
 
         assert bestQueue != null : "Current best queue null";
@@ -264,14 +263,15 @@ public final class AndresSelector extends Selector {
 
     /**
      * Returns a users that has queues in created state.
-     *
+     * 
      * @param users
      *            Iterator of users.
      * @return User that has at least one queue in created state.
      * @throws TReqSException
-     *             If there is a problem with queuesController.
+     *             If there is a problem with queuesController. It is possible
+     *             to return Null.
      */
-    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+    private User/* ? */getNextPossibleUser(final Iterator<User> users)
             throws TReqSException {
         LOGGER.trace("> getNextPossibleUser");
 
@@ -295,14 +295,14 @@ public final class AndresSelector extends Selector {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#selectBestQueue(java
      * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
-            final Resource/* ! */resource) throws TReqSException {
+    public Queue selectBestQueue(final List<Queue> queues,
+            final Resource resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
@@ -342,21 +342,20 @@ public final class AndresSelector extends Selector {
      * Chooses the best queue candidate for activation for a given user.
      * <p>
      * Also taking the opportunity to unsuspend the suspended queues.
-     *
+     * 
      * @param queues
      *            Set of queues.
      * @param resource
      *            Type of resource to analyze.
      * @param user
      *            The best user.
-     * @return The best queue for the given user of the given resource. or null
+     * @return The best queue for the given user of the given resource. Or null
      *         f there are not available queues.
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    private Queue/* ? */selectBestQueueForUser(
-            final List<Queue>/* <!>! */queues, final Resource/* ! */resource,
-            final User/* ! */user) throws TReqSException {
+    private Queue/* ? */selectBestQueueForUser(final List<Queue> queues,
+            final Resource resource, final User user) throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
 
         assert queues != null : "queues null";
@@ -401,7 +400,7 @@ public final class AndresSelector extends Selector {
 
     /**
      * Choose the best user candidate for activation.
-     *
+     * 
      * @param queuesMap
      *            List of queues.
      * @param resource
@@ -410,8 +409,8 @@ public final class AndresSelector extends Selector {
      * @throws TReqSException
      *             If there is a problem retrieving a queue in created state.
      */
-    private User/* ! */selectBestUser(final List<Queue>/* <!>! */queuesMap,
-            final Resource/* ! */resource) throws TReqSException {
+    private User selectBestUser(final List<Queue> queuesMap,
+            final Resource resource) throws TReqSException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";

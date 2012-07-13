@@ -45,7 +45,7 @@ import fr.in2p3.cc.storage.treqs.control.starter.StarterTest;
 /**
  * System tests. This tests are at a global level that checks if the behavior is
  * the desired.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)

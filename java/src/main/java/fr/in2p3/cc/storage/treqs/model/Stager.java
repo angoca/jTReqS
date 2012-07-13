@@ -123,7 +123,7 @@ public final class Stager extends AbstractProcess {
     /**
      * @return Retrieves the associated queue.
      */
-    public Queue/* ! */getQueue() {
+    public Queue getQueue() {
         LOGGER.trace(">< getQueue");
 
         return this.queue;

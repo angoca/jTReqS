@@ -40,7 +40,7 @@ import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
  * Manages register information insert and updates to the database.
- *
+ * 
  * @author Andrés Gómez
  * @since 1.5.4
  */
@@ -48,7 +48,7 @@ public interface RegisterInformationDAO {
 
     /**
      * Inserts a new value in the database for the information part.
-     *
+     * 
      * @param name
      *            Name of the information to insert.
      * @param value
@@ -56,6 +56,5 @@ public interface RegisterInformationDAO {
      * @throws TReqSException
      *             If there is any problem while inserting.
      */
-    void insert(final String /* ! */name, final String /* ! */value)
-            throws TReqSException;
+    void insert(final String name, final String value) throws TReqSException;
 }

@@ -45,7 +45,7 @@ import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 
 /**
  * Tests for MediaType.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)

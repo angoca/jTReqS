@@ -363,7 +363,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
      * @throws HSMGeneralStageProblemException
      *             Problem detected.
      */
-    private void printStream(final InputStream/* ! */inputStream,
+    private void printStream(final InputStream inputStream,
             final boolean error) throws IOException,
             HSMGeneralStageProblemException {
         LOGGER.trace("> printStream");

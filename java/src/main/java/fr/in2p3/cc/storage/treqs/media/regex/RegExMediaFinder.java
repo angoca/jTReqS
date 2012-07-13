@@ -78,7 +78,7 @@ public final class RegExMediaFinder extends AbstractMediaFinder {
      *             are not a corresponding media type.
      * @since 1.5
      */
-    public final MediaType getMediaType(final String/* ! */storageName)
+    public final MediaType getMediaType(final String storageName)
             throws TReqSException {
         LOGGER.trace("> getMediaType");
 

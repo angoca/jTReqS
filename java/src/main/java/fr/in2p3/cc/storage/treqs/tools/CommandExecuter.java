@@ -63,7 +63,7 @@ public final class CommandExecuter {
      * @throws ExecuterException
      *             If there is any problem while executing.
      */
-    public static String/* ! */execute(final String[]/* [!]! */command)
+    public static String execute(final String[] command)
             throws ExecuterException {
         LOGGER.trace("> execute");
 
@@ -102,7 +102,7 @@ public final class CommandExecuter {
      *             If there is a problem processing the output.
      */
     private static String/* ? */processOutput(
-            final BufferedReader/* ! */stream, final boolean error)
+            final BufferedReader stream, final boolean error)
             throws ExecuterException {
         LOGGER.trace("> processOutput");
 

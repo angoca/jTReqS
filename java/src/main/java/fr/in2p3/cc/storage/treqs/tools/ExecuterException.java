@@ -76,7 +76,7 @@ public final class ExecuterException extends TReqSException {
      * @param exception
      *            Wrapped exception.
      */
-    public ExecuterException(final IOException/* ! */exception) {
+    public ExecuterException(final IOException exception) {
         super(exception);
 
         LOGGER.trace(">< Instance creation");
@@ -88,7 +88,7 @@ public final class ExecuterException extends TReqSException {
      * @param message
      *            Message describing the problem.
      */
-    public ExecuterException(final String /* ! */message) {
+    public ExecuterException(final String  message) {
         super(message);
 
         LOGGER.trace(">< Instance creation");

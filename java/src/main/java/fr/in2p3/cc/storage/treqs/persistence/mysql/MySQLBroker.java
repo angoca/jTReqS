@@ -406,7 +406,7 @@ public final class MySQLBroker {
      * @throws TReqSException
      *             If there is any problem when looking for the values.
      */
-    static String/* ! */getURL() throws TReqSException {
+    static String getURL() throws TReqSException {
         LOGGER.trace("> getURL");
 
         final String url = "jdbc:mysql://"
@@ -430,7 +430,7 @@ public final class MySQLBroker {
      * @throws TReqSException
      *             If there is any problem retrieving the user.
      */
-    static String/* ! */getUser() throws TReqSException {
+    static String getUser() throws TReqSException {
         LOGGER.trace("> getUser");
 
         final String username = Configurator.getInstance().getStringValue(
