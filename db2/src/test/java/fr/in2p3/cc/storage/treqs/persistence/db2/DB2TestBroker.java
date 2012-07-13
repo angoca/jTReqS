@@ -163,8 +163,7 @@ public final class DB2TestBroker extends DB2Broker {
      *             If there is a problem while validating the connection or
      *             while executing.
      */
-    public int executeModification(final String/* ! */query)
-            throws TReqSException {
+    public int executeModification(final String query) throws TReqSException {
         LOGGER.trace("> executeModification");
 
         assert query != null;
