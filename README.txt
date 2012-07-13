@@ -7,7 +7,7 @@ for HPSS. This implementation is in Java.
 
 * Prerequisites
 
- - Needed libraries (included in the sources):
+ - Required libraries (included in the sources):
    o Logback (Classic and Core).
    o SLF4J.
    o Commons CLI.
@@ -16,12 +16,14 @@ for HPSS. This implementation is in Java.
    o Commons Logging.
    o Commons Lang.
    o MySQL connector for java.
+   o (Optionally) DB2 connector for Java.
 
  - Compilation Environment:
    o Linux.
    o Java (wih JAVA_HOME set).
    o gcc compiler.
    o Maven (optional but highly recommended).
+   O (Optionally) IBM DB2 SQLJ compiler. 
 
  - Other:
    o a proper HPSS keytab.
@@ -100,9 +102,9 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
 
 * Installation and configuration
 
-** Database
+** Database (MySQL)
 
- - Create the database and give proper permissions to user <jtreqs>.
+ - Create the database and grant proper permissions to user <jtreqs>.
    > CREATE DATABASE jtreqs;
    > CREATE USER 'jtreqs'@'localhost' IDENTIFIED BY 'jtreqs';
    For tests.
@@ -110,7 +112,7 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
    For production.
    > GRANT SELECT, INSERT, UPDATE ON jtreqs.* TO 'jtreqs'@'localhost';
 
-   Then, you can create the tables in the databases. In the 'doc' directory,
+   Then, you can create the tables in the database. In the 'doc' directory,
    there is a script called 'mysql.sql' that contains the dump of the database.
    However, the application itself can show the queries to create the tables
    by calling the application with the option -db
@@ -118,21 +120,42 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
    And, if you want, the application can create the tables if it is called like
    this:
       jtreqs.sh -dbc
-   For more information about executing the application, please check
+   For more information about executing the application, please check the
    'Execution' section.
 
+** Database (DB2)
+
+ - Create the user jtreqs in the operative system.
+   > sudo useradd jtreqs
+   > sudo passwd jtreqs
+ - Create the database and grant the proper permissions to user <jtreqs>.
+   > db2 CREATE DATABASE jtreqs
+   > db2 CONNECT TO jtreqs
+   > db2 GRANT DBADM ON DATABASE TO USER jtreqs
+   
+   Then, you can create the tables in the database. In the 'doc' directory,
+   there is a script called 'db2.sql' that contains th dump of the database.
+   However, the application itself can show the queries to create the tables
+   by calling the application with the option -db. Remember to change the
+   data source in order to use DB2 instead of MySQL.
+      jtreqs.sh -db
+   For more information about executing the applications, please check the
+   'Execution' section.
+
+** Table's configuration
+
    Once, the tables are created, you need to indicate the quantity of drives
-   that the application can use to mounts tapes. Remember that the HSM (HPSS)
-   could use many drives to do migration, thus, it is NOT recommended to put the
-   totality of drives for the applications. Depending on the ratio
-   reading/writings, this value should be configured. If you are going to put 15
-   T10K-B drives you should insert a row like:
+   that the application can use to mount tapes. Remember that the HSM (HPSS)
+   could use many drives to do migrations, thus, it is NOT recommended to put
+   the totality of drives for the applications. Depending on the
+   reading/writing ratio, this value should be configured. If you are going to
+   put 15 T10K-B drives you should insert a row like:
       insert into JMEDIATYPES (id, name, drives) values (1, "T10K-B", 15);
    When using Fair-Share, you have to decide the percentage of drives that will
    be used for a given client when all drives are requested. This will assure a
    minimum quantity of drives per user when all drives are being used. For
    example, if you want to reserve 20% of drives T10K-B for an experience called
-   atlas, you will do:
+   Atlas, you will do:
       insert into JALLOCATIONS (id, user, share) values (1, "atlas", 0.20);
 
 ** System
@@ -141,11 +164,11 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
 
    The application needs a user to be executed, thus it is necessary to create a
    user in the system that will have the following rights:
-   - To execute the application (+x in the bin/jtreqs.sh
+   - To execute the application (+x in the bin/jtreqs.sh)
    - To read the keytab (+r in the keytab path)
    - To write in the log files of the application. If the default values are
    chosen, then the application has to have the rights to write in
-   /var/log/jtreqs.
+      /var/log/jtreqs.
 
 *** Files and Directories
 
@@ -207,3 +230,13 @@ java/src/main/java/fr/in2p3/cc/storage/treqs/tools/*.java
 
  - With the treqs-client available at: http://git.in2p3.fr/public/treqs-client.
 
+
+For test in development:
+
+ - Many tests use Assertion, thus, you have to activate them by -ea in the VM
+ arguments.
+ - When running in Eclipse, it is necessary to indicate that the Working
+ directory is the bin directory, or where the .class files are ggenerated.
+ - Many tests use some configuration files and scripts. For this reason it is
+ necessary to add the java > src > test > config and script directories to the
+ path.
