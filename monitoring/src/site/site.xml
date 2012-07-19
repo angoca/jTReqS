@@ -44,12 +44,12 @@
       <item name="HPSS Dashboard" href="http://cctoolsafs.in2p3.fr/hpss/demo/"/>
     </links>
 
-    <menu name="jTReqS 1.5">
+    <menu name="jTReqS">
       <item name="Introduction" href="index.html"/>
-      <item name="General Information" href="global.html"/>
-      <item name="Queues" href="queues.html" />
+      <item name="General Information" href="main.php"/>
+      <item name="Queues" href="queues.php" />
       <item name="Tapes" href="tapes.html"/>
-      <item name="Requests" href="requests.html"/>
+      <item name="Requests" href="requests.php"/>
     </menu>
 
     <menu ref="reports"/>

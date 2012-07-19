@@ -42,27 +42,35 @@
   </parent>
 
   <!-- Build Settings -->
-  <reporting>
+  <build>
     <outputDirectory>${basedir}/target/site</outputDirectory>
     <plugins>
       <plugin>
-        <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.3.1</version>
-        <reportSets>
-          <reportSet>
-            <reports>
-              <report>index</report>
-              <report>issue-tracking</report>
-              <report>license</report>
-              <report>project-team</report>
-              <report>scm</report>
-              <report>summary</report>
-            </reports>
-          </reportSet>
-        </reportSets>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <reportPlugins>
+            <plugin>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>2.4</version>
+              <reportSets>
+                <reportSet>
+                  <reports>
+                    <report>index</report>
+                    <report>issue-tracking</report>
+                    <report>license</report>
+                    <report>project-team</report>
+                    <report>scm</report>
+                    <report>summary</report>
+                  </reports>
+                </reportSet>
+              </reportSets>
+            </plugin>
+          </reportPlugins>
+        </configuration>
       </plugin>
     </plugins>
-  </reporting>
+  </build>
 
   <!-- More Project Information -->
   <name>jTReqS Server - Monitoring part</name>
