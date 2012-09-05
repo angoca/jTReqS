@@ -34,36 +34,59 @@
  * knowledge of the CeCILL license and that you accept its terms.
  *
  */
-package fr.in2p3.cc.storage.treqs;
+package fr.in2p3.cc.storage.treqs.media;
 
+import junit.framework.Assert;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
 
-import fr.in2p3.cc.storage.treqs.control.dispatcher.FileRequestTest;
-import fr.in2p3.cc.storage.treqs.media.MediaFinderFactoryTest;
-import fr.in2p3.cc.storage.treqs.model.FilePositionOnTapeTest;
-import fr.in2p3.cc.storage.treqs.model.FileTest;
-import fr.in2p3.cc.storage.treqs.model.MediaTypeTest;
-import fr.in2p3.cc.storage.treqs.model.QueueTest;
-import fr.in2p3.cc.storage.treqs.model.ReadingTest;
-import fr.in2p3.cc.storage.treqs.model.ResourceTest;
-import fr.in2p3.cc.storage.treqs.model.StagerTest;
-import fr.in2p3.cc.storage.treqs.model.TapeTest;
-import fr.in2p3.cc.storage.treqs.model.UserTest;
-import fr.in2p3.cc.storage.treqs.tools.ConfiguratorTest;
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.DefaultProperties;
+import fr.in2p3.cc.storage.treqs.MainTests;
+import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
+import fr.in2p3.cc.storage.treqs.TReqSException;
 
 /**
- * Unit tests. White box test.
+ * Test for Media Finder.
  * 
- * @author Andrés Gómez
+ * @author Andres Gomez
  */
-@RunWith(Suite.class)
-@SuiteClasses({ MediaTypeTest.class, FileRequestTest.class, FileTest.class,
-        TapeTest.class, ResourceTest.class, UserTest.class,
-        FilePositionOnTapeTest.class, ReadingTest.class, QueueTest.class,
-        StagerTest.class, ConfiguratorTest.class,
-        MediaFinderFactoryTest.class })
-public final class UnitTests {
-    // Nothing.
+@RunWith(RandomBlockJUnit4ClassRunner.class)
+public class MediaFinderFactoryTest {
+    /**
+     * Setups the configuration file for tests.
+     */
+    @Before
+    public void setUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
+    /**
+     * Clears all after the tests.
+     * 
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    @After
+    public void tearDown() throws TReqSException {
+        MediaFinderFactory.destroyInstance();
+    }
+
+    /**
+     * Tests the default instance name.
+     * 
+     * @throws TReqSException
+     *             Never.
+     */
+    @Test
+    public void testGetInstance01() throws TReqSException {
+        final String actual = MediaFinderFactory.getDAOFactoryInstance()
+                .getClass().getName();
+        final String expected = DefaultProperties.DEFAULT_MEDIA_FINDER_FACTORY;
+        Assert.assertEquals(expected, actual);
+    }
 }
