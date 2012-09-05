@@ -252,7 +252,7 @@ public final class HSMCommandBridge extends AbstractHSMBridge {
     }
 
     /**
-     * Builds the command to execute.
+     * Builds the command to execute. TODO Return a set of strings {"",""}.
      *
      * @param name
      *            Name of the file to query.
