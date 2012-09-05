@@ -38,9 +38,12 @@ package fr.in2p3.cc.storage.treqs.control.controller;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.MainTests;
 import fr.in2p3.cc.storage.treqs.RandomBlockJUnit4ClassRunner;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.exception.NotMediaTypeDefinedException;
@@ -53,6 +56,15 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class MediaTypesControllerTest {
+    /**
+     * Setups the configuration file for tests.
+     */
+    @Before
+    public void setUp() {
+        System.setProperty(Constants.CONFIGURATION_FILE,
+                MainTests.PROPERTIES_FILE);
+    }
+
     /**
      * Destroys everything.
      */
@@ -128,6 +140,7 @@ public final class MediaTypesControllerTest {
                 .getMediaAllocations();
         MediaTypesController.getInstance().getMediaType("T10K-A");
         // FIXME Terminar este test
-        // FIXME hacer tests de la nueva estructura para ver si sí instancia bien
+        // FIXME hacer tests de la nueva estructura para ver si sí instancia
+        // bien
     }
 }
