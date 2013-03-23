@@ -3,3 +3,8 @@ jdk:
   - oraclejdk7
   - openjdk7
   - openjdk6
+before_script:
+  - mysql -e 'create database jtreqs;'
+  - mysql --execute="CREATE USER 'jtreqs'@'localhost' IDENTIFIED BY 'jtreqs';"
+  - mysql --execute="GRANT ALL ON jtreqs.* TO 'jtreqs'@'localhost';"
+services: mysql
