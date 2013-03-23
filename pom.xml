@@ -104,9 +104,9 @@
   </dependencies>
   <modules>
     <module>java</module>
-    <module>native</module>
+    <!--module>native</module>
     <module>release</module>
-    <module>monitoring</module>
+    <module>monitoring</module-->
   </modules>
   <properties>
     <projectVersion>${project.version}</projectVersion>
