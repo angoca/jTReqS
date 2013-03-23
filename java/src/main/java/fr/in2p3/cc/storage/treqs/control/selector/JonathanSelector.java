@@ -71,7 +71,7 @@ import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
  * queues activated. Then, the best queue part will try to chose a queue for
  * this user, but this user does not need more queues, so the other users will
  * not be selected. This produces an error log "Unable to chose best queue".
- *
+ * 
  * @author Andres Gomez
  * @since 1.5
  */
@@ -88,7 +88,7 @@ public final class JonathanSelector extends FifoSelector {
      * <code>
      * Value = #TotalDrives * #Reserved - #Used
      * </code>
-     *
+     * 
      * @param resource
      *            Type of associated resource.
      * @param usersScores
@@ -96,9 +96,8 @@ public final class JonathanSelector extends FifoSelector {
      * @param queue
      *            Queue to analyze.
      */
-    private void calculateUserScore(final Resource/* ! */resource,
-            final Map<User, Float>/* <!,!>! */usersScores,
-            final Queue/* ! */queue) {
+    private void calculateUserScore(final Resource resource,
+            final Map<User, Float>/* <!,!>! */usersScores, final Queue queue) {
         LOGGER.trace("> checkUser");
 
         assert resource != null : "resource null";
@@ -110,8 +109,8 @@ public final class JonathanSelector extends FifoSelector {
             // Just setting a default best user.
             final User user = queue.getOwner();
             if (user != null) {
-                score = resource.getTotalAllocation() * resource
-                        .getUserAllocation(user)
+                score = resource.getTotalAllocation()
+                        * resource.getUserAllocation(user)
                         - resource.getUsedResources(user);
                 usersScores.put(user, score);
                 LOGGER.debug(
@@ -135,14 +134,15 @@ public final class JonathanSelector extends FifoSelector {
      * Returns a users that has queues in created state.
      * <p>
      * TODO v2.0 Negative user means that the user has to be ignored/skipped.
-     *
+     * 
      * @param users
      *            Iterator of users.
-     * @return User that has at least one queue in created state.
+     * @return User that has at least one queue in created state. It is possible
+     *         to return null.
      * @throws TReqSException
      *             If there is a problem with queuesController.
      */
-    private User/* ? */getNextPossibleUser(final Iterator<User>/* <!>! */users)
+    private User/* ? */getNextPossibleUser(final Iterator<User> users)
             throws TReqSException {
         LOGGER.trace("> getNextPossibleUser");
 
@@ -166,14 +166,14 @@ public final class JonathanSelector extends FifoSelector {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#selectBestQueue(java
      * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
-            final Resource/* ! */resource) throws TReqSException {
+    public Queue selectBestQueue(final List<Queue> queues,
+            final Resource resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
@@ -213,7 +213,7 @@ public final class JonathanSelector extends FifoSelector {
      * Chooses the best queue candidate for activation for a given user.
      * <p>
      * Also taking the opportunity to unsuspend the suspended queues.
-     *
+     * 
      * @param queues
      *            Set of queues.
      * @param resource
@@ -225,9 +225,8 @@ public final class JonathanSelector extends FifoSelector {
      * @throws TReqSException
      *             If there a problem retrieving the instance.
      */
-    Queue/* ? */selectBestQueueForUser(final List<Queue>/* <!>! */queues,
-            final Resource/* ! */resource, final User/* ! */user)
-            throws TReqSException {
+    Queue/* ? */selectBestQueueForUser(final List<Queue> queues,
+            final Resource resource, final User user) throws TReqSException {
         LOGGER.trace("> selectBestQueueForUser");
 
         assert queues != null : "queues null";
@@ -272,7 +271,7 @@ public final class JonathanSelector extends FifoSelector {
 
     /**
      * Choose the best user candidate for activation.
-     *
+     * 
      * @param queuesMap
      *            List of queues.
      * @param resource
@@ -281,8 +280,8 @@ public final class JonathanSelector extends FifoSelector {
      * @throws TReqSException
      *             If there is a problem retrieving a queue in created state.
      */
-    User/* ! */selectBestUser(final List<Queue>/* <!>! */queuesMap,
-            final Resource/* ! */resource) throws TReqSException {
+    User selectBestUser(final List<Queue> queuesMap, final Resource resource)
+            throws TReqSException {
         LOGGER.trace("> selectBestUser");
 
         assert queuesMap != null : "queues null";

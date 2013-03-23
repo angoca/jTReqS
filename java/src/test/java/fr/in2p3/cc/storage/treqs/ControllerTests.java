@@ -43,6 +43,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import fr.in2p3.cc.storage.treqs.control.controller.ControllerTest;
 import fr.in2p3.cc.storage.treqs.control.controller.FilePositionOnTapesControllerTest;
 import fr.in2p3.cc.storage.treqs.control.controller.FilesControllerTest;
+import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesControllerTest;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesControllerTest;
 import fr.in2p3.cc.storage.treqs.control.controller.StagersControllerTest;
 import fr.in2p3.cc.storage.treqs.control.controller.TapesControllerTest;
@@ -50,14 +51,14 @@ import fr.in2p3.cc.storage.treqs.control.controller.UsersControllerTest;
 
 /**
  * Tests on the controllers.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)
 @SuiteClasses({ ControllerTest.class, TapesControllerTest.class,
-        FilesControllerTest.class, UsersControllerTest.class,
-        FilePositionOnTapesControllerTest.class, StagersControllerTest.class,
-        QueuesControllerTest.class })
+        MediaTypesControllerTest.class, FilesControllerTest.class,
+        UsersControllerTest.class, FilePositionOnTapesControllerTest.class,
+        StagersControllerTest.class, QueuesControllerTest.class })
 public final class ControllerTests {
     // Nothing.
 }

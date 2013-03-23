@@ -95,8 +95,8 @@ public final class StarterTest {
 
         MySQLRequestsDAO.deleteAll();
         MySQLHelper.deleteMediaTypes();
-        MySQLHelper.insertMediaType(1, "T10K-A", 5);
-        MySQLHelper.insertMediaType(2, "T10K-B", 5);
+        MySQLHelper.insertMediaType(1, "T10K-A", 5, "/TAPA");
+        MySQLHelper.insertMediaType(2, "T10K-B", 5, "/TAPB");
         MySQLBroker.getInstance().disconnect();
     }
 

@@ -39,6 +39,7 @@ package fr.in2p3.cc.storage.treqs.persistence.mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
 import fr.in2p3.cc.storage.treqs.model.dao.ReadingDAO;
@@ -54,7 +55,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mock.dao.MockWatchDogDAO;
 /**
  * DAO factory. This is the implementation of the Factory method for the Mock
  * data source access.
- *
+ * 
  * @author Andrés Gómez
  * @since 1.5
  */
@@ -68,7 +69,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#dumpStructure()
      */
@@ -79,7 +80,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getConfigurationDAO
      * ()
@@ -93,7 +94,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getQueueDAO()
      */
@@ -106,7 +107,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getReadingDAO()
      */
@@ -118,8 +119,35 @@ public final class MockDAOFactory extends AbstractDAOFactory {
     }
 
     /*
+     * (sin Javadoc)
+     * 
+     * @seefr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#
+     * getRegisterDBInformation()
+     */
+    @Override
+    public String getRegisterDBInformation() throws TReqSException {
+        LOGGER.trace(">< getRegisterDBInformation");
+
+        return "Mock DB";
+    }
+
+    /*
      * (non-Javadoc)
-     *
+     * 
+     * @see
+     * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDBUser
+     * ()
+     */
+    @Override
+    public String getRegisterDBUser() throws TReqSException {
+        LOGGER.trace(">< getRegisterDBUser");
+
+        return "MockUserName";
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getRegisterDAO()
      */
@@ -132,7 +160,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#getWatchDog()
      */
@@ -145,7 +173,7 @@ public final class MockDAOFactory extends AbstractDAOFactory {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory#initialize()
      */

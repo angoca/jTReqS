@@ -1055,7 +1055,7 @@ public final class Queue implements Comparable<Queue> {
         // The insert method ensures that the reading object is inserted
         // in the right place.
 
-        // FIXME v2.0 In HPSS version 7 the aggregation return the same position
+        // FIXME v1.5.6 In HPSS version 7 the aggregation return the same position
         // for different files.
         boolean exists = false;
         synchronized (this.readingList) {
@@ -1069,7 +1069,7 @@ public final class Queue implements Comparable<Queue> {
                 if (!this.readingList.get(fpot.getPosition()).getMetaData()
                         .getFile().getName().equals(fpot.getFile().getName())) {
                     assert false : "Two different files in the same position";
-                    // FIXME v2.0 this will happen when using aggregation.
+                    // FIXME v1.5.6 This will happen when using aggregation.
                 }
             }
         }
@@ -1371,7 +1371,7 @@ public final class Queue implements Comparable<Queue> {
      * Remove the suspended status from the queue. Puts the queue in CREATED
      * state.
      * <p>
-     * TODO v2.0 reactivate the queue from the Activator.
+     * TODO v2.0 Reactivate the queue from the Activator.
      *
      * @throws TReqSException
      *             If the queue has been suspended too many times.

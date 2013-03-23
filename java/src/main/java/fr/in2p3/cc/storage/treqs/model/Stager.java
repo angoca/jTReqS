@@ -36,8 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.model;
 
-import java.util.GregorianCalendar;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,7 +123,7 @@ public final class Stager extends AbstractProcess {
     /**
      * @return Retrieves the associated queue.
      */
-    public Queue/* ! */getQueue() {
+    public Queue getQueue() {
         LOGGER.trace(">< getQueue");
 
         return this.queue;
@@ -204,8 +202,7 @@ public final class Stager extends AbstractProcess {
                     AbstractDAOFactory
                             .getDAOFactoryInstance()
                             .getReadingDAO()
-                            .update(nextReading, RequestStatus.FAILED,
-                                    new GregorianCalendar());
+                            .update(nextReading, RequestStatus.FAILED);
                 } catch (final TReqSException e1) {
                     LOGGER.error("Error logging problem for reading {}",
                             nextReading.getMetaData().getPosition());

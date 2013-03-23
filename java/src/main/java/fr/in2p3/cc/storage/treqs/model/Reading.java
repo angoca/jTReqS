@@ -262,7 +262,7 @@ public final class Reading {
         // reconsider it. Or failed if it is over.
 
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .update(this, daoState, new GregorianCalendar());
+                .update(this, daoState);
 
         LOGGER.trace("< logsException");
 
@@ -290,7 +290,7 @@ public final class Reading {
         this.setErrorMessage("Staging.");
         // Status Queued in the database.
         AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                .update(this, this.getRequestStatus(), this.startTime);
+                .update(this, this.getRequestStatus());
         LOGGER.info("File {} in tape {} at, position {}: Started.",
                 new String[] { filename, this.metaData.getTape().getName(),
                         Integer.toString(this.metaData.getPosition()) });
@@ -307,7 +307,7 @@ public final class Reading {
             AbstractDAOFactory
                     .getDAOFactoryInstance()
                     .getReadingDAO()
-                    .update(this, RequestStatus.STAGED, new GregorianCalendar());
+                    .update(this, RequestStatus.STAGED);
             LOGGER.info("File {} successfully staged.", filename);
         } catch (final AbstractHSMException e) {
             LOGGER.warn("Error processing this file: {} {}", filename,
@@ -322,8 +322,7 @@ public final class Reading {
                 AbstractDAOFactory
                         .getDAOFactoryInstance()
                         .getReadingDAO()
-                        .update(this, RequestStatus.SUBMITTED,
-                                new GregorianCalendar());
+                        .update(this, RequestStatus.SUBMITTED);
                 // We report this problem to the caller.
                 throw e;
             } else if (e instanceof AbstractHSMPropertiesException) {
@@ -486,7 +485,7 @@ public final class Reading {
 
             // Send update to the DAO. Failed status in the database.
             AbstractDAOFactory.getDAOFactoryInstance().getReadingDAO()
-                    .update(this, this.requestStatus, new GregorianCalendar());
+                    .update(this, this.requestStatus);
         } else if (this.requestStatus == RequestStatus.STAGED) {
             // If this file has already been done.
             LOGGER.info("{} already staged.", filename);

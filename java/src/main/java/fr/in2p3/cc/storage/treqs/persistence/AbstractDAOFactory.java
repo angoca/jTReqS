@@ -54,7 +54,7 @@ import fr.in2p3.cc.storage.treqs.tools.KeyNotFoundException;
 /**
  * DAO factory. Retrieves the corresponding DAO Factory for each persistence
  * mechanism. This is the implementation of the Abstract Factory pattern.
- *
+ * 
  * @author Andrés Gómez
  * @since 1.5
  */
@@ -73,9 +73,9 @@ public abstract class AbstractDAOFactory {
     /**
      * Creates the DAO factory.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem obtaining the configuration or
      *             instantiating the class.
@@ -118,7 +118,7 @@ public abstract class AbstractDAOFactory {
     /**
      * Creates the DAO factory for the specified type defined in the
      * configuration file.
-     *
+     * 
      * @return Factory DAO.
      * @throws TReqSException
      *             If there is a problem while acceding the data source. If
@@ -140,49 +140,65 @@ public abstract class AbstractDAOFactory {
 
     /**
      * Dumps the structure of the data source.
-     *
+     * 
      * @return Structure of the data source.
      */
     public abstract String dumpStructure();
 
     /**
      * Returns the DAO for the configuration.
-     *
+     * 
      * @return the DAO for the configuration object.
      */
     public abstract ConfigurationDAO getConfigurationDAO();
 
     /**
      * Returns the DAO for the queue.
-     *
+     * 
      * @return The DAO for the Queue object.
      */
     public abstract QueueDAO getQueueDAO();
 
     /**
      * Returns the DAO for the reading.
-     *
+     * 
      * @return The DAO for the reading object.
      */
     public abstract ReadingDAO getReadingDAO();
 
     /**
+     * Returns the information about the database.
+     * 
+     * @return Information about where the database is.
+     */
+    public abstract String getRegisterDBInformation() throws TReqSException;
+
+    /**
+     * Returns the username used to connect to the database.
+     * 
+     * @return The username used to connect to the database.
+     * @throws TReqSException
+     *             If there is any problem.
+     */
+    public abstract String getRegisterDBUser() throws TReqSException;
+
+    /**
      * Returns the DAO for the register information.
-     *
+     * 
      * @return The DAO for the register information.
      */
     public abstract RegisterInformationDAO getRegisterInformationDAO();
 
     /**
      * Starts the process of monitoring in the database.
-     *
+     * 
      * @return The DAO for the watchdog.
      */
     public abstract WatchDogDAO getWatchDogDAO();
 
     /**
      * Initializes the data source.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem while initializing the data source.
      */

@@ -1,3 +1,48 @@
 TODO v2.0 Unifier the monitoring repository as part of the Maven Site of the
 server. This permits to generate a better site from the source code.
 The client could be apart, cause the clients could be different.
+
+
+TODO v1.6 The parallel execution should be managed by an Actor
+
+There is an excellent article in IBM DeveloperWorks
+http://www.ibm.com/developerworks/training/kp/j-kp-actorconcurrency/index.html?ca=drs-
+https://en.wikipedia.org/wiki/Actor_model
+With actors, the threads in TReqS will change as following:
+- Dispatcher: Only checks if the database has new requests. The only message
+that receives is to stop execution. This actor is always active checking
+requests, with sleeping time periods.
+- Consultant: Receives the filename as a message, and then queries HPSS for the
+information about that file. Eventually, it sends a message to the activator
+in order to wake him up because the activator could is sleeping.
+- Activator: Activates the queue according to the files. The message it receives
+is to activate and start to mount a tape. Wake up messages could be ignored
+once it is activating queues if all drives are being used. It the file request
+is for an unused tape type, it could activate that tape immediately, in order to
+mount the tape. The activator now have to states: sleeping,
+waiting. Sleeping is when there is not any file request to process, thus it
+waits to be woken up. Instead, waiting is when it has a lot of file requests,
+but has activate all possible drives, so it is not possible to activate more
+tapes.
+- Stagers: Reads the data from the tapes. The messages sent to stagers should be
+in a round robin fashion, in order to force the three stages in parallel.
+The stagers send messages to the activator once a tape has finished its queue.
+The stagers could send messages between them, in order to synchronize the end of
+a tape. When the a queue has 3 stagers, and there is only one file, the other
+two stagers pass to an inactivated state. However, at this time, new file
+requests could arrive, and the only active stager will process the new file
+request. In order to prevent this, the stagers could have a final state (no
+more filerequest in the queue, and all stagers finished), and a waiting state
+(there are not any more file request in the queue, but at least there is a
+stager processing a file)
+- Main: It is the main actors that checks if treqs should continue its execution
+If there is a shutdown signal, it passes this signal to the other actors in
+order to stop execution.
+
+In the current TReqS version, there is the concept of process which holds a
+state, and permits to start and stop the execution of the threads, because
+all of them uses the same abstract class. With the concept of actors, this
+change a lot, because the actors will have mailbox and other concepts.
+The dispatcher will be the most impacted at a first glance, but the performance
+will be improved when there is a bulk staging. The dispatche will be divided
+in two concepts.

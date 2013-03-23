@@ -37,6 +37,7 @@
 package fr.in2p3.cc.storage.treqs.control.controller;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.MediaType;
  * <p>
  * The key is the name of the media type in the controller, however the id is
  * the primary key in the data source.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5
  */
@@ -82,7 +83,7 @@ public final class MediaTypesController extends AbstractController {
 
     /**
      * Retrieves the singleton instance of this class.
-     *
+     * 
      * @return Unique instance.
      */
     public static MediaTypesController getInstance() {
@@ -115,17 +116,20 @@ public final class MediaTypesController extends AbstractController {
     /**
      * Creates an instance of media type and adds it to the controller. Once a
      * media type is added, it cannot be deleted.
-     *
+     * 
      * @param name
      *            Name of the media type.
      * @param id
      *            Id of the media.
+     * @param regExpId
+     *            Regular expression that determines if a tapename belongs to a
+     *            media type.
      * @return Instance of the media type.
      * @throws TReqSException
      *             If there is a problem creating the instance or adding it to
      *             the controller.
      */
-    public MediaType add(final String name, final byte id)
+    public MediaType add(final String name, final byte id, final String regExpId)
             throws TReqSException {
         LOGGER.trace("> add");
 
@@ -136,7 +140,7 @@ public final class MediaTypesController extends AbstractController {
         synchronized (this.getObjectMap()) {
             media = (MediaType) this.exists(name);
             if (media == null) {
-                media = this.create(name, id);
+                media = this.create(name, id, regExpId);
             }
         }
 
@@ -149,23 +153,26 @@ public final class MediaTypesController extends AbstractController {
 
     /**
      * Creates an instance of the media type.
-     *
+     * 
      * @param name
      *            Name of the media type.
      * @param id
      *            Id of the media type.
+     * @param regExpId
+     *            Regular expression that determines if a tapename belongs to a
+     *            media type.
      * @return The instance of the media type.
      * @throws TReqSException
      *             If there is a problem while creating the instance.
      */
-    private MediaType create(final String name, final byte id)
-            throws TReqSException {
+    private MediaType create(final String name, final byte id,
+            final String regExpId) throws TReqSException {
         LOGGER.trace("> create");
 
         assert (name != null) && !name.equals("");
         assert id >= 0;
 
-        final MediaType media = new MediaType(id, name);
+        final MediaType media = new MediaType(id, name, regExpId);
         super.add(name, media);
 
         assert media != null;
@@ -176,15 +183,11 @@ public final class MediaTypesController extends AbstractController {
     }
 
     /**
-     * Returns the type of media, comparing the given name with the pattern.
-     * <p>
-     * In version 1.0, this was done by a query using the 'like' operator.
-     * <p>
-     * FIXME v2.0 This should be an external component, such as the ACSLS. Or
-     * something with regular expressions.
-     *
-     * @param storageName
-     *            Storage name that will be queried.
+     * Returns the type of media, comparing the given id with the pattern of the
+     * regular expression.
+     * 
+     * @param id
+     *            Storage id that will be queried.
      * @return Returns the related media type that accords with the storage
      *         name.
      * @throws TReqSException
@@ -192,28 +195,25 @@ public final class MediaTypesController extends AbstractController {
      *             are not a corresponding media type.
      * @since 1.5
      */
-    public MediaType getMediaType(final String storageName)
-            throws TReqSException {
+    public final MediaType getMediaType(final String id) throws TReqSException {
         LOGGER.trace("> getMediaType");
 
-        assert (storageName != null) && !storageName.equals("");
+        assert (id != null) && !id.equals("");
 
         MediaType ret = null;
         synchronized (this.getObjectMap()) {
-            if (storageName.startsWith("IT") || storageName.startsWith("IS")) {
-                LOGGER.debug("T10K-A");
-                ret = (MediaType) this.getObjectMap().get("T10K-A");
-            } else if (storageName.startsWith("JT")) {
-                LOGGER.debug("T10K-B");
-                ret = (MediaType) this.getObjectMap().get("T10K-B");
-            } else {
-                LOGGER.error("Unknown media type: '{}'", storageName);
-                assert false;
+            Iterator<String> medias = this.getObjectMap().keySet().iterator();
+            while (medias.hasNext()) {
+                MediaType media = (MediaType) this.getObjectMap().get(
+                        medias.next());
+                if (media.belongs(id)) {
+                    ret = media;
+                }
             }
         }
 
         if (ret == null) {
-            throw new NotMediaTypeDefinedException(storageName);
+            throw new NotMediaTypeDefinedException(id);
         }
 
         assert ret != null;

@@ -57,6 +57,12 @@ import fr.in2p3.cc.storage.treqs.model.Tape;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class ControllerTest {
     /**
+     * Media type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "media", "/TAPE");
+
+    /**
      * Destroys the used objects.
      */
     @After
@@ -72,14 +78,14 @@ public final class ControllerTest {
      */
     @Test
     public void testAdd01() throws TReqSException {
-        final String tapename = "tapenameYes";
+        final String tapename = "tapeYes";
         TapesController.getInstance().add(tapename,
-                new Tape(tapename, new MediaType((byte) 1, "media")));
+                new Tape(tapename, MEDIA_TYPE));
 
         boolean failed = false;
         try {
             TapesController.getInstance().add(tapename,
-                    new Tape(tapename, new MediaType((byte) 1, "media")));
+                    new Tape(tapename, MEDIA_TYPE));
             failed = true;
         } catch (final Throwable e) {
             if (!(e instanceof ControllerInsertException)) {
@@ -101,7 +107,7 @@ public final class ControllerTest {
         boolean failed = false;
         try {
             TapesController.getInstance().add(null,
-                    new Tape(tapename, new MediaType((byte) 1, "media")));
+                    new Tape(tapename, MEDIA_TYPE));
             failed = true;
         } catch (final Throwable e) {
             if (!(e instanceof AssertionError)) {
@@ -142,9 +148,8 @@ public final class ControllerTest {
      */
     @Test
     public void testExist01Yes() throws TReqSException {
-        final String tapename = "tapenameYes";
-        TapesController.getInstance().create(tapename,
-                new MediaType((byte) 1, "media"));
+        final String tapename = "tapeYes";
+        TapesController.getInstance().create(tapename, MEDIA_TYPE);
 
         final Tape tape = (Tape) TapesController.getInstance().exists(tapename);
 
@@ -190,9 +195,8 @@ public final class ControllerTest {
      */
     @Test
     public void testRemove01() throws TReqSException {
-        final String tapename = "tapenameYes";
-        TapesController.getInstance().create(tapename,
-                new MediaType((byte) 1, "media"));
+        final String tapename = "tapeYes";
+        TapesController.getInstance().create(tapename, MEDIA_TYPE);
 
         Tape tape = (Tape) TapesController.getInstance().exists(tapename);
         Assert.assertTrue("Existing object", tape != null);

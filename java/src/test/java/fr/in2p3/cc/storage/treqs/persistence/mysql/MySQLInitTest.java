@@ -90,6 +90,7 @@ public final class MySQLInitTest {
         MySQLInitTest.dropTable(MySQLStatements.ALLOCATIONS);
         MySQLInitTest.dropTable(MySQLStatements.MEDIATYPES);
         MySQLInitTest.dropTable(MySQLStatements.HEART_BEAT);
+        MySQLInitTest.dropTable(MySQLStatements.INFORMATIONS);
         MySQLBroker.getInstance().disconnect();
     }
 

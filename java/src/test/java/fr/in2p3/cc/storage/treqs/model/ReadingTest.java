@@ -68,6 +68,11 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 public final class ReadingTest {
 
     /**
+     * Media type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "media", "/TAPE");
+    /**
      * Number one hundred.
      */
     private static final int HUNDRED = 100;
@@ -126,7 +131,7 @@ public final class ReadingTest {
      */
     @Test
     public void testGetQueue01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", 1);
         final FilePositionOnTape fpot = new FilePositionOnTape(file,
                 ReadingTest.HUNDRED, tape, new User("username"));
@@ -149,7 +154,7 @@ public final class ReadingTest {
      */
     @Test
     public void testMaxRetries01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", 1);
         final FilePositionOnTape fpot = new FilePositionOnTape(file,
                 ReadingTest.HUNDRED, tape, new User("username"));
@@ -173,7 +178,7 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods02() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -202,7 +207,7 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods03() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -231,7 +236,7 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods04() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -260,7 +265,7 @@ public final class ReadingTest {
      */
     @Test
     public void testOtherMethods05() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -279,9 +284,10 @@ public final class ReadingTest {
      */
     @Test
     public void testReadingConstructor01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
-        final Queue queue = new Queue(new FilePositionOnTape(new File("filename",
-                ReadingTest.HUNDRED), 50, tape, new User("username")), (byte) 2);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
+        final Queue queue = new Queue(new FilePositionOnTape(new File(
+                "filename", ReadingTest.HUNDRED), 50, tape,
+                new User("username")), (byte) 2);
 
         boolean failed = false;
         try {
@@ -308,7 +314,7 @@ public final class ReadingTest {
         Configurator.getInstance().deleteValue(Constants.SECTION_QUEUE,
                 Constants.MAX_READ_RETRIES);
 
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -325,7 +331,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStage01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -347,7 +353,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStage02() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -370,7 +376,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStage03() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -392,14 +398,15 @@ public final class ReadingTest {
      */
     @Test
     public void testStage04() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
         final Queue queue = new Queue(fpot, (byte) ReadingTest.TEN);
         final Reading reading = new Reading(fpot, (byte) 1, queue);
 
-        final AbstractHSMException exception = new HSMResourceException((short) 1);
+        final AbstractHSMException exception = new HSMResourceException(
+                (short) 1);
         HSMMockBridge.getInstance().setStageException(exception);
 
         boolean failed = false;
@@ -424,7 +431,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStageFailed01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -447,7 +454,7 @@ public final class ReadingTest {
         final byte max = Configurator.getInstance().getByteValue(
                 Constants.SECTION_READING, Constants.MAX_READ_RETRIES,
                 DefaultProperties.MAX_READ_RETRIES);
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -465,7 +472,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStageMaxRetries02() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -485,7 +492,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStageQueued01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -506,7 +513,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetCreatedAfterFailed01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -540,7 +547,7 @@ public final class ReadingTest {
 
     @Test
     public void testStateSetCreatedAfterQueued01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -572,7 +579,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetCreatedAfterStaged01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -605,7 +612,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetCreatedAfterSubmitted01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -636,7 +643,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetFailedAfterFailed01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -669,7 +676,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetFailedAfterStaged01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -702,7 +709,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetFailedAfterSubmitted01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -733,7 +740,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetQueueAfterStaged01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -766,7 +773,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetQueuedAfterFailed01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -799,7 +806,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetQueuedAfterQueued01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -831,7 +838,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetStagedAfterFailed01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -864,7 +871,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetStagedAfterStaged01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -897,7 +904,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetStagedAfterSubmitted01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -928,7 +935,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetSubmittedAfterFailed01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -961,7 +968,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetSubmittedAfterStaged01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -994,7 +1001,7 @@ public final class ReadingTest {
      */
     @Test
     public void testStateSetSubmittedAfterSubmitted01() throws TReqSException {
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));
@@ -1025,7 +1032,7 @@ public final class ReadingTest {
     public void testToString01() throws TReqSException {
         final String filename = "filename";
         final String tapename = "tapename";
-        final Tape tape = new Tape(tapename, new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape(tapename, MEDIA_TYPE);
         final File file = new File("filename", ReadingTest.HUNDRED);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 1, tape,
                 new User("username"));

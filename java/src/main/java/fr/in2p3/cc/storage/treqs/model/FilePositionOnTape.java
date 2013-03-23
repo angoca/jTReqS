@@ -105,7 +105,7 @@ public final class FilePositionOnTape {
     /**
      * Constructor with all parameters.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
      *
      * @param associatedFile
@@ -191,7 +191,7 @@ public final class FilePositionOnTape {
      * outdated. It's a good practice to call this method after a
      * isMetadataOutdated.
      * <p>
-     * TODO v2.0 check if the metadata is verified before.
+     * TODO v2.0 Check if the metadata is verified before.
      *
      * @return Tape where the file is stored.
      */

@@ -65,7 +65,7 @@ import fr.in2p3.cc.storage.treqs.persistence.mysql.MySQLStatements;
 
 /**
  * Tests for the Watchdog.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(RandomBlockJUnit4ClassRunner.class)
@@ -82,7 +82,7 @@ public final class WatchdogTest {
 
     /**
      * Init the test.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem deleting the tables.
      */
@@ -110,7 +110,7 @@ public final class WatchdogTest {
 
     /**
      * Setups the environment.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem.
      */
@@ -132,7 +132,7 @@ public final class WatchdogTest {
     /**
      * Checks that there is a heart-beat after registering the start time equal
      * to the start time.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -143,9 +143,10 @@ public final class WatchdogTest {
         LOGGER.info("--> testHeartBeat01Null");
         Watchdog.getInstance();
 
-        final String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
-                + " = " + MySQLStatements.HEART_BEAT_START_TIME + ", '"
-                + EQUALS + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
+        final String query = "SELECT IF ("
+                + MySQLStatements.HEART_BEAT_LAST_TIME + " = "
+                + MySQLStatements.HEART_BEAT_START_TIME + ", '" + EQUALS
+                + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
 
         final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
@@ -168,7 +169,7 @@ public final class WatchdogTest {
     /**
      * Checks that the heart beat in not updated when the Dispatcher has not
      * been started. It should be equal to the start time.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -182,9 +183,10 @@ public final class WatchdogTest {
         Activator.getInstance().start();
         Watchdog.getInstance().heartBeat();
 
-        final String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
-                + " = " + MySQLStatements.HEART_BEAT_START_TIME + ", '"
-                + EQUALS + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
+        final String query = "SELECT IF ("
+                + MySQLStatements.HEART_BEAT_LAST_TIME + " = "
+                + MySQLStatements.HEART_BEAT_START_TIME + ", '" + EQUALS
+                + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
 
         final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
@@ -207,7 +209,7 @@ public final class WatchdogTest {
     /**
      * Checks that the heart beat in not updated when the Activator has not been
      * started. It should be equal to the start time.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -221,9 +223,10 @@ public final class WatchdogTest {
         Dispatcher.getInstance().start();
         Watchdog.getInstance().heartBeat();
 
-        final String query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME
-                + " = " + MySQLStatements.HEART_BEAT_START_TIME + ", '"
-                + EQUALS + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
+        final String query = "SELECT IF ("
+                + MySQLStatements.HEART_BEAT_LAST_TIME + " = "
+                + MySQLStatements.HEART_BEAT_START_TIME + ", '" + EQUALS
+                + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
 
         final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
@@ -246,7 +249,7 @@ public final class WatchdogTest {
     /**
      * Checks that the heart beat is well inserted when the activator and the
      * dispatcher have been started.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem inserting the heart beat in the data
      *             source.
@@ -262,7 +265,8 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_START_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects2 = MySQLBroker.getInstance()
+                .executeSelect(query);
         final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
         final long startLong = result2.getTimestamp(1).getTime();
@@ -276,7 +280,8 @@ public final class WatchdogTest {
         query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME + " = "
                 + MySQLStatements.HEART_BEAT_START_TIME + ", '" + EQUALS
                 + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
-        final Object[] objects4 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects4 = MySQLBroker.getInstance()
+                .executeSelect(query);
         final ResultSet result4 = (ResultSet) objects4[1];
         result4.next();
         String res = result4.getString(1);
@@ -296,7 +301,8 @@ public final class WatchdogTest {
 
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
-        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects1 = MySQLBroker.getInstance()
+                .executeSelect(query);
         final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
         final long first = result1.getTimestamp(1).getTime();
@@ -308,7 +314,8 @@ public final class WatchdogTest {
         query = "SELECT IF (" + MySQLStatements.HEART_BEAT_LAST_TIME + " = "
                 + MySQLStatements.HEART_BEAT_START_TIME + ", '" + EQUALS
                 + "', 'diff')" + " FROM " + MySQLStatements.HEART_BEAT;
-        final Object[] objects5 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects5 = MySQLBroker.getInstance()
+                .executeSelect(query);
         final ResultSet result5 = (ResultSet) objects5[1];
         result5.next();
         res = result5.getString(1);
@@ -334,7 +341,8 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        final Object[] objects3 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects3 = MySQLBroker.getInstance()
+                .executeSelect(query);
 
         final ResultSet result3 = (ResultSet) objects3[1];
         result3.next();
@@ -348,7 +356,7 @@ public final class WatchdogTest {
     /**
      * Tests that the watchdog does not refresh the heartbeat when the activator
      * has not been stopped.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -372,7 +380,8 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects1 = MySQLBroker.getInstance()
+                .executeSelect(query);
         final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
         final long first = result1.getTimestamp(1).getTime();
@@ -390,7 +399,8 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects2 = MySQLBroker.getInstance()
+                .executeSelect(query);
 
         final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
@@ -404,7 +414,7 @@ public final class WatchdogTest {
     /**
      * Tests that the watchdog does not register a heartbeat once the dispatcher
      * has been stooped.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -428,7 +438,8 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects1 = MySQLBroker.getInstance()
+                .executeSelect(query);
         final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
         final long first = result1.getTimestamp(1).getTime();
@@ -446,7 +457,8 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects2 = MySQLBroker.getInstance()
+                .executeSelect(query);
 
         final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
@@ -460,7 +472,7 @@ public final class WatchdogTest {
     /**
      * Tests that the heartbeat does not write a new heartbeat when the
      * activator and the dispatcher have been stopped.
-     *
+     * 
      * @throws TReqSException
      *             Never.
      * @throws SQLException
@@ -483,7 +495,8 @@ public final class WatchdogTest {
 
         String query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME
                 + " FROM " + MySQLStatements.HEART_BEAT;
-        final Object[] objects1 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects1 = MySQLBroker.getInstance()
+                .executeSelect(query);
         final ResultSet result1 = (ResultSet) objects1[1];
         result1.next();
         final long first = result1.getTimestamp(1).getTime();
@@ -502,7 +515,8 @@ public final class WatchdogTest {
         query = "SELECT " + MySQLStatements.HEART_BEAT_LAST_TIME + " FROM "
                 + MySQLStatements.HEART_BEAT;
 
-        final Object[] objects2 = MySQLBroker.getInstance().executeSelect(query);
+        final Object[] objects2 = MySQLBroker.getInstance()
+                .executeSelect(query);
 
         final ResultSet result2 = (ResultSet) objects2[1];
         result2.next();
@@ -515,7 +529,7 @@ public final class WatchdogTest {
 
     /**
      * Tests to delete an inexistent value.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem.
      * @throws SQLException
@@ -531,16 +545,19 @@ public final class WatchdogTest {
         // Warning: It does not work with gij
         final String expected = pid.substring(0, index);
 
-        final String query = "SELECT " + MySQLStatements.HEART_BEAT_PID + " FROM "
-                + MySQLStatements.HEART_BEAT;
+        final String query = "SELECT " + MySQLStatements.HEART_BEAT_PID
+                + " FROM " + MySQLStatements.HEART_BEAT;
 
         final Object[] objects = MySQLBroker.getInstance().executeSelect(query);
 
         final ResultSet result = (ResultSet) objects[1];
-        result.next();
-        final String actual = result.getString(1);
-        MySQLBroker.getInstance().terminateExecution(objects);
-
-        Assert.assertEquals(expected, actual);
+        if (result.next()) {
+            final String actual = result.getString(1);
+            MySQLBroker.getInstance().terminateExecution(objects);
+            Assert.assertEquals(expected, actual);
+        } else {
+            MySQLBroker.getInstance().terminateExecution(objects);
+            Assert.fail();
+        }
     }
 }

@@ -36,8 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.tools;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +64,7 @@ public class WatchdogException extends TReqSException {
      * @param e
      *            Exception that describes the problem.
      */
-    public WatchdogException(final IOException e) {
+    public WatchdogException(final Exception e) {
         super(e);
 
         LOGGER.trace(">< Instance creation");

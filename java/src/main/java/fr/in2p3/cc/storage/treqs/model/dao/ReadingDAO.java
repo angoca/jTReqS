@@ -36,7 +36,6 @@
  */
 package fr.in2p3.cc.storage.treqs.model.dao;
 
-import java.util.Calendar;
 import java.util.List;
 
 import fr.in2p3.cc.storage.treqs.TReqSException;
@@ -106,12 +105,10 @@ public interface ReadingDAO {
      *            Reading to update. A reading is a reading try of a request.
      * @param status
      *            New request status.
-     * @param time
-     *            Timestamp of the state change.
      * @throws TReqSException
      *             If there is a problem with the configuration.
      */
-    void update(Reading reading, RequestStatus status, Calendar time)
+    void update(Reading reading, RequestStatus status)
             throws TReqSException;
 
     /**

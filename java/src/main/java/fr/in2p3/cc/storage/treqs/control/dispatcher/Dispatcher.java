@@ -50,7 +50,6 @@ import fr.in2p3.cc.storage.treqs.DefaultProperties;
 import fr.in2p3.cc.storage.treqs.TReqSException;
 import fr.in2p3.cc.storage.treqs.control.controller.FilePositionOnTapesController;
 import fr.in2p3.cc.storage.treqs.control.controller.FilesController;
-import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesController;
 import fr.in2p3.cc.storage.treqs.control.controller.QueuesController;
 import fr.in2p3.cc.storage.treqs.control.controller.ResourcesController;
 import fr.in2p3.cc.storage.treqs.control.controller.TapesController;
@@ -64,6 +63,7 @@ import fr.in2p3.cc.storage.treqs.hsm.HSMDirectoryException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMEmptyFileException;
 import fr.in2p3.cc.storage.treqs.hsm.HSMFactory;
 import fr.in2p3.cc.storage.treqs.hsm.HSMHelperFileProperties;
+import fr.in2p3.cc.storage.treqs.media.MediaFinderFactory;
 import fr.in2p3.cc.storage.treqs.model.File;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTape;
 import fr.in2p3.cc.storage.treqs.model.MediaType;
@@ -85,7 +85,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * all, but this kind of problems appear when there is a problem with the
  * database, so the application has to be restarted.
  * <p>
- * TODO v2.0 this class has to use threads. The implementation will be like
+ * TODO v2.0 This class has to use threads. The implementation will be like
  * this:<br>
  * All the new requests are read from the databases and they are put in a list.
  * After that, the requests are passed to a set of list, each one for a
@@ -108,7 +108,7 @@ import fr.in2p3.cc.storage.treqs.tools.ProblematicConfiguationFileException;
  * configuration parameter, and it could be or not be possible to have several
  * Analyzer for the same user.</li>
  * </ul>
- *
+ * 
  * @author Jonathan Schaeffer
  * @since 1.0
  */
@@ -148,7 +148,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Returns the singleton instance.
-     *
+     * 
      * @return The singleton instance.
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving the configuration.
@@ -191,9 +191,9 @@ public final class Dispatcher extends AbstractProcess {
     /**
      * Creates the dispatcher. Initializes the attributes.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
-     *
+     * 
      * @throws ProblematicConfiguationFileException
      *             If there is a problem retrieving a configuration.
      */
@@ -221,7 +221,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Performs the process of the dispatcher.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem while executing the action.
      */
@@ -261,14 +261,14 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Checks if the exception is about an empty file.
-     *
+     * 
      * @param fileRequest
      *            Request.
      * @param e
      *            Exception to analyze.
      */
-    private void checkIfEmptyFile(final FileRequest/* ! */fileRequest,
-            final AbstractHSMException/* ! */e) {
+    private void checkIfEmptyFile(final FileRequest fileRequest,
+            final AbstractHSMException e) {
         LOGGER.trace("> checkIfEmptyFile");
 
         assert fileRequest != null;
@@ -288,7 +288,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Checks if the file is on disk.
-     *
+     * 
      * @param fileRequest
      *            Request being processed.
      * @param cont
@@ -297,13 +297,14 @@ public final class Dispatcher extends AbstractProcess {
      *            Properties of the request.
      * @return If the process has to continue.
      */
-    private boolean checkOnDisk(final FileRequest/* ! */fileRequest,
-            boolean cont, final HSMHelperFileProperties/* ! */fileProperties) {
+    private boolean checkOnDisk(final FileRequest fileRequest, boolean cont,
+            final HSMHelperFileProperties fileProperties) {
         LOGGER.trace("> checkOnDisk {}", cont);
 
         if (cont && (fileProperties != null)) {
             final String requestTape = fileProperties.getTapeName();
-            final boolean equals = requestTape.compareTo(Constants.FILE_ON_DISK) == 0;
+            final boolean equals = requestTape
+                    .compareTo(Constants.FILE_ON_DISK) == 0;
             LOGGER.debug(
                     "Comparing {} and {}, and the equals is {}",
                     new Object[] { requestTape, Constants.FILE_ON_DISK, equals });
@@ -323,7 +324,7 @@ public final class Dispatcher extends AbstractProcess {
      * <p>
      * With the new mechanism to clean objects once the queue has finished, it
      * is not necessary to exist this method.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
@@ -350,11 +351,11 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Process the case when a file is already on disk.
-     *
+     * 
      * @param request
      *            Request that asks for the file.
      */
-    private void fileOnDisk(final FileRequest/* ! */request) {
+    private void fileOnDisk(final FileRequest request) {
         LOGGER.trace("> fileOnDisk");
 
         assert request != null;
@@ -370,7 +371,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Getter for max requests.
-     *
+     * 
      * @return Quantity of requests per loop.
      */
     short getMaxRequests() {
@@ -381,7 +382,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Returns the type of media.
-     *
+     * 
      * @param fileRequest
      *            File request.
      * @param fileProperties
@@ -390,12 +391,14 @@ public final class Dispatcher extends AbstractProcess {
      *            Media type.
      * @param cont
      *            if the execution has to continue.
-     * @return
+     * @return The media type that correspond to the name. Null would be
+     *         returned if no media type matches, but before that, an exception
+     *         is thrown.
      * @throws TReqSException
      */
-    private MediaType/* ? */getMediaType(final FileRequest/* ! */fileRequest,
-            final HSMHelperFileProperties/* ? */fileProperties, final boolean cont)
-            throws TReqSException {
+    private MediaType/* ? */getMediaType(final FileRequest fileRequest,
+            final HSMHelperFileProperties/* ? */fileProperties,
+            final boolean cont) throws TReqSException {
         LOGGER.trace("> getMediaType");
 
         assert fileRequest != null;
@@ -404,8 +407,8 @@ public final class Dispatcher extends AbstractProcess {
         if (cont && (fileProperties != null)) {
             // Now, try to find out the media type.
             try {
-                media = MediaTypesController.getInstance().getMediaType(
-                        fileProperties.getTapeName());
+                media = MediaFinderFactory.getDAOFactoryInstance()
+                        .getMediaType(fileProperties.getTapeName());
             } catch (final NotMediaTypeDefinedException e) {
                 this.logFailReadingException(e, fileRequest);
             }
@@ -418,7 +421,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Retrieves the quantity of milliseconds between loops.
-     *
+     * 
      * @return Quantity of seconds between loops.
      */
     public long getMillisBetweenLoops() {
@@ -430,7 +433,7 @@ public final class Dispatcher extends AbstractProcess {
     /**
      * Scans new requests via DAO. Puts all new requests in the RequestsList
      * container.
-     *
+     * 
      * @return A map of all the new requests. The key is the filename.
      * @throws TReqSException
      *             If there is a problem in any component.
@@ -470,7 +473,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Inner loop of new requests.
-     *
+     * 
      * @param newRequests
      *            Map of new requests.
      * @param listNewRequests
@@ -478,8 +481,8 @@ public final class Dispatcher extends AbstractProcess {
      * @throws TReqSException
      *             If there a problem retrieving the objects.
      */
-    private void getNewRequestsInner(final MultiMap/* ! */newRequests,
-            final List<PersistenceHelperFileRequest>/* <!>! */listNewRequests)
+    private void getNewRequestsInner(final MultiMap newRequests,
+            final List<PersistenceHelperFileRequest> listNewRequests)
             throws TReqSException {
         LOGGER.trace("> getNewRequestsInner");
 
@@ -497,8 +500,8 @@ public final class Dispatcher extends AbstractProcess {
                             dbFileRequest.getOwnerName() });
             final User owner = UsersController.getInstance().add(
                     dbFileRequest.getOwnerName());
-            final FileRequest newFileReq = new FileRequest(dbFileRequest.getId(),
-                    dbFileRequest.getFileName(), owner,
+            final FileRequest newFileReq = new FileRequest(
+                    dbFileRequest.getId(), dbFileRequest.getFileName(), owner,
                     dbFileRequest.getNumberTries());
 
             newRequests.put(dbFileRequest.getFileName(), newFileReq);
@@ -515,13 +518,13 @@ public final class Dispatcher extends AbstractProcess {
      * times the same things.
      * <p>
      * If there is a problem in any step, the file will not be processed.
-     *
+     * 
      * @param fileRequest
      *            Request to process.
      * @throws TReqSException
      *             If there is a problem while processing the requests.
      */
-    private void innerProcess(final FileRequest/* ! */fileRequest)
+    private void innerProcess(final FileRequest fileRequest)
             throws TReqSException {
         LOGGER.trace("> innerProcess");
 
@@ -615,14 +618,14 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Logs the error in the database.
-     *
+     * 
      * @param exception
      *            Exception to log.
      * @param request
      *            FileRequest that had a problem.
      */
-    private void logFailReadingException(final TReqSException/* ! */exception,
-            final FileRequest/* ! */request) {
+    private void logFailReadingException(final TReqSException exception,
+            final FileRequest request) {
         LOGGER.trace("> logReadingException");
 
         assert exception != null;
@@ -642,7 +645,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#oneLoop()
      */
     @Override
@@ -670,15 +673,14 @@ public final class Dispatcher extends AbstractProcess {
      * <p>
      * TODO v2.0 This should be multithreaded in order to ask several file
      * properties to the server simultaneously.
-     *
+     * 
      * @param newRequests
      *            Map of new requests.
      * @throws TReqSException
      *             If there is a problem while processing the requests.
      */
     @SuppressWarnings("unchecked")
-    private void process(final MultiMap/* ! */newRequests)
-            throws TReqSException {
+    private void process(final MultiMap newRequests) throws TReqSException {
         LOGGER.trace("> process");
 
         assert newRequests != null;
@@ -713,14 +715,14 @@ public final class Dispatcher extends AbstractProcess {
      * Process a generated exception, writing the problem in the database. It
      * just write the problem in the database, but it does not stop the
      * application.
-     *
+     * 
      * @param exception
      *            Exception to process.
      * @param request
      *            Problematic request
      */
-    private void processException(final AbstractHSMException/* ! */exception,
-            final FileRequest/* ! */request) {
+    private void processException(final AbstractHSMException exception,
+            final FileRequest request) {
         LOGGER.trace("> processException");
 
         assert exception != null;
@@ -753,7 +755,7 @@ public final class Dispatcher extends AbstractProcess {
      * Retrieves the requests from the data source.
      * <p>
      * This method has a default visibility just for testing purposes.
-     *
+     * 
      * @throws TReqSException
      *             If there is problem retrieving the new requests.
      */
@@ -783,7 +785,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Establishes the quantity of files to process before a message.
-     *
+     * 
      * @param max
      *            Maximal quantity of files before a message.
      */
@@ -799,7 +801,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Establishes the quantity of requests to process in a single query.
-     *
+     * 
      * @param max
      *            Max requests.
      */
@@ -815,7 +817,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Sets the quantity of seconds between loops.
-     *
+     * 
      * @param seconds
      *            Quantity of seconds.
      */
@@ -832,7 +834,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Creates the necessary objects to register an fpot in a queue.
-     *
+     * 
      * @param fileProperties
      *            Properties of the file.
      * @param media
@@ -844,10 +846,9 @@ public final class Dispatcher extends AbstractProcess {
      * @throws TReqSException
      *             If there is a problem adding an object.
      */
-    private void submitRequest(
-            final HSMHelperFileProperties/* ! */fileProperties,
-            final MediaType/* ! */media, final File/* ! */file,
-            final FileRequest/* ! */request) throws TReqSException {
+    private void submitRequest(final HSMHelperFileProperties fileProperties,
+            final MediaType media, final File file, final FileRequest request)
+            throws TReqSException {
         LOGGER.trace("> submitRequest");
 
         assert fileProperties != null;
@@ -858,8 +859,8 @@ public final class Dispatcher extends AbstractProcess {
         final Tape tape = TapesController.getInstance().add(
                 fileProperties.getTapeName(), media);
 
-        final FilePositionOnTape fpot = FilePositionOnTapesController.getInstance()
-                .add(file, tape, fileProperties.getPosition(),
+        final FilePositionOnTape fpot = FilePositionOnTapesController
+                .getInstance().add(file, tape, fileProperties.getPosition(),
                         request.getUser());
 
         // We have a FilePositionOnTape. We have to put it in a queue
@@ -871,7 +872,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see fr.in2p3.cc.storage.treqs.control.AbstractProcess#toStart()
      */
     @Override
@@ -914,7 +915,7 @@ public final class Dispatcher extends AbstractProcess {
 
     /**
      * Writes the status for a request in the data source.
-     *
+     * 
      * @param request
      *            Request to process.
      * @param message
@@ -924,9 +925,8 @@ public final class Dispatcher extends AbstractProcess {
      * @param status
      *            New status of the request.
      */
-    private void writeRequestStatus(final FileRequest/* ! */request,
-            final String/* ! */message, final int code,
-            final RequestStatus/* ! */status) {
+    private void writeRequestStatus(final FileRequest request,
+            final String message, final int code, final RequestStatus status) {
         LOGGER.trace("> writeRequestStatus");
 
         assert request != null;

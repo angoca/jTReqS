@@ -1,0 +1,365 @@
+/*
+ * Copyright      Jonathan Schaeffer 2009-2010,
+ *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
+ * Contributors   Andres Gomez,
+ *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
+ *
+ * This software is a computer program whose purpose is to schedule, sort
+ * and submit file requests to the hierarchical storage system HPSS.
+ *
+ * This software is governed by the CeCILL license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights, and the successive licensors have only limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ *
+ */
+package fr.in2p3.cc.storage.treqs.persistence.db2.dao;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sqlj.runtime.ConnectionContext;
+import sqlj.runtime.ExecutionContext;
+import fr.in2p3.cc.storage.treqs.Constants;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.model.Queue;
+import fr.in2p3.cc.storage.treqs.model.QueueStatus;
+import fr.in2p3.cc.storage.treqs.model.dao.QueueDAO;
+import fr.in2p3.cc.storage.treqs.persistence.db2.DB2Broker;
+import fr.in2p3.cc.storage.treqs.persistence.db2.DB2Statements;
+import fr.in2p3.cc.storage.treqs.persistence.db2.exception.DB2AssertionException;
+import fr.in2p3.cc.storage.treqs.persistence.db2.exception.DB2ExecuteException;
+
+/**
+ * Manage the Queues object insert and updates to DB2 database.
+ *
+ * @author Andres Gomez
+ * @since 1.5.6
+ */
+public final class DB2QueueDAO implements QueueDAO {
+
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(DB2QueueDAO.class);
+
+	// Declare a user context class.
+	#sql static context UserContext;
+	/**
+	 * Connection context.
+	 */
+	private UserContext ctx;
+
+	// Declare the iterator (Pos) for the generated key.
+	#sql static iterator IterKey (int);
+	/**
+	 * Iterator for the generated key.
+	 */
+	private IterKey iterInfo = null;
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#abortPendingQueues()
+	 */
+	@Override
+	public int abortPendingQueues() throws TReqSException {
+		LOGGER.trace("> abortPendingQueues");
+
+		LOGGER.info("Cleaning unfinished queues");
+
+		final short abortedId = QueueStatus.ABORTED.getId();
+		final short endedId = QueueStatus.ENDED.getId();
+		final ExecutionContext execCtx = new ExecutionContext();
+		SQLWarning sqlWarn;
+		final int ret;
+		try {
+			ctx = new UserContext(DB2Broker.getInstance().getConnection());
+			#sql [ctx, execCtx] { UPDATE DATA.QUEUES SET STATUS = :abortedId,
+			    END_TIME = CURRENT TIMESTAMP WHERE STATUS NOT IN (:endedId,
+			    :abortedId) } ;
+			if ((sqlWarn = execCtx.getWarnings()) != null) {
+				final int code = sqlWarn.getErrorCode();
+				if (code != 100) {
+					LOGGER.warn("SQL Warning", sqlWarn);
+				}
+			}
+			ret = execCtx.getUpdateCount();
+		} catch (SQLException ex) {
+			DB2Broker.handleSQLException(ex);
+			throw new DB2ExecuteException(ex);
+		} finally {
+			try {
+				ctx.close(ConnectionContext.KEEP_CONNECTION);
+			} catch (final SQLException exception) {
+				throw new DB2ExecuteException(exception);
+			}
+		}
+
+		// XXX Bug: assert ret >= 0;
+
+		LOGGER.trace("< abortPendingQueues");
+
+		return ret;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#insert(fr.in2p3.cc.storage
+	 * .treqs.model.Queue)
+	 */
+	@Override
+	public int insert(final Queue/* ! */queue) throws TReqSException {
+		LOGGER.trace("> insert");
+
+		// XXX Bug: assert queue != null;
+
+		ArrayList<Object> l = new ArrayList<Object>();
+		for (Object object : l) {
+			object.getClass();
+		}
+
+		final short statusId = queue.getStatus().getId();
+		final String tapeName = queue.getTape().getName();
+		final int size = queue.getRequestsSize();
+		final byte mediaTypeId = queue.getTape().getMediaType().getId();
+		final String empty = "";
+		final long byteSize = queue.getByteSize();
+
+		final ExecutionContext execCtx = new ExecutionContext();
+		SQLWarning sqlWarn;
+		int id = 0;
+		try {
+			ctx = new UserContext(DB2Broker.getInstance().getConnection());
+			#sql [ctx, execCtx] iterInfo = { SELECT ID FROM FINAL TABLE (INSERT
+			    INTO DATA.QUEUES (STATUS, NAME, NB_REQS, MEDIATYPE_ID, OWNER ,
+			    BYTE_SIZE, CREATION_TIME) VALUES (:statusId, :tapeName, :size,
+			    :mediaTypeId, :empty, :byteSize, CURRENT TIMESTAMP)) };
+			if ((sqlWarn = execCtx.getWarnings()) != null) {
+				LOGGER.warn("SQL Warning", sqlWarn);
+			}
+			#sql { FETCH :iterInfo INTO :id };
+		} catch (final SQLException ex) {
+			DB2Broker.handleSQLException(ex);
+			throw new DB2ExecuteException(ex);
+		} finally {
+			try {
+				iterInfo.close();
+				ctx.close(ConnectionContext.KEEP_CONNECTION);
+			} catch (final SQLException ex) {
+				DB2Broker.handleSQLException(ex);
+				throw new DB2ExecuteException(ex);
+			}
+		}
+		LOGGER.info("New queue inserted with id {} ({})", id, tapeName);
+
+		// XXX Bug: assert id >= 0;
+
+		LOGGER.trace("< insert");
+
+		return id;
+	}
+
+	/**
+	 * Fills the statement and execute it.
+	 *
+	 * @param queue
+	 *            Queue to update.
+	 * @param nbDone
+	 *            Number of requests done.
+	 * @param nbFailed
+	 *            Number of failed requests.
+	 * @param statement
+	 *            Statement to fill and execute.
+	 * @param i
+	 *            Index in the statement.
+	 * @throws DB2ExecuteException
+	 *             If there is a problem executing the query.
+	 */
+	private void processUpdate(final Queue queue, final short nbDone,
+			final short nbFailed, final PreparedStatement statement, final int i)
+			throws DB2ExecuteException {
+		LOGGER.trace("> processUpdate");
+
+		// XXX Bug: assert queue != null;
+		// XXX Bug: assert nbDone >= 0;
+		// XXX Bug: assert nbFailed >= 0;
+		// XXX Bug: assert statement != null;
+		// XXX Bug: assert i > 0;
+
+		final int id = queue.getId();
+		final short statusId = queue.getStatus().getId();
+		final String ownerName = queue.getOwner().getName();
+		final int size = queue.getRequestsSize();
+		final long byteSize = queue.getByteSize();
+
+		int index = i;
+
+		try {
+			// Insert queue status.
+			statement.setShort(index++, statusId);
+			// Insert number of requests.
+			statement.setInt(index++, size);
+			// Insert number of requests done.
+			statement.setInt(index++, nbDone);
+			// Insert number of requests failed.
+			statement.setInt(index++, nbFailed);
+			// Insert owner.
+			statement.setString(index++, ownerName);
+			// Insert size.
+			statement.setLong(index++, byteSize);
+			// Insert Id.
+			statement.setInt(index++, id);
+
+			statement.execute();
+
+			LOGGER.info("Updated queue " + id);
+		} catch (final SQLException ex) {
+			LOGGER.error("Error updating queue " + id);
+			DB2Broker.handleSQLException(ex);
+			throw new DB2ExecuteException(ex);
+		} finally {
+			try {
+				statement.close();
+			} catch (final SQLException ex) {
+				DB2Broker.handleSQLException(ex);
+				throw new DB2ExecuteException(ex);
+			}
+		}
+
+		LOGGER.trace("< processUpdate");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateAddRequest(fr.in2p3
+	 * .cc.storage.treqs.model.Queue)
+	 */
+	@Override
+	public void updateAddRequest(final Queue/* ! */queue)
+			throws TReqSException {
+		LOGGER.trace("> updateAddRequest");
+
+		// XXX Bug: assert queue != null;
+
+		String ownerName = Constants.NO_OWNER_NAME;
+		if (queue.getOwner() != null) {
+			ownerName = queue.getOwner().getName();
+		}
+		final int id = queue.getId();
+		final int size = queue.getRequestsSize();
+		final long byteSize = queue.getByteSize();
+
+		ExecutionContext execCtx = new ExecutionContext();
+		SQLWarning sqlWarn;
+		try {
+			ctx = new UserContext(DB2Broker.getInstance().getConnection());
+			#sql [ctx, execCtx] { UPDATE DATA.QUEUES SET NB_REQS = :size, OWNER =
+			    :ownerName, BYTE_SIZE = :byteSize WHERE ID = :id };
+			if ((sqlWarn = execCtx.getWarnings()) != null) {
+				LOGGER.warn("SQL Warning", sqlWarn);
+			}
+		} catch (final SQLException ex) {
+			DB2Broker.handleSQLException(ex);
+			throw new DB2ExecuteException(ex);
+		} finally {
+			try {
+				ctx.close(ConnectionContext.KEEP_CONNECTION);
+			} catch (final SQLException ex) {
+				DB2Broker.handleSQLException(ex);
+				throw new DB2ExecuteException(ex);
+			}
+		}
+
+		LOGGER.trace("< updateAddRequest");
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see
+	 * fr.in2p3.cc.storage.treqs.model.dao.QueueDAO#updateState(fr.in2p3.cc.
+	 * storage.treqs.model.Queue, java.util.Calendar, short, short)
+	 */
+	@Override
+	public void updateState(final Queue/* ! */queue,
+			final Calendar/* ! */time, short nbDone, short nbFailed)
+			throws TReqSException {
+		LOGGER.trace("> updateState");
+
+		// XXX Bug: assert queue != null;
+		// XXX Bug: assert time != null;
+		// XXX Bug: assert nbDone >= 0;
+		// XXX Bug: assert nbFailed >= 0;
+
+		final QueueStatus status = queue.getStatus();
+
+		PreparedStatement statement = null;
+		int index = 1;
+
+		switch (status) {
+		case ACTIVATED:
+			// XXX Bug: assert (nbDone == 0) && (nbFailed == 0);
+			statement = DB2Broker.getInstance().getPreparedStatement(
+					DB2Statements.SQL_QUEUES_UPDATE_QUEUE_ACTIVATED);
+			break;
+		case CREATED:
+			// XXX Bug: assert (nbDone == 0) && (nbFailed == 0);
+			// This call could be done when the queue is unsuspended.
+			LOGGER.error("This is an invalid state call.");
+			// XXX Bug: assert false;
+			throw new DB2AssertionException();
+			// XXX Bug: break;
+		case ENDED:
+			statement = DB2Broker.getInstance().getPreparedStatement(
+					DB2Statements.SQL_QUEUES_UPDATE_QUEUE_ENDED);
+			break;
+		case TEMPORARILY_SUSPENDED:
+			// In this state the queue is not update in the database.
+			statement = DB2Broker.getInstance().getPreparedStatement(
+					DB2Statements.SQL_QUEUES_UPDATE_QUEUE_SUSPENDED);
+			break;
+		default:
+			LOGGER.error("This state is invalid.");
+			// Aborted queue exists only when the application starts.
+			// XXX Bug: assert false;
+			break;
+		}
+
+		this.processUpdate(queue, nbDone, nbFailed, statement, index);
+
+		LOGGER.trace("< updateState");
+	}
+}

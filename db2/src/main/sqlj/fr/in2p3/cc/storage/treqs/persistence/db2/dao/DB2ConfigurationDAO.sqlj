@@ -1,0 +1,216 @@
+/*
+ * Copyright      Jonathan Schaeffer 2009-2010,
+ *                  CC-IN2P3, CNRS <jonathan.schaeffer@cc.in2p3.fr>
+ * Contributors   Andres Gomez,
+ *                  CC-IN2P3, CNRS <andres.gomez@cc.in2p3.fr>
+ *
+ * This software is a computer program whose purpose is to schedule, sort
+ * and submit file requests to the hierarchical storage system HPSS.
+ *
+ * This software is governed by the CeCILL license under French law and
+ * abiding by the rules of distribution of free software.  You can  use,
+ * modify and/or redistribute the software under the terms of the CeCILL
+ * license as circulated by CEA, CNRS and INRIA at the following URL
+ * "http://www.cecill.info".
+ *
+ * As a counterpart to the access to the source code and rights to copy,
+ * modify and redistribute granted by the license, users are provided only
+ * with a limited warranty  and the software's author,  the holder of the
+ * economic rights, and the successive licensors have only limited
+ * liability.
+ *
+ * In this respect, the user's attention is drawn to the risks associated
+ * with loading,  using,  modifying and/or developing or reproducing the
+ * software by the user in light of its specific status of free software,
+ * that may mean  that it is complicated to manipulate,  and  that  also
+ * therefore means  that it is reserved for developers  and  experienced
+ * professionals having in-depth computer knowledge. Users are therefore
+ * encouraged to load and test the software's suitability as regards their
+ * requirements in conditions enabling the security of their systems and/or
+ * data to be ensured and,  more generally, to use and operate it in the
+ * same conditions as regards security.
+ *
+ * The fact that you are presently reading this means that you have had
+ * knowledge of the CeCILL license and that you accept its terms.
+ *
+ */
+package fr.in2p3.cc.storage.treqs.persistence.db2.dao;
+
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.map.MultiValueMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import sqlj.runtime.ConnectionContext;
+import sqlj.runtime.ExecutionContext;
+import fr.in2p3.cc.storage.treqs.TReqSException;
+import fr.in2p3.cc.storage.treqs.control.controller.MediaTypesController;
+import fr.in2p3.cc.storage.treqs.model.MediaType;
+import fr.in2p3.cc.storage.treqs.model.Resource;
+import fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO;
+import fr.in2p3.cc.storage.treqs.persistence.db2.DB2Broker;
+import fr.in2p3.cc.storage.treqs.persistence.db2.exception.DB2ExecuteException;
+import fr.in2p3.cc.storage.treqs.persistence.helper.PersistenceHelperResourceAllocation;
+
+/**
+ * Managing the DB2 implementation of the configuration that is stored in the
+ * database.
+ * 
+ * @author Andres Gomez
+ * @since 1.5.6
+ */
+public final class DB2ConfigurationDAO implements ConfigurationDAO {
+
+	/**
+	 * Logger.
+	 */
+	private static final Logger LOGGER = LoggerFactory
+			.getLogger(DB2ConfigurationDAO.class);
+
+	// Declare a user context class.
+	#sql static context UserContext;
+	/**
+	 * Connection context.
+	 */
+	private UserContext ctx;
+
+	// Declare the iterator (Named) for the media types.
+	#sql static iterator IterMedia (byte id, String name, short drives, String
+	    regex);
+	/**
+	 * Iterator for the list of media.
+	 */
+	private IterMedia iterMedia = null;
+	// Declare the iterator (Positioned) for the allocations.
+	#sql static iterator IterAlloc (byte, String, float);
+	/**
+	 * Iterator for the allocations.
+	 */
+	private IterAlloc iterAlloc = null;
+
+	/*
+	 * (sin Javadoc)
+	 * 
+	 * @see
+	 * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getMediaAllocations
+	 * ()
+	 */
+	@Override
+	public List<Resource>/* <!>! */getMediaAllocations() throws TReqSException {
+		LOGGER.trace("> getMediaAllocations");
+
+		final List<Resource> mediaTypeList = new ArrayList<Resource>();
+		SQLWarning sqlWarn;
+		try {
+			ctx = new UserContext(DB2Broker.getInstance().getConnection());
+			final ExecutionContext execCtx = ctx.getExecutionContext();
+			#sql [ctx] iterMedia = { SELECT ID, NAME, DRIVES, REGEX FROM
+			    TAPE.MEDIATYPES FOR READ ONLY };
+			if ((sqlWarn = execCtx.getWarnings()) != null) {
+				LOGGER.warn("SQL Warning", sqlWarn);
+			}
+			// Store result
+			while (iterMedia.next()) {
+				final byte id = iterMedia.id();
+				final String name = iterMedia.name();
+				final short qty = iterMedia.drives();
+				final String regexp = iterMedia.regex();
+				final MediaType media = MediaTypesController.getInstance().add(
+						name, id, regexp);
+				final Resource res = new Resource(media, qty);
+				mediaTypeList.add(res);
+			}
+		} catch (final SQLException ex) {
+			DB2Broker.handleSQLException(ex);
+			throw new DB2ExecuteException(ex);
+		} finally {
+			try {
+				iterMedia.close();
+				ctx.close(ConnectionContext.KEEP_CONNECTION);
+			} catch (final SQLException ex) {
+				DB2Broker.handleSQLException(ex);
+				throw new DB2ExecuteException(ex);
+			}
+		}
+
+		if (mediaTypeList.size() == 0) {
+			// No entry in table, something wrong with configuration.
+			LOGGER.warn("No drives (media type) found. Please define them "
+					+ "in the database.");
+		}
+
+		// XXX Bug: assert mediaTypeList != null;
+
+		LOGGER.trace("< getMediaAllocations");
+
+		return mediaTypeList;
+	}
+
+	/*
+	 * (sin Javadoc)
+	 * 
+	 * @see
+	 * fr.in2p3.cc.storage.treqs.model.dao.ConfigurationDAO#getResourceAllocation
+	 * ()
+	 */
+	@Override
+	public MultiMap/* ! */getResourceAllocation() throws TReqSException {
+		LOGGER.trace("> getResourceAllocation");
+
+		// Allocations maps a media type to a pair (user,share)
+		final MultiMap allocations = new MultiValueMap();
+
+		byte id = 0;
+		String userName = null;
+		float share = 0;
+		SQLWarning sqlWarn;
+
+		try {
+			ctx = new UserContext(DB2Broker.getInstance().getConnection());
+			final ExecutionContext execCtx = ctx.getExecutionContext();
+			#sql [ctx] iterAlloc = { SELECT MEDIA_ID, "USER", SHARE FROM
+			    TAPE.ALLOCATIONS FOR READ ONLY };
+			if ((sqlWarn = execCtx.getWarnings()) != null) {
+				LOGGER.warn("SQL Warning", sqlWarn);
+			}
+
+			// Store result
+			#sql { FETCH :iterAlloc INTO :id, :userName, :share };
+			while (!iterAlloc.endFetch()) {
+				final PersistenceHelperResourceAllocation helper = new PersistenceHelperResourceAllocation(
+						userName, share);
+				allocations.put(new Byte(id), helper);
+				LOGGER.debug("Allocation on mediatype: '" + id + "', user: '"
+						+ userName + "', share: " + share);
+				#sql { FETCH :iterAlloc INTO :id, :userName, :share };
+			}
+		} catch (final SQLException ex) {
+			DB2Broker.handleSQLException(ex);
+			throw new DB2ExecuteException(ex);
+		} finally {
+			try {
+				iterAlloc.close();
+				ctx.close(ConnectionContext.KEEP_CONNECTION);
+			} catch (final SQLException ex) {
+				DB2Broker.handleSQLException(ex);
+				throw new DB2ExecuteException(ex);
+			}
+		}
+		if (allocations.size() == 0) {
+			// No entry in table, something wrong with configuration.
+			LOGGER.warn("No media type allocations found. Please define them "
+					+ "in the database.");
+		}
+
+		// XXX Bug: assert allocations != null;
+
+		LOGGER.trace("< getResourceAllocation");
+
+		return allocations;
+	}
+}

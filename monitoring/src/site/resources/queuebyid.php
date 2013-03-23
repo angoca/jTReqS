@@ -29,9 +29,6 @@
     knowledge of the CeCILL license and that you accept its terms. -->
 <html>
 <head>
-<link rel="icon" href="images/eyes.ico" type="image/ico" />
-<title>jTReqS Monitoring - Summary</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <style type="text/css">
 @IMPORT url("css/fancystyle.css");
 </style>
@@ -52,9 +49,6 @@ mysql_connect($dbServer, $dbUser, $dbPasswd);
 @ mysql_select_db($dbName) or die("Unable to connect to the database '"
 .$dbName."' at '".$dbServer."'"); ?>
 
-  <div>
-    <img src="images/center.png" />
-  </div>
   <table>
     <tr>
       <td>TODO v1.5.6 to be finished with old version</td>

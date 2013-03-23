@@ -42,7 +42,7 @@ import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * Tests at database level.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)

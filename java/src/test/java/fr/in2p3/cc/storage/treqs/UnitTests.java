@@ -41,6 +41,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import fr.in2p3.cc.storage.treqs.control.dispatcher.FileRequestTest;
+import fr.in2p3.cc.storage.treqs.media.MediaFinderFactoryTest;
 import fr.in2p3.cc.storage.treqs.model.FilePositionOnTapeTest;
 import fr.in2p3.cc.storage.treqs.model.FileTest;
 import fr.in2p3.cc.storage.treqs.model.MediaTypeTest;
@@ -54,14 +55,15 @@ import fr.in2p3.cc.storage.treqs.tools.ConfiguratorTest;
 
 /**
  * Unit tests. White box test.
- *
+ * 
  * @author Andrés Gómez
  */
 @RunWith(Suite.class)
 @SuiteClasses({ MediaTypeTest.class, FileRequestTest.class, FileTest.class,
         TapeTest.class, ResourceTest.class, UserTest.class,
         FilePositionOnTapeTest.class, ReadingTest.class, QueueTest.class,
-        StagerTest.class, ConfiguratorTest.class })
+        StagerTest.class, ConfiguratorTest.class,
+        MediaFinderFactoryTest.class })
 public final class UnitTests {
     // Nothing.
 }

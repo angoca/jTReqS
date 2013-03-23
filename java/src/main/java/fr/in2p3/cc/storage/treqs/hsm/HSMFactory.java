@@ -70,7 +70,7 @@ public final class HSMFactory {
      * MAIN.HSM_BRIDGE in the configuration file. If no value was specify, it
      * will return HPSS bridge as default.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
      *
      * @return The configured HSM bridge.
@@ -94,7 +94,7 @@ public final class HSMFactory {
         }
 
         LOGGER.debug("HSM to return: '" + hsmBridgeClass + "'");
-        // TODO v2.0 keep a copy of an object to invoke it fastly, not to do the
+        // TODO v2.0 Keep a copy of an object to invoke it fastly, not to do the
         // whole process each time.
         final AbstractHSMBridge bridge = Instantiator
                 .getInstanceClass(hsmBridgeClass);

@@ -63,6 +63,11 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
 @RunWith(RandomBlockJUnit4ClassRunner.class)
 public final class FilePositionOnTapesControllerTest {
     /**
+     * Media type.
+     */
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "media", "/TAPE");
+    /**
      * Number one hundred.
      */
     private static final int HUNDRED = 1000;
@@ -101,7 +106,7 @@ public final class FilePositionOnTapesControllerTest {
     @Test
     public void testAddFpot01FileNull() {
         final File file = null;
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = new User("userName");
 
         boolean failed = false;
@@ -151,7 +156,7 @@ public final class FilePositionOnTapesControllerTest {
     public void testAddFpot03TapeNegative() {
         final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = new User("userName");
 
         boolean failed = false;
@@ -176,7 +181,7 @@ public final class FilePositionOnTapesControllerTest {
     public void testAddFpot04UserNull() {
         final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = null;
 
         boolean failed = false;
@@ -204,14 +209,14 @@ public final class FilePositionOnTapesControllerTest {
     public void testAddTwice() throws TReqSException {
         final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = new User("userName");
 
-        final FilePositionOnTape fpot1 = FilePositionOnTapesController.getInstance()
-                .add(file, tape, 0, user);
+        final FilePositionOnTape fpot1 = FilePositionOnTapesController
+                .getInstance().add(file, tape, 0, user);
 
-        final FilePositionOnTape fpot2 = FilePositionOnTapesController.getInstance()
-                .add(file, tape, 0, user);
+        final FilePositionOnTape fpot2 = FilePositionOnTapesController
+                .getInstance().add(file, tape, 0, user);
         Assert.assertTrue("Same fpot", fpot1 == fpot2);
 
     }
@@ -222,7 +227,7 @@ public final class FilePositionOnTapesControllerTest {
     @Test
     public void testCreateFpot01FileNull() {
         final File file = null;
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = new User("userName");
 
         boolean failed = false;
@@ -272,7 +277,7 @@ public final class FilePositionOnTapesControllerTest {
     public void testCreateFpot03TapeNegative() {
         final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = new User("userName");
 
         boolean failed = false;
@@ -297,7 +302,7 @@ public final class FilePositionOnTapesControllerTest {
     public void testCreateFpot04UserNull() {
         final File file = new File("filename",
                 FilePositionOnTapesControllerTest.HUNDRED);
-        final Tape tape = new Tape("tapename", new MediaType((byte) 1, "media"));
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = null;
 
         boolean failed = false;

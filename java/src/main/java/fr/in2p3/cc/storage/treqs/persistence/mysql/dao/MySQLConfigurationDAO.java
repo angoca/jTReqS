@@ -94,8 +94,9 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
                 final byte id = result.getByte(index++);
                 final String name = result.getString(index++);
                 final short qty = result.getShort(index++);
-                final MediaType media = MediaTypesController.getInstance().add(name,
-                        id);
+                final String regExpId = result.getString(index++);
+                final MediaType media = MediaTypesController.getInstance().add(
+                        name, id, regExpId);
                 final Resource res = new Resource(media, qty);
                 mediaTypeList.add(res);
             }
@@ -133,7 +134,7 @@ public final class MySQLConfigurationDAO implements ConfigurationDAO {
         final Object[] objects = MySQLBroker.getInstance().executeSelect(
                 MySQLStatements.SQL_ALLOCATIONS_SELECT);
 
-        // store result
+        // Store result
         final ResultSet result = (ResultSet) objects[1];
         try {
             while (result.next()) {

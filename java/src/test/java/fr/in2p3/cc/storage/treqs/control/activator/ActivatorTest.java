@@ -77,8 +77,8 @@ public final class ActivatorTest {
     /**
      * Media type 1 for tests.
      */
-    private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
-            "T10K-a");
+    private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
+            "T10K-a", "/IT");
     /**
      * Number three hundred.
      */
@@ -162,11 +162,11 @@ public final class ActivatorTest {
         Activator.getInstance().setActiveStagers((short) 10);
 
         final File file = new File("filename", ActivatorTest.THREE_HUNDRED);
-        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
                 new User("username"));
-        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
-                fpot, (byte) 1);
+        final Queue queue = QueuesController.getInstance()
+                .addFilePositionOnTape(fpot, (byte) 1);
 
         Activator.getInstance().activate(queue);
 
@@ -185,11 +185,11 @@ public final class ActivatorTest {
     @Test
     public void testActivate03() throws TReqSException {
         final File file = new File("filename", ActivatorTest.THREE_HUNDRED);
-        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 2, tape,
                 new User("username"));
-        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
-                fpot, (byte) 1);
+        final Queue queue = QueuesController.getInstance()
+                .addFilePositionOnTape(fpot, (byte) 1);
 
         Activator.getInstance().activate(queue);
 
@@ -210,20 +210,23 @@ public final class ActivatorTest {
         Activator.getInstance().setMaxStagersPerQueue((byte) 2);
         Activator.getInstance().setSecondsBetweenStagers((short) 1);
 
-        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = new User("username");
 
         final File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
-        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
-                fpot1, (byte) 1);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10,
+                tape, user);
+        final Queue queue = QueuesController.getInstance()
+                .addFilePositionOnTape(fpot1, (byte) 1);
 
         final File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20,
+                tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
 
         final File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
-        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
+        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30,
+                tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
 
         Activator.getInstance().activate(queue);
@@ -244,20 +247,23 @@ public final class ActivatorTest {
         Activator.getInstance().setMaxStagers((byte) 2);
         Activator.getInstance().setSecondsBetweenStagers((short) 1);
 
-        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final User user = new User("username");
 
         final File file1 = new File("filename1", ActivatorTest.THREE_HUNDRED);
-        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10, tape, user);
-        final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
-                fpot1, (byte) 1);
+        final FilePositionOnTape fpot1 = new FilePositionOnTape(file1, 10,
+                tape, user);
+        final Queue queue = QueuesController.getInstance()
+                .addFilePositionOnTape(fpot1, (byte) 1);
 
         final File file2 = new File("filename2", ActivatorTest.THREE_HUNDRED);
-        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20, tape, user);
+        final FilePositionOnTape fpot2 = new FilePositionOnTape(file2, 20,
+                tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot2, (byte) 1);
 
         final File file3 = new File("filename3", ActivatorTest.THREE_HUNDRED);
-        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30, tape, user);
+        final FilePositionOnTape fpot3 = new FilePositionOnTape(file3, 30,
+                tape, user);
         QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
 
         Activator.getInstance().activate(queue);
@@ -494,7 +500,7 @@ public final class ActivatorTest {
         Activator.getInstance().refreshAllocations();
 
         final File file = new File("filename", 400);
-        final Tape tape = new Tape("tapename", MEDIA_TYPE_1);
+        final Tape tape = new Tape("tapename", MEDIA_TYPE);
         final FilePositionOnTape fpot = new FilePositionOnTape(file, 6, tape,
                 new User("username"));
         QueuesController.getInstance().addFilePositionOnTape(fpot, (byte) 1);

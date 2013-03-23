@@ -42,10 +42,7 @@ import fr.in2p3.cc.storage.treqs.model.RequestStatus;
 /**
  * Statements used to interact with the database.
  * <p>
- * TODO v2.0 The dates have to be server side or database side, but not both of
- * them.
- * <p>
- * TODO v2.0 Create an option that permits to dump the SQL queries of the
+ * TODO v1.5.6 Create an option that permits to dump the SQL queries of the
  * application. This permits to see how the database is used, an eventually
  * tuned it in a better way.
  *
@@ -113,6 +110,11 @@ public final class MySQLStatements {
      * Media types table: Name of the media type.
      */
     static final String MEDIATYPES_NAME = "name";
+    /**
+     * Media types table: Regular expression that describes the name of the
+     * media type.
+     */
+    static final String MEDIATYPES_REG_EXP = "regex";
     /**
      * Queues table name.
      */
@@ -315,7 +317,7 @@ public final class MySQLStatements {
      */
     public static final String SQL_MEDIATYPES_SELECT = "SELECT "
             + MEDIATYPES_ID + ", " + MEDIATYPES_NAME + ", " + MEDIATYPES_DRIVES
-            + " FROM " + MEDIATYPES;
+            + ", " + MEDIATYPES_REG_EXP + " FROM " + MEDIATYPES;
 
     /**
      * SQL statement to insert a new queue in the database.
@@ -423,7 +425,7 @@ public final class MySQLStatements {
      * Requests 7.
      */
     public static final String SQL_REQUESTS_UPDATE_REQUEST_ENDED = "UPDATE "
-            + REQUESTS + " SET " + REQUESTS_END_TIME + " = ?, "
+            + REQUESTS + " SET " + REQUESTS_END_TIME + " = NOW(), "
             + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE + " = ?, "
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "
@@ -437,7 +439,7 @@ public final class MySQLStatements {
      * Requests 4.
      */
     public static final String SQL_REQUESTS_UPDATE_REQUEST_QUEUED = "UPDATE "
-            + REQUESTS + " SET " + REQUESTS_QUEUED_TIME + " = ?, "
+            + REQUESTS + " SET " + REQUESTS_QUEUED_TIME + " = NOW(), "
             + REQUESTS_QUEUE_ID + " = ?, " + REQUESTS_TAPE + " = ?, "
             + REQUESTS_POSITION + " = ?, " + REQUESTS_ERRORCODE + " = ?, "
             + REQUESTS_TRIES + " = ?, " + REQUESTS_STATUS + " = ?, "

@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
  * Template for the algorithm to choose the best user and the best queue.
  * <p>
  * The constructor should be without parameters.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5
  */
@@ -64,7 +64,7 @@ public abstract class Selector {
 
     /**
      * Checks if the queue has to be selected.
-     *
+     * 
      * @param resource
      *            Type of resource.
      * @param queue
@@ -73,8 +73,8 @@ public abstract class Selector {
      * @throws TReqSException
      *             If there is a problem getting the configuration.
      */
-    protected boolean checkQueue(final Resource/* ! */resource,
-            final Queue/* ! */queue) throws TReqSException {
+    protected boolean checkQueue(final Resource resource, final Queue queue)
+            throws TReqSException {
         LOGGER.trace("> checkQueue");
 
         assert resource != null : "resource null";
@@ -124,8 +124,8 @@ public abstract class Selector {
      * Compares the two queue to see which one can be selected. Both of them are
      * eligible.
      * <p>
-     *
-     *
+     * 
+     * 
      * @param best
      *            This is the best queue at the moment.
      * @param queue
@@ -134,12 +134,12 @@ public abstract class Selector {
      * @throws TReqSException
      *             Problem in the configurator.
      */
-    protected abstract Queue compareQueue(final Queue/* ! */best,
-            final Queue /* ! */queue) throws TReqSException;
+    protected abstract Queue compareQueue(final Queue best, final Queue queue)
+            throws TReqSException;
 
     /**
      * Chooses the best queue candidate for activation for a given resource.
-     *
+     * 
      * @param queues
      *            List of created queues. There are queues in all states of the
      *            researched media type. There are not queues for other media
@@ -150,12 +150,12 @@ public abstract class Selector {
      * @throws TReqSException
      *             Problem using the selector. The queue map could be empty.
      */
-    public abstract Queue/* ! */selectBestQueue(final List<Queue> queues,
+    public abstract Queue selectBestQueue(final List<Queue> queues,
             final Resource resource) throws TReqSException;
 
     /**
      * Selects a queue without taking care of the users.
-     *
+     * 
      * @param queues
      *            Set of queues.
      * @param resource
@@ -164,9 +164,8 @@ public abstract class Selector {
      * @throws TReqSException
      *             If there is a problem while doing the calculation.
      */
-    protected Queue/* ! */selectBestQueueWithoutUser(
-            final List<Queue>/* <!>! */queues, final Resource/* ! */resource)
-            throws TReqSException {
+    protected Queue selectBestQueueWithoutUser(final List<Queue> queues,
+            final Resource resource) throws TReqSException {
         LOGGER.trace("> selectBestQueueWithoutUser");
 
         assert queues != null : "queues null";

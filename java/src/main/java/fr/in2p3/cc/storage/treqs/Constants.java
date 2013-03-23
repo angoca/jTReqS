@@ -140,6 +140,10 @@ public final class Constants {
      */
     public static final String MAX_SUSPEND_RETRIES = "MAX_SUSPEND_RETRIES";
     /**
+     * Media finder factory.
+     */
+    public static final String MEDIA_FINDER_FACTORY = "MEDIA_FINDER_FACTORY";
+    /**
      * Quantity of milliseconds in a second.
      */
     public static final int MILLISECONDS = 1000;
@@ -183,14 +187,13 @@ public final class Constants {
      */
     public static final String SECTION_KEYTAB = "HPSS";
     /**
+     * Section in the configuration file for Media Finder.
+     */
+    public static final String SECTION_MEDIA_FINDER = "MEDIA_FINDER";
+    /**
      * Section in the configuration file for the Persistence.
      */
     public static final String SECTION_PERSISTENCE = "PERSISTENCE";
-    /**
-     * Specific section in the configuration file when using MySQL as data
-     * source.
-     */
-    public static final String SECTION_PERSISTENCE_MYSQL = "PERSISTENCE_MYSQL";
     /**
      * Section in the configuration file for the Queue.
      */

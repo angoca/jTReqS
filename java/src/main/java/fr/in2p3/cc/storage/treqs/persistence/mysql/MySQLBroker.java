@@ -66,7 +66,7 @@ import fr.in2p3.cc.storage.treqs.tools.Configurator;
  * <code>"jdbc:mysql://localhost:3306/dbname?useJvmCharsetConverters=true"
  * </code> This information is in
  * http://ubuntuforums.org/showthread.php?t=1248907
- *
+ * 
  * @author Andrés Gómez
  * @since 1.5
  */
@@ -107,7 +107,7 @@ public final class MySQLBroker {
 
     /**
      * Method to call the singleton.
-     *
+     * 
      * @return Retrieves the unique instance of this object.
      */
     public static MySQLBroker getInstance() {
@@ -149,7 +149,7 @@ public final class MySQLBroker {
     /**
      * Closes the result set of a query. This could be due to an exception, or
      * when the query has been already processed.
-     *
+     * 
      * @param result
      *            Result set to close.
      */
@@ -171,7 +171,7 @@ public final class MySQLBroker {
 
     /**
      * Close a given statement.
-     *
+     * 
      * @param stmt
      *            Statement to close.
      * @throws MySQLCloseException
@@ -185,7 +185,7 @@ public final class MySQLBroker {
             try {
                 stmt.close();
             } catch (final SQLException sqlEx) {
-                this.handleSQLException(sqlEx);
+                MySQLBroker.handleSQLException(sqlEx);
                 throw new MySQLCloseException(sqlEx);
             }
         }
@@ -196,9 +196,9 @@ public final class MySQLBroker {
     /**
      * Establishes a connection to the database.
      * <p>
-     * TODO v2.0 The parameters should be dynamic, this permits to reload the
+     * TODO v1.5.6 The parameters should be dynamic, this permits to reload the
      * configuration file in hot. Check if the value has changed.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem retrieving the database values from the
      *             configuration. Or retrieving the driver, or connecting to the
@@ -207,19 +207,12 @@ public final class MySQLBroker {
     public void connect() throws TReqSException {
         LOGGER.trace("> connect");
 
-        final String url = "jdbc:mysql://"
-                + Configurator.getInstance().getStringValue(
-                        Constants.SECTION_PERSISTENCE_MYSQL,
-                        Constants.DB_SERVER)
-                + '/'
-                + Configurator.getInstance().getStringValue(
-                        Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_NAME)
-                + "?useJvmCharsetConverters=true";
+        final String url = getURL();
         final String driver = "com.mysql.jdbc.Driver";
-        final String user = Configurator.getInstance().getStringValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
+        final String user = getUser();
         final String password = Configurator.getInstance().getStringValue(
-                Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_PASSWORD);
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL,
+                Constants.DB_PASSWORD);
 
         // There can be only a connection per instance.
         synchronized (instance) {
@@ -227,7 +220,7 @@ public final class MySQLBroker {
                 try {
                     Class.forName(driver).newInstance();
                 } catch (final Exception e) {
-                    LOGGER.error("Exception: {}", e.getMessage());
+                    LOGGER.error("Exception while loading: {}", e.getMessage());
                     throw new MySQLOpenException(e);
                 }
                 try {
@@ -237,7 +230,7 @@ public final class MySQLBroker {
                     this.executeModification(SET_MODE_STRICT);
                     this.connected = true;
                 } catch (final SQLException ex) {
-                    this.handleSQLException(ex);
+                    MySQLBroker.handleSQLException(ex);
                     try {
                         this.disconnect();
                     } catch (final Exception e) {
@@ -253,7 +246,7 @@ public final class MySQLBroker {
 
     /**
      * Disconnects from the database.
-     *
+     * 
      * @throws MySQLCloseException
      *             If there is a problem closing the connection.
      */
@@ -265,7 +258,7 @@ public final class MySQLBroker {
                 try {
                     this.connection.close();
                 } catch (final SQLException ex) {
-                    this.handleSQLException(ex);
+                    MySQLBroker.handleSQLException(ex);
                     throw new MySQLCloseException(ex);
                 } finally {
                     this.connection = null;
@@ -279,7 +272,7 @@ public final class MySQLBroker {
 
     /**
      * Executes a statement in the database.
-     *
+     * 
      * @param query
      *            Statement to execute.
      * @return Quantity of modified rows.
@@ -304,7 +297,7 @@ public final class MySQLBroker {
                 LOGGER.debug("Query: '{}'", query);
                 rows = statement.executeUpdate(query);
             } catch (final SQLException ex) {
-                this.handleSQLException(ex);
+                MySQLBroker.handleSQLException(ex);
                 throw new MySQLExecuteException(ex);
             } finally {
                 try {
@@ -325,7 +318,7 @@ public final class MySQLBroker {
     /**
      * Executes a select in the database returning the resultSet. The Broker can
      * process just one query at a time.
-     *
+     * 
      * @param query
      *            Query statement to execute in the databases.
      * @return Set of objects: [Statement, ResultSet].
@@ -352,7 +345,7 @@ public final class MySQLBroker {
                 LOGGER.debug("Query: '{}'", query);
                 rs = stmt.executeQuery(query);
             } catch (final SQLException ex) {
-                this.handleSQLException(ex);
+                MySQLBroker.handleSQLException(ex);
                 this.closeResultSet(rs);
                 throw new MySQLExecuteException(ex);
             }
@@ -369,7 +362,7 @@ public final class MySQLBroker {
     /**
      * Retrieves a prepared statement. The Broker can process just one query at
      * a time.
-     *
+     * 
      * @param query
      *            Query to prepare.
      * @return Prepared statement to fill with the data to execute.
@@ -407,26 +400,68 @@ public final class MySQLBroker {
     }
 
     /**
+     * Creates the URL for the connection.
+     * 
+     * @return Returns the URL for the DB connection.
+     * @throws TReqSException
+     *             If there is any problem when looking for the values.
+     */
+    static String getURL() throws TReqSException {
+        LOGGER.trace("> getURL");
+
+        final String url = "jdbc:mysql://"
+                + Configurator.getInstance().getStringValue(
+                        MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL,
+                        Constants.DB_SERVER)
+                + '/'
+                + Configurator.getInstance().getStringValue(
+                        MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL,
+                        Constants.DB_NAME) + "?useJvmCharsetConverters=true";
+
+        LOGGER.trace("> getURL");
+
+        return url;
+    }
+
+    /**
+     * Retrieves the user used to connect to the database.
+     * 
+     * @return Database username.
+     * @throws TReqSException
+     *             If there is any problem retrieving the user.
+     */
+    static String getUser() throws TReqSException {
+        LOGGER.trace("> getUser");
+
+        final String username = Configurator.getInstance().getStringValue(
+                MySQLDAOFactory.SECTION_PERSISTENCE_MYSQL, Constants.DB_USER);
+
+        LOGGER.trace("< getUser");
+
+        return username;
+    }
+
+    /**
      * Handle an exception, logging the messages.
-     *
+     * 
      * @param exception
      *            Exception to process.
      */
-    private void handleSQLException(final SQLException exception) {
+    private static void handleSQLException(final SQLException exception) {
         LOGGER.trace("> handleSQLException");
 
         assert exception != null;
 
-        System.out.println("SQLException: " + exception.getMessage());
-        System.out.println("SQLState: " + exception.getSQLState());
-        System.out.println("VendorError: " + exception.getErrorCode());
+        System.err.println("SQLException: " + exception.getMessage());
+        System.err.println("SQLState: " + exception.getSQLState());
+        System.err.println("VendorError: " + exception.getErrorCode());
 
         LOGGER.trace("< handleSQLException");
     }
 
     /**
      * Close the result set and the statement of a previous select.
-     *
+     * 
      * @param objects
      *            Set of object to close [statement, resultSet].
      * @throws MySQLCloseException
@@ -449,7 +484,7 @@ public final class MySQLBroker {
 
     /**
      * Validates if the connection is valid.
-     *
+     * 
      * @throws TReqSException
      *             While verifying the connection status or when reestablishing
      *             the connection.
@@ -462,7 +497,7 @@ public final class MySQLBroker {
             ret = this.connected && (this.connection != null)
                     && !this.connection.isClosed();
         } catch (final SQLException e) {
-            this.handleSQLException(e);
+            MySQLBroker.handleSQLException(e);
             throw new MySQLExecuteException(e);
         }
         if (!ret) {

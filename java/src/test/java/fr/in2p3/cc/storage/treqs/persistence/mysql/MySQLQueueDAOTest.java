@@ -81,7 +81,7 @@ public final class MySQLQueueDAOTest {
      * Media type.
      */
     private static final MediaType MEDIA_TYPE = new MediaType((byte) 1,
-            "media1");
+            "media1", "/TAPE");
     /**
      * Number three.
      */
@@ -128,7 +128,7 @@ public final class MySQLQueueDAOTest {
         MySQLTests.cleanDatabase();
 
         final String query = "INSERT INTO " + MySQLStatements.MEDIATYPES
-                + " VALUES (1, \"T10K-A\", 5)";
+                + " VALUES (1, \"T10K-A\", 5, '/TAPA')";
         MySQLBroker.getInstance().executeModification(query);
     }
 
@@ -154,7 +154,7 @@ public final class MySQLQueueDAOTest {
      */
     @Test
     public void testAbort02Created() throws TReqSException, SQLException {
-        final Tape tape = new Tape("tapename2", MEDIA_TYPE);
+        final Tape tape = new Tape("tapenam2", MEDIA_TYPE);
         final int size = 987;
 
         final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
@@ -195,7 +195,7 @@ public final class MySQLQueueDAOTest {
      */
     @Test
     public void testAbort03Activated() throws TReqSException, SQLException {
-        final Tape tape = new Tape("tapename2", MEDIA_TYPE);
+        final Tape tape = new Tape("tapenam2", MEDIA_TYPE);
         final int size = 987;
 
         final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
@@ -236,7 +236,7 @@ public final class MySQLQueueDAOTest {
      */
     @Test
     public void testAbort04Suspended() throws TReqSException, SQLException {
-        final Tape tape = new Tape("tapename2", MEDIA_TYPE);
+        final Tape tape = new Tape("tapenam2", MEDIA_TYPE);
         final int size = 987;
 
         final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
@@ -275,7 +275,7 @@ public final class MySQLQueueDAOTest {
      */
     @Test
     public void testInsert01() throws TReqSException {
-        final Tape tape = new Tape("tapename1", MEDIA_TYPE);
+        final Tape tape = new Tape("tapenam1", MEDIA_TYPE);
         final int size = 10;
 
         final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
@@ -293,7 +293,7 @@ public final class MySQLQueueDAOTest {
     @Test
     public void testUpdateAddRequest01() throws TReqSException {
         final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
-                50), 0, new Tape("tapenameup1", MEDIA_TYPE), new User(
+                50), 0, new Tape("tapnmup1", MEDIA_TYPE), new User(
                 "username"));
         final Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
@@ -314,7 +314,7 @@ public final class MySQLQueueDAOTest {
         final long byteSize = 123;
 
         final FilePositionOnTape fpot = new FilePositionOnTape(new File("filename",
-                byteSize), 0, new Tape("tapename2", MEDIA_TYPE), new User(
+                byteSize), 0, new Tape("tapenam2", MEDIA_TYPE), new User(
                 ownerName));
         final Queue queue = new Queue(fpot, (byte) MySQLQueueDAOTest.THREE);
 
@@ -363,13 +363,13 @@ public final class MySQLQueueDAOTest {
         final long byteSize = 123;
 
         final FilePositionOnTape fpot1 = new FilePositionOnTape(new File("filename",
-                byteSize), 10, new Tape("tapename2", MEDIA_TYPE), new User(
+                byteSize), 10, new Tape("tapenam2", MEDIA_TYPE), new User(
                 ownerName));
         final Queue queue = new Queue(fpot1, (byte) MySQLQueueDAOTest.THREE);
         final String other = "other";
 
         final FilePositionOnTape fpot2 = new FilePositionOnTape(new File("filename2",
-                byteSize), 20, new Tape("tapename2", MEDIA_TYPE), new User(
+                byteSize), 20, new Tape("tapenam2", MEDIA_TYPE), new User(
                 other));
         queue.registerFPOT(fpot2, (byte) 0);
 

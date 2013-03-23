@@ -110,7 +110,8 @@ public final class FilePositionOnTapeTest {
         this.fileName = "filename";
         this.tapeName = "tapename";
         this.file = new File(this.fileName, 400);
-        this.tape = new Tape(this.tapeName, new MediaType((byte) 1, "media"));
+        this.tape = new Tape(this.tapeName, new MediaType((byte) 1, "media",
+                "/TAPE"));
     }
 
     /**
@@ -286,16 +287,16 @@ public final class FilePositionOnTapeTest {
         final String username = "username";
         final User user = new User(username);
 
-        final FilePositionOnTape fpot = new FilePositionOnTape(this.file, position,
-                this.tape, user);
+        final FilePositionOnTape fpot = new FilePositionOnTape(this.file,
+                position, this.tape, user);
 
         final String actual = fpot.toString();
 
         final String expectedPrefix = "FilePositionOnTape{ "
                 + Constants.MAX_METADATA_AGE + ": " + 30 + ", file: "
                 + this.fileName + ", metadataAge: ";
-        final String expectedSuffix = ", position: " + position + ", requester: "
-                + username + ", tape: " + this.tapeName + "}";
+        final String expectedSuffix = ", position: " + position
+                + ", requester: " + username + ", tape: " + this.tapeName + "}";
 
         LOGGER.error("toString Current    {}", actual);
         LOGGER.error("toString Excepected {}XXXXXXXXXXXXX{}", expectedPrefix,

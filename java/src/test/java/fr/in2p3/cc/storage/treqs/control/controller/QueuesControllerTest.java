@@ -94,12 +94,12 @@ public final class QueuesControllerTest {
      * Media type 1 for tests.
      */
     private static final MediaType MEDIA_TYPE_1 = new MediaType((byte) 1,
-            "T10K-a");
+            "T10K-a", "/TAPA");
     /**
      * Media type 2 for tests.
      */
     private static final MediaType MEDIA_TYPE_2 = new MediaType((byte) 2,
-            "T10K-b");
+            "T10K-b", "/TAPB");
     /**
      * Name of the tape 1.
      */
@@ -645,25 +645,25 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testClean02One() throws TReqSException {
-        final String tapename0 = "clean0tapename";
+        final String tapename0 = "clean0ta";
         QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename0", HUNDRED),
                         QueuesControllerTest.TEN, new Tape(tapename0,
                                 MEDIA_TYPE_1), USER_1),
                 (byte) QueuesControllerTest.THREE);
-        final String tapename1 = "clean1tapename";
+        final String tapename1 = "clean1ta";
         final Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename1", HUNDRED),
                         QueuesControllerTest.TEN, new Tape(tapename1,
                                 MEDIA_TYPE_1), USER_1),
                 (byte) QueuesControllerTest.THREE);
-        final String tapename2 = "clean2tapename";
+        final String tapename2 = "clean2ta";
         QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename2", HUNDRED),
                         QueuesControllerTest.TEN, new Tape(tapename2,
                                 MEDIA_TYPE_1), USER_1),
                 (byte) QueuesControllerTest.THREE);
-        final String tapename3 = "clean3tapename";
+        final String tapename3 = "clean3ta";
         final Queue queue3 = QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename3", HUNDRED),
                         QueuesControllerTest.TEN, new Tape(tapename3,
@@ -695,9 +695,9 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testClean03Several() throws TReqSException {
-        final String tapename4 = "clean4tapename";
-        final String tapename5 = "clean5tapename";
-        final String tapename6 = "clean6tapename";
+        final String tapename4 = "clean4ta";
+        final String tapename5 = "clean5ta";
+        final String tapename6 = "clean6ta";
 
         final Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename1", HUNDRED),
@@ -760,7 +760,7 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testClean04DifferentStatus() throws TReqSException {
-        final String tapename1 = "clean1tapename";
+        final String tapename1 = "clean1ta";
 
         final Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename1", HUNDRED),
@@ -928,7 +928,7 @@ public final class QueuesControllerTest {
         Helper.activate(queue1);
 
         final File file2 = new File("filename2", QueuesControllerTest.THREE_HUNDRED);
-        final Tape tape2 = new Tape("tapename2", MEDIA_TYPE_2);
+        final Tape tape2 = new Tape("tapenae2", MEDIA_TYPE_2);
         final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
                 QueuesControllerTest.TWENTY, tape2, new User("username2"));
         final Queue queue2 = QueuesController.getInstance().addFilePositionOnTape(
@@ -936,7 +936,7 @@ public final class QueuesControllerTest {
         Helper.activate(queue2);
 
         final File file3 = new File("filename3", QueuesControllerTest.THREE_HUNDRED);
-        final Tape tape3 = new Tape("tapename3", MEDIA_TYPE_2);
+        final Tape tape3 = new Tape("tapenam3", MEDIA_TYPE_2);
         final FilePositionOnTape fpot3 = new FilePositionOnTape(file3,
                 QueuesControllerTest.TWENTY, tape3, new User("username3"));
         final Queue queue3 = QueuesController.getInstance().addFilePositionOnTape(
@@ -971,7 +971,7 @@ public final class QueuesControllerTest {
         Helper.activate(queue1);
 
         final File file2 = new File("filename2", QueuesControllerTest.THREE_HUNDRED);
-        final Tape tape2 = new Tape("tapename2", MEDIA_TYPE_2);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_2);
         final FilePositionOnTape fpot2 = new FilePositionOnTape(file2,
                 QueuesControllerTest.TWENTY, tape2, new User("username2"));
         final Queue queue2 = QueuesController.getInstance().addFilePositionOnTape(
@@ -980,7 +980,7 @@ public final class QueuesControllerTest {
         Helper.end(queue2);
 
         final File file3 = new File("filename3", QueuesControllerTest.THREE_HUNDRED);
-        final Tape tape3 = new Tape("tapename3", MEDIA_TYPE_2);
+        final Tape tape3 = new Tape("tapenam3", MEDIA_TYPE_2);
         final FilePositionOnTape fpot3 = new FilePositionOnTape(file3,
                 QueuesControllerTest.TWENTY, tape3, new User("username3"));
         QueuesController.getInstance().addFilePositionOnTape(fpot3, (byte) 1);
@@ -1093,7 +1093,7 @@ public final class QueuesControllerTest {
         QueuesController.getInstance().addFilePositionOnTape(fpot1,
                 (byte) QueuesControllerTest.THREE);
 
-        final Tape tape2 = new Tape("tapename2", MEDIA_TYPE_2);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_2);
         final FilePositionOnTape fpot2 = new FilePositionOnTape(new File("filename",
                 HUNDRED), QueuesControllerTest.TEN, tape2, USER_1);
         final Queue queue = QueuesController.getInstance().addFilePositionOnTape(
@@ -1123,7 +1123,7 @@ public final class QueuesControllerTest {
                 fpot1, (byte) QueuesControllerTest.THREE);
         Helper.activate(queue1);
 
-        final Tape tape2 = new Tape("tapename2", MEDIA_TYPE_2);
+        final Tape tape2 = new Tape("tapenam2", MEDIA_TYPE_2);
         final FilePositionOnTape fpot2 = new FilePositionOnTape(new File("filename",
                 HUNDRED), QueuesControllerTest.TEN, tape2, USER_1);
         final Queue queue2 = QueuesController.getInstance().addFilePositionOnTape(
@@ -1366,8 +1366,8 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testGetQueues01() throws TReqSException {
-        final String tapename1 = "getQueuetape1";
-        final String tapename2 = "getQueuetape2";
+        final String tapename1 = "getQueu1";
+        final String tapename2 = "getQueu2";
 
         this.createQueues(tapename1, tapename2);
 
@@ -1424,8 +1424,8 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testGetQueues02() throws TReqSException {
-        final String tapename1 = "getQueuetape1";
-        final String tapename2 = "getQueuetape2";
+        final String tapename1 = "getQueu1";
+        final String tapename2 = "getQueu2";
 
         this.createQueues(tapename1, tapename2);
 
@@ -1482,7 +1482,7 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testGetQueues04AllStates() throws TReqSException {
-        final String tapename1 = "getQueuetape1";
+        final String tapename1 = "Queuetp1";
 
         int qty = 0;
         Collection<Queue> queues = QueuesController.getInstance()
@@ -1613,8 +1613,8 @@ public final class QueuesControllerTest {
      */
     @Test
     public void testSuspendTime01() throws TReqSException {
-        final String tapename1 = "updatename1";
-        final String tapename3 = "updatename3";
+        final String tapename1 = "update1";
+        final String tapename3 = "update3";
 
         final Queue queue1 = QueuesController.getInstance().addFilePositionOnTape(
                 new FilePositionOnTape(new File("filename1", HUNDRED),

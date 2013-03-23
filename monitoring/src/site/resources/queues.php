@@ -29,9 +29,6 @@
     knowledge of the CeCILL license and that you accept its terms. -->
 <html>
 <head>
-<link rel="icon" href="images/eyes.ico" type="image/ico" />
-<title>jTReqS Monitoring - Queues</title>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <style type="text/css">
 @IMPORT url("css/fancystyle.css");
 </style>
@@ -46,17 +43,11 @@ ini_set('display_errors', true);
 require_once "configuration.inc";
 require_once "queries.inc";
 
-include "menu.php";
-
 mysql_connect($dbServer, $dbUser, $dbPasswd);
 @ mysql_select_db($dbName) or die("Unable to connect to the database '"
 .$dbName."' at '".$dbServer."'");
 
 ?>
-  <div>
-    <img src="images/center.png" />
-  </div>
-
   <h1>Queues per tape</h1>
   <?php
   $result = mysql_query($SQL_QUEUES_BY_ID); ?>

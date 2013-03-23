@@ -36,6 +36,7 @@
  */
 package fr.in2p3.cc.storage.treqs.tools;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Scanner;
@@ -51,12 +52,10 @@ import fr.in2p3.cc.storage.treqs.persistence.AbstractDAOFactory;
  * Register the information of the environment where the application is executed
  * into the data source.
  * <p>
- * TODO v2.0 Register the name of the database.
- * <p>
  * TODO v2.0 Register the name of the keytab (location).
  * <p>
  * TODO v2.0 Register the username for the keytab.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5.4
  */
@@ -66,6 +65,14 @@ public class RegisterInformation {
      */
     private static final String APP_VERSION = "ApplicationVersion";
     /**
+     * Variable that has the DB hostname.
+     */
+    private static final String DB_HOSTNAME = "DBHostname";
+    /**
+     * Variable that has the DB user.
+     */
+    private static final String DB_USER = "DBUser";
+    /**
      * Variable that has the hostname.
      */
     private static final String HOSTNAME = "Hostname";
@@ -74,18 +81,26 @@ public class RegisterInformation {
      */
     private static final String HPSS_HOSTNAME = "HPSSHostname";
     /**
+     * Variable that has the HPSS Keytab.
+     */
+    private static final String HPSS_KEYTAB = "HPSSKeytab";
+    /**
+     * Variable that has the HPSS username.
+     */
+    private static final String HPSS_USERNAME = "HPSSUsername";
+    /**
+     * Variable that has the username.
+     */
+    private static final String USERNAME = "Username";
+    /**
      * Logger.
      */
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RegisterInformation.class);
-    /**
-     * Variable that has the MySQL hostname.
-     */
-    private static final String MYSQL_HOSTNAME = "MySQLHostname";
 
     /**
      * Register the application version.
-     *
+     * 
      * @throws TReqSException
      *             If there is a problem while inserting the value.
      */
@@ -124,7 +139,7 @@ public class RegisterInformation {
 
     /**
      * Register the information in the database.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem while retrieving or inserting the
      *             values.
@@ -135,8 +150,11 @@ public class RegisterInformation {
         try {
             RegisterInformation.appVersion();
             RegisterInformation.hostname();
+            RegisterInformation.username();
             RegisterInformation.hpssHostname();
-            RegisterInformation.mysqlHostname();
+            RegisterInformation.hpssUsernameAndKeytab();
+            RegisterInformation.dbHostname();
+            RegisterInformation.dbUser();
         } catch (final Exception e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
@@ -146,8 +164,60 @@ public class RegisterInformation {
     }
 
     /**
+     * Registers the DB server hostname.
+     * 
+     * @throws TReqSException
+     *             If there is any problem while executing or registering.
+     */
+    private static void dbHostname() throws TReqSException {
+        LOGGER.trace("> dbHostname");
+
+        String dbConfFile = "Not defined.";
+        try {
+            dbConfFile = AbstractDAOFactory.getDAOFactoryInstance()
+                    .getRegisterDBInformation();
+        } catch (final TReqSException e) {
+            LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
+                    e.getStackTrace());
+        }
+
+        LOGGER.error("DB Hostname: {}", dbConfFile);
+
+        AbstractDAOFactory.getDAOFactoryInstance().getRegisterInformationDAO()
+                .insert(DB_HOSTNAME, dbConfFile);
+
+        LOGGER.trace("< dbHostname");
+    }
+
+    /**
+     * Registers the DB user.
+     * 
+     * @throws TReqSException
+     *             If there is any problem while executing or registering.
+     */
+    private static void dbUser() throws TReqSException {
+        LOGGER.trace("> dbUser");
+
+        String dbConfFile = "Not defined.";
+        try {
+            dbConfFile = AbstractDAOFactory.getDAOFactoryInstance()
+                    .getRegisterDBInformation();
+        } catch (final TReqSException e) {
+            LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
+                    e.getStackTrace());
+        }
+
+        LOGGER.error("DB user: {}", dbConfFile);
+
+        AbstractDAOFactory.getDAOFactoryInstance().getRegisterInformationDAO()
+                .insert(DB_USER, dbConfFile);
+
+        LOGGER.trace("< dbUser");
+    }
+
+    /**
      * Registers the hostname where the application is executed.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem while executing or registering.
      */
@@ -172,7 +242,7 @@ public class RegisterInformation {
 
     /**
      * Registers the HPSS server hostname.
-     *
+     * 
      * @throws TReqSException
      *             If there is any problem while executing or registering.
      */
@@ -191,7 +261,13 @@ public class RegisterInformation {
         final String[] command = new String[] { "awk", "-F=",
                 "/^HPSS_SITE_NAME/ {print $2}", hpssConfFile };
 
-        final String hpssHostname = CommandExecuter.execute(command);
+        String hpssHostname = null;
+        try {
+            hpssHostname = CommandExecuter.execute(command);
+        } catch (final ExecuterException e) {
+            if (e.getCause() instanceof IOException)
+                hpssHostname = "UNKNOWN";
+        }
 
         LOGGER.error("HPSS Hostname: {}", hpssHostname);
 
@@ -202,29 +278,53 @@ public class RegisterInformation {
     }
 
     /**
-     * Registers the MySQL server hostname.
-     *
+     * Registers the user name used by hpss and the keytab.
+     * 
      * @throws TReqSException
      *             If there is any problem while executing or registering.
      */
-    private static void mysqlHostname() throws TReqSException {
-        LOGGER.trace("> mysqlHostname");
+    private static void hpssUsernameAndKeytab() throws TReqSException {
+        LOGGER.trace("> hpssUsernameAndKeytab");
 
-        String mysqlConfFile = "Not defined.";
+        final String username = Configurator.getInstance().getStringValue(
+                Constants.SECTION_KEYTAB, Constants.HSM_USER);
+        final String keytab = Configurator.getInstance().getStringValue(
+                Constants.SECTION_KEYTAB, Constants.KEYTAB_FILE);
+
+        LOGGER.error("hpssUsername: {}", username);
+        LOGGER.error("hpssKeytab: {}", keytab);
+
+        AbstractDAOFactory.getDAOFactoryInstance().getRegisterInformationDAO()
+                .insert(HPSS_USERNAME, username);
+        AbstractDAOFactory.getDAOFactoryInstance().getRegisterInformationDAO()
+                .insert(HPSS_KEYTAB, keytab);
+
+        LOGGER.trace("< hpssUsernameAndKeytab");
+    }
+
+    /**
+     * Registers the user name used to execute TReqS.
+     * 
+     * @throws TReqSException
+     *             If there is any problem while executing or registering.
+     */
+    private static void username() throws TReqSException {
+        LOGGER.trace("> username");
+
+        String whoami = "Not defined.";
         try {
-            mysqlConfFile = Configurator.getInstance().getStringValue(
-                    Constants.SECTION_PERSISTENCE_MYSQL, Constants.DB_SERVER);
+            whoami = CommandExecuter.execute(new String[] { "whoami" });
         } catch (final TReqSException e) {
             LOGGER.error("Problem while registering: {} - {}", e.getMessage(),
                     e.getStackTrace());
         }
 
-        LOGGER.error("MySQL Hostname: {}", mysqlConfFile);
+        LOGGER.error("Username: {}", whoami);
 
         AbstractDAOFactory.getDAOFactoryInstance().getRegisterInformationDAO()
-                .insert(MYSQL_HOSTNAME, mysqlConfFile);
+                .insert(USERNAME, whoami);
 
-        LOGGER.trace("< mysqlHostname");
+        LOGGER.trace("< username");
     }
 
     /**

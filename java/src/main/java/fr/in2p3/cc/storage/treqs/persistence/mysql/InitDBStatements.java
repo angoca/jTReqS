@@ -115,6 +115,10 @@ final class InitDBStatements {
      */
     private static final String MEDIATYPES_NAME = MySQLStatements.MEDIATYPES_NAME;
     /**
+     * Media types table: Regular expression of the media type.
+     */
+    private static final String MEDIATYPE_REG_EXP = MySQLStatements.MEDIATYPES_REG_EXP;
+    /**
      * Queues table name.
      */
     static final String QUEUES = MySQLStatements.QUEUES;
@@ -275,7 +279,8 @@ final class InitDBStatements {
      */
     static final String STRUCTURE_TABLE_HEART_BEAT = '(' + HEART_BEAT_PID
             + " int not null, " + HEART_BEAT_START_TIME
-            + " datetime not null, " + HEART_BEAT_LAST_TIME + " datetime)";
+            + " datetime not null, " + HEART_BEAT_LAST_TIME + " datetime) "
+            + "ENGINE=InnoDB";
 
     /**
      * Structure of the table informations.
@@ -290,8 +295,9 @@ final class InitDBStatements {
     static final String STRUCTURE_TABLE_MEDIATYPES = '(' + MEDIATYPES_ID
             + " tinyint not null, " + MEDIATYPES_NAME
             + " varchar(16) not null, " + MEDIATYPES_DRIVES
-            + " smallint default 0 not null, " + "PRIMARY KEY  ("
-            + MEDIATYPES_ID + ")) ENGINE=InnoDB";
+            + " smallint default 0 not null, " + MEDIATYPE_REG_EXP
+            + " varchar(32) not null, " + "PRIMARY KEY (" + MEDIATYPES_ID
+            + ")) ENGINE=InnoDB";
 
     /**
      * Structure of the table queues. The columns were sorted in order to have

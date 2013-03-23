@@ -51,7 +51,7 @@ import fr.in2p3.cc.storage.treqs.model.Resource;
  * This implementation was proposed by Pierre-Emmanuel Brinette. This is a
  * smooth variation of the Jonathan selector, but it does not take in account
  * the users, only the time when the queue was registered.
- *
+ * 
  * @author Andres Gomez
  * @since 1.5
  */
@@ -64,14 +64,14 @@ public class FifoSelector extends Selector {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#compareQueue(fr.in2p3
      * .cc.storage.treqs.model.Queue, fr.in2p3.cc.storage.treqs.model.Queue)
      */
     @Override
-    protected final Queue/* ! */compareQueue(final Queue/* ! */bestQueue,
-            final Queue/* ! */currentQueue) throws TReqSException {
+    protected final Queue compareQueue(final Queue bestQueue,
+            final Queue currentQueue) throws TReqSException {
         LOGGER.trace("> compareQueue");
 
         assert bestQueue != null : "Current best queue null";
@@ -110,14 +110,14 @@ public class FifoSelector extends Selector {
 
     /*
      * (non-Javadoc)
-     *
+     * 
      * @see
      * fr.in2p3.cc.storage.treqs.control.selector.Selector#selectBestQueue(java
      * .util.List, fr.in2p3.cc.storage.treqs.model.Resource)
      */
     @Override
-    public Queue/* ! */selectBestQueue(final List<Queue>/* <!>! */queues,
-            final Resource/* ! */resource) throws TReqSException {
+    public Queue selectBestQueue(final List<Queue> queues,
+            final Resource resource) throws TReqSException {
         LOGGER.trace("> selectBestQueue");
 
         assert queues != null : "queues null";
